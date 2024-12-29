@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { FormElement, Input } from '@styles/form';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
+import { LoginType } from '@components/pages/Login/Login';
 
 const PasswordToggleButton = styled.button`
     position: absolute;
@@ -16,8 +17,10 @@ type PasswordInputType = {
     fieldName: string;
     name: string;
     errorMsg: string;
+    formValue: LoginType;
+    setFormValue: React.Dispatch<React.SetStateAction<LoginType>>;
 };
-const PasswordInput = ({ fieldName, name, errorMsg = '' }: PasswordInputType) => {
+const PasswordInput = ({ fieldName, name, errorMsg = '', formValue, setFormValue }: PasswordInputType) => {
     const [showPassword, setShowPassword] = useState(false);
 
     const togglePassword = () => {
@@ -35,6 +38,9 @@ const PasswordInput = ({ fieldName, name, errorMsg = '' }: PasswordInputType) =>
                     placeholder=""
                     name={name}
                     className="form-elem-control"
+                    onChange={(e) => {
+                        setFormValue({ ...formValue, password: e.target.value });
+                    }}
                 />
 
                 <PasswordToggleButton
@@ -45,12 +51,12 @@ const PasswordInput = ({ fieldName, name, errorMsg = '' }: PasswordInputType) =>
                     {showPassword ? (
                         <>
                             <i className="bi bi-eye-fill"></i>
-                            <span className="pwd-toggle-text text-sm">Hide</span>
+                            <span className="pwd-toggle-text text-sm">Ẩn</span>
                         </>
                     ) : (
                         <>
                             <i className="bi bi-eye-slash-fill"></i>
-                            <span className="pwd-toggle-text text-sm">Show</span>
+                            <span className="pwd-toggle-text text-sm">Hiện</span>
                         </>
                     )}
                 </PasswordToggleButton>
