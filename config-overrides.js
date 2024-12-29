@@ -10,10 +10,10 @@ module.exports = function override(config) {
         '@routes': 'src/routes',
         '@images': 'src/assets/images',
         '@icons': 'src/assets/icons',
-        // '@setup': 'src/setup',
-        // '@redux': 'src/redux',
+        '@setup': 'src/setup',
+        '@redux': 'src/redux',
         '@styles': 'src/styles',
-        // '@common': 'src/common',
+        '@common': 'src/common',
         '@ultils': 'src/ultils',
     })(config);
 

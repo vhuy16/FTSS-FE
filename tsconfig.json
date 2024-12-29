@@ -25,10 +25,10 @@
             "@routes/*": ["routes/*"],
             "@images/*": ["assets/images/*"],
             "@icons/*": ["assets/icons/*"],
-            // "@setup/*": ["setup/*"],
-            // "@redux/*": ["redux/*"],
+            "@setup/*": ["setup/*"],
+            "@redux/*": ["redux/*"],
             "@styles/*": ["styles/*"],
-            // "@common/*": ["common/*"],
+            "@common/*": ["common/*"],
             "@ultils/*": ["ultils/*"]
         }
     },
