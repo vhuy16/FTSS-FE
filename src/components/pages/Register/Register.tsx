@@ -1,9 +1,9 @@
-import { useAppDispatch, useAppSelector } from "../../redux/hook";
+import { useAppDispatch, useAppSelector } from "../../../redux/hook";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { getAllProvince, getAllDistrict } from "../../redux/slices/addressSlice";
+import { getAllProvince, getAllDistrict } from "../../../redux/slices/addressSlice";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { FormGridWrapper, FormTitle } from "styles/form_grid";
@@ -11,7 +11,8 @@ import { Container } from "styles/styles";
 import { staticImages } from "@ultils/images";
 import { Input } from "@styles/form";
 import { BaseButtonBlack } from "@styles/button";
-import { createAccount } from "../../redux/slices/registerSlice";
+import { createAccount } from "../../../redux/slices/registerSlice";
+import Loading from "@components/atom/Loading/Loading";
 
 const SignUpScreenWrapper = styled.section`
   form {
@@ -129,10 +130,11 @@ const Register = () => {
     if (isEmptyValue(formValue.password)) {
       errors.password = "Mật khẩu không được bỏ trống";
       check = false;
-    } else if (!isValidPassword(formValue.password)) {
-      errors.password = "Mật khẩu phải chứa ít nhất 8 ký tự, bao gồm một chữ cái viết hoa và một chữ số";
-      check = false;
     }
+    // } else if (!isValidPassword(formValue.password)) {
+    //   errors.password = "Mật khẩu phải chứa ít nhất 8 ký tự, bao gồm một chữ cái viết hoa và một chữ số";
+    //   check = false;
+    // }
     if (isEmptyValue(formValue.phoneNumber)) {
       errors.phoneNumber = "Số điện thoại không được bỏ trống";
       check = false;
@@ -204,7 +206,7 @@ const Register = () => {
             </div>
             <div className="form-grid-right">
               <FormTitle>
-                <h3>Sign Up</h3>
+                <h3>Đăng ký</h3>
               </FormTitle>
               <div>
                 <div className="w-full flex flex-col maxWidth550">
@@ -220,7 +222,7 @@ const Register = () => {
                       onChange={(e) => {
                         setFormValue({ ...formValue, userName: e.target.value });
                       }}
-                      placeholder="User Name"
+                      placeholder="Tên đăng nhập"
                       className="w-full text-black py-3 my-2 bg-transparent border-b border-gray outline-none focus:outline-none"
                       required
                     />
@@ -234,7 +236,7 @@ const Register = () => {
                       className="w-full text-black py-3 my-2 bg-transparent border-b border-gray outline-none focus:outline-none"
                       required
                     />
-                    {formError.email && <div className="text-red-500 text-sm">{formError.email}</div>}
+                    {formError.email && <div className="text-red text-sm">{formError.email}</div>}
                     <Input
                       type="password"
                       name="password"
@@ -256,7 +258,7 @@ const Register = () => {
                       className="w-full text-black py-3 my-2 bg-transparent border-b border-gray outline-none focus:outline-none"
                       required
                     />
-                    {formError.phoneNumber && <div className="text-red-500 text-sm">{formError.phoneNumber}</div>}
+                    {formError.phoneNumber && <div className="text-red text-sm">{formError.phoneNumber}</div>}
                     <Input
                       type="text"
                       name="first_name"
@@ -267,7 +269,7 @@ const Register = () => {
                       className="w-full text-black py-3 my-2 bg-transparent border-b border-gray outline-none focus:outline-none"
                       required
                     />
-                    {formError.first_name && <div className="text-red-500 text-sm">{formError.first_name}</div>}
+                    {formError.first_name && <div className="text-red text-sm">{formError.first_name}</div>}
                     <Input
                       type="text"
                       name="last_name"
@@ -279,7 +281,7 @@ const Register = () => {
                       className="w-full text-black py-3 my-2 bg-transparent border-b border-gray outline-none focus:outline-none"
                       required
                     />
-                    {formError.last_name && <div className="text-red-500 text-sm">{formError.last_name}</div>}
+                    {formError.last_name && <div className="text-red text-sm">{formError.last_name}</div>}
 
                     <label
                       htmlFor="gioiTinh"
@@ -322,7 +324,7 @@ const Register = () => {
                         );
                       })}
                     </select>
-                    {formError.province && <div className="text-red-500 text-sm">{formError.province}</div>}
+                    {formError.province && <div className="text-red text-sm">{formError.province}</div>}
                     <label htmlFor="huyen" className="block mb-2 text-base font-medium text-gray-900 dark:text-white">
                       Huyện
                     </label>
@@ -344,7 +346,7 @@ const Register = () => {
                         );
                       })}
                     </select>
-                    {formError.district && <div className="text-red-500 text-sm">{formError.district}</div>}
+                    {formError.district && <div className="text-red text-sm">{formError.district}</div>}
                     <Input
                       type="text"
                       name="street"
@@ -355,14 +357,14 @@ const Register = () => {
                           street: e.target.value,
                         });
                       }}
-                      placeholder="Số nhà ,Tên Đường"
+                      placeholder="Số nhà ,Tên đường"
                       className="w-full text-black py-3 my-2 bg-transparent border-b border-gray outline-none focus:outline-none  "
                       required
                     />
-                    {formError.street && <div className="text-red-500 text-sm">{formError.street}</div>}
+                    {formError.street && <div className="text-red text-sm">{formError.street}</div>}
                     <div className="w-full flex flex-col my-4">
                       <BaseButtonBlack type="submit" className="form-submit-btn" onClick={() => handleRegister()}>
-                        {isLoadingRegister == true ? "Loading!!!" : "Đăng kí"}
+                        {isLoadingRegister == true ? <Loading /> : "Đăng kí"}
                       </BaseButtonBlack>
                     </div>
                   </div>

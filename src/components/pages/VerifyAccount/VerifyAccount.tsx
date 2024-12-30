@@ -6,8 +6,9 @@ import { FormGridWrapper, FormTitle } from "styles/form_grid";
 import { Container } from "styles/styles";
 import { staticImages } from "@ultils/images";
 import { BaseButtonGreen } from "@styles/button";
-import { useAppDispatch, useAppSelector } from "../../redux/hook";
-import { verifyAccount } from "../../redux/slices/verifyAccountSlice";
+import { useAppDispatch, useAppSelector } from "../../../redux/hook";
+import { verifyAccount } from "../../../redux/slices/verifyAccountSlice";
+import Loading from "@components/atom/Loading/Loading";
 
 const VerificationScreenWrapper = styled.section``;
 const VerifyAccount: React.FC = () => {
@@ -113,6 +114,7 @@ const VerifyAccount: React.FC = () => {
 
       console.log("res", res);
       if (res) {
+        localStorage.removeItem("userId");
         setTimeout(() => {
           navigate("/login");
         }, 3000);
@@ -136,10 +138,6 @@ const VerifyAccount: React.FC = () => {
                   <header className="mb-10">
                     <h1 className="text-2xl font-bold mb-4">Xác minh tài khoản</h1>
                     <p className="text-[15px] mb-4">Nhập mã xác minh gồm 6 kí tự đã được gửi tới email của bạn.</p>
-                    {/* {isErrorVerify && <div className="text-red-500 text-lg">{message}</div>}
-                    {isErrorVerify == false && isLoadingVerify == false && (
-                      <div className="text-green-500 text-lg">{message}</div>
-                    )} */}
                   </header>
                   <form id="otp-form">
                     <div className="flex items-center justify-center gap-3">
@@ -157,8 +155,9 @@ const VerifyAccount: React.FC = () => {
                       <BaseButtonGreen
                         type="submit"
                         className="w-full inline-flex justify-center  px-3.5 py-2.5 text-sm font-medium text-white"
+                        onClick={handleSubmit}
                       >
-                        {isLoadingVerify == true ? "Loading !!!" : "Xác minh"}
+                        {isLoadingVerify == true ? <Loading /> : "Xác minh"}
                       </BaseButtonGreen>
                     </div>
                   </form>

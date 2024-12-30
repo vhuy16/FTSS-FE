@@ -1,10 +1,10 @@
 // import MainLayout from "@layouts/MainLayout";
-import Home from "@components/pages/Home";
+import Home from "@components/pages/Home/Home";
 import { ComponentType } from "react";
 import AuthLayout from "@layouts/AuthLayout";
-import Login from "@components/pages/Login";
-import Register from "@components/pages/Register";
-import VerifyAccount from "@components/pages/VerifyAccount";
+import Register from "@components/pages/Register/Register";
+import VerifyAccount from "@components/pages/VerifyAccount/VerifyAccount";
+import Login from "@components/pages/Login/Login";
 
 export type RouteType = {
   path: string;

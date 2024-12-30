@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { breakpoints, defaultTheme } from "./themes/default";
 
 export const Input = styled.input`
-  font-size: 15px;
+  font-size: 14px;
   border: none;
   outline: 0;
   color: ${defaultTheme.color_dim_gray};

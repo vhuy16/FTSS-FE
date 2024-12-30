@@ -29,11 +29,11 @@ const SignOptions = styled.div`
 const AuthOptions = () => {
     return (
         <SignOptions className="grid">
-            <Link to="/" className="sign-option flex items-center justify-center">
+            <Link to="/login" className="sign-option flex items-center justify-center">
                 <span className="sign-opt-icon flex items-center justify-center">
                     <img src={staticImages.google} />
                 </span>
-                <span className="sign-opt-text font-medium">Continue With Google</span>
+                <span className="sign-opt-text font-medium">Đăng nhập với Google</span>
             </Link>
         </SignOptions>
     );
