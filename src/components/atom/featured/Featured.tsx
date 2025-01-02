@@ -2,8 +2,8 @@ import styled from "styled-components";
 import { Container, Section } from "@styles/styles";
 import { Link } from "react-router-dom";
 import { breakpoints, defaultTheme } from "@styles/themes/default";
-import feature2 from "@images/hero1.jpg";
-import feature1 from "@images/hero1.jpg";
+import feature2 from "@images/img1.jpg";
+import feature1 from "@images/img2.jpg";
 
 // Định nghĩa kiểu dữ liệu cho item trong featuredData
 export interface FeaturedItem {
@@ -114,7 +114,7 @@ const Featured: React.FC = () => {
       <Container>
         <FeaturedContent className="grid">
           {featuredData.map((featured) => (
-            <FeaturedCardWrapper className="text-black-60" key={featured.id}>
+            <FeaturedCardWrapper className="text-black" key={featured.id}>
               <img
                 className="object-fit-cover feat-card-img"
                 src={featured.imgSource}
@@ -124,7 +124,7 @@ const Featured: React.FC = () => {
                 <p className="feat-text-top text-xxl font-semibold">{featured.topText}</p>
                 <h3 className="feat-text-large font-bold">{featured.largeText}</h3>
                 <p className="feat-text-bottom font-light text-xl italic uppercase">{featured.bottomText}</p>
-                <Link to={featured.buttonLink} className="feat-link font-extrabold text-black-60 text-3xl">
+                <Link to={featured.buttonLink} className="feat-link font-extrabold text-black text-3xl">
                   {featured.buttonText}
                 </Link>
               </div>

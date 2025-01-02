@@ -1,3 +1,4 @@
+import Title from "@common/Title";
 import { useAppDispatch, useAppSelector } from "@redux/hook";
 import { getAllCategory } from "@redux/slices/categorySlice";
 import { Container, Section, TitleWrapper } from "@styles/styles";
@@ -72,16 +73,16 @@ const Brands = () => {
       <Container>
         <BrandsContent className="bg-outerspace">
           <StyledSectionTitle className="text-white text-center justify-center flex-col">
-            <h3>Các loại hàng nổi bật</h3>
+            <h3>Các loại mặt hàng nổi bật</h3>
             <p className="text-xxl text-white">
-              Ưu đãi <span className="text-yellow">đặc biệt</span> cho những khách hàng mới.
+              Chúng tôi có những ưu đãi <span className="text-yellow">đặc biệt</span> cho những khách hàng mới.
             </p>
           </StyledSectionTitle>
           <BrandsListWrapper className="flex items-center flex-wrap justify-center">
             {listCategory?.map((categories) => {
               return (
                 <BrandsItemWrapper className="flex items-center justify-center" key={categories.id}>
-                  <TitleWrapper>{categories.categoryName}</TitleWrapper>
+                  {categories.categoryName}
                 </BrandsItemWrapper>
               );
             })}
