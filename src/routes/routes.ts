@@ -5,6 +5,7 @@ import AuthLayout from "@layouts/AuthLayout";
 import Register from "@components/pages/Register/Register";
 import VerifyAccount from "@components/pages/VerifyAccount/VerifyAccount";
 import Login from "@components/pages/Login/Login";
+import MainLayout from "@layouts/MainLayout";
 
 export type RouteType = {
   path: string;
@@ -16,7 +17,7 @@ const publicRoute: RouteType[] = [
   {
     path: "/",
     component: Home,
-    layout: null,
+    layout: MainLayout,
   },
   {
     path: "/login",

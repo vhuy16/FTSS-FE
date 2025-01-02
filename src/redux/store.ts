@@ -3,6 +3,9 @@ import addressReducer from "./slices/addressSlice";
 import registerReducer from "./slices/registerSlice";
 import verifyAccountReducer from "./slices/verifyAccountSlice";
 import loginReducer from "./slices/loginSlice";
+import sidebarReducer from "./slices/sidebarSlice";
+import searchReducer from "./slices/searchSlice";
+import listCategoriesReducer from "./slices/categorySlice";
 
 export const store = configureStore({
   reducer: {
@@ -10,6 +13,9 @@ export const store = configureStore({
     register: registerReducer,
     verifyAccount: verifyAccountReducer,
     login: loginReducer,
+    sidebar: sidebarReducer,
+    search: searchReducer,
+    category: listCategoriesReducer,
   },
 });
 

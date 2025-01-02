@@ -119,6 +119,9 @@ export const GlobalStyles = createGlobalStyle`
     .maxWidth550 {
         max-width: 550px;
     }
+    .w-16 {
+       max-width: 64px;
+    }
 
     // font weights
     .font-light {
@@ -139,6 +142,7 @@ export const GlobalStyles = createGlobalStyle`
     .font-extrabold {
         font-weight: 800;
     }
+    
 
     // text
     [class^="text"] {
@@ -346,6 +350,9 @@ export const GlobalStyles = createGlobalStyle`
     }
     .mt-7 {
         margin-top: 28px;
+    }
+    .ml-12 {
+        margin-left: 50px;
     }
     // border styles (tailwind-like)
     .border {
