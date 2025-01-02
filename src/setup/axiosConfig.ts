@@ -1,15 +1,9 @@
-import axios, { AxiosInstance, InternalAxiosRequestConfig, AxiosResponse } from "axios";
-import { toast } from "react-toastify";
+import axios, { AxiosInstance, InternalAxiosRequestConfig, AxiosResponse } from 'axios';
+import { toast } from 'react-toastify';
 
-export type ApiResponse = {
-  status: string;
-  message: string;
-  data: unknown;
-  listErrorMessage: string[] | null;
-};
 // Set config defaults when creating the instance
 const instance: AxiosInstance = axios.create({
-  baseURL: "https://ftss.id.vn/api/v1",
+    baseURL: 'https://ftss.id.vn/api/v1',
 });
 instance.defaults.withCredentials = true;
 
@@ -48,33 +42,33 @@ instance.defaults.withCredentials = true;
 
 // Add a request interceptor
 instance.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
-    // Lấy token mới nhất từ localStorage
-    const access_token = localStorage.getItem("access_token");
+    (config: InternalAxiosRequestConfig) => {
+        // Lấy token mới nhất từ localStorage
+        const access_token = localStorage.getItem('access_token');
 
-    if (access_token) {
-      config.headers["Authorization"] = `Bearer ${access_token}`;
-    }
+        if (access_token) {
+            config.headers['Authorization'] = `Bearer ${access_token}`;
+        }
 
-    // Do something before the request is sent
-    return config;
-  },
-  (error) => {
-    // Do something with the request error
-    return Promise.reject(error);
-  }
+        // Do something before the request is sent
+        return config;
+    },
+    (error) => {
+        // Do something with the request error
+        return Promise.reject(error);
+    },
 );
 
 // Add a response interceptor
 // let isToastShown = false;
 
 instance.interceptors.response.use(
-  (response: AxiosResponse) => {
-    return response;
-  },
-  async (error) => {
-    return Promise.reject(error);
-  }
+    (response: AxiosResponse) => {
+        return response;
+    },
+    async (error) => {
+        return Promise.reject(error);
+    },
 );
 
 export default instance;

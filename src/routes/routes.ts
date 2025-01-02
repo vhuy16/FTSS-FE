@@ -1,4 +1,5 @@
 // import MainLayout from "@layouts/MainLayout";
+
 import Home from "@components/pages/Home/Home";
 import { ComponentType } from "react";
 import AuthLayout from "@layouts/AuthLayout";
@@ -6,6 +7,7 @@ import Register from "@components/pages/Register/Register";
 import VerifyAccount from "@components/pages/VerifyAccount/VerifyAccount";
 import Login from "@components/pages/Login/Login";
 import MainLayout from "@layouts/MainLayout";
+import Product from "@components/pages/Product/Product";
 
 export type RouteType = {
   path: string;
@@ -33,6 +35,11 @@ const publicRoute: RouteType[] = [
     path: "/verify",
     component: VerifyAccount,
     layout: AuthLayout,
+  },
+  {
+    path: "/product",
+    component: Product,
+    layout: null,
   },
 ];
 

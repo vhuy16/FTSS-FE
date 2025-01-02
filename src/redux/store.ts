@@ -6,6 +6,7 @@ import loginReducer from "./slices/loginSlice";
 import sidebarReducer from "./slices/sidebarSlice";
 import searchReducer from "./slices/searchSlice";
 import listCategoriesReducer from "./slices/categorySlice";
+import productReducer from "./slices/productSlice";
 
 export const store = configureStore({
   reducer: {
@@ -16,6 +17,7 @@ export const store = configureStore({
     sidebar: sidebarReducer,
     search: searchReducer,
     category: listCategoriesReducer,
+    product: productReducer,
   },
 });
 
