@@ -11,15 +11,16 @@ export default function PaginationControlled() {
     const dispatch = useAppDispatch();
     const total_page = useAppSelector((state) => state.product.data?.totalPages);
     useEffect(() => {
-        dispatch(getAllProduct({ page: page, size: 1 }));
+        dispatch(getAllProduct({ page: 1, size: 6 }));
     }, []);
     const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
-        dispatch(getAllProduct({ page: page, size: 1 }));
+        console.log('page', value);
+        dispatch(getAllProduct({ page: value, size: 6 }));
         setPage(value);
     };
 
     return (
-        <Stack spacing={2}>
+        <Stack spacing={2} style={{ marginTop: '5rem' }}>
             <Pagination count={total_page} page={page} onChange={handleChange} />
         </Stack>
     );
