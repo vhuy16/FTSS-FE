@@ -220,6 +220,9 @@ export const GlobalStyles = createGlobalStyle`
     .bg-silver{
         background-color: ${defaultTheme.color_silver};
     }
+    .bg-black-50 {
+    background-color: rgb(60, 66, 66);
+}
 
     // page
     .page-py-spacing {
@@ -272,6 +275,12 @@ export const GlobalStyles = createGlobalStyle`
         font-size: 20px;
         margin-bottom: 16px;
     }
+    .text-title-2xsm {
+    font-size: 0.63rem; /* Kích thước chữ 10px */
+    font-weight: 600;    /* Đậm, nếu bạn muốn kiểu chữ tiêu đề */
+    line-height: 3.2;    /* Chiều cao dòng (có thể tùy chỉnh) */
+}
+
      // margin and padding 
     .m-0 { margin: 0; }
     .mt-0 { margin-top: 0; }
@@ -455,7 +464,9 @@ export const GlobalStyles = createGlobalStyle`
   border-color: #10ac97; 
   box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2); 
 }
-
+.cursor-pointer {
+    cursor: pointer;
+}
     @media screen and (max-width: 575.98px){
         .text-xs {
             font-size: 11px !important;

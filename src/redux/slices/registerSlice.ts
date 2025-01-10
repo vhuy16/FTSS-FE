@@ -15,6 +15,19 @@ export const createAccount = createAsyncThunk("user/createAccount", async (data:
   }
 });
 
+export const googleSignin = createAsyncThunk("user/googleSignin", async (any, { rejectWithValue }) => {
+  try {
+    const response = await myAxios.get("https://ftss.id.vn/api/v1/google-auth/login");
+    return response.data;
+  } catch (error: any) {
+    if (error.response && error.response.data) {
+      return rejectWithValue(error.response.data.message);
+    } else {
+      return rejectWithValue("An unknown error occurred");
+    }
+  }
+});
+
 interface ApiResponseRegister {
   status: string; // Mã trạng thái trả về từ server (200, 404, 500, ...)
   message: string; // Thông điệp trả về từ server
@@ -66,6 +79,18 @@ const registerSlice = createSlice({
         state.message = "Yêu cầu đăng ký không thành công. Tài khoản đã tồn tại !";
         state.isLoading = false;
         state.isError = true;
+      })
+      .addCase(googleSignin.pending, (state) => {
+        state.isLoading = true;
+        state.isError = false;
+      })
+      .addCase(googleSignin.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.data = action.payload; // Thông tin trả về từ API
+      })
+      .addCase(googleSignin.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true; // Thông báo lỗi
       });
   },
 });

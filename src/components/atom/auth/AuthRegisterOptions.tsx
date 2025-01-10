@@ -1,6 +1,5 @@
 import styled from "styled-components";
 import { staticImages } from "@ultils/images";
-import { Link } from "react-router-dom";
 import { defaultTheme } from "@styles/themes/default";
 import { useAppDispatch } from "@redux/hook";
 import { googleSignin } from "@redux/slices/registerSlice";
@@ -25,40 +24,33 @@ const SignOptions = styled.div`
         width: 18px;
       }
     }
+    .sign-opt-text {
+      font-size: 14px;
+    }
   }
 `;
 
-const AuthOptions = () => {
+const AuthRegisterOptions = () => {
   const dispatch = useAppDispatch();
-
   const handleGoogleSignin = async () => {
-    const width = 500; // Chiều rộng của popup
-    const height = 600; // Chiều cao của popup
-    const left = Math.max((window.innerWidth - width) / 2, 0); // Căn giữa theo chiều ngang
-    const top = Math.max((window.innerHeight - height) / 2, 0); // Căn giữa theo chiều dọc
-    window.open(
-      `https://ftss.id.vn/api/v1/google-auth/login`,
-      "google-signin",
-      `width=${width},height=${height},top=${top},left=${left},resizable=yes,scrollbars=yes`
-    );
-    window.addEventListener("message", (event) => {
-      if (event.origin !== "https://ftss.id.vn") {
-        console.log("Nguồn không hợp lệ:", event.origin);
-        return;
-      }
-      console.log("even", event.data);
-    });
+    try {
+      const res = await dispatch(googleSignin()).unwrap();
+      console.log("Google Sign-In success:", res);
+    } catch (error) {
+      console.error("Google Sign-In failed:", error);
+    }
   };
+
   return (
     <SignOptions className="grid">
       <button className="sign-option flex items-center justify-center" onClick={handleGoogleSignin}>
         <span className="sign-opt-icon flex items-center justify-center">
           <img src={staticImages.google} />
         </span>
-        <span className="sign-opt-text font-medium">Đăng nhập với Google</span>
+        <span className="sign-opt-text font-medium">Đăng ký với Google</span>
       </button>
     </SignOptions>
   );
 };
 
-export default AuthOptions;
+export default AuthRegisterOptions;
