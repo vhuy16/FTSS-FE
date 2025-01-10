@@ -1,17 +1,22 @@
 import { useState, ChangeEvent, useEffect } from 'react';
-import { FilterTitle, FilterWrap, PriceFilter, ProductCategoryFilter } from '@styles/filter';
+import { FilterSubWrap, FilterTitle, FilterWrap, PriceFilter, ProductCategoryFilter } from '@styles/filter';
 import { useAppDispatch, useAppSelector } from '@redux/hook';
 import { useNavigate } from 'react-router-dom';
+import { BaseBtnGreen } from '@styles/button';
+import { toast } from 'react-toastify';
+import { useSearchParams } from 'react-router-dom';
+import { getAllCategory } from '@redux/slices/categorySlice';
 
 const ProductFilter = () => {
     const [isProductFilterOpen, setProductFilterOpen] = useState<boolean>(true);
     const [isPriceFilterOpen, setPriceFilterOpen] = useState<boolean>(true);
-    // const dispatch = useAppDispatch();
-    // const listCategory = useAppSelector((state) => state.category.categories);
-    // const navigate = useNavigate();
-    // useEffect(() => {
-    //     dispatch(getAllCategory());
-    // }, []);
+    const [searchParams, setSearchParams] = useSearchParams();
+    const dispatch = useAppDispatch();
+    const listCategory = useAppSelector((state) => state.category.categories);
+    const navigate = useNavigate();
+    useEffect(() => {
+        dispatch(getAllCategory());
+    }, []);
     const toggleFilter = (filter: string): void => {
         switch (filter) {
             case 'product':
@@ -25,9 +30,9 @@ const ProductFilter = () => {
         }
     };
 
-    const rangeMin = 100;
-    const [minRange, setMinRange] = useState<number>(300);
-    const [maxRange, setMaxRange] = useState<number>(700);
+    const rangeMin = 10000;
+    const [minRange, setMinRange] = useState<number>(0);
+    const [maxRange, setMaxRange] = useState<number>(1000000);
 
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>): void => {
         const inputName = e.target.name;
@@ -35,62 +40,114 @@ const ProductFilter = () => {
 
         if (inputName === 'min') {
             setMinRange(inputValue);
-            if (maxRange - inputValue < rangeMin) {
-                setMaxRange(inputValue + rangeMin);
-            }
+            // if (maxRange - inputValue < rangeMin) {
+            //     setMaxRange(inputValue + rangeMin);
+            // }
         } else if (inputName === 'max') {
             setMaxRange(inputValue);
-            if (inputValue - minRange < rangeMin) {
-                setMinRange(inputValue - rangeMin);
-            }
+            // if (inputValue - minRange < rangeMin) {
+            //     setMinRange(inputValue - rangeMin);
+            // }
         }
     };
 
     const calculateRangePosition = (value: number, max: number): string => {
         return (value / max) * 100 + '%';
     };
+    const handleFilterPrice = () => {
+        if (minRange > maxRange) {
+            toast.warning('Giá nhỏ nhất không được lớn hơn giá lớn nhất');
+        } else {
+            const currentParams = Object.fromEntries(searchParams.entries()); // Lấy các tham số hiện tại
+            const updatedParams = {
+                ...currentParams, // Giữ nguyên các tham số hiện có
+                minPrice: minRange.toString(),
+                maxPrice: maxRange.toString(),
+            };
+            setSearchParams(updatedParams);
+        }
+    };
+    const handleFilterSubCate = (subCateName: string) => {
+        const currentParams = Object.fromEntries(searchParams.entries()); // Lấy các tham số hiện tại
+        const updatedParams = {
+            ...currentParams, // Giữ nguyên các tham số hiện có
+            subcategoryName: subCateName,
+        };
+        setSearchParams(updatedParams);
+    };
+    type OpenFiltersState = {
+        [key: string]: boolean; // Các khóa là chuỗi, giá trị là boolean
+    };
+    const [openFilters, setOpenFilters] = useState<OpenFiltersState>({}); // Khởi tạo trạng thái với kiểu dữ liệu cụ thể
 
+    const toggleCate = (id: string) => {
+        setOpenFilters((prev) => ({
+            ...prev,
+            [id]: !prev[id], // Đảo trạng thái của bộ lọc với `id`
+        }));
+    };
     return (
         <>
-            {/* <ProductCategoryFilter>
+            <ProductCategoryFilter>
                 <FilterTitle
                     className="filter-title flex items-center justify-between"
                     onClick={() => toggleFilter('product')}
                 >
-                    <p className="filter-title-text text-gray-150 text-base font-semibold text-lg">Các Loại Sản Phẩm</p>
-                    <span
-                        className={`text-gray-150 text-xxl filter-title-icon ${!isProductFilterOpen ? 'rotate' : ''}`}
-                    >
+                    <p className="filter-title-text text-gray text-base font-semibold text-lg">Phân loại</p>
+                    <span className={`text-gray text-xxl filter-title-icon ${!isProductFilterOpen ? 'rotate' : ''}`}>
                         <i className="bi bi-filter"></i>
                     </span>
                 </FilterTitle>
                 <FilterWrap className={`${!isProductFilterOpen ? 'hide' : 'show'}`}>
-                    {listCategory?.map((category) => {
+                    {listCategory?.map((productFilter) => {
                         return (
-                            <div
-                                className="product-filter-item"
-                                key={category.category_id}
-                                onClick={() => {
-                                    dispatch(changeSearchValue(category.name));
-                                    navigate(`/search?keyword=${category.name}`);
-                                }}
-                            >
-                                <button
-                                    type="button"
-                                    className="filter-item-head w-full   flex items-center justify-between"
-                                >
-                                    <span className="filter-head-title text-base text-gray-150 font-semibold">
-                                        {category.name}
-                                    </span>
-                                    <span className="filter-head-icon text-gray-150">
-                                        <i className="bi bi-chevron-right"></i>
-                                    </span>
-                                </button>
+                            <div>
+                                <div className="product-filter-item" key={productFilter.id}>
+                                    <button
+                                        type="button"
+                                        className="filter-item-head w-full flex items-center justify-between"
+                                    >
+                                        <div className="filter-head-title text-base text-gray font-semibold">
+                                            {productFilter.categoryName}
+                                        </div>
+
+                                        <span
+                                            onClick={() => toggleCate(productFilter.id)}
+                                            className={`text-gray text-xl filter-title-icon ${
+                                                !openFilters[productFilter.id] ? 'rotate' : ''
+                                            }`}
+                                        >
+                                            <i className="bi bi-chevron-up"></i>
+                                        </span>
+                                    </button>
+                                </div>
+                                <FilterSubWrap className={`${!openFilters[productFilter.id] ? 'hide' : 'show'}`}>
+                                    {productFilter.subCategories?.map((productFilter) => {
+                                        return (
+                                            <div
+                                                className="product-filter-item"
+                                                key={productFilter.id}
+                                                onClick={() => {
+                                                    handleFilterSubCate(productFilter.subCategoryName);
+                                                }}
+                                            >
+                                                <button
+                                                    type="button"
+                                                    className="filter-item-head w-full flex items-center justify-between"
+                                                >
+                                                    <div className="filter-head-title text-base text-gray font-semibold">
+                                                        {productFilter.subCategoryName}
+                                                    </div>
+                                                </button>
+                                            </div>
+                                        );
+                                    })}
+                                </FilterSubWrap>
                             </div>
                         );
                     })}
                 </FilterWrap>
-            </ProductCategoryFilter> */}
+            </ProductCategoryFilter>
 
             <PriceFilter>
                 <FilterTitle
@@ -107,8 +164,8 @@ const ProductFilter = () => {
                         <span
                             className="range-selected h-full bg-green-150"
                             style={{
-                                left: calculateRangePosition(minRange, 1000),
-                                right: calculateRangePosition(1000 - maxRange, 1000),
+                                left: calculateRangePosition(minRange, 1000000),
+                                right: calculateRangePosition(1000000 - maxRange, 1000000),
                             }}
                         ></span>
                     </div>
@@ -117,9 +174,9 @@ const ProductFilter = () => {
                             type="range"
                             className="min w-full"
                             min="0"
-                            max="1000"
+                            max="1000000"
                             value={minRange}
-                            step="10"
+                            step="10000"
                             name="min"
                             onChange={handleInputChange}
                         />
@@ -127,9 +184,9 @@ const ProductFilter = () => {
                             type="range"
                             className="min w-full"
                             min="0"
-                            max="1000"
+                            max="1000000"
                             value={maxRange}
-                            step="10"
+                            step="10000"
                             name="max"
                             onChange={handleInputChange}
                         />
@@ -150,6 +207,7 @@ const ProductFilter = () => {
                             onChange={handleInputChange}
                         />
                     </div>
+                    <BaseBtnGreen onClick={handleFilterPrice}>Xác nhận</BaseBtnGreen>
                 </FilterWrap>
             </PriceFilter>
         </>

@@ -28,10 +28,32 @@ type initialStateProduct = {
 
 export const getAllProduct = createAsyncThunk(
     'product/getAll',
-    async ({ page, size }: { page: number; size: number }, { rejectWithValue }) => {
+    async (
+        {
+            page,
+            size,
+            minPrice,
+            maxPrice,
+            subcategoryName,
+        }: { page?: number; size?: number; minPrice?: number; maxPrice?: number; subcategoryName?: string },
+        { rejectWithValue },
+    ) => {
         try {
             const baseUrl = '/product';
-            const url = page && size ? `${baseUrl}?page=${page}&size=${size}` : baseUrl;
+            let url = baseUrl;
+            if (page && size) {
+                url = `${baseUrl}?page=${page}&size=${size}`;
+                if (minPrice && maxPrice) {
+                    url = `${baseUrl}?page=${page}&size=${size}&minPrice=${minPrice}&maxPrice=${maxPrice}`;
+                    if (subcategoryName) {
+                        url = `${baseUrl}?page=${page}&size=${size}&subcategoryName=${subcategoryName}&minPrice=${minPrice}&maxPrice=${maxPrice}`;
+                    }
+                } else {
+                    if (subcategoryName) {
+                        url = `${baseUrl}?page=${page}&size=${size}&subcategoryName=${subcategoryName}`;
+                    }
+                }
+            }
             const response = await myAxios.get(url);
             return response.data.data;
         } catch (error: any) {
