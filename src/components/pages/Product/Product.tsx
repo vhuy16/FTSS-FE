@@ -11,6 +11,8 @@ import PaginationControlled from '@components/atom/pagination/Pagination';
 import { useLocation } from 'react-router-dom';
 import { log } from 'console';
 import Loading from '@components/atom/Loading/Loading';
+import { useEffect } from 'react';
+import { getAllProduct } from '@redux/slices/productSlice';
 
 // Define breadcrumb type
 type BreadcrumbItem = {
@@ -106,16 +108,26 @@ const ProductListScreen: React.FC = () => {
     const isLoading = useAppSelector((state) => state.product.isLoading);
     const location = useLocation();
     const path = location.pathname;
-    // const k = location.search;
-    // const queryString = k.split('?')[1];
-    // const params = new URLSearchParams(queryString);
-    // let keyword = params.get('keyword');
-    // const [flag, setFlag] = useState(0);
-    // useEffect(() => {
-    //     setFlag(flag + 1);
-    // }, [keyword]);
-    console.log('pro', listProducts);
+    const k = location.search;
+    const queryString = k.split('?')[1];
+    const params = new URLSearchParams(queryString);
+    const page = params.get('page') ?? '1';
+    const size = params.get('size') ?? '6';
+    const minPrice = params.get('minPrice');
+    const maxPrice = params.get('maxPrice');
+    const subcategoryName = params.get('subcategoryName');
 
+    useEffect(() => {
+        dispatch(
+            getAllProduct({
+                page: parseInt(page as string),
+                size: parseInt(size as string),
+                minPrice: parseInt(minPrice as string),
+                maxPrice: parseInt(maxPrice as string),
+                subcategoryName: subcategoryName as string,
+            }),
+        );
+    }, [page, size, minPrice, maxPrice, subcategoryName]);
     return (
         <main className="page-py-spacing">
             <Container>
@@ -138,7 +150,7 @@ const ProductListScreen: React.FC = () => {
 
                         {isLoading ? (
                             <Loading></Loading>
-                        ) : listProducts ? (
+                        ) : listProducts && listProducts.length > 0 ? (
                             <ProductListPage products={listProducts} />
                         ) : (
                             <div>Không có sản phẩm nào</div>

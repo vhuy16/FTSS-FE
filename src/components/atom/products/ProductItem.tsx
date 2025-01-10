@@ -81,8 +81,10 @@ const ProductItem: React.FC<ProductItemProps> = ({ product }) => {
             <div className="product-info">
                 <ProductTitle className="font-normal">{product.productName}</ProductTitle>
                 <div className="flex items-center justify-between text-sm font-medium">
-                    <span className="text-gray-400">{product.categoryName}</span>
-                    <span className="text-outerspace font-bold text-red-400">
+                    <span className="text-gray" style={{ color: 'gray' }}>
+                        {product.categoryName}
+                    </span>
+                    <span className="text-outerspace font-bold text-red" style={{ color: 'red' }}>
                         {product.status === 'Available'
                             ? `${currencyFormat(product.price)}`
                             : 'Sản phẩm đã dừng hoạt động'}
