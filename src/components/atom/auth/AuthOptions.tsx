@@ -1,9 +1,9 @@
 import styled from "styled-components";
 import { staticImages } from "@ultils/images";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { defaultTheme } from "@styles/themes/default";
-import { useAppDispatch } from "@redux/hook";
-import { googleSignin } from "@redux/slices/registerSlice";
+import jwt_decode from "jwt-decode";
+import { toast } from "react-toastify";
 
 const SignOptions = styled.div`
   row-gap: 12px;
@@ -29,26 +29,50 @@ const SignOptions = styled.div`
 `;
 
 const AuthOptions = () => {
-  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
-  const handleGoogleSignin = async () => {
+  const handleGoogleSignin = () => {
     const width = 500; // Chiều rộng của popup
     const height = 600; // Chiều cao của popup
     const left = Math.max((window.innerWidth - width) / 2, 0); // Căn giữa theo chiều ngang
     const top = Math.max((window.innerHeight - height) / 2, 0); // Căn giữa theo chiều dọc
-    window.open(
+    const popup = window.open(
       `https://ftss.id.vn/api/v1/google-auth/login`,
       "google-signin",
-      `width=${width},height=${height},top=${top},left=${left},resizable=yes,scrollbars=yes`
+      `width=${width},height=${height},top=${top},resizable=yes,scrollbars=yes`
     );
-    window.addEventListener("message", (event) => {
-      if (event.origin !== "https://ftss.id.vn") {
-        console.log("Nguồn không hợp lệ:", event.origin);
-        return;
-      }
-      console.log("even", event.data);
-    });
+
+    // Lắng nghe sự kiện 'message' từ popup
+    window.addEventListener(
+      "message",
+      (event) => {
+        if (event.origin !== "https://ftss.id.vn") {
+          console.error("Nguồn không hợp lệ:", event.origin);
+          return;
+        }
+
+        try {
+          const { accessToken, refreshToken } = event.data;
+
+          if (accessToken) {
+            // Lưu token vào localStorage
+            localStorage.setItem("accessToken", accessToken);
+          
+
+            toast.success("Đăng nhập bằng Google thành công!");
+            
+              console.log(accessToken)
+            }
+         
+        } catch (error) {
+          console.error("Lỗi xử lý dữ liệu sau đăng nhập:", error);
+          toast.error("Đã xảy ra lỗi khi xử lý dữ liệu sau đăng nhập.");
+        }
+      },
+      false
+    );
   };
+
   return (
     <SignOptions className="grid">
       <button className="sign-option flex items-center justify-center" onClick={handleGoogleSignin}>
