@@ -2,7 +2,6 @@ import styled from "styled-components";
 import { staticImages } from "@ultils/images";
 import { Link, useNavigate } from "react-router-dom";
 import { defaultTheme } from "@styles/themes/default";
-import jwt_decode from "jwt-decode";
 import { toast } from "react-toastify";
 
 const SignOptions = styled.div`
@@ -52,18 +51,14 @@ const AuthOptions = () => {
         }
 
         try {
-          const { accessToken, refreshToken } = event.data;
+          const { accessToken } = event.data;
 
           if (accessToken) {
             // Lưu token vào localStorage
-            localStorage.setItem("accessToken", accessToken);
-          
-
-            toast.success("Đăng nhập bằng Google thành công!");
-            
-              console.log(accessToken)
-            }
-         
+            localStorage.setItem("access_token", accessToken);
+            console.log(accessToken);
+            navigate("/");
+          }
         } catch (error) {
           console.error("Lỗi xử lý dữ liệu sau đăng nhập:", error);
           toast.error("Đã xảy ra lỗi khi xử lý dữ liệu sau đăng nhập.");

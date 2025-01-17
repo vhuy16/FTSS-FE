@@ -152,8 +152,8 @@ const Login = () => {
                   formValue={formValue}
                   setFormValue={setFormValue}
                 />
-                <Link to="/reset" className="form-elem-text text-end font-medium">
-                  Quên mật khẩu?
+                <Link to="/forgot-password" className="form-elem-text text-end font-medium">
+                  Quên mật khẩu ?
                 </Link>
                 <BaseButtonBlack className="form-submit-btn" onClick={handleLogin}>
                   {isLoadingLogin ? <Loading /> : <>Đăng nhập</>}

@@ -10,6 +10,9 @@ import MainLayout from "@layouts/MainLayout";
 import Product from "@components/pages/Product/Product";
 import ProductDetail from "@components/pages/ProductDetail/ProductDetail";
 import CartScreen from "@components/pages/Cart/Cart";
+import ForgotPassword from "@components/pages/ForgotPassword/ForgotPassword";
+import VerifyOTP from "@components/pages/ForgotPassword/VerifyOTP";
+import ResetPassword from "@components/pages/ForgotPassword/ResetPassword";
 
 export type RouteType = {
   path: string;
@@ -36,6 +39,21 @@ const publicRoute: RouteType[] = [
   {
     path: "/verify",
     component: VerifyAccount,
+    layout: AuthLayout,
+  },
+  {
+    path: "/forgot-password",
+    component: ForgotPassword,
+    layout: AuthLayout,
+  },
+  {
+    path: "/verify-forgot-password",
+    component: VerifyOTP,
+    layout: AuthLayout,
+  },
+  {
+    path: "/reset-password",
+    component: ResetPassword,
     layout: AuthLayout,
   },
   {
