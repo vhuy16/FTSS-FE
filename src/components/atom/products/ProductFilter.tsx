@@ -1,7 +1,7 @@
 import { useState, ChangeEvent, useEffect } from 'react';
 import { FilterSubWrap, FilterTitle, FilterWrap, PriceFilter, ProductCategoryFilter } from '@styles/filter';
 import { useAppDispatch, useAppSelector } from '@redux/hook';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { BaseBtnGreen } from '@styles/button';
 import { toast } from 'react-toastify';
 import { useSearchParams } from 'react-router-dom';
@@ -14,9 +14,21 @@ const ProductFilter = () => {
     const dispatch = useAppDispatch();
     const listCategory = useAppSelector((state) => state.category.categories);
     const navigate = useNavigate();
+    const location = useLocation();
+    const k = location.search;
+    const queryString = k.split('?')[1];
+    const params = new URLSearchParams(queryString);
+    const minPrice = params.get('minPrice');
+    const maxPrice = params.get('maxPrice');
     useEffect(() => {
         dispatch(getAllCategory());
     }, []);
+    useEffect(() => {
+        if (!minPrice && !maxPrice) {
+            setMaxRange(10000000);
+            setMinRange(0);
+        }
+    }, [minPrice, maxPrice]);
     const toggleFilter = (filter: string): void => {
         switch (filter) {
             case 'product':
@@ -32,7 +44,7 @@ const ProductFilter = () => {
 
     const rangeMin = 10000;
     const [minRange, setMinRange] = useState<number>(0);
-    const [maxRange, setMaxRange] = useState<number>(1000000);
+    const [maxRange, setMaxRange] = useState<number>(10000000);
 
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>): void => {
         const inputName = e.target.name;
@@ -63,6 +75,7 @@ const ProductFilter = () => {
                 ...currentParams, // Giữ nguyên các tham số hiện có
                 minPrice: minRange.toString(),
                 maxPrice: maxRange.toString(),
+                page: '1',
             };
             setSearchParams(updatedParams);
         }
@@ -72,6 +85,7 @@ const ProductFilter = () => {
         const updatedParams = {
             ...currentParams, // Giữ nguyên các tham số hiện có
             subcategoryName: subCateName,
+            page: '1',
         };
         setSearchParams(updatedParams);
     };
@@ -164,8 +178,8 @@ const ProductFilter = () => {
                         <span
                             className="range-selected h-full bg-green-150"
                             style={{
-                                left: calculateRangePosition(minRange, 1000000),
-                                right: calculateRangePosition(1000000 - maxRange, 1000000),
+                                left: calculateRangePosition(minRange, 10000000),
+                                right: calculateRangePosition(10000000 - maxRange, 10000000),
                             }}
                         ></span>
                     </div>
@@ -174,7 +188,7 @@ const ProductFilter = () => {
                             type="range"
                             className="min w-full"
                             min="0"
-                            max="1000000"
+                            max="10000000"
                             value={minRange}
                             step="10000"
                             name="min"
@@ -184,7 +198,7 @@ const ProductFilter = () => {
                             type="range"
                             className="min w-full"
                             min="0"
-                            max="1000000"
+                            max="10000000"
                             value={maxRange}
                             step="10000"
                             name="max"
