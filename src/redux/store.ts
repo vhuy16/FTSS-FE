@@ -9,8 +9,7 @@ import listCategoriesReducer from "./slices/categorySlice";
 import productReducer from "./slices/productSlice";
 import productDetailReducer from "./slices/productDetailSlice";
 import cartReducer from "./slices/cartSlice";
-import forgotPasswordReducer from "./slices/forgotPasswordSlice";
-import resetPasswordReducer from "./slices/resetPassword";
+
 export const store = configureStore({
   reducer: {
     address: addressReducer,
@@ -23,8 +22,6 @@ export const store = configureStore({
     product: productReducer,
     productDetail: productDetailReducer,
     cart: cartReducer,
-    forgotPassword: forgotPasswordReducer,
-    resetPassword: resetPasswordReducer,
   },
 });
 

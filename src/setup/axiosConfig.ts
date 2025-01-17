@@ -60,13 +60,30 @@ instance.interceptors.request.use(
 );
 
 // Add a response interceptor
-// let isToastShown = false;
+let isToastShown = false;
 
 instance.interceptors.response.use(
     (response: AxiosResponse) => {
+        // Reset lại flag khi request thành công
+        isToastShown = false;
         return response;
     },
     async (error) => {
+        const originalRequest = error.config;
+
+        // Nếu lỗi là 401 và chưa hiển thị toast
+        if (error.response.status === 400 && !isToastShown) {
+            isToastShown = true; // Đánh dấu rằng toast đã được hiển thị
+            await toast.warning('Phiên bản đã hết hạn xin hãy đăng nhập lại');
+            localStorage.removeItem('access_token');
+            // localStorage.removeItem('refresh_token');
+            setTimeout(() => {
+                window.location.href = '/login';
+            }, 1000);
+        }
+
+        // Any status codes that fall outside the range of 2xx cause this function to trigger
+        // Do something with response error
         return Promise.reject(error);
     },
 );

@@ -13,6 +13,8 @@ import CartScreen from "@components/pages/Cart/Cart";
 import ForgotPassword from "@components/pages/ForgotPassword/ForgotPassword";
 import VerifyOTP from "@components/pages/ForgotPassword/VerifyOTP";
 import ResetPassword from "@components/pages/ForgotPassword/ResetPassword";
+import Account from "@components/pages/Account/Account";
+import CheckoutScreen from "@components/pages/Checkout/Checkout";
 
 export type RouteType = {
   path: string;
@@ -69,6 +71,16 @@ const publicRoute: RouteType[] = [
   {
     path: "/product/:id",
     component: ProductDetail,
+    layout: MainLayout,
+  },
+  {
+    path: "/checkout",
+    component: CheckoutScreen,
+    layout: MainLayout,
+  },
+  {
+    path: "/account",
+    component: Account,
     layout: MainLayout,
   },
 ];

@@ -11,7 +11,7 @@ import PaginationControlled from '@components/atom/pagination/Pagination';
 import { useLocation } from 'react-router-dom';
 import { log } from 'console';
 import Loading from '@components/atom/Loading/Loading';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { getAllProduct } from '@redux/slices/productSlice';
 
 // Define breadcrumb type
@@ -107,7 +107,6 @@ const ProductListScreen: React.FC = () => {
     const listProducts = useAppSelector((state) => state.product.data?.items);
     const isLoading = useAppSelector((state) => state.product.isLoading);
     const location = useLocation();
-    const path = location.pathname;
     const k = location.search;
     const queryString = k.split('?')[1];
     const params = new URLSearchParams(queryString);
@@ -128,6 +127,7 @@ const ProductListScreen: React.FC = () => {
             }),
         );
     }, [page, size, minPrice, maxPrice, subcategoryName]);
+
     return (
         <main className="page-py-spacing">
             <Container>
