@@ -64,7 +64,7 @@ const ProductsContentRight = styled.div`
         column-gap: 16px;
         li {
             a.active {
-                color: ${defaultTheme.color_purple};
+                color: ${defaultTheme.color_sea_green};
             }
         }
     }
@@ -165,7 +165,7 @@ const ProductListScreen: React.FC = () => {
             </Container>
             <Section>
                 <Container>
-                    <DescriptionContent>
+                    {/* <DescriptionContent>
                         <Title titleText={'Clothing for Everyone Online'} />
                         <ContentStylings className="text-base content-stylings">
                             <h4>Reexplore Clothing Collection Online at Achats.</h4>
@@ -191,7 +191,7 @@ const ProductListScreen: React.FC = () => {
                             </p>
                             <Link to="/">See More</Link>
                         </ContentStylings>
-                    </DescriptionContent>
+                    </DescriptionContent> */}
                 </Container>
             </Section>
         </main>
