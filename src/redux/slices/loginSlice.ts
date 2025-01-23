@@ -23,7 +23,17 @@ const initialState = {
 const loginSlice = createSlice({
   name: "login",
   initialState,
-  reducers: {},
+  reducers: {
+    logoutUser: (state) => {
+      // Đặt lại state về giá trị ban đầu khi người dùng đăng xuất
+      state.isLoading = false;
+      state.message = "";
+      state.isError = false;
+      // Xóa token khỏi Local Storage
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(loginUser.pending, (state) => {
@@ -42,4 +52,5 @@ const loginSlice = createSlice({
       });
   },
 });
+export const { logoutUser } = loginSlice.actions; // Xuất action logoutUser
 export default loginSlice.reducer;

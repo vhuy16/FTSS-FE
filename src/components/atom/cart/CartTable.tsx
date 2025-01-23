@@ -82,7 +82,7 @@ const CartTable = ({ cartItems }: CartTableProps) => {
         </thead>
         <tbody>
           {cartItems.map((cartItem) => {
-            return <CartItemCB key={cartItem.item.id} cartItem={cartItem} />;
+            return <CartItemCB key={cartItem.cartItemId} cartItem={cartItem} />;
           })}
         </tbody>
       </CartTableWrapper>
