@@ -256,8 +256,8 @@ const ProductDetailsScreen: React.FC = () => {
                     as={BaseBtnGreen}
                     className="prod-add-btn"
                     onClick={() => {
+                      dispatch(addItem({ productId: product.id, quantity: 1 }));
                       toast.success("Thêm Sản Phẩm Vào Giỏ Hàng Thành Công");
-                      dispatch(addItem(product));
                     }}
                   >
                     <span className="prod-add-btn-icon">

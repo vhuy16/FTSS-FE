@@ -226,12 +226,6 @@ const Register = () => {
               <FormTitle>
                 <h3>Đăng ký</h3>
               </FormTitle>
-              <AuthRegisterOptions />
-              <div className="form-separator flex items-center justify-center">
-                <span className="separator-line"></span>
-                <span className="separator-text inline-flex items-center justify-center text-white">Or</span>
-                <span className="separator-line"></span>
-              </div>
               <div>
                 <div className="w-full flex flex-col maxWidth550">
                   {message != "Customer account created successfully" ? (
@@ -339,7 +333,7 @@ const Register = () => {
                       }}
                       className="block w-full px-4 py-3 mb-2 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     >
-                      <option value="">Chọn Tỉnh ...</option>
+                      <option value="">Chọn tỉnh ...</option>
                       {listProvince.map((province, index) => {
                         return (
                           <option key={index} value={JSON.stringify({ id: province.id, name: province.name })}>
@@ -361,7 +355,7 @@ const Register = () => {
                       }}
                       className="block w-full px-4 py-3 mb-2 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     >
-                      <option value="">Chọn Huyện ...</option>
+                      <option value="">Chọn huyện ...</option>
                       {listDistrict.map((district, index) => {
                         return (
                           <option key={index} value={district.name}>
