@@ -57,6 +57,10 @@ const BaseLinkGreen = styled(BaseLink)`
     background-color: ${defaultTheme.color_sea_green};
     border-color: ${defaultTheme.color_sea_green};
 `;
+const BaseLinkRed = styled(BaseButton)`
+    background-color: ${defaultTheme.color_red};
+    border-color: ${defaultTheme.color_red};
+`;
 const BaseBtnGreen = styled(BaseButton)`
     background-color: ${defaultTheme.color_sea_green};
     border-color: ${defaultTheme.color_sea_green};
@@ -105,4 +109,5 @@ export {
     BaseLinkOutlineWhite,
     BaseLinkOutlinePlatinum,
     BaseBtnGreen,
+    BaseLinkRed,
 };
