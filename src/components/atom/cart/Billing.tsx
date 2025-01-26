@@ -12,6 +12,7 @@ import { CartItem } from '@redux/slices/cartSlice';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { getUserProfile } from '@redux/slices/userSlice';
+import { createOrder } from '@redux/slices/orderSlice';
 
 const BillingOrderWrapper = styled.div`
     gap: 60px;
@@ -117,41 +118,23 @@ const Billing = () => {
     const [district, setDistrict] = useState('0');
 
     const initFormValue = {
-        description: 'Thanh Toán Đơn Hàng',
         phone: '',
-        products: [
-            {
-                quantity: 0,
-                product_id: 0,
-                product_name: '',
-                unit_price: 0,
-                line_total: 0,
-            },
-        ],
-        account_id: '',
         customer_name: '',
         street: '',
         district: '',
         province: '',
-        total_price: 0,
-        payment_date: new Date().toISOString(),
-    };
-    type ProductCheckOut = {
-        quantity: number;
-        product_id: number;
-        product_name: string;
-        unit_price: number;
-        line_total: number;
+        CartItem: [],
+        ShipCost: 0,
+        VoucherId: '',
+        Address: '',
+        PaymentMethod: 'PayOs',
     };
     type DataCheckOut = {
-        description: string;
-        phone: string;
-        products: ProductCheckOut[];
-        account_id: string | null | undefined;
-        customer_name: string;
-        shipped_address: string;
-        total_price: number;
-        payment_date: string;
+        CartItem: string[];
+        ShipCost: number;
+        Address: string;
+        VoucherId: string;
+        PaymentMethod: string;
     };
     const [formValue, setFormValue] = useState(initFormValue);
     const [formError, setFormError] = useState({
@@ -165,9 +148,6 @@ const Billing = () => {
         dispatch(getAllProvince());
         dispatch(getAllDistrict(idProvice.id));
     }, [idProvice.id]);
-    useEffect(() => {
-        dispatch(getUserProfile());
-    }, []);
     const validateForm = () => {
         const errors = {
             name: '',
@@ -205,47 +185,34 @@ const Billing = () => {
         return check;
     };
     const cart = useAppSelector((state) => state.cart.items);
-    const user = useAppSelector((state) => state.userProfile.user);
-    // const handlePayNow = async () => {
-    //     const check = validateForm();
-    //     if (check) {
-    //         const data: DataCheckOut = {
-    //             description: formValue.description,
-    //             account_id: user?.account_id,
-    //             phone: formValue.phone,
-    //             products: cart.map((item: CartItem) => {
-    //                 return {
-    //                     quantity: item.quantity,
-    //                     product_id: item.item.product_id,
-    //                     product_name: item.item.product_name,
-    //                     unit_price: item.item.price,
-    //                     line_total: item.item.price * item.quantity,
-    //                 };
-    //             }),
-    //             customer_name: formValue.customer_name,
-    //             shipped_address: formValue.street + ' ' + formValue.district + ' ' + formValue.province,
-    //             total_price: cart.reduce((total: number, item: CartItem) => {
-    //                 return total + item.quantity * item.item.price;
-    //             }, 0),
-    //             payment_date: formValue.payment_date,
-    //         };
+    const handlePayNow = async () => {
+        const check = validateForm();
+        if (check) {
+            const data: DataCheckOut = {
+                ShipCost: formValue.ShipCost,
+                CartItem: cart.map((item: CartItem) => {
+                    return item.cartItemId;
+                }),
+                Address: formValue.street + ' ' + formValue.district + ' ' + formValue.province,
+                VoucherId: formValue.VoucherId,
+                PaymentMethod: formValue.PaymentMethod,
+            };
 
-    //         try {
-    //             const res: string = await dispatch(createPayment(data)).unwrap();
-
-    //             if (res !== '') {
-    //                 await toast.success('Vui lòng chờ để thanh toán');
-    //                 setTimeout(() => {
-    //                     window.location.href = res;
-    //                 }, 1500);
-    //             }
-    //         } catch (error) {
-    //             console.log(error);
-    //         }
-    //     } else {
-    //         console.log('payment invalid');
-    //     }
-    // };
+            try {
+                const res: string = await dispatch(createOrder(data)).unwrap();
+                if (res !== '') {
+                    await toast.success('Vui lòng chờ để thanh toán');
+                    setTimeout(() => {
+                        window.location.href = res;
+                    }, 1500);
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        } else {
+            console.log('payment invalid');
+        }
+    };
     return (
         <BillingOrderWrapper className="billing-and-order grid items-start">
             <BillingDetailsWrapper>
@@ -344,7 +311,9 @@ const Billing = () => {
                     </div>
                     <div className="horiz-line-separator w-full"></div>
                     <ShippingPayment />
-                    <BaseButtonGreen className="pay-now-btn">Thanh toán ngay</BaseButtonGreen>
+                    <BaseButtonGreen className="pay-now-btn" onClick={handlePayNow}>
+                        Thanh toán ngay
+                    </BaseButtonGreen>
                 </div>
             </BillingDetailsWrapper>
             <CheckoutSummary />
