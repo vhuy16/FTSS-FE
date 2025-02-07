@@ -77,6 +77,8 @@ const CheckoutSummaryWrapper = styled.div`
 
 const CheckoutSummary = () => {
     const listCart = useAppSelector((state) => state.cart.items);
+    console.log('lc', listCart);
+
     const totalPrice = listCart.reduce((total: number, item: CartItem) => {
         return total + item.price;
     }, 0);
@@ -92,7 +94,7 @@ const CheckoutSummary = () => {
                     return (
                         <div className="order-item grid" key={cart.cartItemId}>
                             <div className="order-item-img">
-                                <img src={cart.linkImage[0]} className="object-fit-cover" alt="" />
+                                <img src={cart.linkImage ? cart.linkImage : ''} className="object-fit-cover" alt="" />
                             </div>
                             <div className="order-item-info flex justify-between">
                                 <div className="order-item-info-l">

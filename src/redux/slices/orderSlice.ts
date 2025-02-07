@@ -7,11 +7,11 @@ type initialStateProduct = {
     isError: boolean;
 };
 type DataCheckOut = {
-    CartItem: string[];
-    ShipCost: number;
-    Address: string;
-    VoucherId: string;
-    PaymentMethod: string;
+    cartItem: string[];
+    shipCost: number;
+    address: string;
+    voucherId: string | null;
+    paymentMethod: string;
 };
 export const createOrder = createAsyncThunk('order/create', async (data: DataCheckOut, { rejectWithValue }) => {
     try {
