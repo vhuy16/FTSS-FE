@@ -125,16 +125,16 @@ const Billing = () => {
         province: '',
         CartItem: [],
         ShipCost: 0,
-        VoucherId: '',
+        VoucherId: null,
         Address: '',
         PaymentMethod: 'PayOs',
     };
     type DataCheckOut = {
-        CartItem: string[];
-        ShipCost: number;
-        Address: string;
-        VoucherId: string;
-        PaymentMethod: string;
+        cartItem: string[];
+        shipCost: number;
+        address: string;
+        voucherId: string | null;
+        paymentMethod: string;
     };
     const [formValue, setFormValue] = useState(initFormValue);
     const [formError, setFormError] = useState({
@@ -189,13 +189,13 @@ const Billing = () => {
         const check = validateForm();
         if (check) {
             const data: DataCheckOut = {
-                ShipCost: formValue.ShipCost,
-                CartItem: cart.map((item: CartItem) => {
+                shipCost: formValue.ShipCost,
+                cartItem: cart.map((item: CartItem) => {
                     return item.cartItemId;
                 }),
-                Address: formValue.street + ' ' + formValue.district + ' ' + formValue.province,
-                VoucherId: formValue.VoucherId,
-                PaymentMethod: formValue.PaymentMethod,
+                address: formValue.street + ' ' + formValue.district + ' ' + formValue.province,
+                voucherId: formValue.VoucherId,
+                paymentMethod: formValue.PaymentMethod,
             };
 
             try {
