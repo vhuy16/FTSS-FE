@@ -12,6 +12,7 @@ import cartReducer from './slices/cartSlice';
 import forgotPasswordReducer from './slices/forgotPasswordSlice';
 import userProfileReducer from './slices/userSlice';
 import orderReducer from './slices/orderSlice';
+import shipmentReducer from './slices/shipmentSlice';
 export const store = configureStore({
     reducer: {
         address: addressReducer,
@@ -27,6 +28,7 @@ export const store = configureStore({
         forgotPassword: forgotPasswordReducer,
         userProfile: userProfileReducer,
         order: orderReducer,
+        shipment: shipmentReducer,
     },
 });
 

@@ -80,7 +80,7 @@ instance.interceptors.response.use(
 
             // Chuyển người dùng về trang đăng nhập (nếu cần)
             setTimeout(() => {
-                // window.location.href = '/login';
+                window.location.href = '/login';
             }, 1000);
 
             // Reset lại cờ sau một khoảng thời gian

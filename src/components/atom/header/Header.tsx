@@ -140,8 +140,6 @@ const Header = () => {
     const token = localStorage.getItem('access_token');
     const navigate = useNavigate();
     const [key, setKey] = useState('');
-    console.log('t', token);
-
     return (
         <HeaderMainWrapper className="header flex items-center">
             <Container className="container">
@@ -200,14 +198,6 @@ const Header = () => {
                     </NavigationAndSearchWrapper>
 
                     <IconLinksWrapper className="flex items-center">
-                        <Link
-                            to="/wishlist"
-                            className={`icon-link ${
-                                location.pathname === '/wishlist' ? 'active' : ''
-                            } inline-flex items-center justify-center`}
-                        >
-                            <img src={heart} alt="" />
-                        </Link>
                         {token && (
                             <Link
                                 to="/account"
@@ -220,14 +210,16 @@ const Header = () => {
                                 <img src={user} alt="" />
                             </Link>
                         )}
-                        <Link
-                            to="/cart"
-                            className={`icon-link ${
-                                location.pathname === '/cart' ? 'active' : ''
-                            } inline-flex items-center justify-center`}
-                        >
-                            <img src={cart} alt="" />
-                        </Link>
+                        {token && (
+                            <Link
+                                to="/cart"
+                                className={`icon-link ${
+                                    location.pathname === '/cart' ? 'active' : ''
+                                } inline-flex items-center justify-center`}
+                            >
+                                <img src={cart} alt="" />
+                            </Link>
+                        )}
                         {!token && (
                             <Link
                                 to="/login"
