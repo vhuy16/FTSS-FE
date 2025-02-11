@@ -6,7 +6,7 @@ import AuthOptions from '@components/atom/auth/AuthOptions';
 import { FormElement, Input } from '../../../styles/form';
 import PasswordInput from '@components/atom/auth/PasswordInput';
 import { Link, useNavigate } from 'react-router-dom';
-import { BaseButtonBlack } from '@styles/button';
+import { BaseButtonBlack, BaseButtonGreen } from '@styles/button';
 import { breakpoints, defaultTheme } from '@styles/themes/default';
 import { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '@redux/hook';
@@ -26,7 +26,7 @@ const SignInScreenWrapper = styled.section`
             border-radius: 50%;
             min-width: 36px;
             height: 36px;
-            background-color: ${defaultTheme.color_purple};
+            background-color: ${defaultTheme.color_sea_green};
             position: relative;
         }
 
@@ -157,9 +157,9 @@ const Login = () => {
                                 <Link to="/forgot-password" className="form-elem-text text-end font-medium">
                                     Quên mật khẩu ?
                                 </Link>
-                                <BaseButtonBlack className="form-submit-btn" onClick={handleLogin}>
+                                <BaseButtonGreen className="form-submit-btn" onClick={handleLogin}>
                                     {isLoadingLogin ? <Loading /> : <>Đăng nhập</>}
-                                </BaseButtonBlack>
+                                </BaseButtonGreen>
                             </div>
                             <p className="flex flex-wrap account-rel-text">
                                 Chưa có tài khoản?

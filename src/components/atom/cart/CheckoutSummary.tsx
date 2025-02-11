@@ -1,9 +1,10 @@
 import styled from 'styled-components';
 // import { orderData } from "../../data/data";
 import { breakpoints, defaultTheme } from '@styles/themes/default';
-import { useAppSelector } from '@redux/hook';
-import { CartItem } from '@redux/slices/cartSlice';
+import { useAppDispatch, useAppSelector } from '@redux/hook';
+import { CartItem, getAllCart } from '@redux/slices/cartSlice';
 import { currencyFormat } from '@ultils/helper';
+import { useEffect } from 'react';
 
 const CheckoutSummaryWrapper = styled.div`
     box-shadow: 2px 2px 4px 0px rgba(0, 0, 0, 0.05), -2px -2px 4px 0px rgba(0, 0, 0, 0.05);
@@ -77,8 +78,11 @@ const CheckoutSummaryWrapper = styled.div`
 
 const CheckoutSummary = () => {
     const listCart = useAppSelector((state) => state.cart.items);
-    console.log('lc', listCart);
-
+    const ship = useAppSelector((state) => state.shipment.ship);
+    const dispatch = useAppDispatch();
+    useEffect(() => {
+        dispatch(getAllCart());
+    }, []);
     const totalPrice = listCart.reduce((total: number, item: CartItem) => {
         return total + item.price;
     }, 0);
@@ -122,12 +126,14 @@ const CheckoutSummary = () => {
 
                 <li className="flex items-center justify-between">
                     <span className="text-outerspace font-bold text-lg">Phí Vận Chuyển</span>
-                    <span className="text-outerspace font-bold text-lg">₫0</span>
+                    <span className="text-outerspace font-bold text-lg">{currencyFormat(ship?.service_fee ?? 0)}</span>
                 </li>
                 <li className="list-separator"></li>
                 <li className="flex items-center justify-between">
                     <span className="text-outerspace font-bold text-lg">Tổng</span>
-                    <span className="text-outerspace font-bold text-lg">{currencyFormat(totalPrice)}</span>
+                    <span className="text-outerspace font-bold text-lg">
+                        {currencyFormat(totalPrice + (ship?.service_fee ?? 0))}
+                    </span>
                 </li>
             </ul>
         </CheckoutSummaryWrapper>

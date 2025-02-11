@@ -15,7 +15,6 @@ function Home() {
     const dispatch = useAppDispatch();
     const listProducts = useAppSelector((state) => state.product.data?.items || []);
     useEffect(() => {
-        dispatch(getUserProfile());
         dispatch(getAllProduct({ page: 1, size: 100 }));
     }, []);
 

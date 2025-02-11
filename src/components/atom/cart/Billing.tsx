@@ -13,6 +13,7 @@ import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { getUserProfile } from '@redux/slices/userSlice';
 import { createOrder } from '@redux/slices/orderSlice';
+import { createShipment } from '@redux/slices/shipmentSlice';
 
 const BillingOrderWrapper = styled.div`
     gap: 60px;
@@ -114,6 +115,7 @@ const Billing = () => {
     const dispatch = useAppDispatch();
     const listProvince = useAppSelector((state) => state.address.listProvince);
     const listDistrict = useAppSelector((state) => state.address.listDistrict);
+    const ship = useAppSelector((state) => state.shipment.ship);
     const [idProvice, setIdProvince] = useState({ id: '0', name: 'chon tinh' });
     const [district, setDistrict] = useState('0');
 
@@ -189,7 +191,7 @@ const Billing = () => {
         const check = validateForm();
         if (check) {
             const data: DataCheckOut = {
-                shipCost: formValue.ShipCost,
+                shipCost: ship?.service_fee as number,
                 cartItem: cart.map((item: CartItem) => {
                     return item.cartItemId;
                 }),
@@ -263,9 +265,12 @@ const Billing = () => {
                                     return (
                                         <option
                                             key={index}
-                                            value={JSON.stringify({ id: province.id, name: province.name })}
+                                            value={JSON.stringify({
+                                                id: province.ProvinceID,
+                                                name: province.ProvinceName,
+                                            })}
                                         >
-                                            {province.name}
+                                            {province.ProvinceName}
                                         </option>
                                     );
                                 })}
@@ -282,14 +287,15 @@ const Billing = () => {
                                 onChange={(e) => {
                                     setDistrict(e.target.value);
                                     setFormValue({ ...formValue, district: e.target.value });
+                                    dispatch(createShipment(parseInt(e.target.value)));
                                 }}
                                 className="block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                             >
                                 <option value="">Chọn Huyện ...</option>
                                 {listDistrict.map((district, index) => {
                                     return (
-                                        <option key={index} value={district.name}>
-                                            {district.name}
+                                        <option key={index} value={district.DistrictID}>
+                                            {district.DistrictName}
                                         </option>
                                     );
                                 })}

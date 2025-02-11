@@ -8,7 +8,9 @@ import { FormElement, Input } from '@styles/form';
 import { BaseLinkGreen } from '@styles/button';
 import { Link } from 'react-router-dom';
 import { breakpoints, defaultTheme } from '@styles/themes/default';
-import { useAppSelector } from '@redux/hook';
+import { useAppDispatch, useAppSelector } from '@redux/hook';
+import { useEffect } from 'react';
+import { getUserProfile } from '@redux/slices/userSlice';
 
 const AccountScreenWrapper = styled.main`
     .address-list {
@@ -60,7 +62,10 @@ const breadcrumbItems = [
 
 const Account = () => {
     const user = useAppSelector((state) => state.userProfile.user);
-
+    const dispatch = useAppDispatch();
+    useEffect(() => {
+        dispatch(getUserProfile());
+    }, []);
     return (
         <AccountScreenWrapper className="page-py-spacing">
             <Container>
