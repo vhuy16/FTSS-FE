@@ -16,7 +16,6 @@ const commonButtonStyles = css`
     font-weight: 500;
     font-size: 14px;
     border: 1px solid transparent;
-    text-transform: capitalize;
     padding-left: 12px;
     padding-right: 12px;
     transition: ${defaultTheme.default_transition};

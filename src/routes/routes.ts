@@ -17,6 +17,7 @@ import Account from '@components/pages/Account/Account';
 import CheckoutScreen from '@components/pages/Checkout/Checkout';
 import ConfirmScreen from '@components/pages/Checkout/PaymentSuccess';
 import ErrorScreen from '@components/pages/Checkout/PaymentError';
+import NotFoundScreen from '@components/pages/error/NotFoundScreen';
 
 export type RouteType = {
     path: string;
@@ -94,6 +95,11 @@ const publicRoute: RouteType[] = [
         path: '/paymentError',
         component: ErrorScreen,
         layout: MainLayout,
+    },
+    {
+        path: '*',
+        component: NotFoundScreen,
+        layout: null,
     },
 ];
 
