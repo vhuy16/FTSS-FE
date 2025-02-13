@@ -41,9 +41,9 @@ export const createShipment = createAsyncThunk('shipment/createShipment', async 
                 from_district_id: 3695,
                 to_district_id: to_district_id,
                 height: 10,
-                length: 20,
-                weight: 5000,
-                width: 20,
+                length: 10,
+                weight: 1000,
+                width: 10,
             },
             {
                 headers: {

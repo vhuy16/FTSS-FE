@@ -20,6 +20,18 @@ export const getAllDistrict = createAsyncThunk('address/getAllDistrict', async (
     );
     return response.data.data;
 });
+export const getAllWard = createAsyncThunk('address/getAllWard', async (id: number) => {
+    const response = await axios.post(
+        'https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward?district_id',
+        { district_id: id },
+        {
+            headers: {
+                token: '95077904-e10a-11ef-b2e4-6ec7c647cc27', // Token GHN
+            },
+        },
+    );
+    return response.data.data;
+});
 type Province = {
     ProvinceID: number;
     ProvinceName: string;
@@ -71,16 +83,51 @@ type District = {
     UpdatedEmployee: number;
     UpdatedDate: string;
 };
+type WhiteListClient = {
+    From: string[];
+    To: string[];
+    Return: string[];
+};
+
+type WhiteListWard = {
+    From: string | null;
+    To: string | null;
+};
+
+type Ward = {
+    WardCode: string;
+    DistrictID: number;
+    WardName: string;
+    NameExtension: string[];
+    IsEnable: number;
+    CanUpdateCOD: boolean;
+    UpdatedBy: number;
+    CreatedAt: string;
+    UpdatedAt: string;
+    SupportType: number;
+    PickType: number;
+    DeliverType: number;
+    WhiteListClient: WhiteListClient;
+    WhiteListWard: WhiteListWard;
+    Status: number;
+    ReasonCode: string;
+    ReasonMessage: string;
+    OnDates: string[] | null;
+    UpdatedEmployee?: number;
+    UpdatedDate?: string;
+};
 
 type ProvinceState = {
     listProvince: Province[];
     listDistrict: District[];
+    listWard: Ward[];
     isLoading: boolean;
     isError: boolean;
 };
 const initialState: ProvinceState = {
     listProvince: [],
     listDistrict: [],
+    listWard: [],
     isLoading: false,
     isError: false,
 };
@@ -115,6 +162,20 @@ const addressSlice = createSlice({
                 state.listDistrict = action.payload;
             })
             .addCase(getAllDistrict.rejected, (state) => {
+                state.isLoading = false;
+                state.isError = true;
+            });
+        builder
+            .addCase(getAllWard.pending, (state) => {
+                state.isLoading = true;
+                state.isError = false;
+            })
+            .addCase(getAllWard.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isError = false;
+                state.listWard = action.payload;
+            })
+            .addCase(getAllWard.rejected, (state) => {
                 state.isLoading = false;
                 state.isError = true;
             });
