@@ -126,13 +126,13 @@ const CheckoutSummary = () => {
 
                 <li className="flex items-center justify-between">
                     <span className="text-outerspace font-bold text-lg">Phí vận chuyển</span>
-                    <span className="text-outerspace font-bold text-lg">{currencyFormat(ship?.service_fee ?? 0)}</span>
+                    <span className="text-outerspace font-bold text-lg">{currencyFormat(ship?.total_fee ?? 0)}</span>
                 </li>
                 <li className="list-separator"></li>
                 <li className="flex items-center justify-between">
                     <span className="text-outerspace font-bold text-lg">Tổng</span>
                     <span className="text-outerspace font-bold text-lg">
-                        {currencyFormat(totalPrice + (ship?.service_fee ?? 0))}
+                        {currencyFormat(totalPrice + (ship?.total_fee ?? 0))}
                     </span>
                 </li>
             </ul>

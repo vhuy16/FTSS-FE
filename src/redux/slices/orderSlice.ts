@@ -12,6 +12,8 @@ type DataCheckOut = {
     address: string;
     voucherId: string | null;
     paymentMethod: string;
+    phoneNumber: string;
+    name: string;
 };
 export const createOrder = createAsyncThunk('order/create', async (data: DataCheckOut, { rejectWithValue }) => {
     try {

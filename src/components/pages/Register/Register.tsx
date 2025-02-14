@@ -349,11 +349,11 @@ const Register = () => {
                                                     <option
                                                         key={index}
                                                         value={JSON.stringify({
-                                                            id: province.ProvinceID,
-                                                            name: province.ProvinceName,
+                                                            id: province.id,
+                                                            name: province.name,
                                                         })}
                                                     >
-                                                        {province.ProvinceName}
+                                                        {province.name}
                                                     </option>
                                                 );
                                             })}
@@ -379,8 +379,8 @@ const Register = () => {
                                             <option value="">Chọn huyện ...</option>
                                             {listDistrict.map((district, index) => {
                                                 return (
-                                                    <option key={index} value={district.DistrictName}>
-                                                        {district.DistrictName}
+                                                    <option key={index} value={district.name}>
+                                                        {district.name}
                                                     </option>
                                                 );
                                             })}

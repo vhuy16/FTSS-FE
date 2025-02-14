@@ -116,9 +116,10 @@ const Billing = () => {
     const listProvince = useAppSelector((state) => state.address.listProvince);
     const listDistrict = useAppSelector((state) => state.address.listDistrict);
     const listWard = useAppSelector((state) => state.address.listWard);
+    const cart = useAppSelector((state) => state.cart.items);
     const ship = useAppSelector((state) => state.shipment.ship);
     const [idProvice, setIdProvince] = useState({ id: '0', name: 'chon tinh' });
-    const [district, setDistrict] = useState({ id: '0', name: '' });
+    const [district, setDistrict] = useState({ id: '0', name: '', city_id: '' });
     const [ward, setWard] = useState({ id: '0', name: '' });
 
     const initFormValue = {
@@ -140,6 +141,8 @@ const Billing = () => {
         address: string;
         voucherId: string | null;
         paymentMethod: string;
+        phoneNumber: string;
+        name: string;
     };
     const [formValue, setFormValue] = useState(initFormValue);
     const [formError, setFormError] = useState({
@@ -156,7 +159,7 @@ const Billing = () => {
             dispatch(getAllDistrict(idProvice.id));
         }
         if (district.id != '0') {
-            dispatch(getAllWard(parseInt(district.id)));
+            dispatch(getAllWard(district.id));
         }
     }, [idProvice.id, district.id]);
     const validateForm = () => {
@@ -200,12 +203,11 @@ const Billing = () => {
         setFormError(errors);
         return check;
     };
-    const cart = useAppSelector((state) => state.cart.items);
     const handlePayNow = async () => {
         const check = validateForm();
         if (check) {
             const data: DataCheckOut = {
-                shipCost: ship?.service_fee as number,
+                shipCost: ship?.total_fee as number,
                 cartItem: cart.map((item: CartItem) => {
                     return item.cartItemId;
                 }),
@@ -213,6 +215,8 @@ const Billing = () => {
                     formValue.street + ', ' + formValue.ward + ', ' + formValue.district + ', ' + formValue.province,
                 voucherId: formValue.VoucherId,
                 paymentMethod: formValue.PaymentMethod,
+                phoneNumber: formValue.phone,
+                name: formValue.customer_name,
             };
 
             try {
@@ -281,11 +285,11 @@ const Billing = () => {
                                         <option
                                             key={index}
                                             value={JSON.stringify({
-                                                id: province.ProvinceID,
-                                                name: province.ProvinceName,
+                                                id: province.id,
+                                                name: province.name,
                                             })}
                                         >
-                                            {province.ProvinceName}
+                                            {province.name}
                                         </option>
                                     );
                                 })}
@@ -302,7 +306,13 @@ const Billing = () => {
                                 onChange={(e) => {
                                     setDistrict(JSON.parse(e.target.value));
                                     setFormValue({ ...formValue, district: JSON.parse(e.target.value).name });
-                                    dispatch(createShipment(parseInt(JSON.parse(e.target.value).id)));
+                                    dispatch(
+                                        createShipment({
+                                            district: JSON.parse(e.target.value).id,
+                                            city: JSON.parse(e.target.value).city_id,
+                                            amount: cart.reduce((a: number, b: CartItem) => a + b.price, 0),
+                                        }),
+                                    );
                                 }}
                                 className="block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                             >
@@ -312,11 +322,12 @@ const Billing = () => {
                                         <option
                                             key={index}
                                             value={JSON.stringify({
-                                                id: district.DistrictID,
-                                                name: district.DistrictName,
+                                                id: district.id,
+                                                name: district.name,
+                                                city_id: district.city_id,
                                             })}
                                         >
-                                            {district.DistrictName}
+                                            {district.name}
                                         </option>
                                     );
                                 })}
@@ -342,11 +353,11 @@ const Billing = () => {
                                         <option
                                             key={index}
                                             value={JSON.stringify({
-                                                id: ward.WardCode,
-                                                name: ward.WardName,
+                                                id: ward.id,
+                                                name: ward.name,
                                             })}
                                         >
-                                            {ward.WardName}
+                                            {ward.name}
                                         </option>
                                     );
                                 })}

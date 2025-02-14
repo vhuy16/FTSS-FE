@@ -18,12 +18,7 @@ export const sideMenuData: SideMenuItem[] = [
         menuText: 'Sản Phẩm',
         iconName: 'grid-fill',
     },
-    {
-        id: 'side-menu-3',
-        menuLink: '/wishlist',
-        menuText: 'Yêu Thích',
-        iconName: 'heart',
-    },
+
     {
         id: 'side-menu-4',
         menuLink: '/account',
