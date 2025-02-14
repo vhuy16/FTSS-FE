@@ -51,9 +51,9 @@ const OrderDetailStatusWrapper = styled.div`
 
   .order-status {
     height: 4px;
-    margin: 50px 0;
+    margin: 60px 0;
     max-width: 580px;
-    width: 340px;
+    width: 500px;
     margin-left: auto;
     margin-right: auto;
     position: relative;
@@ -117,8 +117,8 @@ const OrderDetailStatusWrapper = styled.div`
 
     &-text {
       position: absolute;
-      top: calc(100% + 8px);
-      left: 50%;
+      top: calc(100% + 10px);
+      left: 70%;
       transform: translateX(-50%);
     }
   }
@@ -297,26 +297,28 @@ const OrderDetailScreen = () => {
               <OrderDetailStatusWrapper className="order-d-status">
                 <div className="order-status bg-silver">
                   <div className="order-status-dot status-done bg-silver">
-                    <span className="order-status-text font-semibold text-center no-wrap text-silver">
-                      Order Placed
-                    </span>
+                    <span className="order-status-text font-semibold text-center no-wrap text-silver">Đã đặt hàng</span>
                   </div>
                   <div className="order-status-dot status-current bg-silver">
-                    <span className="order-status-text font-semibold text-center no-wrap text-silver">In Progress</span>
+                    <span className="order-status-text font-semibold text-center no-wrap text-silver">Đang xử lí</span>
                   </div>
                   <div className="order-status-dot bg-silver">
-                    <span className="order-status-text font-semibold text-center no-wrap text-silver">Shipped</span>
+                    <span className="order-status-text font-semibold text-center no-wrap text-silver">
+                      Đang vận chuyển
+                    </span>
                   </div>
                   <div className="order-status-dot bg-silver">
-                    <span className="order-status-text font-semibold text-center no-wrap text-silver">Delivered</span>
+                    <span className="order-status-text font-semibold text-center no-wrap text-silver">
+                      Đã vận chuyển
+                    </span>
                   </div>
                 </div>
               </OrderDetailStatusWrapper>
 
               <OrderDetailMessageWrapper className="order-message flex items-center justify-start">
                 <p className="font-semibold text-gray">
-                  8 June 2023 3:40 PM &nbsp;
-                  <span className="text-outerspace">Your order has been successfully verified.</span>
+                  {formatDate(order?.createDate)} &nbsp;
+                  <span className="text-outerspace">Đơn hàng của bạn đã được xác nhận.</span>
                 </p>
               </OrderDetailMessageWrapper>
               {/*  list sp */}
