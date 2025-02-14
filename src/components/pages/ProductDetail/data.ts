@@ -38,7 +38,7 @@ export const productDescriptionTabHeads: TabHead[] = [
         tabHead: 'tabComments',
         tabText: 'Nhận xét',
         badgeValue: 10,
-        badgeColor: 'purple',
+        badgeColor: 'outerspace',
     },
     {
         id: 'tab-QNA',
@@ -86,21 +86,21 @@ export const servicesData: Service[] = [
     {
         id: 'service_1',
         icon: card_icon,
-        text: 'Thanh Toán Online',
+        text: 'Thanh toán online',
     },
     {
         id: 'service_2',
         icon: size_icon,
-        text: 'Sản Phẩm Đa Dạng',
+        text: 'Sản phẩm đa dạng',
     },
     {
         id: 'service_3',
         icon: shipping_icon,
-        text: 'Miễn Phí Vận Chuyển',
+        text: 'Miễn phí vận chuyển',
     },
     {
         id: 'service_4',
         icon: return_icon,
-        text: 'Miễn Phí Đổi Trả',
+        text: 'Miễn phí đổi trả',
     },
 ];

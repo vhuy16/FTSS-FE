@@ -23,7 +23,7 @@ const CheckoutScreen = () => {
     return (
         <CheckoutScreenWrapper>
             <Container>
-                <Title titleText={'Thông Tin Thanh Toán'} />
+                <Title titleText={'Thông tin thanh toán'} />
                 <Billing />
             </Container>
         </CheckoutScreenWrapper>

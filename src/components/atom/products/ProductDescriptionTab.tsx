@@ -22,15 +22,9 @@ const DetailsContent = styled.div`
     }
 
     .details-content-wrapper {
-        grid-template-columns: auto 500px;
         gap: 40px;
 
-        @media (max-width: ${breakpoints.xl}) {
-            grid-template-columns: auto 400px;
-        }
-
         @media (max-width: ${breakpoints.lg}) {
-            grid-template-columns: 100%;
             gap: 24px;
         }
     }
@@ -136,7 +130,7 @@ const ProductDescriptionTab = ({ product }: ProductDescriptionTabProps) => {
 
     return (
         <DetailsContent>
-            <Title titleText={'Mô Tả Sản Phẩm'} />
+            <Title titleText={'Mô tả sản phẩm'} />
             <div className="details-content-wrapper grid">
                 <DescriptionTabsWrapper>
                     <div className="tabs-heads flex items-center flex-wrap">
@@ -176,7 +170,7 @@ const ProductDescriptionTab = ({ product }: ProductDescriptionTabProps) => {
                         </div>
                     </div>
                 </DescriptionTabsWrapper>
-                <ProductDescriptionMedia />
+                {/* <ProductDescriptionMedia /> */}
             </div>
         </DetailsContent>
     );

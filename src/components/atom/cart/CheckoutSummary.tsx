@@ -92,7 +92,7 @@ const CheckoutSummary = () => {
     }, 0);
     return (
         <CheckoutSummaryWrapper>
-            <h4 className="text-xxl font-bold text-outersapce">Tóm Tắt Đơn Hàng Thanh Toán</h4>
+            <h4 className="text-xxl font-bold text-outersapce">Tóm tắt đơn hàng thanh toán</h4>
             <div className="order-list grid">
                 {listCart?.map((cart) => {
                     return (
@@ -119,13 +119,13 @@ const CheckoutSummary = () => {
             <ul className="order-info">
                 <li className="flex items-center justify-between">
                     <span className="text-outerspace font-bold text-lg">
-                        Tổng Phụ <span className="text-gray font-semibold">({totalItems} Sản Phẩm)</span>
+                        Tổng phụ <span className="text-gray font-semibold">({totalItems} Sản phẩm)</span>
                     </span>
                     <span className="text-outerspace font-bold text-lg">{currencyFormat(totalPrice)}</span>
                 </li>
 
                 <li className="flex items-center justify-between">
-                    <span className="text-outerspace font-bold text-lg">Phí Vận Chuyển</span>
+                    <span className="text-outerspace font-bold text-lg">Phí vận chuyển</span>
                     <span className="text-outerspace font-bold text-lg">{currencyFormat(ship?.service_fee ?? 0)}</span>
                 </li>
                 <li className="list-separator"></li>

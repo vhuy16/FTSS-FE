@@ -1,5 +1,3 @@
-// import MainLayout from "@layouts/MainLayout";
-
 import Home from "@components/pages/Home/Home";
 import { ComponentType } from "react";
 import AuthLayout from "@layouts/AuthLayout";
@@ -19,6 +17,7 @@ import ConfirmScreen from "@components/pages/Checkout/PaymentSuccess";
 import ErrorScreen from "@components/pages/Checkout/PaymentError";
 import OrderListScreen from "@components/pages/Order/OrderListScreen";
 import OrderDetailScreen from "@components/pages/Order/OrderDetail";
+import NotFoundScreen from "@components/pages/error/NotFoundScreen";
 
 export type RouteType = {
   path: string;
@@ -106,6 +105,11 @@ const publicRoute: RouteType[] = [
     path: "/paymentError",
     component: ErrorScreen,
     layout: MainLayout,
+  },
+  {
+    path: "*",
+    component: NotFoundScreen,
+    layout: null,
   },
 ];
 
