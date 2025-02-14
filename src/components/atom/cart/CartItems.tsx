@@ -69,8 +69,7 @@ const CartItemCB = ({ cartItem }: CartItemProps) => {
   const productData = useAppSelector((state) =>
     state.product.data?.items.find((product) => product.id === cartItem.productId)
   );
-
-  const availableQuantity = productData ? productData.quantity : 0; // Tính số lượng khả dụng
+  const availableQuantity = productData ? productData.quantity : "Đang tải...";
 
   return (
     <CartTableRowWrapper key={cartItem.cartItemId}>
