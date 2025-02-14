@@ -196,7 +196,7 @@ const ProductDetailsScreen: React.FC = () => {
     useEffect(() => {
         window.scrollTo(0, 0);
         dispatch(getProductDetail(id as string));
-    }, []);
+    }, [id]);
 
     const stars = Array.from({ length: 5 }, (_, index) => (
         <span

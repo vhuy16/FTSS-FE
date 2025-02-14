@@ -66,17 +66,6 @@ const ProductItem: React.FC<ProductItemProps> = ({ product }) => {
         >
             <div className="product-img">
                 <img className="object-fit-cover" src={product.images[0]} alt="Ảnh sản phẩm" />
-                {/* <button
-                    type="button"
-                    className="product-wishlist-icon flex items-center justify-center bg-white"
-                    onClick={(e) => {
-                        e.preventDefault(); // Ngăn điều hướng của thẻ cha khi bấm nút
-                        e.stopPropagation(); // Ngăn sự kiện click lan truyền lên cha
-                        dispatch(addItemWishList(post));
-                    }}
-                >
-                    <i className="bi bi-heart"></i>
-                </button> */}
             </div>
             <div className="product-info">
                 <ProductTitle className="font-normal">{product.productName}</ProductTitle>
