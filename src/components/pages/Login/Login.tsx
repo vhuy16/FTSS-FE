@@ -94,7 +94,9 @@ const Login = () => {
                 const messenger = res.message;
                 if (messenger && messenger === 'Login successful.') {
                     localStorage.setItem('access_token', res.data.token);
-                    navigate('/');
+                    if (res.data.roleEnum === 'Customer') {
+                        navigate('/');
+                    }
                 }
             } catch (error) {
                 console.log(error);
