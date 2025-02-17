@@ -1,5 +1,3 @@
-// import MainLayout from "@layouts/MainLayout";
-
 import Home from '@components/pages/Home/Home';
 import { ComponentType } from 'react';
 import AuthLayout from '@layouts/AuthLayout';
@@ -20,6 +18,8 @@ import ErrorScreen from '@components/pages/Checkout/PaymentError';
 import NotFoundScreen from '@components/pages/error/NotFoundScreen';
 import Dashboard from '@components/pages/admin/Dashboad';
 import AdminLayout from '@layouts/AdminLayouts';
+import OrderListScreen from '@components/pages/Order/OrderListScreen';
+import OrderDetailScreen from '@components/pages/Order/OrderDetail';
 
 export type RouteType = {
     path: string;
@@ -102,6 +102,16 @@ const publicRoute: RouteType[] = [
         path: '/dashboard',
         component: Dashboard,
         layout: AdminLayout,
+    },
+    {
+        path: '/order',
+        component: OrderListScreen,
+        layout: MainLayout,
+    },
+    {
+        path: '/order-detail/:orderId',
+        component: OrderDetailScreen,
+        layout: MainLayout,
     },
     {
         path: '*',
