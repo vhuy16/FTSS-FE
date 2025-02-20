@@ -14,6 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import { getUserProfile } from '@redux/slices/userSlice';
 import { createOrder } from '@redux/slices/orderSlice';
 import { createShipment } from '@redux/slices/shipmentSlice';
+import Loading from '../Loading/Loading';
 
 const BillingOrderWrapper = styled.div`
     gap: 60px;
@@ -116,7 +117,8 @@ const Billing = () => {
     const listProvince = useAppSelector((state) => state.address.listProvince);
     const listDistrict = useAppSelector((state) => state.address.listDistrict);
     const listWard = useAppSelector((state) => state.address.listWard);
-    const cart = useAppSelector((state) => state.cart.items);
+    const isLoadingOrder = useAppSelector((state) => state.order.isLoading);
+    const cart = useAppSelector((state) => state.cart.cartselected);
     const ship = useAppSelector((state) => state.shipment.ship);
     const [idProvice, setIdProvince] = useState({ id: '0', name: 'chon tinh' });
     const [district, setDistrict] = useState({ id: '0', name: '', city_id: '' });
@@ -225,7 +227,7 @@ const Billing = () => {
                     await toast.success('Vui lòng chờ để thanh toán');
                     setTimeout(() => {
                         window.location.href = res;
-                    }, 1500);
+                    }, 1000);
                 }
             } catch (error) {
                 console.log(error);
@@ -382,7 +384,7 @@ const Billing = () => {
                     <div className="horiz-line-separator w-full"></div>
                     <ShippingPayment />
                     <BaseButtonGreen className="pay-now-btn" onClick={handlePayNow}>
-                        Thanh toán ngay
+                        {isLoadingOrder ? <Loading></Loading> : <>Thanh toán ngay</>}
                     </BaseButtonGreen>
                 </div>
             </BillingDetailsWrapper>
