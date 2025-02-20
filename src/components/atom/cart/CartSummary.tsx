@@ -51,12 +51,12 @@ const CartSummary = ({ totalPrice }: CartSummaryProps) => {
         <CartSummaryWrapper>
             <ul className="summary-list">
                 <li className="summary-item flex justify-between">
-                    <span className="font-medium text-outerspace">Tổng Phụ</span>
+                    <span className="font-medium text-outerspace">Tổng phụ</span>
                     <span className="font-medium text-outerspace">{currencyFormat(totalPrice)}</span>
                 </li>
                 <li className="summary-item flex justify-between">
-                    <span className="font-medium text-outerspace">Phí Vận Chuyển</span>
-                    <span className="font-medium text-outerspace">0</span>
+                    <span className="font-medium text-outerspace">Giảm giá</span>
+                    <span className="font-medium text-outerspace">{currencyFormat(0)}</span>
                 </li>
                 <li className="summary-item flex justify-between">
                     <span className="font-medium text-outerspace">Tổng</span>
@@ -69,11 +69,15 @@ const CartSummary = ({ totalPrice }: CartSummaryProps) => {
                 className="checkout-btn"
                 onClick={() => {
                     const token = localStorage.getItem('access_token');
-                    if (token) {
-                        navigate('/checkout');
+                    if (totalPrice === 0) {
+                        toast.warning('Vui lòng chọn sản phẩm để thanh toán');
                     } else {
-                        toast.warning('Xin mời đăng nhập trước để thanh toán');
-                        navigate('/login');
+                        if (token) {
+                            navigate('/checkout');
+                        } else {
+                            toast.warning('Xin mời đăng nhập trước để thanh toán');
+                            navigate('/login');
+                        }
                     }
                 }}
             >
