@@ -15,6 +15,7 @@ export type CartItem = {
 
 interface CartState {
   items: CartItem[];
+  cartselected: CartItem[];
   loading: boolean;
   error: string | null;
   message: string | null;
@@ -22,6 +23,7 @@ interface CartState {
 
 const initialState: CartState = {
   items: [],
+  cartselected: [],
   loading: false,
   error: null,
   message: null,
@@ -81,6 +83,16 @@ const cartSlice = createSlice({
     clearCart: (state) => {
       state.items = [];
       state.error = null;
+    },
+    selectCart: (state, action: PayloadAction<CartItem>) => {
+      const cartItem = action.payload;
+      const isSelected = state.cartselected.some((p) => p.cartItemId === cartItem.cartItemId);
+
+      if (isSelected) {
+        state.cartselected = state.cartselected.filter((p) => p.cartItemId !== cartItem.cartItemId);
+      } else {
+        state.cartselected = [...state.cartselected, cartItem];
+      }
     },
   },
   extraReducers: (builder) => {
@@ -163,5 +175,5 @@ const cartSlice = createSlice({
   },
 });
 
-export const { clearCart } = cartSlice.actions;
+export const { clearCart, selectCart } = cartSlice.actions;
 export default cartSlice.reducer;

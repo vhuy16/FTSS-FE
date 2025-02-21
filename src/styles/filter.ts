@@ -50,7 +50,7 @@ export const FilterWrap = styled.div`
     }
 `;
 export const FilterSubWrap = styled.div`
-    padding: 5px;
+    padding-left: 30px;
     transition: ${defaultTheme.default_transition};
 
     @media (max-width: ${breakpoints.lg}) {
@@ -77,7 +77,6 @@ export const FilterSubWrap = styled.div`
 export const ProductCategoryFilter = styled.div`
     .product-filter-item {
         padding: 4px 0;
-        margin: 12px 0;
 
         &:hover {
             .filter-head-title {

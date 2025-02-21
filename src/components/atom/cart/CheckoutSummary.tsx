@@ -77,7 +77,7 @@ const CheckoutSummaryWrapper = styled.div`
 `;
 
 const CheckoutSummary = () => {
-    const listCart = useAppSelector((state) => state.cart.items);
+    const listCart = useAppSelector((state) => state.cart.cartselected);
     const ship = useAppSelector((state) => state.shipment.ship);
     const dispatch = useAppDispatch();
     useEffect(() => {
