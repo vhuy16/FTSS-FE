@@ -30,9 +30,12 @@ const initialState: CartState = {
 // Async thunk để thêm sản phẩm vào giỏ hàng
 export const addItem = createAsyncThunk(
   "cart/addItemToCart",
-  async ({ productId, quantity }: { productId: string; quantity: number }, { rejectWithValue }) => {
+  async (
+    { productId, quantity, status }: { productId: string; quantity: number; status: string },
+    { rejectWithValue }
+  ) => {
     try {
-      const response = await myAxios.post(`https://ftss.id.vn/api/v1/cart/item`, { productId, quantity });
+      const response = await myAxios.post(`https://ftss.id.vn/api/v1/cart/item`, [{ productId, quantity, status }]);
       return response.data.data; // Trả về dữ liệu sản phẩm vừa thêm
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || "Failed to add item to cart");
