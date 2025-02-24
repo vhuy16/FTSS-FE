@@ -22,6 +22,7 @@ function Home() {
   return (
     <HomeScreenWrapper>
       <Hero />
+      <Featured />
       <Container>
         {listProducts.length > 0 ? (
           <Catalog catalogTitle={"Các sản phẩm mới"} products={listProducts.slice(-4)} />

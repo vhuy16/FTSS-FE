@@ -79,9 +79,9 @@ instance.interceptors.response.use(
       localStorage.removeItem("access_token");
 
       // Chuyển người dùng về trang đăng nhập (nếu cần)
-      // setTimeout(() => {
-      //     window.location.href = '/login';
-      // }, 1000);
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 1000);
 
       // Reset lại cờ sau một khoảng thời gian
       setTimeout(() => {
