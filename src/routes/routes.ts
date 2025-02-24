@@ -17,7 +17,7 @@ import ConfirmScreen from "@components/pages/Checkout/PaymentSuccess";
 import ErrorScreen from "@components/pages/Checkout/PaymentError";
 import NotFoundScreen from "@components/pages/error/NotFoundScreen";
 import Dashboard from "@components/pages/admin/Dashboad";
-import AdminLayout from "@layouts/AdminLayouts";
+import AdminLayout from "@layouts/admin/AdminLayouts";
 import OrderListScreen from "@components/pages/Order/OrderListScreen";
 import OrderDetailScreen from "@components/pages/Order/OrderDetail";
 import Setup from "@components/pages/Setup/Setup";

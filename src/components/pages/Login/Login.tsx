@@ -97,6 +97,9 @@ const Login = () => {
                     if (res.data.roleEnum === 'Customer') {
                         navigate('/');
                     }
+                    if (res.data.roleEnum === 'Admin') {
+                        navigate('/dashboard');
+                    }
                 }
             } catch (error) {
                 console.log(error);

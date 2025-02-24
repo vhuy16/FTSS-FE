@@ -342,7 +342,7 @@ const ProductDetailsScreen: React.FC = () => {
                     onClick={() => {
                       const token = localStorage.getItem("access_token");
                       if (token) {
-                        dispatch(addItem({ productId: product.id, quantity: quantity, status: "Odd" }));
+                        dispatch(addItem({ productId: product.id, quantity: quantity }));
                         toast.success("Thêm Sản Phẩm Vào Giỏ Hàng Thành Công");
                       } else {
                         toast.warning("Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng");
