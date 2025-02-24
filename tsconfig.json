@@ -29,7 +29,8 @@
             "@redux/*": ["redux/*"],
             "@styles/*": ["styles/*"],
             "@common/*": ["common/*"],
-            "@ultils/*": ["ultils/*"]
+            "@ultils/*": ["ultils/*"],
+            "@context/*": ["context/*"]
         }
     },
     "include": ["src"]
