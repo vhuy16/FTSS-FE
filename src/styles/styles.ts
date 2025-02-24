@@ -8,7 +8,7 @@ export const PageWrapper = styled.div`
 `;
 
 export const Container = styled.div`
-  max-width: 1320px;
+  max-width: 1460px;
   padding: 0 16px !important;
   margin: 0 auto;
   width: 100%;
@@ -28,6 +28,7 @@ export const TitleWrapper = styled.div`
   padding-left: 32px;
   display: flex;
   align-items: center;
+  font-family: "Inter", sans-serif;
 
   h2,
   h3,
@@ -58,20 +59,13 @@ export const TitleWrapper = styled.div`
   p {
     font-size: 18px;
   }
-
-  &::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 6px;
-    height: 30px;
-    background-color: ${defaultTheme.color_sea_green};
-    border-radius: 100vh;
-  }
 `;
-
+export const HorizontalLine = styled.hr`
+  border: none;
+  height: 1px;
+  background-color: #0000001a;
+  margin: 24px 0;
+`;
 export const ContentStylings = styled.div`
   color: ${defaultTheme.color_gray};
   h1,
@@ -100,28 +94,31 @@ export const ContentStylings = styled.div`
       font-size: 12px !important;
     }
   }
-  h1, h2{
-    @media(max-width: ${breakpoints.lg}){
-      font-size: 17px!important;
+  h1,
+  h2 {
+    @media (max-width: ${breakpoints.lg}) {
+      font-size: 17px !important;
     }
-    @media(max-width: ${breakpoints.sm}){
-      font-size: 16px!important;
-    }
-  }
-  h3, h4{
-    @media(max-width: ${breakpoints.lg}){
-      font-size: 16px!important;
-    }
-    @media(max-width: ${breakpoints.sm}){
-      font-size: 15px!important;
+    @media (max-width: ${breakpoints.sm}) {
+      font-size: 16px !important;
     }
   }
-  h5, h6{
-    @media(max-width: ${breakpoints.lg}){
-      font-size: 15px!important;
+  h3,
+  h4 {
+    @media (max-width: ${breakpoints.lg}) {
+      font-size: 16px !important;
     }
-    @media(max-width: ${breakpoints.sm}){
-      font-size: 14px!important;
+    @media (max-width: ${breakpoints.sm}) {
+      font-size: 15px !important;
+    }
+  }
+  h5,
+  h6 {
+    @media (max-width: ${breakpoints.lg}) {
+      font-size: 15px !important;
+    }
+    @media (max-width: ${breakpoints.sm}) {
+      font-size: 14px !important;
     }
   }
 `;
