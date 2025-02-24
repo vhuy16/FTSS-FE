@@ -51,7 +51,7 @@ const BillingDetailsWrapper = styled.div`
 
             input,
             select {
-                height: 40px;
+                height: 45px;
                 border-radius: 4px;
                 background: ${defaultTheme.color_whitesmoke};
                 padding-left: 12px;

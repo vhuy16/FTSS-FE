@@ -71,7 +71,7 @@ instance.interceptors.response.use(
         const originalRequest = error.config;
 
         // Nếu lỗi là 401 và toast chưa được hiển thị
-        if (error.response?.status === 400 && !isToastShown) {
+        if (error.response?.status === 401 && !isToastShown) {
             isToastShown = true; // Đánh dấu rằng toast đã được hiển thị
             await toast.warning('Phiên bản đã hết hạn xin hãy đăng nhập lại');
 
