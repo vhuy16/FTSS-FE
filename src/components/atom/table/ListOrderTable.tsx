@@ -56,14 +56,14 @@ export default function ListOrderTable() {
                     color={
                         params.row.payment.paymentStatus === 'Processing'
                             ? 'warning'
-                            : params.row.payment.paymentStatus === 'PAID'
+                            : params.row.payment.paymentStatus === 'Completed'
                             ? 'success'
                             : 'error'
                     }
                 >
                     {params.row.payment.paymentStatus === 'Processing'
                         ? 'Đang chờ thanh toán'
-                        : params.row.payment.paymentStatus === 'PAID'
+                        : params.row.payment.paymentStatus === 'Completed'
                         ? 'Đã thanh toán'
                         : 'Đã hủy'}
                 </Badge>
@@ -92,14 +92,18 @@ export default function ListOrderTable() {
                 <Badge
                     size="sm"
                     color={
-                        params.row.status === 'Complete'
+                        params.row.status === 'PENDING_DELIVERY'
                             ? 'success'
                             : params.row.status === 'PROCESSING'
                             ? 'warning'
                             : 'error'
                     }
                 >
-                    {params.row.status === 'PROCESSING' ? 'Đang xử lý' : 'Hoàn tất'}
+                    {params.row.status === 'PROCESSING'
+                        ? 'Đang xử lý'
+                        : params.row.status === 'PENDING_DELIVERY'
+                        ? 'Đang giao'
+                        : 'Hoàn tất'}
                 </Badge>
             ),
         },
