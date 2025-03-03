@@ -1,11 +1,12 @@
 const defaultTheme = require('tailwindcss/defaultTheme');
+const flowbite = require('flowbite-react/tailwind');
 //  @type {import('tailwindcss').Config}
 module.exports = {
-    content: ['./src/**/*.{js,jsx,ts,tsx}'],
+    content: ['./src/**/*.{js,jsx,ts,tsx}', flowbite.content()],
     darkMode: 'class',
     theme: {
         fontFamily: {
-            outfit: ['Outfit', 'sans-serif'],
+            outfit: ['Roboto', 'sans-serif'],
         },
         screens: {
             '2xsm': '375px',
@@ -25,10 +26,27 @@ module.exports = {
                 'theme-xs': ['12px', '18px'],
             },
             colors: {
+                primary: {
+                    50: '#eff6ff',
+                    100: '#dbeafe',
+                    200: '#bfdbfe',
+                    300: '#93c5fd',
+                    400: '#60a5fa',
+                    500: '#3b82f6',
+                    600: '#2563eb',
+                    700: '#1d4ed8',
+                    800: '#1e40af',
+                    900: '#1e3a8a',
+                    950: '#172554',
+                },
                 current: 'currentColor',
                 transparent: 'transparent',
                 white: '#FFFFFF',
-                black: '#101828',
+                whiteBlue: '#EDF2F7',
+                whiteBlue2: '#C5E9FF',
+                blackGreen: '#2d3748',
+                blackGreenHover: '#3d4553',
+                black: '#000000',
                 brand: {
                     25: '#F2F7FF',
                     50: '#ECF3FF',
@@ -44,6 +62,7 @@ module.exports = {
                     950: '#161950',
                 },
                 'blue-light': {
+                    15: '#d9ecf7',
                     25: '#F5FBFF',
                     50: '#F0F9FF',
                     100: '#E0F2FE',
@@ -176,5 +195,5 @@ module.exports = {
             },
         },
     },
-    plugins: [require('@tailwindcss/forms'), require('autoprefixer')],
+    plugins: [require('@tailwindcss/forms'), require('autoprefixer'), flowbite.plugin()],
 };
