@@ -53,7 +53,7 @@ const HeroSliderWrapper = styled.div`
 
 const HeroSliderItemWrapper = styled.div`
   position: relative;
-  height: 716px;
+  height: 816px;
   overflow: hidden;
 
   &::after {
@@ -187,9 +187,9 @@ const Hero = () => {
                 <img src={banner.imgSource} className="object-fit-cover" alt="banner" />
                 <HeroSlideContent className="flex items-center w-full h-full">
                   <Container className="container text-white">
-                    <p className="hero-text-top font-bold italic">{banner.topText}</p>
-                    <h2 className="hero-text-large font-extrabold">{banner.titleText}</h2>
-                    <p className="hero-text-bottom font-semibold uppercase">{banner.bottomText}</p>
+                    <p className="hero-text-top font-bold Inter">{banner.topText}</p>
+                    <h2 className="hero-text-large font-Inter">{banner.titleText}</h2>
+                    <p className="hero-text-bottom font-Inter uppercase">{banner.bottomText}</p>
                     <BaseLinkWhite to={banner.buttonLink} className="hero-btn">
                       {banner.buttonText}
                     </BaseLinkWhite>
