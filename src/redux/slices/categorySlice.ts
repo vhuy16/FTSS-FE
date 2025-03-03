@@ -7,6 +7,7 @@ type SubCategory = {
     description: string;
     createDate: string;
     modifyDate: string;
+    categoryName: string;
 };
 type categoryType = {
     categoryName: string;
@@ -19,19 +20,32 @@ type categoryType = {
 };
 
 export const getAllCategory = createAsyncThunk('user/getAllCategory', async () => {
-    const response = await myAxios.get('https://ftss.id.vn/api/v1/category?page=1&size=100');
+    const response = await myAxios.get('/category?page=1&size=100');
     return response.data.data.items;
 });
+export const getAllSubCategoryByCateName = createAsyncThunk(
+    'user/getAllSubCategoryByCateName',
+    async (cateName: string) => {
+        try {
+            const response = await myAxios.get(`/category?page=1&size=100&searchName=${cateName}`);
+            return response.data.data.items[0].subCategories;
+        } catch (error: any) {
+            console.log(error);
+        }
+    },
+);
 
 type CategoryState = {
     isLoading: boolean;
-    categories: categoryType[] | null;
+    categories: categoryType[];
+    subCates: SubCategory[];
     isError: boolean;
 };
 
 const initialState: CategoryState = {
     isLoading: false,
-    categories: null,
+    categories: [],
+    subCates: [],
     isError: false,
 };
 
@@ -51,6 +65,20 @@ const ListCategorySlice = createSlice({
                 state.isError = false;
             })
             .addCase(getAllCategory.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+            });
+        builder
+            .addCase(getAllSubCategoryByCateName.pending, (state) => {
+                state.isLoading = true;
+                state.isError = false;
+            })
+            .addCase(getAllSubCategoryByCateName.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.subCates = action.payload;
+                state.isError = false;
+            })
+            .addCase(getAllSubCategoryByCateName.rejected, (state, action) => {
                 state.isLoading = false;
                 state.isError = true;
             });

@@ -1,9 +1,8 @@
 import React, { ReactNode } from 'react';
 import { SidebarProvider, useSidebar } from '@context/SidebarContext';
-import { Outlet } from 'react-router';
-import AppHeader from './AppHeader';
-import Backdrop from './Backdrop';
-import AppSidebar from './AppSidebar';
+import AppHeader from '@layouts/admin/AppHeader';
+import Backdrop from '@layouts/admin/Backdrop';
+import ManagerSidebar from './ManagerSidebar';
 import '../../admin.css';
 
 export type AdminLayoutProps = {
@@ -15,7 +14,7 @@ const LayoutContent: React.FC<AdminLayoutProps> = ({ children }) => {
     return (
         <div className="min-h-screen xl:flex">
             <div>
-                <AppSidebar />
+                <ManagerSidebar />
                 <Backdrop />
             </div>
             <div
@@ -30,7 +29,7 @@ const LayoutContent: React.FC<AdminLayoutProps> = ({ children }) => {
     );
 };
 
-const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
+const ManagerLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     return (
         <SidebarProvider>
             <LayoutContent>{children}</LayoutContent>
@@ -38,4 +37,4 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     );
 };
 
-export default AdminLayout;
+export default ManagerLayout;

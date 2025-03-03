@@ -28,15 +28,25 @@ type NavItem = {
 
 const navItems: NavItem[] = [
     {
-        icon: <GridIcon />,
-        name: 'Doanh thu',
-        path: '/dashboard',
+        icon: <CalenderIcon />,
+        name: 'Danh sách công việc',
+        path: '/calenderIcon',
+    },
+    {
+        icon: <ListIcon />,
+        name: 'Danh sách đơn hàng',
+        path: '/listOrder',
+    },
+    {
+        icon: <TableIcon />,
+        name: 'Danh sách sản phẩm',
+        path: '/listProduct',
     },
 
     {
-        icon: <UserCircleIcon />,
-        name: 'Danh sách người dùng',
-        path: '/listUser',
+        icon: <BoxCubeIcon />,
+        name: 'Các thiết kế bể cá',
+        path: '/listSetup',
     },
 ];
 
@@ -71,7 +81,7 @@ const othersItems: NavItem[] = [
     },
 ];
 
-const AppSidebar: React.FC = () => {
+const ManagerSidebar: React.FC = () => {
     const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
     const location = useLocation();
 
@@ -295,4 +305,4 @@ const AppSidebar: React.FC = () => {
     );
 };
 
-export default AppSidebar;
+export default ManagerSidebar;
