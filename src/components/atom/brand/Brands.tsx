@@ -56,7 +56,7 @@ const Brands = () => {
             </p>
           </StyledSectionTitle>
           <BrandsListWrapper>
-            {listSetup.length > 0 ? <CatalogSetup setups={listSetup.slice(0, 3)} /> : <Loading></Loading>}
+            {listSetup.length > 0 ? <CatalogSetup setups={listSetup.slice(0, 4)} /> : <Loading></Loading>}
           </BrandsListWrapper>
         </BrandsContent>
       </Container>

@@ -137,7 +137,7 @@ const OrderItemList: React.FC<OrderItemListProps> = ({ orders }) => {
               </div>
               <div className="order-info-item">
                 <span className="text-gray font-semibold">Phương thức thanh toán:</span>
-                <span className="text-silver font-semibold">{order.shipCost}</span>
+                <span className="text-silver font-semibold">{order.payment.paymentMethod}</span>
               </div>
             </div>
           </div>
