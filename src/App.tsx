@@ -15,7 +15,11 @@ function App() {
 }
 function AppContent() {
     const location = useLocation();
-    const isAdminRoute = location.pathname.startsWith('/dashboard');
+    const isAdminRoute =
+        location.pathname.startsWith('/dashboard') ||
+        location.pathname.startsWith('/listUser') ||
+        location.pathname.startsWith('/listOrder') ||
+        location.pathname.startsWith('/listProduct');
     return (
         <div className="App">
             {!isAdminRoute && <GlobalStyles />}

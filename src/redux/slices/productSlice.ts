@@ -22,7 +22,9 @@ type ProductData = {
 };
 type initialStateProduct = {
   data: ProductData | null;
+  listProductForAdmin: Product[];
   isLoading: boolean;
+  isLoadingAdd: boolean;
   isError: boolean;
 };
 
@@ -76,10 +78,37 @@ export const getAllProductSimilar = createAsyncThunk(
     }
   }
 );
+export const getAllProductForAdmin = createAsyncThunk(
+  "product/getAllProductForAdmin",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await myAxios.get(`/product?page=1&size=100`);
+      return response.data.data.items;
+    } catch (error: any) {
+      console.log(error);
+      return rejectWithValue(error.response?.data?.message || "Lấy sản phẩm thất bại");
+    }
+  }
+);
+export const addProducts = createAsyncThunk("product/addProducts", async (formData: FormData, { dispatch }) => {
+  try {
+    const response = await myAxios.post(`/product`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    await dispatch(getAllProductForAdmin());
+    return response.data;
+  } catch (error: any) {
+    console.log(error);
+  }
+});
 
 const initialState: initialStateProduct = {
   data: null,
+  listProductForAdmin: [],
   isLoading: false,
+  isLoadingAdd: false,
   isError: false,
 };
 
@@ -114,6 +143,33 @@ const productSlice = createSlice({
       })
       .addCase(getAllProductSimilar.rejected, (state, action) => {
         state.isLoading = false;
+        state.isError = true;
+      });
+    builder
+      .addCase(getAllProductForAdmin.pending, (state) => {
+        state.isLoading = true;
+        state.isError = false;
+      })
+      .addCase(getAllProductForAdmin.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isError = false;
+        state.listProductForAdmin = action.payload;
+      })
+      .addCase(getAllProductForAdmin.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+      });
+    builder
+      .addCase(addProducts.pending, (state) => {
+        state.isLoadingAdd = true;
+        state.isError = false;
+      })
+      .addCase(addProducts.fulfilled, (state, action) => {
+        state.isLoadingAdd = false;
+        state.isError = false;
+      })
+      .addCase(addProducts.rejected, (state, action) => {
+        state.isLoadingAdd = false;
         state.isError = true;
       });
   },

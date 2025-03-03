@@ -15,6 +15,8 @@ import { useEffect, useState } from "react";
 import { getAllProduct } from "@redux/slices/productSlice";
 import { getSetupPackagesShop } from "@redux/slices/setupSlice";
 import SetupListShopPage from "./SetupListShopPage";
+import { BannerBox } from "../Setup/SetupStyles";
+import { banner } from "@images/aquarium-banner.jpg";
 
 // Define breadcrumb type
 type BreadcrumbItem = {
@@ -103,7 +105,7 @@ const DescriptionContent = styled.div`
 const SetupShop: React.FC = () => {
   const breadcrumbItems: BreadcrumbItem[] = [
     { label: "Trang Chủ", link: "/" },
-    { label: "Sản Phẩm", link: "/product" },
+    { label: "Hồ Cá", link: "/setup-package-shop" },
   ];
   const dispatch = useAppDispatch();
   const listSetupShop = useAppSelector((state) => state.setupPackage.setupPackages);
@@ -124,7 +126,7 @@ const SetupShop: React.FC = () => {
         <Breadcrumb items={breadcrumbItems} />
         <ProductsContent className="grid items-start">
           <ProductsContentLeft>
-            <ProductFilter />
+            <BannerBox>{/* <img src={banner} alt="Banner hồ cá" /> */}</BannerBox>
           </ProductsContentLeft>
           <ProductsContentRight>
             <div className="products-right-top flex items-center justify-between">

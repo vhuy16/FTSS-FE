@@ -20,136 +20,244 @@ import Dashboard from "@components/pages/admin/Dashboad";
 import AdminLayout from "@layouts/admin/AdminLayouts";
 import OrderListScreen from "@components/pages/Order/OrderListScreen";
 import OrderDetailScreen from "@components/pages/Order/OrderDetail";
-import Setup from "@components/pages/Setup/SetupDetail";
 import SetupList from "@components/pages/SetupList/SetupList";
 import SetupDetail from "@components/pages/Setup/SetupDetail";
 import BuildSetup from "@components/pages/Setup/BuildSetup";
 import SetupShop from "@components/pages/SetupShop/SetupShop";
 import SetupShopDetailScreen from "@components/pages/SetupShopDetail.tsx/SetupShopDetail";
+import ListUser from "@components/pages/admin/ListUser";
+import ManagerLayout from "@layouts/manager/ManagerLayout";
+import ListOrder from "@components/pages/manager/ListOrder";
+import ListProduct from "@components/pages/manager/ListProduct";
 
 export type RouteType = {
   path: string;
   component: ComponentType<any>;
   layout?: ComponentType<any> | null | undefined;
 };
+let publicRoute: RouteType[] = [];
+const role = localStorage.getItem("role");
+if (role === "Admin") {
+  publicRoute = [
+    {
+      path: "/",
+      component: Home,
+      layout: MainLayout,
+    },
+    {
+      path: "/login",
+      component: Login,
+      layout: AuthLayout,
+    },
+    {
+      path: "/register",
+      component: Register,
+      layout: AuthLayout,
+    },
+    {
+      path: "/verify",
+      component: VerifyAccount,
+      layout: AuthLayout,
+    },
+    {
+      path: "/forgot-password",
+      component: ForgotPassword,
+      layout: AuthLayout,
+    },
+    {
+      path: "/verify-forgot-password",
+      component: VerifyOTP,
+      layout: AuthLayout,
+    },
+    {
+      path: "/reset-password",
+      component: ResetPassword,
+      layout: AuthLayout,
+    },
+    {
+      path: "/dashboard",
+      component: Dashboard,
+      layout: AdminLayout,
+    },
+    {
+      path: "/listUser",
+      component: ListUser,
+      layout: AdminLayout,
+    },
+    {
+      path: "*",
+      component: NotFoundScreen,
+      layout: null,
+    },
+  ];
+} else if (role === "Manager") {
+  publicRoute = [
+    {
+      path: "/",
+      component: Home,
+      layout: MainLayout,
+    },
+    {
+      path: "/login",
+      component: Login,
+      layout: AuthLayout,
+    },
+    {
+      path: "/register",
+      component: Register,
+      layout: AuthLayout,
+    },
+    {
+      path: "/verify",
+      component: VerifyAccount,
+      layout: AuthLayout,
+    },
+    {
+      path: "/forgot-password",
+      component: ForgotPassword,
+      layout: AuthLayout,
+    },
+    {
+      path: "/verify-forgot-password",
+      component: VerifyOTP,
+      layout: AuthLayout,
+    },
+    {
+      path: "/reset-password",
+      component: ResetPassword,
+      layout: AuthLayout,
+    },
+    {
+      path: "/listOrder",
+      component: ListOrder,
+      layout: ManagerLayout,
+    },
+    {
+      path: "/listProduct",
+      component: ListProduct,
+      layout: ManagerLayout,
+    },
+    {
+      path: "*",
+      component: NotFoundScreen,
+      layout: null,
+    },
+  ];
+} else {
+  publicRoute = [
+    {
+      path: "/",
+      component: Home,
+      layout: MainLayout,
+    },
+    {
+      path: "/login",
+      component: Login,
+      layout: AuthLayout,
+    },
+    {
+      path: "/register",
+      component: Register,
+      layout: AuthLayout,
+    },
+    {
+      path: "/verify",
+      component: VerifyAccount,
+      layout: AuthLayout,
+    },
+    {
+      path: "/forgot-password",
+      component: ForgotPassword,
+      layout: AuthLayout,
+    },
+    {
+      path: "/verify-forgot-password",
+      component: VerifyOTP,
+      layout: AuthLayout,
+    },
+    {
+      path: "/reset-password",
+      component: ResetPassword,
+      layout: AuthLayout,
+    },
+    {
+      path: "/cart",
+      component: CartScreen,
+      layout: MainLayout,
+    },
+    {
+      path: "/product",
+      component: Product,
+      layout: MainLayout,
+    },
+    {
+      path: "/product/:id",
+      component: ProductDetail,
+      layout: MainLayout,
+    },
+    {
+      path: "/checkout",
+      component: CheckoutScreen,
+      layout: MainLayout,
+    },
+    {
+      path: "/account",
+      component: Account,
+      layout: MainLayout,
+    },
+    {
+      path: "/paymentSuccess",
+      component: ConfirmScreen,
+      layout: MainLayout,
+    },
+    {
+      path: "/paymentError",
+      component: ErrorScreen,
+      layout: MainLayout,
+    },
 
-const publicRoute: RouteType[] = [
-  {
-    path: "/",
-    component: Home,
-    layout: MainLayout,
-  },
-  {
-    path: "/login",
-    component: Login,
-    layout: AuthLayout,
-  },
-  {
-    path: "/register",
-    component: Register,
-    layout: AuthLayout,
-  },
-  {
-    path: "/verify",
-    component: VerifyAccount,
-    layout: AuthLayout,
-  },
-  {
-    path: "/forgot-password",
-    component: ForgotPassword,
-    layout: AuthLayout,
-  },
-  {
-    path: "/verify-forgot-password",
-    component: VerifyOTP,
-    layout: AuthLayout,
-  },
-  {
-    path: "/reset-password",
-    component: ResetPassword,
-    layout: AuthLayout,
-  },
-  {
-    path: "/cart",
-    component: CartScreen,
-    layout: MainLayout,
-  },
-  {
-    path: "/product",
-    component: Product,
-    layout: MainLayout,
-  },
-  {
-    path: "/product/:id",
-    component: ProductDetail,
-    layout: MainLayout,
-  },
-  {
-    path: "/checkout",
-    component: CheckoutScreen,
-    layout: MainLayout,
-  },
-  {
-    path: "/account",
-    component: Account,
-    layout: MainLayout,
-  },
-  {
-    path: "/paymentSuccess",
-    component: ConfirmScreen,
-    layout: MainLayout,
-  },
-  {
-    path: "/paymentError",
-    component: ErrorScreen,
-    layout: MainLayout,
-  },
-  {
-    path: "/dashboard",
-    component: Dashboard,
-    layout: AdminLayout,
-  },
-  {
-    path: "/order",
-    component: OrderListScreen,
-    layout: MainLayout,
-  },
-  {
-    path: "/order-detail/:orderId",
-    component: OrderDetailScreen,
-    layout: MainLayout,
-  },
-  {
-    path: "/setup-package/:setupPackageId",
-    component: SetupDetail,
-    layout: MainLayout,
-  },
-  {
-    path: "/setup-package",
-    component: SetupList,
-    layout: MainLayout,
-  },
-  {
-    path: "/setup-package-build",
-    component: BuildSetup,
-    layout: MainLayout,
-  },
-  {
-    path: "/setup-package-shop",
-    component: SetupShop,
-    layout: MainLayout,
-  },
-  {
-    path: "/setup-package-shop/:setupPackageId",
-    component: SetupShopDetailScreen,
-    layout: MainLayout,
-  },
-  {
-    path: "*",
-    component: NotFoundScreen,
-    layout: null,
-  },
-];
+    {
+      path: "/order",
+      component: OrderListScreen,
+      layout: MainLayout,
+    },
+    {
+      path: "/order-detail/:orderId",
+      component: OrderDetailScreen,
+      layout: MainLayout,
+    },
+    {
+      path: "*",
+      component: NotFoundScreen,
+      layout: null,
+    },
+    {
+      path: "/setup-package/:setupPackageId",
+      component: SetupDetail,
+      layout: MainLayout,
+    },
+    {
+      path: "/setup-package",
+      component: SetupList,
+      layout: MainLayout,
+    },
+    {
+      path: "/setup-package-build",
+      component: BuildSetup,
+      layout: MainLayout,
+    },
+    {
+      path: "/setup-package-shop",
+      component: SetupShop,
+      layout: MainLayout,
+    },
+    {
+      path: "/setup-package-shop/:setupPackageId",
+      component: SetupShopDetailScreen,
+      layout: MainLayout,
+    },
+  ];
+}
 
 const privateRoute: RouteType[] = [];
 

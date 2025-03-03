@@ -94,11 +94,15 @@ const Login = () => {
                 const messenger = res.message;
                 if (messenger && messenger === 'Login successful.') {
                     localStorage.setItem('access_token', res.data.token);
+                    localStorage.setItem('role', res.data.roleEnum);
                     if (res.data.roleEnum === 'Customer') {
-                        navigate('/');
+                        window.location.href = '/';
                     }
                     if (res.data.roleEnum === 'Admin') {
-                        navigate('/dashboard');
+                        window.location.href = '/dashboard';
+                    }
+                    if (res.data.roleEnum === 'Manager') {
+                        window.location.href = '/listOrder';
                     }
                 }
             } catch (error) {
