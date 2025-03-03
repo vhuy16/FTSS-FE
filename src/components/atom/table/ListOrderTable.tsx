@@ -94,12 +94,12 @@ export default function ListOrderTable() {
                     color={
                         params.row.status === 'Complete'
                             ? 'success'
-                            : params.row.status === 'PENDING_PAYMENT'
+                            : params.row.status === 'PROCESSING'
                             ? 'warning'
                             : 'error'
                     }
                 >
-                    {params.row.status === 'PENDING_PAYMENT' ? 'Đang xử lý' : 'Hoàn tất'}
+                    {params.row.status === 'PROCESSING' ? 'Đang xử lý' : 'Hoàn tất'}
                 </Badge>
             ),
         },
