@@ -45,7 +45,7 @@ export const TitleWrapper = styled.div`
     padding-left: 20px;
   }
   h3 {
-    font-size: 28px;
+    font-size: 40px;
     margin-bottom: 4px;
     @media (max-width: ${breakpoints.lg}) {
       font-size: 24px;

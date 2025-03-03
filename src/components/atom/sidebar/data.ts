@@ -33,8 +33,14 @@ export const sideMenuData: SideMenuItem[] = [
   },
   {
     id: "side-menu-6",
+    menuLink: "/setup-package-shop",
+    menuText: "Hồ Cá",
+    iconName: "water",
+  },
+  {
+    id: "side-menu-7",
     menuLink: "/setup-package",
     menuText: "Build Hồ Cá",
-    iconName: "bag-check-fill",
+    iconName: "tools",
   },
 ];

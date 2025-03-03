@@ -10,7 +10,7 @@ export type Product = {
   categoryName: string;
   price: number;
   status: string;
-  images: string[];
+  images: string[] | string;
 };
 
 type ProductData = {

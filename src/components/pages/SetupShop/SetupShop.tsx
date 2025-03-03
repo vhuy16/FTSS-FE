@@ -13,6 +13,8 @@ import { log } from "console";
 import Loading from "@components/atom/Loading/Loading";
 import { useEffect, useState } from "react";
 import { getAllProduct } from "@redux/slices/productSlice";
+import { getSetupPackagesShop } from "@redux/slices/setupSlice";
+import SetupListShopPage from "./SetupListShopPage";
 
 // Define breadcrumb type
 type BreadcrumbItem = {
@@ -98,35 +100,23 @@ const DescriptionContent = styled.div`
   }
 `;
 
-const ProductListScreen: React.FC = () => {
+const SetupShop: React.FC = () => {
   const breadcrumbItems: BreadcrumbItem[] = [
     { label: "Trang Chủ", link: "/" },
     { label: "Sản Phẩm", link: "/product" },
   ];
   const dispatch = useAppDispatch();
-  const listProducts = useAppSelector((state) => state.product.data?.items);
-  const isLoading = useAppSelector((state) => state.product.isLoading);
+  const listSetupShop = useAppSelector((state) => state.setupPackage.setupPackages);
+  const isLoading = useAppSelector((state) => state.setupPackage.loading);
   const location = useLocation();
   const k = location.search;
   const queryString = k.split("?")[1];
   const params = new URLSearchParams(queryString);
-  const page = params.get("page") ?? "1";
-  const size = params.get("size") ?? "6";
-  const minPrice = params.get("minPrice");
-  const maxPrice = params.get("maxPrice");
-  const subcategoryName = params.get("subcategoryName");
 
   useEffect(() => {
-    dispatch(
-      getAllProduct({
-        page: parseInt(page as string),
-        size: parseInt(size as string),
-        minPrice: parseInt(minPrice as string),
-        maxPrice: parseInt(maxPrice as string),
-        subcategoryName: subcategoryName as string,
-      })
-    );
-  }, [page, size, minPrice, maxPrice, subcategoryName]);
+    dispatch(getSetupPackagesShop());
+  }, []);
+  console.log("listSetupShop", listSetupShop);
 
   return (
     <main className="page-py-spacing">
@@ -150,8 +140,8 @@ const ProductListScreen: React.FC = () => {
 
             {isLoading ? (
               <Loading></Loading>
-            ) : listProducts && listProducts.length > 0 ? (
-              <ProductListPage products={listProducts} />
+            ) : listSetupShop && listSetupShop.length > 0 ? (
+              <SetupListShopPage setups={listSetupShop} />
             ) : (
               <div>Không có sản phẩm nào</div>
             )}
@@ -198,4 +188,4 @@ const ProductListScreen: React.FC = () => {
   );
 };
 
-export default ProductListScreen;
+export default SetupShop;

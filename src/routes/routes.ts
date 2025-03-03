@@ -20,7 +20,12 @@ import Dashboard from "@components/pages/admin/Dashboad";
 import AdminLayout from "@layouts/admin/AdminLayouts";
 import OrderListScreen from "@components/pages/Order/OrderListScreen";
 import OrderDetailScreen from "@components/pages/Order/OrderDetail";
-import Setup from "@components/pages/Setup/Setup";
+import Setup from "@components/pages/Setup/SetupDetail";
+import SetupList from "@components/pages/SetupList/SetupList";
+import SetupDetail from "@components/pages/Setup/SetupDetail";
+import BuildSetup from "@components/pages/Setup/BuildSetup";
+import SetupShop from "@components/pages/SetupShop/SetupShop";
+import SetupShopDetailScreen from "@components/pages/SetupShopDetail.tsx/SetupShopDetail";
 
 export type RouteType = {
   path: string;
@@ -115,8 +120,28 @@ const publicRoute: RouteType[] = [
     layout: MainLayout,
   },
   {
+    path: "/setup-package/:setupPackageId",
+    component: SetupDetail,
+    layout: MainLayout,
+  },
+  {
     path: "/setup-package",
-    component: Setup,
+    component: SetupList,
+    layout: MainLayout,
+  },
+  {
+    path: "/setup-package-build",
+    component: BuildSetup,
+    layout: MainLayout,
+  },
+  {
+    path: "/setup-package-shop",
+    component: SetupShop,
+    layout: MainLayout,
+  },
+  {
+    path: "/setup-package-shop/:setupPackageId",
+    component: SetupShopDetailScreen,
     layout: MainLayout,
   },
   {

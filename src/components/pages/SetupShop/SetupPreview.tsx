@@ -2,6 +2,7 @@ import styled from "styled-components";
 import { useEffect, useState } from "react";
 import { breakpoints, defaultTheme } from "@styles/themes/default";
 import { Product } from "@redux/slices/productSlice";
+import { SetupPackage } from "@redux/slices/setupSlice";
 
 const ProductPreviewWrapper = styled.div`
   grid-template-columns: 72px auto;
@@ -79,17 +80,17 @@ const ProductPreviewWrapper = styled.div`
     }
   }
 `;
-type ProductPreview = {
-  product: Product;
+type SetupPreview = {
+  setup: SetupPackage;
 };
-const ProductPreview: React.FC<ProductPreview> = ({ product }) => {
+const SetupPreview: React.FC<SetupPreview> = ({ setup }) => {
   const [activePreviewImage, setActivePreviewImage] = useState("");
   console.log("image", activePreviewImage);
 
   useEffect(() => {
-    const imagesArray = Array.isArray(product.images) ? product.images : [product.images];
+    const imagesArray = Array.isArray(setup.images) ? setup.images : [setup.images];
     setActivePreviewImage(imagesArray[0] || ""); // Đảm bảo luôn có giá trị hợp lệ
-  }, [product]);
+  }, [setup]);
   const handlePreviewImageChange = (previewImage: string) => {
     setActivePreviewImage(previewImage);
   };
@@ -97,7 +98,7 @@ const ProductPreview: React.FC<ProductPreview> = ({ product }) => {
   return (
     <ProductPreviewWrapper className="grid items-center">
       <div className="preview-items w-full">
-        {(Array.isArray(product.images) ? product.images : [product.images]).map((previewImage, index) => (
+        {(Array.isArray(setup.images) ? setup.images : [setup.images]).map((previewImage, index) => (
           <div className="preview-item-wrapper" key={index} onClick={() => handlePreviewImageChange(previewImage)}>
             <div className="preview-item">
               <img src={previewImage} alt={`Preview ${index}`} className="object-fit-cover" />
@@ -112,4 +113,4 @@ const ProductPreview: React.FC<ProductPreview> = ({ product }) => {
   );
 };
 
-export default ProductPreview;
+export default SetupPreview;
