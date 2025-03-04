@@ -75,6 +75,7 @@ const FeaturedCardWrapper = styled.div`
     top: 0;
     left: 0;
     max-width: 400px;
+    font-weight: 900;
 
     @media (max-width: ${breakpoints.sm}) {
       padding: 16px;
@@ -124,9 +125,9 @@ const Featured: React.FC = () => {
                 <p className="feat-text-top text-xxl font-semibold">{featured.topText}</p>
                 <h3 className="feat-text-large font-bold">{featured.largeText}</h3>
                 <p className="feat-text-bottom font-light text-xl italic uppercase">{featured.bottomText}</p>
-                <Link to={featured.buttonLink} className="feat-link font-extrabold text-black text-3xl">
+                {/* <Link to={featured.buttonLink} className="feat-link font-extrabold text-black text-3xl">
                   {featured.buttonText}
-                </Link>
+                </Link> */}
               </div>
             </FeaturedCardWrapper>
           ))}

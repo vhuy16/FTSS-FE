@@ -174,6 +174,7 @@ const SetupDescriptionTab = ({ setup }: SetupDescriptionTabProps) => {
                         />
                         <div className="product-info-center">
                           <h2 className="product-name">{product.productName}</h2>
+                          <div className="product-quantity">Số lượng: {product.quantity}</div>
                         </div>
                         <div className="product-info-last">
                           <h2 className="current-price">{currencyFormat(product.price ?? 0)}</h2>

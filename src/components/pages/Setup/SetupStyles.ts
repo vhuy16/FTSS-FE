@@ -129,6 +129,14 @@ export const SetupItem = styled.div`
       font-weight: 700;
       color: rgb(90 98 113 / var(--tw-text-opacity, 1));
     }
+    .product-quantity {
+      display: flex;
+      align-items: center;
+      gap: 17px;
+      margin-left: 2rem;
+      font-size: 15px;
+      font-weight: 700;
+    }
     .product-info-center-btn {
       display: flex;
       align-items: center;
