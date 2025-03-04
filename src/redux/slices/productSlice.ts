@@ -45,7 +45,8 @@ export const getAllProduct = createAsyncThunk(
             let url = baseUrl;
             if (page && size) {
                 url = `${baseUrl}?page=${page}&size=${size}`;
-                if (minPrice && maxPrice) {
+                console.log('khoaa', minPrice, maxPrice);
+                if ((minPrice as number) >= 0 && (maxPrice as number) >= 0) {
                     url = `${baseUrl}?page=${page}&size=${size}&minPrice=${minPrice}&maxPrice=${maxPrice}`;
                     if (subcategoryName) {
                         url = `${baseUrl}?page=${page}&size=${size}&subcategoryName=${subcategoryName}&minPrice=${minPrice}&maxPrice=${maxPrice}`;
@@ -56,6 +57,7 @@ export const getAllProduct = createAsyncThunk(
                     }
                 }
             }
+
             const response = await myAxios.get(url);
             return response.data.data;
         } catch (error: any) {
