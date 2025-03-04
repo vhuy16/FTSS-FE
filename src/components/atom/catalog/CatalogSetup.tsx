@@ -5,30 +5,29 @@ import { Product } from "@redux/slices/productSlice";
 import ProductList from "../products/ProductList";
 import { defaultTheme } from "@styles/themes/default";
 import { useNavigate } from "react-router-dom";
+import { SetupPackage } from "@redux/slices/setupSlice";
+import SetupListShopPage from "@components/pages/SetupShop/SetupListShopPage";
 
 type CatalogProps = {
-  catalogTitle: string;
-  products: Product[];
+  setups: SetupPackage[];
 };
 
-const Catalog: React.FC<CatalogProps> = ({ catalogTitle, products }) => {
+const CatalogSetup: React.FC<CatalogProps> = ({ setups }) => {
   const navigate = useNavigate();
   return (
     <CatalogSection>
       <Container>
-        <CatalogHeader>
-          <Title titleText={catalogTitle} />
-        </CatalogHeader>
-        <ProductList products={products} />
+        <CatalogHeader></CatalogHeader>
+        <SetupListShopPage setups={setups} />
         <ViewAllWrapper>
-          <ViewAllButton onClick={() => navigate("/product")}>Xem tất cả</ViewAllButton>
+          <ViewAllButton onClick={() => navigate("/setup-package-shop")}>Xem tất cả</ViewAllButton>
         </ViewAllWrapper>
       </Container>
     </CatalogSection>
   );
 };
 
-export default Catalog;
+export default CatalogSetup;
 
 const CatalogSection = styled(Section)`
   padding: 50px 0;
@@ -63,7 +62,7 @@ const ViewAllWrapper = styled.div`
 const ViewAllButton = styled.button`
   padding: 16px 54px;
   border: 1px solid #10ac97;
-  background: transparent;
+  background: #10ac97;
   border-radius: 63px;
   font-size: 13px;
   font-weight: 500;
@@ -71,7 +70,7 @@ const ViewAllButton = styled.button`
   transition: ${defaultTheme.default_transition};
 
   &:hover {
-    background: #10ac97;
-    color: #fff;
+    color: #10ac97;
+    background: #fff;
   }
 `;

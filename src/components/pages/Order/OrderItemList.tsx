@@ -5,6 +5,7 @@ import { breakpoints, defaultTheme } from "@styles/themes/default";
 import styled from "styled-components";
 import { BaseBtnGreen, BaseLinkOutlineGreen } from "@styles/button";
 import { useNavigate } from "react-router-dom";
+import { formatDate } from "@ultils/helper";
 
 interface OrderItemListProps {
   orders: Order[]; // Changed to an array of Order
@@ -101,10 +102,6 @@ const OrderItemListWrapper = styled.div`
 const OrderItemList: React.FC<OrderItemListProps> = ({ orders }) => {
   const navigate = useNavigate();
   console.log("or", orders);
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric" });
-  };
   return (
     <OrderItemListWrapper>
       {orders?.map((order) => (
@@ -140,7 +137,7 @@ const OrderItemList: React.FC<OrderItemListProps> = ({ orders }) => {
               </div>
               <div className="order-info-item">
                 <span className="text-gray font-semibold">Phương thức thanh toán:</span>
-                <span className="text-silver font-semibold">{order.shipCost}</span>
+                <span className="text-silver font-semibold">{order.payment.paymentMethod}</span>
               </div>
             </div>
           </div>

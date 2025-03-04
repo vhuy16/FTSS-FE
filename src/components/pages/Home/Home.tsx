@@ -4,6 +4,7 @@ import Category from "@components/atom/category/Category";
 import Featured from "@components/atom/featured/Featured";
 import Feedback from "@components/atom/feedback/Feedback";
 import Hero from "@components/atom/hero/Hero";
+import Loading from "@components/atom/Loading/Loading";
 import { useAppDispatch, useAppSelector } from "@redux/hook";
 import { getAllProduct } from "@redux/slices/productSlice";
 import { getUserProfile } from "@redux/slices/userSlice";
@@ -27,14 +28,14 @@ function Home() {
         {listProducts.length > 0 ? (
           <Catalog catalogTitle={"Các sản phẩm mới"} products={listProducts.slice(-4)} />
         ) : (
-          <>Loading</>
+          <Loading></Loading>
         )}
         <HorizontalLine />
 
         {listProducts.length > 0 ? (
-          <Catalog catalogTitle={"Các Sản Phẩm Bán Chạy"} products={listProducts.slice(2, 6)} />
+          <Catalog catalogTitle={"Các sản phẩm bán chạy"} products={listProducts.slice(2, 6)} />
         ) : (
-          <>Loading</>
+          <Loading></Loading>
         )}
         <HorizontalLine />
         <Brands />

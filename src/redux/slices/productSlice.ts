@@ -10,7 +10,7 @@ export type Product = {
     categoryName: string;
     price: number;
     status: string;
-    images: string[];
+    images: string[] | string;
 };
 
 type ProductData = {
@@ -45,7 +45,6 @@ export const getAllProduct = createAsyncThunk(
             let url = baseUrl;
             if (page && size) {
                 url = `${baseUrl}?page=${page}&size=${size}`;
-                console.log('khoaa', minPrice, maxPrice);
                 if ((minPrice as number) >= 0 && (maxPrice as number) >= 0) {
                     url = `${baseUrl}?page=${page}&size=${size}&minPrice=${minPrice}&maxPrice=${maxPrice}`;
                     if (subcategoryName) {

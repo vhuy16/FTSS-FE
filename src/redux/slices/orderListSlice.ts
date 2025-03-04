@@ -16,6 +16,10 @@ export type Order = {
     phoneNumber: string;
   };
   orderDetails: OrderDetail[];
+  payment: {
+    paymentStatus: string;
+    paymentMethod: string;
+  };
 };
 export interface OrderDetail {
   productName: string;

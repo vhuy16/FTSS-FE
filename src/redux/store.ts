@@ -14,6 +14,8 @@ import userProfileReducer from "./slices/userSlice";
 import orderReducer from "./slices/orderSlice";
 import shipmentReducer from "./slices/shipmentSlice";
 import orderListReducer from "./slices/orderListSlice";
+import setupPackageReducer from "./slices/setupSlice";
+import setupPackageDetailReducer from "./slices/setupDetailSlice";
 export const store = configureStore({
   reducer: {
     address: addressReducer,
@@ -31,6 +33,8 @@ export const store = configureStore({
     order: orderReducer,
     shipment: shipmentReducer,
     orderList: orderListReducer,
+    setupPackage: setupPackageReducer,
+    setupPackageDetail: setupPackageDetailReducer,
   },
 });
 
