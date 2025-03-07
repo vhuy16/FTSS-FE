@@ -15,12 +15,18 @@ type UserResponse = {
     email: string;
     phoneNumber: string;
 };
+type Payment = {
+    paymentMethod: string | null;
+    paymentStatus: string | null;
+};
 
 type OrderDetail = {
     productName: string;
     price: number;
     quantity: number;
     linkImage: string;
+    categoryName: string;
+    subCategoryName: string;
 };
 
 type Order = {
@@ -36,10 +42,12 @@ type Order = {
     discount: number;
     userResponse: UserResponse;
     orderDetails: OrderDetail[];
+    payment: Payment;
 };
 type initialStateProduct = {
     url: string;
     listOrder: Order[];
+    order: Order | null;
     isLoading: boolean;
     isError: boolean;
 };
@@ -61,10 +69,20 @@ export const getAllOrder = createAsyncThunk('order/getAllOrder', async (_, { rej
         return rejectWithValue(error.response?.data?.message || 'Lấy đơn hàng thất bại');
     }
 });
+export const getOrderById = createAsyncThunk('order/getOrderById', async (id: string, { rejectWithValue }) => {
+    try {
+        const response = await myAxios.get(`/order/${id}`);
+        return response.data.data;
+    } catch (error: any) {
+        console.log(error);
+        return rejectWithValue(error.response?.data?.message || 'Lấy đơn hàng theo id thất bại');
+    }
+});
 
 const initialState: initialStateProduct = {
     url: '',
     listOrder: [],
+    order: null,
     isLoading: false,
     isError: false,
 };
@@ -99,6 +117,20 @@ const orderSlice = createSlice({
                 state.listOrder = action.payload;
             })
             .addCase(getAllOrder.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+            });
+        builder
+            .addCase(getOrderById.pending, (state) => {
+                state.isLoading = true;
+                state.isError = false;
+            })
+            .addCase(getOrderById.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isError = false;
+                state.order = action.payload;
+            })
+            .addCase(getOrderById.rejected, (state, action) => {
                 state.isLoading = false;
                 state.isError = true;
             });

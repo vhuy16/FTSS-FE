@@ -66,6 +66,7 @@ export default function AddProductModal({ isModalAddOpen, setIsModalAddOpen }: M
             formData.append('Price', data.price.toString());
             formData.append('Quantity', data.quantity.toString());
             formData.append('SubCategoryId', data.subCategoryId);
+            formData.append('Size', '3x4x5');
 
             for (let i = 0; i < data.images.length; i++) {
                 formData.append('ImageLink', data.images[i]);

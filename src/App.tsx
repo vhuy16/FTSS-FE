@@ -19,7 +19,8 @@ function AppContent() {
         location.pathname.startsWith('/dashboard') ||
         location.pathname.startsWith('/listUser') ||
         location.pathname.startsWith('/listOrder') ||
-        location.pathname.startsWith('/listProduct');
+        location.pathname.startsWith('/listProduct') ||
+        location.pathname.startsWith('/listSetup');
     return (
         <div className="App">
             {!isAdminRoute && <GlobalStyles />}

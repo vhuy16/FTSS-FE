@@ -122,7 +122,7 @@ export default function ListUserTable() {
             {listUser && (
                 <Box
                     sx={{
-                        height: 400,
+                        minHeight: 400,
                         width: '100%',
                         overflow: 'visible',
                         position: 'relative' /* Đảm bảo các phần tử con có thể thoát ra */,

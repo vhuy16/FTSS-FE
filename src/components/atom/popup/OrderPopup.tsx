@@ -12,16 +12,19 @@ import ConfirmDelete from '../popup_modal/ConfirmDelete';
 import 'flowbite';
 import ConfirmEditRole from '../popup_modal/ConfirmEditRole';
 import { UserProfile } from '@redux/slices/userSlice';
+import { Order } from '@redux/slices/orderListSlice';
+import { useNavigate } from 'react-router-dom';
 
 const ITEM_HEIGHT = 48;
-type UserPopupProps = {
-    user: UserProfile;
+type OrderPopupProps = {
+    order: Order;
 };
-export default function OrderPopup({ user }: UserPopupProps) {
+export default function OrderPopup({ order }: OrderPopupProps) {
     const [anchorEl1, setAnchorEl1] = React.useState<null | HTMLElement>(null);
     const [isModalOpenBan, setIsModalOpenBan] = React.useState(false);
     const [isModalOpenEditRole, setIsModalOpenEditRole] = React.useState(false);
     const [newRole, setNewRole] = React.useState('');
+    const navigate = useNavigate();
     const open1 = Boolean(anchorEl1);
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl1(event.currentTarget);
@@ -71,8 +74,8 @@ export default function OrderPopup({ user }: UserPopupProps) {
             >
                 <MenuItem
                     onClick={() => {
+                        navigate(`/listOrder/${order.id}`);
                         handleClose();
-                        setIsModalOpenBan(true);
                     }}
                 >
                     <ListItemIcon>

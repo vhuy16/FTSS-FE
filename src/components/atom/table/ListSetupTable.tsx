@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { DownloadIcon } from '@icons/admin_icon';
+import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
 import Button from '@components/ui/button/Button';
 import { Box, styled } from '@mui/material';
-import { DataGrid, GridCellParams, GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useAppDispatch, useAppSelector } from '@redux/hook';
 import { getAllUser } from '@redux/slices/userSlice';
 import UserPopup from '../popup/UserPopup';
@@ -10,9 +11,12 @@ import { getAllOrder } from '@redux/slices/orderSlice';
 import { currencyFormat } from '@ultils/helper';
 import Badge from '@components/ui/badge/Badge';
 import OrderPopup from '../popup/OrderPopup';
-import { useNavigate } from 'react-router-dom';
-import { Order } from '@redux/slices/orderListSlice';
-import { CSVLink } from 'react-csv';
+import { getAllProductForAdmin, Product } from '@redux/slices/productSlice';
+import ProductPopup from '../popup/ProductPopup';
+import AddProductModal from '../modal/AddProductModal';
+import { getSetupPackagesShop } from '@redux/slices/setupSlice';
+import AddSetupModal from '../modal/AddSetupModal';
+import SetupPopup from '../popup/SetupPopup';
 
 const paginationModel = { page: 0, pageSize: 5 };
 const StyledDataGrid = styled(DataGrid)((theme) => ({
@@ -25,100 +29,66 @@ const StyledDataGrid = styled(DataGrid)((theme) => ({
         color: 'white',
     },
 }));
-export default function ListOrderTable() {
-    const listOrder = useAppSelector((state) => state.order.listOrder);
-    const [selectedRow, setSelectedRow] = useState<any[]>([]);
+export default function ListSetupTable() {
+    const listSetup = useAppSelector((state) => state.setupPackage.setupPackages);
+    const [isModalAddOpen, setIsModalAddOpen] = useState(false);
     const dispatch = useAppDispatch();
     useEffect(() => {
-        dispatch(getAllOrder());
+        dispatch(getSetupPackagesShop());
     }, []);
     const columns: GridColDef[] = [
         { field: 'stt', headerName: 'STT', width: 50, headerClassName: 'super-app-theme--header' },
-
+        { field: 'id', headerName: 'Mã thiết kế', width: 350, headerClassName: 'super-app-theme--header' },
         {
-            field: 'id',
-            headerName: 'Mã đơn hàng',
-            width: 320,
+            field: 'setUp',
+            headerName: 'Mẫu thiết kế',
+            width: 300,
             headerClassName: 'super-app-theme--header',
             renderCell: (params) => (
-                <span onClick={(event) => event.stopPropagation()} style={{ cursor: 'pointer', userSelect: 'none' }}>
-                    {params.value}
-                </span>
+                <div className="flex items-center gap-3 h-full">
+                    <div className="w-10 h-10 overflow-hidden rounded-[10px]">
+                        <img src={params.row.images} alt={params.row.setupName} />
+                    </div>
+                    <div>
+                        <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
+                            {params.row.setupName}
+                        </span>
+                        <span className="block text-gray-500 text-theme-xs dark:text-gray-400">{params.row.size}</span>
+                    </div>
+                </div>
             ),
         },
         {
-            field: 'customerName',
-            headerName: 'Tên khách hàng',
+            field: 'price',
+            headerName: 'Giá',
             width: 150,
-            headerClassName: 'super-app-theme--header',
-            renderCell: (params) => params.row.userResponse.name,
-        },
-        {
-            field: 'createDate',
-            headerName: 'Ngày tạo',
-            width: 120,
-            headerClassName: 'super-app-theme--header',
-            renderCell: (params) => params.row.createDate.split('T')[0],
-        },
-        {
-            field: 'paymentStatus',
-            headerName: 'Trạng thái thanh toán',
-            width: 200,
-            headerClassName: 'super-app-theme--header',
-            renderCell: (params) => (
-                <Badge
-                    size="sm"
-                    color={
-                        params.row.payment.paymentStatus === 'Processing'
-                            ? 'warning'
-                            : params.row.payment.paymentStatus === 'Completed'
-                            ? 'success'
-                            : 'error'
-                    }
-                >
-                    {params.row.payment.paymentStatus === 'Processing'
-                        ? 'Đang chờ thanh toán'
-                        : params.row.payment.paymentStatus === 'Completed'
-                        ? 'Đã thanh toán'
-                        : 'Đã hủy'}
-                </Badge>
-            ),
-        },
-        {
-            field: 'totalPrice',
-            headerName: 'Tổng tiền',
-            width: 120,
             headerClassName: 'super-app-theme--header',
             renderCell: (params) => currencyFormat(params.row.totalPrice),
         },
         {
-            field: 'paymentMethod',
-            headerName: 'Phương thức thanh toán',
-            width: 200,
-            headerClassName: 'super-app-theme--header',
-            renderCell: (params) => params.row.payment.paymentMethod,
-        },
-        {
-            field: 'status',
-            headerName: 'Trạng thái đơn hàng',
+            field: 'products',
+            headerName: 'Thành phần',
             width: 200,
             headerClassName: 'super-app-theme--header',
             renderCell: (params) => (
-                <Badge
-                    size="sm"
-                    color={
-                        params.row.status === 'PENDING_DELIVERY'
-                            ? 'success'
-                            : params.row.status === 'PROCESSING'
-                            ? 'warning'
-                            : 'error'
-                    }
-                >
-                    {params.row.status === 'PROCESSING'
-                        ? 'Đang xử lý'
-                        : params.row.status === 'PENDING_DELIVERY'
-                        ? 'Đang giao'
-                        : 'Hoàn tất'}
+                <div className="flex items-center -space-x-2 h-full">
+                    {params.row.products.map((product: Product, index: number) => (
+                        <div className="w-10 h-10 overflow-hidden border-2 border-white rounded-[10px] dark:border-gray-900">
+                            <img key={product.id} src={product.images as string} alt={`products ${index + 1}`} />
+                        </div>
+                    ))}
+                </div>
+            ),
+        },
+
+        {
+            field: 'status',
+            headerName: 'Trạng thái',
+            width: 200,
+            headerClassName: 'super-app-theme--header',
+            renderCell: (params) => (
+                <Badge size="sm" color={params.row.isDelete === false ? 'success' : 'error'}>
+                    {params.row.isDelete === false ? 'Đang bán' : 'Ngừng bán'}
                 </Badge>
             ),
         },
@@ -132,25 +102,15 @@ export default function ListOrderTable() {
             headerAlign: 'right',
             sortable: false,
             renderCell: (params) => (
-                <Box
-                    sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}
-                    onClick={(event) => event.stopPropagation()}
-                >
-                    <OrderPopup order={params.row} />
+                <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+                    <SetupPopup setup={params.row} />
                 </Box>
             ),
         },
     ];
-    const navigate = useNavigate();
-    const handleCellDoubleClick = (params: GridCellParams) => {
-        if (params.field === 'id') {
-            navigate(`/listOrder/${params.row.id}`);
-        }
-    };
-    const rows = listOrder?.map((order, index) => {
-        return { ...order, stt: index + 1 };
+    const rows = listSetup?.map((setup, index) => {
+        return { ...setup, stt: index + 1, id: setup.setupPackageId };
     });
-
     return (
         <div>
             <div className="flex justify-between mb-4">
@@ -178,14 +138,19 @@ export default function ListOrderTable() {
                         className="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-200 bg-transparent py-2.5 pl-12 pr-14 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-800 dark:bg-gray-900 dark:bg-white/[0.03] dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 xl:w-[430px]"
                     />
                 </div>
-                <Button size="ssm" variant="primary" startIcon={<DownloadIcon />}>
-                    <CSVLink data={selectedRow} filename="order">
-                        Tải về
-                    </CSVLink>
+                <Button
+                    size="ssm"
+                    variant="primary"
+                    startIcon={<AddCircleOutlineOutlinedIcon />}
+                    onClick={() => {
+                        setIsModalAddOpen(true);
+                    }}
+                >
+                    Thêm mới
                 </Button>
             </div>
 
-            {listOrder && (
+            {listSetup && (
                 <Box
                     sx={{
                         minHeight: 400,
@@ -195,9 +160,9 @@ export default function ListOrderTable() {
                     }}
                 >
                     <StyledDataGrid
+                        // autoHeight
                         rows={rows}
                         columns={columns}
-                        onCellDoubleClick={handleCellDoubleClick}
                         initialState={{
                             pagination: {
                                 paginationModel: {
@@ -224,12 +189,6 @@ export default function ListOrderTable() {
                                 position: 'relative',
                                 index: '0',
                             },
-                            '& .MuiDataGrid-columnHeaderTitleContainer': {
-                                backgroundColor: '#2d3748',
-                                color: '#fff',
-                                position: 'relative',
-                                index: '0',
-                            },
                             '& .MuiDataGrid-columnHeaderTitle': {
                                 fontWeight: 'bold',
                             },
@@ -243,28 +202,13 @@ export default function ListOrderTable() {
                                 outline: 'none', // Bỏ viền khi đang focus trong ô
                             },
                         }}
-                        // disableRowSelectionOnClick
+                        disableRowSelectionOnClick
                         disableColumnMenu
                         disableColumnFilter
-                        checkboxSelection
-                        onRowSelectionModelChange={(row) => {
-                            const orders = listOrder.filter((order) => row.includes(order.id as string));
-                            const dataCSV = orders.map((order) => ({
-                                'Mã đơn hàng': order.id,
-                                'Ngày tạo': order.createDate,
-                                'Tên khách hàng': order.userResponse.name,
-                                'Số điện thoại': order.userResponse.phoneNumber,
-                                'Trạng thái đơn hàng': order.status,
-                                'Trạng thái thanh toán': order.payment.paymentStatus,
-                                'Phương thức thanh toán': order.payment.paymentMethod,
-                                'Địa chỉ giao hàng': order.address,
-                                'Tổng tiền': order.totalPrice,
-                            }));
-                            setSelectedRow(dataCSV);
-                        }}
                     />
                 </Box>
             )}
+            <AddSetupModal isModalAddOpen={isModalAddOpen} setIsModalAddOpen={setIsModalAddOpen}></AddSetupModal>
         </div>
     );
 }
