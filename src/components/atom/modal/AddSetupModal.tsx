@@ -92,7 +92,7 @@ export default function AddSetupModal({ isModalAddOpen, setIsModalAddOpen }: Mod
 
             try {
                 const res = await dispatch(createSetupPackage(formData)).unwrap();
-                if (res == 201) {
+                if (res.status == 201) {
                     setIsModalAddOpen(false);
                     toast.success('Thêm mẫu thiết kế bể cá thành công');
                 }
