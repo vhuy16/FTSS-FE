@@ -9,19 +9,17 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import RemoveRedEyeOutlinedIcon from '@mui/icons-material/RemoveRedEyeOutlined';
 import UpdateOutlinedIcon from '@mui/icons-material/UpdateOutlined';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
-import Popover from '@mui/material/Popover';
-import ConfirmDelete from '../popup_modal/ConfirmDelete';
 import 'flowbite';
-import { Product } from '@redux/slices/productSlice';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
-import ConfirmDeleteProduct from '../popup_modal/ConfirmDeleteProduct';
-import ConfirmActivateProduct from '../popup_modal/ConfirmActivateProduct';
+import { SetupPackage } from '@redux/slices/setupSlice';
+import ConfirmDeleteSetup from '../popup_modal/ConfirmDeleteSetup';
+import ConfirmActivateSetup from '../popup_modal/ConfirmActivateSetup';
 
 const ITEM_HEIGHT = 48;
-type ProductPopupProps = {
-    product: Product;
+type SetupPopupProps = {
+    setup: SetupPackage;
 };
-export default function ProductPopup({ product }: ProductPopupProps) {
+export default function SetupPopup({ setup }: SetupPopupProps) {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const [isModalOpenDelete, setIsModalOpenDelete] = React.useState(false);
     const [isModalOpenActivate, setIsModalOpenActivate] = React.useState(false);
@@ -84,7 +82,7 @@ export default function ProductPopup({ product }: ProductPopupProps) {
                     </ListItemIcon>
                     <ListItemText>Chỉnh sửa</ListItemText>
                 </MenuItem>
-                {product && product.status === 'Unavailable' ? (
+                {setup && setup.isDelete ? (
                     <MenuItem
                         onClick={() => {
                             handleClose();
@@ -110,15 +108,15 @@ export default function ProductPopup({ product }: ProductPopupProps) {
                     </MenuItem>
                 )}
             </Menu>
-            <ConfirmDeleteProduct
+            <ConfirmDeleteSetup
                 isModalOpenDelete={isModalOpenDelete}
                 setIsModalOpenDelete={setIsModalOpenDelete}
-                product={product}
+                setup={setup}
             />
-            <ConfirmActivateProduct
+            <ConfirmActivateSetup
                 isModalOpenActivate={isModalOpenActivate}
                 setIsModalOpenActivate={setIsModalOpenActivate}
-                product={product}
+                setup={setup}
             />
         </div>
     );
