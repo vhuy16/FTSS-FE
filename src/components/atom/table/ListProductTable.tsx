@@ -11,7 +11,7 @@ import { getAllOrder } from '@redux/slices/orderSlice';
 import { currencyFormat } from '@ultils/helper';
 import Badge from '@components/ui/badge/Badge';
 import OrderPopup from '../popup/OrderPopup';
-import { getAllProductForAdmin } from '@redux/slices/productSlice';
+import { getAllProductForAdmin, getProductByNameForAdmin } from '@redux/slices/productSlice';
 import ProductPopup from '../popup/ProductPopup';
 import AddProductModal from '../modal/AddProductModal';
 
@@ -29,6 +29,7 @@ const StyledDataGrid = styled(DataGrid)((theme) => ({
 export default function ListProductTable() {
     const listProduct = useAppSelector((state) => state.product.listProductForAdmin);
     const [isModalAddOpen, setIsModalAddOpen] = useState(false);
+    const [products, setProducts] = useState<any[]>([]);
     const dispatch = useAppDispatch();
     useEffect(() => {
         dispatch(getAllProductForAdmin());
@@ -94,7 +95,7 @@ export default function ListProductTable() {
             sortable: false,
             renderCell: (params) => (
                 <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
-                    <ProductPopup user={params.row} />
+                    <ProductPopup product={params.row} />
                 </Box>
             ),
         },
@@ -127,6 +128,13 @@ export default function ListProductTable() {
                         type="text"
                         placeholder="Tìm kiếm..."
                         className="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-200 bg-transparent py-2.5 pl-12 pr-14 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-800 dark:bg-gray-900 dark:bg-white/[0.03] dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 xl:w-[430px]"
+                        onChange={(e) => {
+                            if (e.target.value) {
+                                dispatch(getProductByNameForAdmin(e.target.value));
+                            } else {
+                                dispatch(getAllProductForAdmin());
+                            }
+                        }}
                     />
                 </div>
                 <Button

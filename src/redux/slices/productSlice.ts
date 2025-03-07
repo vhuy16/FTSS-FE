@@ -20,11 +20,19 @@ type ProductData = {
     totalPages: number;
     items: Product[];
 };
+type ListCateAndProduct = {
+    categoryName: string;
+    products: Product[];
+};
 type initialStateProduct = {
     data: ProductData | null;
     listProductForAdmin: Product[];
+    listCateAndProduct: ListCateAndProduct[];
     isLoading: boolean;
+    isLoadingGetCateWithProduct: boolean;
     isLoadingAdd: boolean;
+    isLoadingDelete: boolean;
+    isLoadingEnable: boolean;
     isError: boolean;
 };
 
@@ -91,6 +99,30 @@ export const getAllProductForAdmin = createAsyncThunk(
         }
     },
 );
+export const getProductByNameForAdmin = createAsyncThunk(
+    'product/getProductByNameForAdmin',
+    async (productName: string, { rejectWithValue }) => {
+        try {
+            const response = await myAxios.get(`/product?page=1&size=100&productName=${productName}`);
+            return response.data.data.items;
+        } catch (error: any) {
+            console.log(error);
+            return rejectWithValue(error.response?.data?.message || 'Lấy sản phẩm thất bại');
+        }
+    },
+);
+export const getAllCategoryWithProduct = createAsyncThunk(
+    'product/getAllCategoryWithProduct',
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await myAxios.get(`/product/subcategory?page=1&size=100`);
+            return response.data.data.categories;
+        } catch (error: any) {
+            console.log(error);
+            return rejectWithValue(error.response?.data?.message || 'Lấy sản phẩm thất bại');
+        }
+    },
+);
 export const addProducts = createAsyncThunk('product/addProducts', async (formData: FormData, { dispatch }) => {
     try {
         const response = await myAxios.post(`/product`, formData, {
@@ -104,12 +136,42 @@ export const addProducts = createAsyncThunk('product/addProducts', async (formDa
         console.log(error);
     }
 });
+export const deleteProduct = createAsyncThunk(
+    'product/deleteProduct',
+    async (id: string, { rejectWithValue, dispatch }) => {
+        try {
+            const response = await myAxios.delete(`/product/${id}`);
+            await dispatch(getAllProductForAdmin());
+            return response.data;
+        } catch (error: any) {
+            console.log(error);
+            return rejectWithValue(error.response?.data?.message || 'Xóa phẩm thất bại');
+        }
+    },
+);
+export const enableProduct = createAsyncThunk(
+    'product/enableProduct',
+    async (id: string, { rejectWithValue, dispatch }) => {
+        try {
+            const response = await myAxios.put(`/product/enable-product/${id}`);
+            await dispatch(getAllProductForAdmin());
+            return response.data;
+        } catch (error: any) {
+            console.log(error);
+            return rejectWithValue(error.response?.data?.message || 'Kích hoạt thất bại');
+        }
+    },
+);
 
 const initialState: initialStateProduct = {
     data: null,
     listProductForAdmin: [],
+    listCateAndProduct: [],
     isLoading: false,
+    isLoadingGetCateWithProduct: false,
     isLoadingAdd: false,
+    isLoadingDelete: false,
+    isLoadingEnable: false,
     isError: false,
 };
 
@@ -161,6 +223,20 @@ const productSlice = createSlice({
                 state.isError = true;
             });
         builder
+            .addCase(getProductByNameForAdmin.pending, (state) => {
+                state.isLoading = true;
+                state.isError = false;
+            })
+            .addCase(getProductByNameForAdmin.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isError = false;
+                state.listProductForAdmin = action.payload;
+            })
+            .addCase(getProductByNameForAdmin.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+            });
+        builder
             .addCase(addProducts.pending, (state) => {
                 state.isLoadingAdd = true;
                 state.isError = false;
@@ -171,6 +247,46 @@ const productSlice = createSlice({
             })
             .addCase(addProducts.rejected, (state, action) => {
                 state.isLoadingAdd = false;
+                state.isError = true;
+            });
+        builder
+            .addCase(deleteProduct.pending, (state) => {
+                state.isLoadingDelete = true;
+                state.isError = false;
+            })
+            .addCase(deleteProduct.fulfilled, (state, action) => {
+                state.isLoadingDelete = false;
+                state.isError = false;
+            })
+            .addCase(deleteProduct.rejected, (state, action) => {
+                state.isLoadingDelete = false;
+                state.isError = true;
+            });
+        builder
+            .addCase(enableProduct.pending, (state) => {
+                state.isLoadingEnable = true;
+                state.isError = false;
+            })
+            .addCase(enableProduct.fulfilled, (state, action) => {
+                state.isLoadingEnable = false;
+                state.isError = false;
+            })
+            .addCase(enableProduct.rejected, (state, action) => {
+                state.isLoadingEnable = false;
+                state.isError = true;
+            });
+        builder
+            .addCase(getAllCategoryWithProduct.pending, (state) => {
+                state.isLoadingGetCateWithProduct = true;
+                state.isError = false;
+            })
+            .addCase(getAllCategoryWithProduct.fulfilled, (state, action) => {
+                state.isLoadingGetCateWithProduct = false;
+                state.isError = false;
+                state.listCateAndProduct = action.payload;
+            })
+            .addCase(getAllCategoryWithProduct.rejected, (state, action) => {
+                state.isLoadingGetCateWithProduct = false;
                 state.isError = true;
             });
     },
