@@ -43,15 +43,30 @@ export const addItem = createAsyncThunk(
     }
   }
 );
+
+export const addSetup = createAsyncThunk(
+  "cart/cart/addSetUpToCart",
+  async (setupPackageId: string | undefined, { rejectWithValue }) => {
+    try {
+      const response = await myAxios.post(
+        "https://ftss.id.vn/api/v1/cart/setup-package",
+        JSON.stringify(setupPackageId),
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      return response.data.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || "Failed to update item quantity");
+    }
+  }
+);
 export const updateItemQuantity = createAsyncThunk(
   "cart/updateItemQuantity",
   async ({ cartItemId, quantity }: { cartItemId: string; quantity: number }, { rejectWithValue }) => {
     try {
-      const response = await myAxios.put(
-        `https://ftss.id.vn/api/v1/cartitem/${cartItemId}`, // Đường dẫn API để cập nhật sản phẩm trong giỏ
-        { quantity }
-      );
-      return response.data.data; // Trả về sản phẩm đã cập nhật
+      const response = await myAxios.put(`https://ftss.id.vn/api/v1/cartitem/${cartItemId}`, { quantity });
+      return response.data.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || "Failed to update item quantity");
     }
@@ -118,6 +133,19 @@ const cartSlice = createSlice({
         state.loading = false;
       })
       .addCase(addItem.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      // add setup
+      .addCase(addSetup.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(addSetup.fulfilled, (state, action) => {
+        state.items = action.payload; // Cập nhật danh sách sản phẩm
+        state.loading = false;
+      })
+      .addCase(addSetup.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       })

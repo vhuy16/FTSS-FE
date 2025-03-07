@@ -70,7 +70,7 @@ const SetupItem: React.FC<ProductItemProps> = ({ setup }) => {
             {setup.size}
           </span>
           <span className="text-outerspace font-bold text-red" style={{ color: "red" }}>
-            {currencyFormat(setup.totalPrice)}
+            {currencyFormat(setup.totalPrice ?? 0)}
           </span>
         </div>
       </div>

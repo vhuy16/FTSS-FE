@@ -134,14 +134,11 @@ const CartItemCB = ({ cartItem }: CartItemProps) => {
         </div>
       </td>
       <td>
-        <span className="cart-tbl-shipping uppercase text-gray-150 font-bold">₫0</span>
-      </td>
-      <td>
         <span className="text-lg font-bold text-outerspace"> {currencyFormat(cartItem.price || 0)}</span>
       </td>
       <td>
         <div
-          className="cart-tbl-actions flex justify-center"
+          className="cart-tbl-actions flex "
           onClick={() => {
             dispatch(removeItem({ cartItemId: cartItem.cartItemId }));
           }}

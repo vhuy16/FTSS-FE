@@ -14,6 +14,8 @@ import styled from "styled-components";
 import { ModalBox, ModalContent, ModalHeader, ModalOverlay } from "../Setup/SetupStyles";
 import ReactDOM from "react-dom";
 import { toast } from "react-toastify";
+import beca from "@images/beca.jpg";
+import Loading from "@components/atom/Loading/Loading";
 const WishListScreenWrapper = styled.main`
   .wishlist {
     gap: 20px;
@@ -178,6 +180,7 @@ const SetupList = () => {
   const setupData = useAppSelector((state) => state.setupPackage.setupPackages);
   const [isModalOpenDelete, setisModalOpenDelete] = useState(false);
   const [selectedSetupId, setSelectedSetupId] = useState<string | null>(null);
+  const isLoadingSetup = useAppSelector((state) => state.setupPackage.loading);
   const openModalDelete = (setupPackageId: string) => {
     setSelectedSetupId(setupPackageId);
     setisModalOpenDelete(true);
@@ -236,9 +239,9 @@ const SetupList = () => {
                       >
                         <i className="bi bi-x-lg"></i>
                       </button>
-                      {/* <div className="wish-item-img-wrapper">
-                        <img src={wishlist.imgSource} className="object-fit-cover" alt="" />
-                      </div> */}
+                      <div className="wish-item-img-wrapper">
+                        <img src={beca} className="object-fit-cover" alt="" />
+                      </div>
                     </div>
                     <div className="wish-item-info flex justify-between">
                       <div className="wish-item-info-l flex flex-col">
@@ -292,7 +295,7 @@ const SetupList = () => {
                     onClick={handleDeleteSetup}
                     className="w-1/2 py-2 bg-red-600 text-white font-semibold rounded-lg"
                   >
-                    Có
+                    {isLoadingSetup ? <Loading /> : <>Có</>}
                   </button>
                 </div>
               </ModalContent>
