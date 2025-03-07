@@ -51,7 +51,7 @@ export const SetupItemsList = styled.div`
   display: flex;
   flex-direction: column;
   gap: 12px;
-  background-color: #fff;
+  background-color: #f2f4f6; /* Đổi nền xám chỉ bao quanh danh sách */
   border: 1px solid #dee2e6 !important;
   border-radius: 0.3rem !important;
   padding: 1rem;
@@ -59,19 +59,43 @@ export const SetupItemsList = styled.div`
 `;
 
 export const SetupItem = styled.div`
-  background-color: #f2f4f6;
-  border-radius: 4px;
+  background-color: #fff;
+  border-radius: 8px;
   padding: 16px;
   display: flex;
-  flex-direction: column; /* Chia theo chiều dọc */
+  flex-direction: column;
   gap: 12px;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Tạo hiệu ứng tách biệt */
 
-  .setup-item-content,
+  .change-btn {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
+  .setup-item-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
   .product-info {
     display: flex;
     align-items: center;
     justify-content: space-between;
     width: 100%;
+    padding: 19px;
+    background-color: #f2f4f6;
+    border-radius: 8px;
+    gap: 16px;
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.3);
+    margin: 18px 0;
+  }
+
+  .product-item {
+    background-color: #fff;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 20px; /* Khoảng cách giữa các sản phẩm */
   }
 
   .setup-item-left {
@@ -87,6 +111,7 @@ export const SetupItem = styled.div`
     border-radius: 4px;
     background-color: #ccc;
   }
+
   .product-image {
     width: 100px;
     height: 100px;
@@ -118,17 +143,19 @@ export const SetupItem = styled.div`
   }
 
   .product-info-center {
-    flex: 1; /* Giúp căn chỉnh khoảng cách giữa ảnh, tên, giá */
+    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     gap: 15px;
+
     .product-name {
       margin-left: 2rem;
       font-size: 20px;
       font-weight: 700;
       color: rgb(90 98 113 / var(--tw-text-opacity, 1));
     }
+
     .product-quantity {
       display: flex;
       align-items: center;
@@ -137,10 +164,12 @@ export const SetupItem = styled.div`
       font-size: 15px;
       font-weight: 700;
     }
+
     .product-info-center-btn {
       display: flex;
       align-items: center;
       gap: 17px;
+
       .delete-btn {
         text-decoration-line: underline;
         color: #093fda;
@@ -149,17 +178,20 @@ export const SetupItem = styled.div`
       }
     }
   }
+
   .product-info-last {
-    flex: 1; /* Giúp căn chỉnh khoảng cách giữa ảnh, tên, giá */
+    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 45px;
+    gap: 10px;
+
     .current-price {
       font-size: 20px;
       color: red;
       font-weight: bold;
     }
+
     .change-btn {
       color: #093fda;
       cursor: pointer;
@@ -170,6 +202,7 @@ export const SetupItem = styled.div`
     }
   }
 `;
+
 export const QuantityWrapper = styled.div`
   display: inline-flex;
   align-items: center;
@@ -273,7 +306,7 @@ export const ModalBox = styled.div`
   background: #fff;
   padding: 20px;
   border-radius: 8px;
-  width: 750px;
+  width: 800px;
   max-width: 100%;
 `;
 
@@ -310,8 +343,8 @@ export const ProductList = styled.div`
 `;
 
 export const ProductCard = styled.div`
-  width: 200px;
-  height: 270px;
+  width: 220px;
+  height: 100%;
   background: #fff;
   border: 1px solid #ddd;
   border-radius: 8px;
