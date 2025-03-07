@@ -189,7 +189,7 @@ const BuildSetup: React.FC<ProductItemProps> = () => {
 
       // Gửi request
       const response = await dispatch(createSetupPackage(formData));
-      console.log("productsJson", "alo");
+      console.log("re", response);
 
       // Xử lý kết quả
       if (response?.payload?.status === "200" || response?.payload?.status === "201") {
