@@ -20,6 +20,7 @@
             "@components/*": ["components/*"],
             "@atom/*": ["components/atom/*"],
             "@pages/*": ["components/pages/*"],
+            "@ui/*": ["components/ui/*"],
             // "@api/*": ["api/*"],
             "@layouts/*": ["layouts/*"],
             "@routes/*": ["routes/*"],
@@ -29,7 +30,8 @@
             "@redux/*": ["redux/*"],
             "@styles/*": ["styles/*"],
             "@common/*": ["common/*"],
-            "@ultils/*": ["ultils/*"]
+            "@ultils/*": ["ultils/*"],
+            "@context/*": ["context/*"]
         }
     },
     "include": ["src"]

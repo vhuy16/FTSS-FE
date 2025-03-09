@@ -17,10 +17,28 @@ export const verifyAccount = createAsyncThunk(
   }
 );
 
+// Xác minh quên mật khẩu OTP
+export const verifyForgotPassword = createAsyncThunk(
+  "user/verifyForgotPassword",
+  async (data: { userId: string; otp: string }, { rejectWithValue }) => {
+    try {
+      const response = await myAxios.post("https://ftss.id.vn/api/v1/user/verify-forgot-password", data);
+      return response.data;
+    } catch (error: any) {
+      if (error.response && error.response.data) {
+        return rejectWithValue(error.response.data.message);
+      } else {
+        return rejectWithValue("An unknown error occurred");
+      }
+    }
+  }
+);
+
 const initialState = {
   isLoading: false,
   isError: false,
   isVerified: false,
+  forgotPasswordVerified: false,
 };
 
 const verifyAccountSlice = createSlice({
@@ -43,6 +61,23 @@ const verifyAccountSlice = createSlice({
         state.isLoading = false;
         state.isError = true;
         state.isVerified = false;
+      })
+
+      // Xử lý verifyForgotPassword
+      .addCase(verifyForgotPassword.pending, (state) => {
+        state.isLoading = true;
+        state.isError = false;
+        state.forgotPasswordVerified = false;
+      })
+      .addCase(verifyForgotPassword.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isError = false;
+        state.forgotPasswordVerified = action.payload;
+      })
+      .addCase(verifyForgotPassword.rejected, (state) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.forgotPasswordVerified = false;
       });
   },
 });

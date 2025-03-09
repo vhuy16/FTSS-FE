@@ -9,7 +9,13 @@ import listCategoriesReducer from "./slices/categorySlice";
 import productReducer from "./slices/productSlice";
 import productDetailReducer from "./slices/productDetailSlice";
 import cartReducer from "./slices/cartSlice";
-
+import forgotPasswordReducer from "./slices/forgotPasswordSlice";
+import userProfileReducer from "./slices/userSlice";
+import orderReducer from "./slices/orderSlice";
+import shipmentReducer from "./slices/shipmentSlice";
+import orderListReducer from "./slices/orderListSlice";
+import setupPackageReducer from "./slices/setupSlice";
+import setupPackageDetailReducer from "./slices/setupDetailSlice";
 export const store = configureStore({
   reducer: {
     address: addressReducer,
@@ -22,6 +28,13 @@ export const store = configureStore({
     product: productReducer,
     productDetail: productDetailReducer,
     cart: cartReducer,
+    forgotPassword: forgotPasswordReducer,
+    userProfile: userProfileReducer,
+    order: orderReducer,
+    shipment: shipmentReducer,
+    orderList: orderListReducer,
+    setupPackage: setupPackageReducer,
+    setupPackageDetail: setupPackageDetailReducer,
   },
 });
 

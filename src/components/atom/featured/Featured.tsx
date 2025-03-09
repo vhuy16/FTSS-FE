@@ -19,20 +19,20 @@ export interface FeaturedItem {
 export const featuredData: FeaturedItem[] = [
   {
     id: "featured-1",
-    topText: "Chào mừng 20-11",
-    largeText: "Dịp đặc biệt trong năm",
-    bottomText: "Những món quà độc đáo dành cho các thầy cô",
-    buttonLink: "/product-1",
-    buttonText: "Mua ngay",
+    topText: "Hồ Cá Cảnh Cao Cấp",
+    largeText: "Mang Thiên Nhiên Vào Nhà",
+    bottomText: "Những mẫu hồ cá độc đáo, phù hợp với mọi không gian",
+    buttonLink: "/ho-ca-canh",
+    buttonText: "Khám Phá Ngay",
     imgSource: feature2,
   },
   {
     id: "featured-2",
-    topText: "Nhiều sản phẩm đa dạng ",
-    largeText: "Tuần lễ giáng sinh cập bến",
-    bottomText: "Dành tặng cho những người mà bạn yêu quý",
-    buttonLink: "/product-2",
-    buttonText: "Mua ngay",
+    topText: "Bộ Sưu Tập Phụ kiện Hồ Cá Cảnh",
+    largeText: "Những Phụ Kiện Đẹp & Độc Đáo",
+    bottomText: "Tô điểm hồ cá với những phụ kiện tuyệt đẹp",
+    buttonLink: "/ca-canh",
+    buttonText: "Mua Ngay",
     imgSource: feature1,
   },
   // Thêm các item khác nếu cần
@@ -75,6 +75,7 @@ const FeaturedCardWrapper = styled.div`
     top: 0;
     left: 0;
     max-width: 400px;
+    font-weight: 900;
 
     @media (max-width: ${breakpoints.sm}) {
       padding: 16px;
@@ -124,9 +125,9 @@ const Featured: React.FC = () => {
                 <p className="feat-text-top text-xxl font-semibold">{featured.topText}</p>
                 <h3 className="feat-text-large font-bold">{featured.largeText}</h3>
                 <p className="feat-text-bottom font-light text-xl italic uppercase">{featured.bottomText}</p>
-                <Link to={featured.buttonLink} className="feat-link font-extrabold text-black text-3xl">
+                {/* <Link to={featured.buttonLink} className="feat-link font-extrabold text-black text-3xl">
                   {featured.buttonText}
-                </Link>
+                </Link> */}
               </div>
             </FeaturedCardWrapper>
           ))}

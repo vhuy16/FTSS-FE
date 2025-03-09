@@ -11,7 +11,7 @@ import ProductSimilar from "@components/atom/products/ProductSimilar";
 import ProductServices from "@components/atom/products/ProductServices";
 import { useAppDispatch, useAppSelector } from "@redux/hook";
 import { addItem } from "@redux/slices/cartSlice";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { getProductDetail } from "@redux/slices/productDetailSlice";
 import { currencyFormat } from "@ultils/helper";
 import { toast } from "react-toastify";
@@ -187,6 +187,72 @@ const ProductColorWrapper = styled.div`
     }
   }
 `;
+const ActionsWrapper = styled.div`
+  /* Nếu bạn muốn 2 phần tử nằm ngang, 
+     ta đã có "flex items-center flex-wrap" 
+     (từ Tailwind hay tùy framework). 
+     Nếu muốn, bạn có thể dùng styled-components thuần như bên dưới:
+
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  */
+  gap: 25px; /* Khoảng cách giữa 2 nút */
+  margin-top: 20px;
+`;
+const QuantityWrapper = styled.div`
+  display: inline-flex;
+  align-items: center;
+  background-color: #f5f5f5;
+  border-radius: 63px;
+  padding: 10px 16px;
+
+  button {
+    background: transparent;
+    border: none;
+    font-size: 25px; /* Tăng cỡ chữ để dấu +, - to hơn */
+    font-weight: 700;
+    width: 40px; /* Tạo chút chiều rộng để dễ bấm */
+    height: 25px; /* Tạo chút chiều cao để dễ bấm */
+    cursor: pointer;
+    outline: none;
+    line-height: 1; /* Đảm bảo text không bị đẩy lên hoặc xuống */
+    text-align: center; /* Căn giữa dấu +, - trong button */
+  }
+
+  span {
+    margin: 0 8px;
+    font-size: 18px; /* Cỡ chữ cho số */
+    font-weight: 500;
+    min-width: 20px;
+    text-align: center;
+    line-height: 1;
+  }
+`;
+
+const AddToCartButton = styled.button`
+  background-color: #10ac97;
+  color: #fff;
+  border: none;
+  border-radius: 63px;
+  padding: 10px 55px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.3s;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 8px; /* Khoảng cách giữa icon và text */
+
+  &:hover {
+    background-color: #0e8c7c;
+  }
+
+  i.bi-cart2 {
+    font-size: 18px;
+  }
+`;
 
 const ProductDetailsScreen: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -196,7 +262,7 @@ const ProductDetailsScreen: React.FC = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
     dispatch(getProductDetail(id as string));
-  }, []);
+  }, [id]);
 
   const stars = Array.from({ length: 5 }, (_, index) => (
     <span
@@ -216,6 +282,18 @@ const ProductDetailsScreen: React.FC = () => {
     { label: "Sản phẩm", link: "/product" },
     { label: `${product?.categoryName}`, link: "" },
   ];
+
+  const [quantity, setQuantity] = useState<number>(1);
+
+  const handleDecrement = () => {
+    if (quantity > 1) {
+      setQuantity((prev) => prev - 1);
+    }
+  };
+
+  const handleIncrement = () => {
+    setQuantity((prev) => prev + 1);
+  };
 
   return (
     <DetailsScreenWrapper>
@@ -238,37 +316,48 @@ const ProductDetailsScreen: React.FC = () => {
                   <span className="prod-comment-text text-sm text-gray">{10} comment(s)</span>
                 </div>
               </div>
+              <p className="text-sm font-semibold text-outerspace mt-4 mb-4">{currencyFormat(product.price)}</p>
               <ProductSizeWrapper>
                 <div className="prod-size-top flex items-center flex-wrap">
-                  <p className="text-sm font-semibold text-outerspace">Mô Tả: {product.description}</p>
+                  <p className="text-sm font-semibold text-outerspace">Mô tả: {product.description}</p>
                 </div>
               </ProductSizeWrapper>
-
               <p className="text-sm font-semibold text-outerspace mt-4">
-                Số Lượng Sản Phẩm Khả Dụng:
-                <span className="text-sm text-gray font-thin"> {product.quantity} Sản Phẩm</span>
+                Số lượng sản phẩm khả dụng:
+                <span className="text-sm text-gray font-thin"> {product.quantity} Sản phẩm</span>
               </p>
               {product.quantity === 0 || product.status !== "Available" ? (
-                <div className="prod-price text-xl font-bold text-outerspace text-red-500 mt-4">Ngừng Hoạt Động</div>
+                <div className="prod-price text-xl font-bold text-outerspace text-red-500 mt-4">Ngừng hoạt động</div>
               ) : (
-                <div className="btn-and-price flex items-center flex-wrap">
-                  <BaseBtnGreen
-                    as={BaseBtnGreen}
-                    className="prod-add-btn"
+                <ActionsWrapper className="flex items-center flex-wrap">
+                  {/* Nút tăng giảm số lượng */}
+                  <QuantityWrapper>
+                    <button onClick={handleDecrement}>-</button>
+                    <span>{quantity}</span>
+                    <button onClick={handleIncrement}>+</button>
+                  </QuantityWrapper>
+
+                  {/* Nút thêm vào giỏ hàng */}
+                  <AddToCartButton
                     onClick={() => {
-                      toast.success("Thêm Sản Phẩm Vào Giỏ Hàng Thành Công");
-                      dispatch(addItem(product));
+                      const token = localStorage.getItem("access_token");
+                      if (token) {
+                        dispatch(addItem({ productId: product.id, quantity: quantity }));
+                        toast.success("Thêm Sản Phẩm Vào Giỏ Hàng Thành Công");
+                      } else {
+                        toast.warning("Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng");
+                        setTimeout(() => {
+                          window.location.href = "/login";
+                        }, 1000);
+                      }
                     }}
                   >
                     <span className="prod-add-btn-icon">
                       <i className="bi bi-cart2"></i>
                     </span>
                     <span className="prod-add-btn-text">Thêm vào giỏ hàng</span>
-                  </BaseBtnGreen>
-                  <span className="prod-price text-xl font-bold text-outerspace text-red-500">
-                    {currencyFormat(product.price)}
-                  </span>
-                </div>
+                  </AddToCartButton>
+                </ActionsWrapper>
               )}
 
               <ProductServices />

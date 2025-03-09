@@ -5,6 +5,7 @@ module.exports = function override(config) {
         '@components': 'src/components',
         '@atom': 'src/components/atom',
         '@pages': 'src/components/pages',
+        '@ui': 'src/components/ui',
         // '@api': 'src/api',
         '@layouts': 'src/layouts',
         '@routes': 'src/routes',
@@ -15,6 +16,7 @@ module.exports = function override(config) {
         '@styles': 'src/styles',
         '@common': 'src/common',
         '@ultils': 'src/ultils',
+        '@context': 'src/context',
     })(config);
 
     return config;

@@ -2,11 +2,11 @@ import styled from "styled-components";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { breakpoints, defaultTheme } from "@styles/themes/default";
-import { CartItem } from "@redux/slices/cartSlice";
+import { CartItem, removeItem, selectCart, updateItemQuantity } from "@redux/slices/cartSlice";
 import { useAppDispatch, useAppSelector } from "@redux/hook";
-import { addItem, removeItem, clearCart, deleteItem } from "@redux/slices/cartSlice";
 import { currencyFormat } from "@ultils/helper";
 import { toast } from "react-toastify";
+import { useState } from "react";
 
 const CartTableRowWrapper = styled.tr`
   .cart-tbl {
@@ -67,27 +67,48 @@ type CartItemProps = {
 };
 const CartItemCB = ({ cartItem }: CartItemProps) => {
   const dispatch = useAppDispatch();
+  const selectedCart = useAppSelector((state) => state.cart.cartselected);
+  const productData = useAppSelector((state) =>
+    state.product.data?.items.find((product) => product.id === cartItem.productId)
+  );
+  const availableQuantity = productData ? productData.quantity : "Đang tải...";
+
+  const handleCheckboxChange = (cart: CartItem) => {
+    dispatch(selectCart(cart));
+  };
   return (
-    <CartTableRowWrapper key={cartItem.item.id}>
+    <CartTableRowWrapper key={cartItem.cartItemId}>
       <td>
         <div className="cart-tbl-prod grid">
           <div className="cart-prod-img">
-            <img src={cartItem.item.images[0]} className="object-fit-cover" alt="" />
+            <img src={cartItem.linkImage} className="object-fit-cover" alt="" />
           </div>
           <div className="cart-prod-info">
-            <h4 className="text-base">{cartItem.item.productName}</h4>
-            <p className="text-sm text-gray-150 inline-flex">
-              <span className="font-semibold">Phân loại: </span> {cartItem.item.categoryName}
-            </p>
+            <h4 className="text-base">{cartItem.productName}</h4>
           </div>
         </div>
       </td>
       <td>
-        <span className="text-lg font-bold text-outerspace">{currencyFormat(cartItem.item.price)}</span>
+        <span className="text-lg font-bold text-outerspace">{currencyFormat(cartItem.unitPrice || 0)}</span>
       </td>
       <td>
         <div className="cart-tbl-qty flex items-center">
-          <button className="qty-dec-btn" onClick={() => dispatch(removeItem(cartItem.item))}>
+          <button
+            className="qty-dec-btn"
+            onClick={() => {
+              if (cartItem.quantity > 1) {
+                // Giảm số lượng xuống 1
+                dispatch(
+                  updateItemQuantity({
+                    cartItemId: cartItem.cartItemId,
+                    quantity: cartItem.quantity - 1,
+                  })
+                );
+              } else {
+                toast.error("Số lượng sản phẩm không thể nhỏ hơn 1");
+              }
+            }}
+          >
             <i className="bi bi-dash-lg"></i>
           </button>
           <span className="qty-value inline-flex items-center justify-center font-medium text-outerspace">
@@ -96,10 +117,15 @@ const CartItemCB = ({ cartItem }: CartItemProps) => {
           <button
             className="qty-inc-btn"
             onClick={() => {
-              if (cartItem.quantity === cartItem.item.quantity) {
-                toast.error("Sản Phẩm Không Đủ Số Lượng Để Cung Cấp");
+              if (cartItem.quantity >= availableQuantity) {
+                toast.error("Không thể thêm số lượng vượt quá khả dụng!");
               } else {
-                dispatch(addItem(cartItem.item));
+                dispatch(
+                  updateItemQuantity({
+                    cartItemId: cartItem.cartItemId,
+                    quantity: cartItem.quantity + 1,
+                  })
+                );
               }
             }}
           >
@@ -108,17 +134,28 @@ const CartItemCB = ({ cartItem }: CartItemProps) => {
         </div>
       </td>
       <td>
-        <span className="cart-tbl-shipping uppercase text-gray-150 font-bold">₫0</span>
+        <span className="text-lg font-bold text-outerspace"> {currencyFormat(cartItem.price || 0)}</span>
       </td>
       <td>
-        <span className="text-lg font-bold text-outerspace">
-          {currencyFormat(cartItem.item.price * cartItem.quantity)}
-        </span>
-      </td>
-      <td>
-        <div className="cart-tbl-actions flex justify-center" onClick={() => dispatch(deleteItem(cartItem.item))}>
+        <div
+          className="cart-tbl-actions flex "
+          onClick={() => {
+            dispatch(removeItem({ cartItemId: cartItem.cartItemId }));
+          }}
+        >
           <i className="bi bi-trash3 tbl-del-action text-red-500"></i>
         </div>
+      </td>
+      <td>
+        <input
+          id="default-checkbox"
+          type="checkbox"
+          value=""
+          onChange={() => handleCheckboxChange(cartItem)}
+          checked={selectedCart.some((p) => p.cartItemId === cartItem.cartItemId)}
+          className={`w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700
+                       dark:border-gray-600`}
+        />
       </td>
     </CartTableRowWrapper>
   );

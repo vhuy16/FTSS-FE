@@ -16,7 +16,6 @@ const commonButtonStyles = css`
     font-weight: 500;
     font-size: 14px;
     border: 1px solid transparent;
-    text-transform: capitalize;
     padding-left: 12px;
     padding-right: 12px;
     transition: ${defaultTheme.default_transition};
@@ -57,6 +56,10 @@ const BaseLinkGreen = styled(BaseLink)`
     background-color: ${defaultTheme.color_sea_green};
     border-color: ${defaultTheme.color_sea_green};
 `;
+const BaseLinkRed = styled(BaseButton)`
+    background-color: ${defaultTheme.color_red};
+    border-color: ${defaultTheme.color_red};
+`;
 const BaseBtnGreen = styled(BaseButton)`
     background-color: ${defaultTheme.color_sea_green};
     border-color: ${defaultTheme.color_sea_green};
@@ -74,6 +77,10 @@ const BaseLinkWhite = styled(BaseLink)`
 const BaseLinkOutlineDark = styled(BaseLink)`
     color: ${defaultTheme.color_black};
     border-color: ${defaultTheme.color_black};
+`;
+const BaseLinkOutlineGreen = styled(BaseLink)`
+    color: ${defaultTheme.color_sea_green};
+    border-color: ${defaultTheme.color_sea_green};
 `;
 
 const BaseLinkOutlineWhite = styled(BaseLink)`
@@ -105,4 +112,6 @@ export {
     BaseLinkOutlineWhite,
     BaseLinkOutlinePlatinum,
     BaseBtnGreen,
+    BaseLinkRed,
+    BaseLinkOutlineGreen,
 };
