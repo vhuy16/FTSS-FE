@@ -54,22 +54,36 @@ export default function AddSetupModal({ isModalAddOpen, setIsModalAddOpen }: Mod
         ProductItemsJson: '',
         ImageFile: null,
     });
-    const handleChange = (event: SelectChangeEvent<string[]>) => {
+    const handleChange = (event: SelectChangeEvent<string[]>, cateName: string) => {
         const {
             target: { value },
         } = event;
-
-        setListProduct(
-            // On autofill we get a stringified value.
-            typeof value === 'string' ? value.split(',') : value,
-        );
+        if (typeof value !== 'string') {
+            const checkExit = value.filter((p) => JSON.parse(p).cateName == 'Bể');
+            if (checkExit.length > 1) {
+                const newValue = value.filter((p) => p != checkExit[0]);
+                setListProduct(newValue);
+            } else {
+                setListProduct(value);
+            }
+        } else {
+            setListProduct(
+                // On autofill we get a stringified value.
+                typeof value === 'string' ? value.split(',') : value,
+            );
+        }
     };
-
     useEffect(() => {
         if (isModalAddOpen) {
             dispatch(getAllCategoryWithProduct());
         } else {
             setListProduct([]);
+            setData({
+                SetupName: '',
+                Description: '',
+                ProductItemsJson: '',
+                ImageFile: null,
+            });
         }
     }, [isModalAddOpen]);
 
@@ -84,21 +98,25 @@ export default function AddSetupModal({ isModalAddOpen, setIsModalAddOpen }: Mod
             }),
         );
         if (data.SetupName && data.Description && data.ImageFile && ProductJson) {
-            const formData = new FormData();
-            formData.append('SetupName', data.SetupName);
-            formData.append('Description', data.Description);
-            formData.append('ProductItemsJson', ProductJson);
-            formData.append('ImageFile', data.ImageFile);
+            if (data.SetupName.length < 10) {
+                const formData = new FormData();
+                formData.append('SetupName', data.SetupName);
+                formData.append('Description', data.Description);
+                formData.append('ProductItemsJson', ProductJson);
+                formData.append('ImageFile', data.ImageFile);
 
-            try {
-                const res = await dispatch(createSetupPackage(formData)).unwrap();
-                if (res.status == 201) {
+                try {
+                    const res = await dispatch(createSetupPackage(formData)).unwrap();
+                    if (res.status == 201) {
+                        setIsModalAddOpen(false);
+                        toast.success('Thêm mẫu thiết kế bể cá thành công');
+                    }
+                } catch (error) {
                     setIsModalAddOpen(false);
-                    toast.success('Thêm mẫu thiết kế bể cá thành công');
+                    toast.error('Thêm mẫu thiết kế bể cá thất bại');
                 }
-            } catch (error) {
-                setIsModalAddOpen(false);
-                toast.error('Thêm mẫu thiết kế bể cá thất bại');
+            } else {
+                toast.error('Tên mẫu thiếu kế phải là chữ in hoa và ít hơn 10 kí tự');
             }
         } else {
             toast.error('Vui lòng nhập đủ thông tin');
@@ -122,7 +140,7 @@ export default function AddSetupModal({ isModalAddOpen, setIsModalAddOpen }: Mod
                                 <div className="relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
                                     <div className="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600">
                                         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                                            Thêm sản phẩm
+                                            Thêm mẫu thiết kế
                                         </h3>
                                         <button
                                             type="button"
@@ -180,7 +198,10 @@ export default function AddSetupModal({ isModalAddOpen, setIsModalAddOpen }: Mod
                                                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                                                     placeholder="Nhập tên thiết kế"
                                                     required={true}
-                                                    onChange={(e) => setData({ ...data, SetupName: e.target.value })}
+                                                    value={data.SetupName}
+                                                    onChange={(e) =>
+                                                        setData({ ...data, SetupName: e.target.value.toUpperCase() })
+                                                    }
                                                 />
                                             </div>
 
@@ -204,7 +225,9 @@ export default function AddSetupModal({ isModalAddOpen, setIsModalAddOpen }: Mod
                                                                     id="demo-multiple-checkbox"
                                                                     multiple
                                                                     value={listProduct}
-                                                                    onChange={handleChange}
+                                                                    onChange={(event) => {
+                                                                        handleChange(event, cate.categoryName);
+                                                                    }}
                                                                     input={<OutlinedInput label="Tag" />}
                                                                     renderValue={() => {
                                                                         const listProductByCate = listProduct.filter(
@@ -234,6 +257,7 @@ export default function AddSetupModal({ isModalAddOpen, setIsModalAddOpen }: Mod
                                                                                 value={JSON.stringify({
                                                                                     ProductId: product.id,
                                                                                     name: product.productName,
+                                                                                    cateName: cate.categoryName,
                                                                                     Quantity: listProduct.find(
                                                                                         (p) =>
                                                                                             JSON.parse(p).ProductId ===
@@ -278,114 +302,119 @@ export default function AddSetupModal({ isModalAddOpen, setIsModalAddOpen }: Mod
                                                                                     (p) =>
                                                                                         JSON.parse(p).ProductId ===
                                                                                         product.id,
-                                                                                ) && (
-                                                                                    <div
-                                                                                        className="max-w-xs ml-auto flex justify-end"
-                                                                                        onClick={(e) =>
-                                                                                            e.stopPropagation()
-                                                                                        }
-                                                                                    >
-                                                                                        <div className="relative flex items-center max-w-[5rem]">
-                                                                                            <button
-                                                                                                type="button"
-                                                                                                id="decrement-button"
-                                                                                                className="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 
+                                                                                ) &&
+                                                                                    cate.categoryName !== 'Bể' && (
+                                                                                        <div
+                                                                                            className="max-w-xs ml-auto flex justify-end"
+                                                                                            onClick={(e) =>
+                                                                                                e.stopPropagation()
+                                                                                            }
+                                                                                        >
+                                                                                            <div className="relative flex items-center max-w-[5rem]">
+                                                                                                <button
+                                                                                                    type="button"
+                                                                                                    id="decrement-button"
+                                                                                                    className="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 
             hover:bg-gray-200 border border-gray-300 rounded-s-lg p-1 h-6 focus:ring-gray-100 
             dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
-                                                                                            >
-                                                                                                <svg
-                                                                                                    className="w-1.5 h-1.5 text-gray-900 dark:text-white"
-                                                                                                    xmlns="http://www.w3.org/2000/svg"
-                                                                                                    fill="none"
-                                                                                                    viewBox="0 0 18 2"
                                                                                                 >
-                                                                                                    <path
-                                                                                                        stroke="currentColor"
-                                                                                                        stroke-linecap="round"
-                                                                                                        stroke-linejoin="round"
-                                                                                                        stroke-width="2"
-                                                                                                        d="M1 1h16"
-                                                                                                    />
-                                                                                                </svg>
-                                                                                            </button>
-                                                                                            <input
-                                                                                                type="text"
-                                                                                                id="quantity-input"
-                                                                                                className="w-[3rem] bg-gray-50 border-x-0 border-gray-300 h-6 text-center text-gray-900 text-xs 
+                                                                                                    <svg
+                                                                                                        className="w-1.5 h-1.5 text-gray-900 dark:text-white"
+                                                                                                        xmlns="http://www.w3.org/2000/svg"
+                                                                                                        fill="none"
+                                                                                                        viewBox="0 0 18 2"
+                                                                                                    >
+                                                                                                        <path
+                                                                                                            stroke="currentColor"
+                                                                                                            stroke-linecap="round"
+                                                                                                            stroke-linejoin="round"
+                                                                                                            stroke-width="2"
+                                                                                                            d="M1 1h16"
+                                                                                                        />
+                                                                                                    </svg>
+                                                                                                </button>
+                                                                                                <input
+                                                                                                    type="text"
+                                                                                                    id="quantity-input"
+                                                                                                    className="w-[3rem] bg-gray-50 border-x-0 border-gray-300 h-6 text-center text-gray-900 text-xs 
             focus:ring-blue-500 focus:border-blue-500 block w-full py-0.5 dark:bg-gray-700 
             dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                                                                                placeholder="1"
-                                                                                                value={
-                                                                                                    listProduct.find(
-                                                                                                        (p) =>
-                                                                                                            JSON.parse(
-                                                                                                                p,
-                                                                                                            )
-                                                                                                                .ProductId ===
-                                                                                                            product.id,
-                                                                                                    )
-                                                                                                        ? JSON.parse(
-                                                                                                              listProduct.find(
-                                                                                                                  (p) =>
-                                                                                                                      JSON.parse(
+                                                                                                    placeholder="1"
+                                                                                                    value={
+                                                                                                        listProduct.find(
+                                                                                                            (p) =>
+                                                                                                                JSON.parse(
+                                                                                                                    p,
+                                                                                                                )
+                                                                                                                    .ProductId ===
+                                                                                                                product.id,
+                                                                                                        )
+                                                                                                            ? JSON.parse(
+                                                                                                                  listProduct.find(
+                                                                                                                      (
                                                                                                                           p,
-                                                                                                                      )
-                                                                                                                          .ProductId ===
-                                                                                                                      product.id,
-                                                                                                              )!,
-                                                                                                          ).Quantity
-                                                                                                        : '1'
-                                                                                                }
-                                                                                                onChange={(e) => {
-                                                                                                    const updatedList =
-                                                                                                        listProduct.map(
-                                                                                                            (item) => {
-                                                                                                                const obj =
-                                                                                                                    JSON.parse(
-                                                                                                                        item,
+                                                                                                                      ) =>
+                                                                                                                          JSON.parse(
+                                                                                                                              p,
+                                                                                                                          )
+                                                                                                                              .ProductId ===
+                                                                                                                          product.id,
+                                                                                                                  )!,
+                                                                                                              ).Quantity
+                                                                                                            : '1'
+                                                                                                    }
+                                                                                                    onChange={(e) => {
+                                                                                                        const updatedList =
+                                                                                                            listProduct.map(
+                                                                                                                (
+                                                                                                                    item,
+                                                                                                                ) => {
+                                                                                                                    const obj =
+                                                                                                                        JSON.parse(
+                                                                                                                            item,
+                                                                                                                        );
+                                                                                                                    if (
+                                                                                                                        obj.name ===
+                                                                                                                        product.productName
+                                                                                                                    ) {
+                                                                                                                        obj.Quantity =
+                                                                                                                            e.target.value;
+                                                                                                                    }
+                                                                                                                    return JSON.stringify(
+                                                                                                                        obj,
                                                                                                                     );
-                                                                                                                if (
-                                                                                                                    obj.name ===
-                                                                                                                    product.productName
-                                                                                                                ) {
-                                                                                                                    obj.Quantity =
-                                                                                                                        e.target.value;
-                                                                                                                }
-                                                                                                                return JSON.stringify(
-                                                                                                                    obj,
-                                                                                                                );
-                                                                                                            },
+                                                                                                                },
+                                                                                                            );
+                                                                                                        setListProduct(
+                                                                                                            updatedList,
                                                                                                         );
-                                                                                                    setListProduct(
-                                                                                                        updatedList,
-                                                                                                    );
-                                                                                                }}
-                                                                                            />
-                                                                                            <button
-                                                                                                type="button"
-                                                                                                id="increment-button"
-                                                                                                className="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 
+                                                                                                    }}
+                                                                                                />
+                                                                                                <button
+                                                                                                    type="button"
+                                                                                                    id="increment-button"
+                                                                                                    className="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 
             hover:bg-gray-200 border border-gray-300 rounded-e-lg p-1 h-6 focus:ring-gray-100 
             dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
-                                                                                            >
-                                                                                                <svg
-                                                                                                    className="w-1.5 h-1.5 text-gray-900 dark:text-white"
-                                                                                                    xmlns="http://www.w3.org/2000/svg"
-                                                                                                    fill="none"
-                                                                                                    viewBox="0 0 18 18"
                                                                                                 >
-                                                                                                    <path
-                                                                                                        stroke="currentColor"
-                                                                                                        stroke-linecap="round"
-                                                                                                        stroke-linejoin="round"
-                                                                                                        stroke-width="2"
-                                                                                                        d="M9 1v16M1 9h16"
-                                                                                                    />
-                                                                                                </svg>
-                                                                                            </button>
+                                                                                                    <svg
+                                                                                                        className="w-1.5 h-1.5 text-gray-900 dark:text-white"
+                                                                                                        xmlns="http://www.w3.org/2000/svg"
+                                                                                                        fill="none"
+                                                                                                        viewBox="0 0 18 18"
+                                                                                                    >
+                                                                                                        <path
+                                                                                                            stroke="currentColor"
+                                                                                                            stroke-linecap="round"
+                                                                                                            stroke-linejoin="round"
+                                                                                                            stroke-width="2"
+                                                                                                            d="M9 1v16M1 9h16"
+                                                                                                        />
+                                                                                                    </svg>
+                                                                                                </button>
+                                                                                            </div>
                                                                                         </div>
-                                                                                    </div>
-                                                                                )}
+                                                                                    )}
                                                                             </MenuItem>
                                                                         ))}
                                                                 </Select>
