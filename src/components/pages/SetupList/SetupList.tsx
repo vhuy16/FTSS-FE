@@ -16,6 +16,7 @@ import ReactDOM from "react-dom";
 import { toast } from "react-toastify";
 import beca from "@images/beca.jpg";
 import Loading from "@components/atom/Loading/Loading";
+import LoadingPage from "@components/atom/Loading/LoadingPage";
 const WishListScreenWrapper = styled.main`
   .wishlist {
     gap: 20px;
@@ -226,58 +227,62 @@ const SetupList = () => {
                 Tạo setup
               </BaseBtnGreen>
             </div>
-
-            <div className="wishlist grid">
-              {setupData?.map((setup) => {
-                return (
-                  <WishItemWrapper className="wish-item flex" key={setup.setupPackageId}>
-                    <div className="wish-item-img flex items-stretch">
-                      <button
-                        type="button"
-                        className="wish-remove-btn"
-                        onClick={() => openModalDelete(setup.setupPackageId)}
-                      >
-                        <i className="bi bi-x-lg"></i>
-                      </button>
-                      <div className="wish-item-img-wrapper">
-                        <img src={beca} className="object-fit-cover" alt="" />
-                      </div>
-                    </div>
-                    <div className="wish-item-info flex justify-between">
-                      <div className="wish-item-info-l flex flex-col">
-                        <p className="wish-item-title text-xl font-bold text-outerspace">{setup.setupName}</p>
-                        <ul className="flex flex-col">
-                          <li>
-                            <span className="text-lg font-bold">Ngày tạo:</span>
-                            <span className="text-lg text-gray font-medium capitalize">
-                              {formatDate(setup.createDate)}
-                            </span>
-                          </li>
-                          <li>
-                            <span className="text-lg font-bold">Mô tả:</span>
-                            <span className="text-lg text-gray font-medium capitalize">{setup.description}</span>
-                          </li>
-                        </ul>
-                      </div>
-                      <div className="wish-item-info-r flex items-center">
-                        <span className="wish-item-price text-xl text-gray font-bold">
-                          {/* {currencyFormat(setup.totalPrice)} */}
-                        </span>
-                        <BaseBtnGreen
-                          onClick={() => {
-                            navigate(`/setup-package/${setup.setupPackageId}`);
-                          }}
-                          className="wish-cart-btn"
+            {isLoadingSetup ? (
+              <LoadingPage />
+            ) : setupData && setupData.length > 0 ? (
+              <div className="wishlist grid">
+                {setupData?.map((setup) => {
+                  return (
+                    <WishItemWrapper className="wish-item flex" key={setup.setupPackageId}>
+                      <div className="wish-item-img flex items-stretch">
+                        <button
+                          type="button"
+                          className="wish-remove-btn"
+                          onClick={() => openModalDelete(setup.setupPackageId)}
                         >
-                          Xem chi tiết
-                        </BaseBtnGreen>
+                          <i className="bi bi-x-lg"></i>
+                        </button>
+                        <div className="wish-item-img-wrapper">
+                          <img src={beca} className="object-fit-cover" alt="" />
+                        </div>
                       </div>
-                    </div>
-                  </WishItemWrapper>
-                );
-              })}
-            </div>
-
+                      <div className="wish-item-info flex justify-between">
+                        <div className="wish-item-info-l flex flex-col">
+                          <p className="wish-item-title text-xl font-bold text-outerspace">{setup.setupName}</p>
+                          <ul className="flex flex-col">
+                            <li>
+                              <span className="text-lg font-bold">Ngày tạo:</span>
+                              <span className="text-lg text-gray font-medium capitalize">
+                                {formatDate(setup.createDate)}
+                              </span>
+                            </li>
+                            <li>
+                              <span className="text-lg font-bold">Mô tả:</span>
+                              <span className="text-lg text-gray font-medium capitalize">{setup.description}</span>
+                            </li>
+                          </ul>
+                        </div>
+                        <div className="wish-item-info-r flex items-center">
+                          <span className="wish-item-price text-xl text-gray font-bold">
+                            {/* {currencyFormat(setup.totalPrice)} */}
+                          </span>
+                          <BaseBtnGreen
+                            onClick={() => {
+                              navigate(`/setup-package/${setup.setupPackageId}`);
+                            }}
+                            className="wish-cart-btn"
+                          >
+                            Xem chi tiết
+                          </BaseBtnGreen>
+                        </div>
+                      </div>
+                    </WishItemWrapper>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="text-center text-gray-600 text-xl mt-6">Không có setup nào. Vui lòng tạo !!</div>
+            )}
             {/* Modal mở khi bấm "Xóa" */}
             <SimpleModal isOpen={isModalOpenDelete} onClose={closeModalDelete}>
               <ModalHeader></ModalHeader>

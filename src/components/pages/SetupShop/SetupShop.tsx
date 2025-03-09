@@ -17,6 +17,7 @@ import { getSetupPackagesShop } from "@redux/slices/setupSlice";
 import SetupListShopPage from "./SetupListShopPage";
 import { BannerBox } from "../Setup/SetupStyles";
 import banner1 from "@images/aquarium-banner.jpg";
+import LoadingPage from "@components/atom/Loading/LoadingPage";
 
 // Define breadcrumb type
 type BreadcrumbItem = {
@@ -122,70 +123,41 @@ const SetupShop: React.FC = () => {
 
   return (
     <main className="page-py-spacing">
-      <Container>
-        <Breadcrumb items={breadcrumbItems} />
-        <ProductsContent className="grid items-start">
-          <ProductsContentLeft>
-            <BannerBox>{/* <img src={banner1} alt="Banner hồ cá" /> */}</BannerBox>
-          </ProductsContentLeft>
-          <ProductsContentRight>
-            <div className="products-right-top flex items-center justify-between">
-              <h4 className="text-xxl"></h4>
-              <ul className="products-right-nav flex items-center justify-end flex-wrap">
-                <li>
-                  <Link to="/" className="active text-lg font-semibold">
-                    Đề xuất
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            {isLoading ? (
-              <Loading></Loading>
-            ) : listSetupShop && listSetupShop.length > 0 ? (
-              <SetupListShopPage setups={listSetupShop} />
-            ) : (
-              <div>Không có sản phẩm nào</div>
-            )}
-
-            {/* số lượng product hiện ra */}
-            <div className="mt-20 flex justify-center">
-              <PaginationControlled></PaginationControlled>
-            </div>
-          </ProductsContentRight>
-        </ProductsContent>
-      </Container>
-      <Section>
+      {isLoading ? (
+        <LoadingPage />
+      ) : (
         <Container>
-          {/* <DescriptionContent>
-                        <Title titleText={'Clothing for Everyone Online'} />
-                        <ContentStylings className="text-base content-stylings">
-                            <h4>Reexplore Clothing Collection Online at Achats.</h4>
-                            <p>
-                                Lorem ipsum dolor sit amet consectetur, adipisicing elit. Sed, molestiae ex atque
-                                similique consequuntur ipsum sapiente inventore magni ducimus sequi nemo id, numquam
-                                officiis fugit pariatur esse, totam facere ullam?
-                            </p>
-                            <p>
-                                Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequatur nam magnam placeat
-                                nesciunt ipsa amet, vel illo veritatis eligendi voluptatem!
-                            </p>
-                            <h4>One-stop Destination to Shop Every Clothing for Everyone: Achats.</h4>
-                            <p>
-                                Lorem ipsum dolor sit amet consectetur adipisicing elit. Nemo iure doloribus optio
-                                aliquid id. Quos quod delectus, dolor est ab exercitationem odio quae quas qui
-                                doloremque. Esse natus minima ratione reiciendis nostrum, quam, quisquam modi aut, neque
-                                hic provident dolorem.
-                            </p>
-                            <p>
-                                Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quasi laborum dolorem deserunt
-                                aperiam voluptate mollitia.
-                            </p>
-                            <Link to="/">See More</Link>
-                        </ContentStylings>
-                    </DescriptionContent> */}
+          <Breadcrumb items={breadcrumbItems} />
+          <ProductsContent className="grid items-start">
+            <ProductsContentLeft>
+              <BannerBox>{/* <img src={banner1} alt="Banner hồ cá" /> */}</BannerBox>
+            </ProductsContentLeft>
+            <ProductsContentRight>
+              <div className="products-right-top flex items-center justify-between">
+                <h4 className="text-xxl"></h4>
+                <ul className="products-right-nav flex items-center justify-end flex-wrap">
+                  <li>
+                    <Link to="/" className="active text-lg font-semibold">
+                      Đề xuất
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+
+              {listSetupShop && listSetupShop.length > 0 ? (
+                <SetupListShopPage setups={listSetupShop} />
+              ) : (
+                <div>Không có sản phẩm nào</div>
+              )}
+
+              {/* số lượng product hiện ra */}
+              <div className="mt-20 flex justify-center">
+                <PaginationControlled></PaginationControlled>
+              </div>
+            </ProductsContentRight>
+          </ProductsContent>
         </Container>
-      </Section>
+      )}
     </main>
   );
 };

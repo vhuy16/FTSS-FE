@@ -2,9 +2,12 @@ import React, { useState } from "react";
 import { DropdownItem } from "@components/ui/dropdown/DropdownItem";
 import { Dropdown } from "@components/ui/dropdown/Dropdown";
 import { Link } from "react-router-dom";
+import { useAppDispatch } from "@redux/hook";
+import { logoutUser } from "@redux/slices/loginSlice";
 
 export default function CustomerDropDown() {
   const [isOpen, setIsOpen] = useState(false);
+  const dispatch = useAppDispatch();
 
   function toggleDropdown() {
     setIsOpen(!isOpen);
@@ -44,6 +47,9 @@ export default function CustomerDropDown() {
         <Link
           to="/login"
           className="flex items-center gap-3 px-3 py-2 mt-3 font-medium text-gray-700 rounded-lg group text-theme-sm hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
+          onClick={() => {
+            dispatch(logoutUser());
+          }}
         >
           <svg
             className="fill-gray-500 group-hover:fill-gray-700 dark:group-hover:fill-gray-300"
@@ -60,7 +66,7 @@ export default function CustomerDropDown() {
               fill=""
             />
           </svg>
-          Sign out
+          Đăng xuất
         </Link>
       </Dropdown>
     </div>
