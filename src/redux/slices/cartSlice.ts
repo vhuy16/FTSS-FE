@@ -11,6 +11,7 @@ export type CartItem = {
   quantity: number;
   linkImage: string;
   unitPrice: number;
+  status: string;
 };
 
 interface CartState {
