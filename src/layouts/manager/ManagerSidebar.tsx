@@ -48,6 +48,14 @@ const navItems: NavItem[] = [
         name: 'Các thiết kế bể cá',
         path: '/listSetup',
     },
+    {
+        name: 'Phân loại',
+        icon: <GridIcon />,
+        subItems: [
+            { name: 'Danh sách phân loại', path: '/listCategory' },
+            { name: 'Danh sách phân loại con', path: '/listSubCategory' },
+        ],
+    },
 ];
 
 const othersItems: NavItem[] = [
