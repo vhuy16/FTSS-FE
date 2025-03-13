@@ -20,6 +20,7 @@ import Loading from "@components/atom/Loading/Loading";
 import { getSetupDetail } from "@redux/slices/setupDetailSlice";
 import SetupPreview from "../SetupShop/SetupPreview";
 import SetupDescriptionTab from "../SetupShop/SetupDescriptionTab";
+import { addSetUpToBuild } from "@redux/slices/setupSlice";
 
 const DetailsScreenWrapper = styled.main`
   margin: 40px 0;
@@ -328,21 +329,32 @@ const SetupShopDetailScreen: React.FC = () => {
                 Kích thước :<span className="text-sm text-gray font-thin"> {setupData.size}</span>
               </p>
               <ActionsWrapper className="flex items-center flex-wrap">
-                <BaseButtonGreen
-                  type="submit"
-                  className="checkout-btn"
-                  onClick={() => {
+                <AddToCartButton
+                  onClick={async () => {
                     const token = localStorage.getItem("access_token");
                     if (token) {
-                      navigate("/checkout");
+                      if (setupPackageId) {
+                        const res = await dispatch(addSetUpToBuild(setupPackageId));
+                        if (res?.payload?.status === "200" || res?.payload?.status === "201") {
+                          toast.success("Cập nhật thành công!");
+                          navigate(`/setup-package/${res.payload.data.newSetupPackageId}`);
+                        } else {
+                          toast.error(res?.payload.message);
+                        }
+                      }
                     } else {
-                      toast.warning("Xin mời đăng nhập trước để thanh toán");
-                      navigate("/login");
+                      toast.warning("Bạn cần đăng nhập để thêm sản phẩm vào build");
+                      setTimeout(() => {
+                        window.location.href = "/login";
+                      }, 1000);
                     }
                   }}
                 >
-                  Mua ngay
-                </BaseButtonGreen>
+                  <span className="prod-add-btn-icon">
+                    <i className="bi bi-tools"></i>
+                  </span>
+                  <span className="prod-add-btn-text">Thêm vào build</span>
+                </AddToCartButton>
               </ActionsWrapper>
 
               <ProductServices />

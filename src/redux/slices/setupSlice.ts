@@ -135,6 +135,18 @@ export const activateSetup = createAsyncThunk(
     }
   }
 );
+export const addSetUpToBuild = createAsyncThunk(
+  "setup/addSetUpToBuild",
+  async (setupPackageId: string, { rejectWithValue }) => {
+    try {
+      const response = await myAxios.post(`/setuppackagecopySetupPackage/${setupPackageId}`);
+      return response.data;
+    } catch (error: any) {
+      console.log(error);
+      return rejectWithValue(error.response?.data?.message || "Lỗi khi Kích hoạt gói cài đặt");
+    }
+  }
+);
 const setupSlice = createSlice({
   name: "setup",
   initialState,
@@ -223,8 +235,20 @@ const setupSlice = createSlice({
           state.setupData = action.payload;
         }
       })
-
       .addCase(updateSetupPackage.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(addSetUpToBuild.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(addSetUpToBuild.fulfilled, (state, action: PayloadAction<SetupPackage>) => {
+        state.loading = false;
+        state.error = null;
+        state.setupPackages.push(action.payload);
+      })
+      .addCase(addSetUpToBuild.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });
