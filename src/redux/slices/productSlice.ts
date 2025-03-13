@@ -77,9 +77,7 @@ export const getAllProductSimilar = createAsyncThunk(
     'product/getAllProductSimilar',
     async (cateName: string, { rejectWithValue }) => {
         try {
-            const response = await myAxios.get(
-                `https://ftss.id.vn/api/v1/product/get-all-product?page=1&size=4&cateName=${cateName}`,
-            );
+            const response = await myAxios.get(`/product/get-all-product?page=1&size=4&cateName=${cateName}`);
             return response.data.data;
         } catch (error: any) {
             console.log(error);

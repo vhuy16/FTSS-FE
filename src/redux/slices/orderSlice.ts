@@ -62,7 +62,7 @@ export const createOrder = createAsyncThunk('order/create', async (data: DataChe
 });
 export const getAllOrder = createAsyncThunk('order/getAllOrder', async (_, { rejectWithValue }) => {
     try {
-        const response = await myAxios.get('/order?page=1&size=100');
+        const response = await myAxios.get('/order?page=1&size=100&isAscending=false');
         return response.data.data.orders;
     } catch (error: any) {
         console.log(error);

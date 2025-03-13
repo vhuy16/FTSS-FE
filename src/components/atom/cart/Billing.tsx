@@ -135,7 +135,7 @@ const Billing = () => {
         ShipCost: 0,
         VoucherId: null,
         Address: '',
-        PaymentMethod: 'PayOs',
+        PaymentMethod: 'VnPay',
     };
     type DataCheckOut = {
         cartItem: string[];
