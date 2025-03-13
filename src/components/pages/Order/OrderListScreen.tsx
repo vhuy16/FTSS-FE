@@ -9,6 +9,7 @@ import OrderItemList from "./OrderItemList";
 import { useAppDispatch, useAppSelector } from "@redux/hook";
 import { useEffect, useState } from "react";
 import { getAllOrdersByUsers } from "@redux/slices/orderListSlice";
+import { getUserProfile } from "@redux/slices/userSlice";
 
 type OrderStatus =
   | "pendingPayment"
@@ -52,6 +53,7 @@ const OrderListScreen = () => {
   const orderData = useAppSelector((state) => state.orderList.orders) || [];
 
   useEffect(() => {
+    dispatch(getUserProfile());
     dispatch(getAllOrdersByUsers());
   }, [dispatch]);
 
@@ -77,7 +79,7 @@ const OrderListScreen = () => {
         <UserDashboardWrapper>
           <UserMenu />
           <UserContent>
-            <Title titleText={"My Orders"} />
+            <Title titleText={"Đơn hàng"} />
             <div className="order-tabs mb-12">
               <div className="order-tabs-heads">
                 {Object.keys(orderStatusMap).map((key) => (
