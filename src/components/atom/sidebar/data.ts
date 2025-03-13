@@ -40,7 +40,7 @@ export const sideMenuData: SideMenuItem[] = [
   {
     id: "side-menu-7",
     menuLink: "/setup-package",
-    menuText: "Build Hồ Cá",
+    menuText: "Hồ Cá Của Tôi",
     iconName: "tools",
   },
 ];

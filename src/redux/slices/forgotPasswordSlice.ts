@@ -8,7 +8,7 @@ type forgotPasswordType = {
 
 export const forgotPassword = createAsyncThunk("user/resetPassword", async (data: forgotPasswordType) => {
   try {
-    const request = await myAxios.post(`https://ftss.id.vn/api/v1/user/forgot-password`, data);
+    const request = await myAxios.post(`/user/forgot-password`, data);
     const response = request.data;
     return response;
   } catch (error: any) {

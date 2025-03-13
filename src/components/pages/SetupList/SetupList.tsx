@@ -17,6 +17,7 @@ import { toast } from "react-toastify";
 import beca from "@images/beca.jpg";
 import Loading from "@components/atom/Loading/Loading";
 import LoadingPage from "@components/atom/Loading/LoadingPage";
+import { getUserProfile } from "@redux/slices/userSlice";
 const WishListScreenWrapper = styled.main`
   .wishlist {
     gap: 20px;
@@ -210,6 +211,7 @@ const SetupList = () => {
 
   const dispatch = useAppDispatch();
   useEffect(() => {
+    dispatch(getUserProfile());
     dispatch(getSetupPackages());
   }, []);
   const navigate = useNavigate();
