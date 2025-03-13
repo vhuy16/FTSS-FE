@@ -103,6 +103,27 @@ const cartSlice = createSlice({
         state.cartselected = [...state.cartselected, cartItem];
       }
     },
+    updateSelectedCart: (state, action: PayloadAction<CartItem>) => {
+      const cartItem = action.payload;
+      const isSelected = state.cartselected.find((p) => p.cartItemId === cartItem.cartItemId);
+
+      if (isSelected && isSelected.cartItemId) {
+        if (isSelected.quantity !== cartItem.quantity) {
+          state.cartselected = state.cartselected.filter((p) => p.cartItemId !== cartItem.cartItemId);
+          state.cartselected = [...state.cartselected, cartItem];
+        } else {
+          state.cartselected = state.cartselected.filter((p) => p.cartItemId !== cartItem.cartItemId);
+        }
+      }
+    },
+    deleteSelectedCart: (state, action: PayloadAction<CartItem>) => {
+      const cartItem = action.payload;
+      const isSelected = state.cartselected.some((p) => p.cartItemId === cartItem.cartItemId);
+
+      if (isSelected) {
+        state.cartselected = state.cartselected.filter((p) => p.cartItemId !== cartItem.cartItemId);
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -197,5 +218,5 @@ const cartSlice = createSlice({
   },
 });
 
-export const { clearCart, selectCart } = cartSlice.actions;
+export const { clearCart, selectCart, updateSelectedCart, deleteSelectedCart } = cartSlice.actions;
 export default cartSlice.reducer;
