@@ -43,9 +43,36 @@ export const getAllSubCategoryByCateName = createAsyncThunk(
         }
     },
 );
+export const addCategory = createAsyncThunk('category/addCategory', async (formData: FormData, { dispatch }) => {
+    try {
+        const response = await myAxios.post(`/category`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        await dispatch(getAllCategory());
+        return response.data;
+    } catch (error: any) {
+        console.log(error);
+    }
+});
+export const addSubCategory = createAsyncThunk(
+    'category/addSubCategory',
+    async (data: { subCategoryName: string; categoryId: string; description: string }, { dispatch }) => {
+        try {
+            const response = await myAxios.post(`/subcategory`, data);
+            await dispatch(getAllSubCategory());
+            return response.data;
+        } catch (error: any) {
+            console.log(error);
+        }
+    },
+);
 
 type CategoryState = {
     isLoading: boolean;
+    isLoadingAdd: boolean;
+    isLoadingAddSubCate: boolean;
     categories: categoryType[];
     subCates: SubCategory[];
     subCategory: SubCategory[];
@@ -54,6 +81,8 @@ type CategoryState = {
 
 const initialState: CategoryState = {
     isLoading: false,
+    isLoadingAdd: false,
+    isLoadingAddSubCate: false,
     categories: [],
     subCates: [],
     subCategory: [],
@@ -105,6 +134,32 @@ const ListCategorySlice = createSlice({
             })
             .addCase(getAllSubCategory.rejected, (state, action) => {
                 state.isLoading = false;
+                state.isError = true;
+            });
+        builder
+            .addCase(addCategory.pending, (state) => {
+                state.isLoadingAdd = true;
+                state.isError = false;
+            })
+            .addCase(addCategory.fulfilled, (state, action) => {
+                state.isLoadingAdd = false;
+                state.isError = false;
+            })
+            .addCase(addCategory.rejected, (state, action) => {
+                state.isLoadingAdd = false;
+                state.isError = true;
+            });
+        builder
+            .addCase(addSubCategory.pending, (state) => {
+                state.isLoadingAddSubCate = true;
+                state.isError = false;
+            })
+            .addCase(addSubCategory.fulfilled, (state, action) => {
+                state.isLoadingAddSubCate = false;
+                state.isError = false;
+            })
+            .addCase(addSubCategory.rejected, (state, action) => {
+                state.isLoadingAddSubCate = false;
                 state.isError = true;
             });
     },

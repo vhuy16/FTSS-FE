@@ -15,6 +15,7 @@ import { getAllProductForAdmin, getProductByNameForAdmin } from '@redux/slices/p
 import ProductPopup from '../popup/ProductPopup';
 import AddProductModal from '../modal/AddProductModal';
 import { getAllCategory, getAllSubCategory, SubCategory } from '@redux/slices/categorySlice';
+import AddSubCategoryModal from '../modal/AddSubCategoryModal';
 
 const paginationModel = { page: 0, pageSize: 5 };
 const StyledDataGrid = styled(DataGrid)((theme) => ({
@@ -162,7 +163,10 @@ export default function ListSubCategoryTable() {
                     />
                 </Box>
             )}
-            {/* <AddProductModal isModalAddOpen={isModalAddOpen} setIsModalAddOpen={setIsModalAddOpen}></AddProductModal> */}
+            <AddSubCategoryModal
+                isModalAddOpen={isModalAddOpen}
+                setIsModalAddOpen={setIsModalAddOpen}
+            ></AddSubCategoryModal>
         </div>
     );
 }
