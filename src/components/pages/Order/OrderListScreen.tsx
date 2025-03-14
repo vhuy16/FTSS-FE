@@ -11,14 +11,7 @@ import { useEffect, useState } from "react";
 import { getAllOrdersByUsers } from "@redux/slices/orderListSlice";
 import { getUserProfile } from "@redux/slices/userSlice";
 
-type OrderStatus =
-  | "pendingPayment"
-  | "processing"
-  | "pendingDelivery"
-  | "delivered"
-  | "paid"
-  | "cancelled"
-  | "refunded";
+type OrderStatus = "processing" | "pendingDelivery" | "delivered" | "paid" | "cancelled" | "returned";
 
 const OrderListScreenWrapper = styled.div`
   background-color: #f6f6f6;
@@ -57,17 +50,16 @@ const OrderListScreen = () => {
     dispatch(getAllOrdersByUsers());
   }, [dispatch]);
 
-  const [activeTab, setActiveTab] = useState<OrderStatus>("pendingPayment");
+  const [activeTab, setActiveTab] = useState<OrderStatus>("processing");
   const handleTabClick = (tab: OrderStatus) => setActiveTab(tab);
 
   const orderStatusMap: Record<OrderStatus, string> = {
-    pendingPayment: "PENDING_PAYMENT",
     processing: "PROCESSING",
     pendingDelivery: "PENDING_DELIVERY",
     delivered: "DELIVERED",
     paid: "PAID",
     cancelled: "CANCELLED",
-    refunded: "REFUNDED",
+    returned: "RETURNED",
   };
 
   const filteredOrders = orderData.filter((order) => order.status === orderStatusMap[activeTab]);
@@ -81,15 +73,16 @@ const OrderListScreen = () => {
           <UserContent>
             <Title titleText={"Đơn hàng"} />
             <div className="order-tabs mb-12">
-              <div className="order-tabs-heads">
+              <div className="order-tabs-heads p-8">
                 {Object.keys(orderStatusMap).map((key) => (
                   <button
                     key={key}
                     type="button"
-                    className={`order-tabs-head text-xl italic ${activeTab === key ? "order-tabs-head-active" : ""}`}
+                    className={`order-tabs-head mr-7 text-xl italic ${
+                      activeTab === key ? "order-tabs-head-active" : ""
+                    }`}
                     onClick={() => handleTabClick(key as OrderStatus)}
                   >
-                    {key === "pendingPayment" && "Chờ thanh toán"}
                     {key === "processing" && "Đang xử lí"}
                     {key === "pendingDelivery" && "Chờ giao hàng"}
                     {key === "delivered" && "Đã giao hàng"}

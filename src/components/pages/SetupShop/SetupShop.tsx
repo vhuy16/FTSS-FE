@@ -120,7 +120,7 @@ const SetupShop: React.FC = () => {
     dispatch(getSetupPackagesShop());
   }, []);
   console.log("listSetupShop", listSetupShop);
-
+  const filteredSetupShop = listSetupShop?.filter((item) => item.isDelete == false);
   return (
     <main className="page-py-spacing">
       {isLoading ? (
@@ -144,8 +144,8 @@ const SetupShop: React.FC = () => {
                 </ul>
               </div>
 
-              {listSetupShop && listSetupShop.length > 0 ? (
-                <SetupListShopPage setups={listSetupShop} />
+              {filteredSetupShop && filteredSetupShop.length > 0 ? (
+                <SetupListShopPage setups={filteredSetupShop} />
               ) : (
                 <div>Không có sản phẩm nào</div>
               )}
