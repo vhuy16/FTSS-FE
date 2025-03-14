@@ -16,7 +16,7 @@ import CheckoutScreen from '@components/pages/Checkout/Checkout';
 import ConfirmScreen from '@components/pages/Checkout/PaymentSuccess';
 import ErrorScreen from '@components/pages/Checkout/PaymentError';
 import NotFoundScreen from '@components/pages/error/NotFoundScreen';
-import Dashboard from '@components/pages/admin/Dashboad';
+import Dashboard from '@components/pages/manager/Dashboad';
 import AdminLayout from '@layouts/admin/AdminLayouts';
 import OrderListScreen from '@components/pages/Order/OrderListScreen';
 import OrderDetailScreen from '@components/pages/Order/OrderDetail';
@@ -31,6 +31,8 @@ import ListOrder from '@components/pages/manager/ListOrder';
 import ListProduct from '@components/pages/manager/ListProduct';
 import ListSetUp from '@components/pages/manager/ListSetUp';
 import OrderDetail from '@components/pages/manager/OrderDetail';
+import ListCategory from '@components/pages/manager/ListCategory';
+import ListSubCategory from '@components/pages/manager/ListSubCategory';
 
 export type RouteType = {
     path: string;
@@ -76,11 +78,7 @@ if (role === 'Admin') {
             component: ResetPassword,
             layout: AuthLayout,
         },
-        {
-            path: '/dashboard',
-            component: Dashboard,
-            layout: AdminLayout,
-        },
+
         {
             path: '/listUser',
             component: ListUser,
@@ -147,6 +145,21 @@ if (role === 'Admin') {
         {
             path: '/listSetup',
             component: ListSetUp,
+            layout: ManagerLayout,
+        },
+        {
+            path: '/listCategory',
+            component: ListCategory,
+            layout: ManagerLayout,
+        },
+        {
+            path: '/listSubCategory',
+            component: ListSubCategory,
+            layout: ManagerLayout,
+        },
+        {
+            path: '/dashboard',
+            component: Dashboard,
             layout: ManagerLayout,
         },
         {

@@ -49,6 +49,7 @@ type initialStateProduct = {
     listOrder: Order[];
     order: Order | null;
     isLoading: boolean;
+    isLoadingUpdate: boolean;
     isError: boolean;
 };
 export const createOrder = createAsyncThunk('order/create', async (data: DataCheckOut, { rejectWithValue }) => {
@@ -62,7 +63,7 @@ export const createOrder = createAsyncThunk('order/create', async (data: DataChe
 });
 export const getAllOrder = createAsyncThunk('order/getAllOrder', async (_, { rejectWithValue }) => {
     try {
-        const response = await myAxios.get('/order?page=1&size=100');
+        const response = await myAxios.get('/order?page=1&size=100&isAscending=false');
         return response.data.data.orders;
     } catch (error: any) {
         console.log(error);
@@ -78,12 +79,26 @@ export const getOrderById = createAsyncThunk('order/getOrderById', async (id: st
         return rejectWithValue(error.response?.data?.message || 'Lấy đơn hàng theo id thất bại');
     }
 });
+export const updateOrder = createAsyncThunk(
+    'order/updateOrder',
+    async ({ id, status }: { id: string; status: string }, { rejectWithValue, dispatch }) => {
+        try {
+            const response = await myAxios.put(`/order/${id}`, { status: status });
+            await dispatch(getAllOrder());
+            return response.data;
+        } catch (error: any) {
+            console.log(error);
+            return rejectWithValue(error.response?.data?.message || 'Cập nhật đơn hàng thất bại');
+        }
+    },
+);
 
 const initialState: initialStateProduct = {
     url: '',
     listOrder: [],
     order: null,
     isLoading: false,
+    isLoadingUpdate: false,
     isError: false,
 };
 
@@ -132,6 +147,19 @@ const orderSlice = createSlice({
             })
             .addCase(getOrderById.rejected, (state, action) => {
                 state.isLoading = false;
+                state.isError = true;
+            });
+        builder
+            .addCase(updateOrder.pending, (state) => {
+                state.isLoadingUpdate = true;
+                state.isError = false;
+            })
+            .addCase(updateOrder.fulfilled, (state, action) => {
+                state.isLoadingUpdate = false;
+                state.isError = false;
+            })
+            .addCase(updateOrder.rejected, (state, action) => {
+                state.isLoadingUpdate = false;
                 state.isError = true;
             });
     },

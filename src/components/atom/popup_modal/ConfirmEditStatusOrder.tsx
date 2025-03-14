@@ -5,11 +5,13 @@ import { getAllUser, updateRoleUser, UserProfile } from '@redux/slices/userSlice
 import { useAppDispatch, useAppSelector } from '@redux/hook';
 import Loading from '../Loading/Loading';
 import { toast } from 'react-toastify';
+import { Order } from '@redux/slices/orderListSlice';
+import { updateOrder } from '@redux/slices/orderSlice';
 type ConfirmDeleteProps = {
-    isModalOpenEditRole: boolean;
-    setIsModalOpenEditRole: (isOpen: boolean) => void;
-    user: UserProfile;
-    newRole: string;
+    isModalOpenEditStatus: boolean;
+    setIsModalOpenEditStatus: (isOpen: boolean) => void;
+    order: Order;
+    status: string;
 };
 const style = {
     position: 'absolute',
@@ -18,34 +20,27 @@ const style = {
     transform: 'translate(-50%, -50%)',
     width: 400,
 };
-export default function ConfirmEditRole({
-    user,
-    newRole,
-    isModalOpenEditRole,
-    setIsModalOpenEditRole,
+export default function ConfirmEditStatusOrder({
+    order,
+    status,
+    isModalOpenEditStatus,
+    setIsModalOpenEditStatus,
 }: ConfirmDeleteProps) {
     const dispatch = useAppDispatch();
-    const isLoading = useAppSelector((state) => state.userProfile.isLoadingEdit);
+    const isLoading = useAppSelector((state) => state.order.isLoadingUpdate);
     const handleEdit = async () => {
-        const data = {
-            gender: user.gender == 'Male' ? 0 : 1,
-            fullName: user.fullName,
-            phoneNumber: user.phoneNumber,
-            address: user.address,
-            role: newRole,
-        };
-        await dispatch(updateRoleUser({ userId: user.userId, userInfo: data }));
-        setIsModalOpenEditRole(false);
-        toast.success('Cập nhật vai trò cho người dùng thành công');
+        await dispatch(updateOrder({ id: order.id, status: status }));
+        setIsModalOpenEditStatus(false);
+        toast.success('Cập nhật trạng thái đơn hàng thành công');
     };
     return (
         <>
             {/* Modal */}
             <div>
                 <Modal
-                    open={isModalOpenEditRole}
+                    open={isModalOpenEditStatus}
                     onClose={() => {
-                        setIsModalOpenEditRole(false);
+                        setIsModalOpenEditStatus(false);
                     }}
                     aria-labelledby="modal-modal-title"
                     aria-describedby="modal-modal-description"
@@ -57,7 +52,7 @@ export default function ConfirmEditRole({
                                     type="button"
                                     className="absolute top-3 end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
                                     onClick={() => {
-                                        setIsModalOpenEditRole(false);
+                                        setIsModalOpenEditStatus(false);
                                     }}
                                 >
                                     <svg
@@ -94,7 +89,7 @@ export default function ConfirmEditRole({
                                         />
                                     </svg>
                                     <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
-                                        Bạn có muốn thay đổi vai trò của người dùng?
+                                        Bạn có muốn cập nhật trạng thái đơn hàng?
                                     </h3>
                                     <button
                                         type="button"
@@ -107,7 +102,7 @@ export default function ConfirmEditRole({
                                         type="button"
                                         className="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
                                         onClick={() => {
-                                            setIsModalOpenEditRole(false);
+                                            setIsModalOpenEditStatus(false);
                                         }}
                                     >
                                         Hủy

@@ -99,7 +99,7 @@ const Login = () => {
                         window.location.href = '/';
                     }
                     if (res.data.roleEnum === 'Admin') {
-                        window.location.href = '/dashboard';
+                        window.location.href = '/listUser';
                     }
                     if (res.data.roleEnum === 'Manager') {
                         window.location.href = '/listOrder';
