@@ -20,6 +20,7 @@ const defaultTheme = {
   color_brown: "#fb9f4c",
   color_black_04: "rgba(0, 0, 0, 0.4)",
   color_lighwhite: "#F0F0F0",
+  color_green_v1: "#E8FFFC",
   // default transition
   default_transition: "all 300ms ease-in-out",
   // font family

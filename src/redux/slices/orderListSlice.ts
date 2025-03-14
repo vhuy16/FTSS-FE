@@ -42,7 +42,7 @@ const initialState: OrderState = {
 
 // Thunk để lấy dữ liệu orders từ API get order by Buyyer
 export const getAllOrdersByUsers = createAsyncThunk("orders/getAllOrdersByUsers", async () => {
-  const response = await myAxios.get(`/order/get-all-order`);
+  const response = await myAxios.get(`/order/get-all-order?page=1&size=100&isAscending=false`);
   return response.data.data.orders;
 });
 
