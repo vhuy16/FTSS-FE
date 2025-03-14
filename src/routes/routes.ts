@@ -16,7 +16,7 @@ import CheckoutScreen from '@components/pages/Checkout/Checkout';
 import ConfirmScreen from '@components/pages/Checkout/PaymentSuccess';
 import ErrorScreen from '@components/pages/Checkout/PaymentError';
 import NotFoundScreen from '@components/pages/error/NotFoundScreen';
-import Dashboard from '@components/pages/admin/Dashboad';
+import Dashboard from '@components/pages/manager/Dashboad';
 import AdminLayout from '@layouts/admin/AdminLayouts';
 import OrderListScreen from '@components/pages/Order/OrderListScreen';
 import OrderDetailScreen from '@components/pages/Order/OrderDetail';
@@ -78,11 +78,7 @@ if (role === 'Admin') {
             component: ResetPassword,
             layout: AuthLayout,
         },
-        {
-            path: '/dashboard',
-            component: Dashboard,
-            layout: AdminLayout,
-        },
+
         {
             path: '/listUser',
             component: ListUser,
@@ -159,6 +155,11 @@ if (role === 'Admin') {
         {
             path: '/listSubCategory',
             component: ListSubCategory,
+            layout: ManagerLayout,
+        },
+        {
+            path: '/dashboard',
+            component: Dashboard,
             layout: ManagerLayout,
         },
         {

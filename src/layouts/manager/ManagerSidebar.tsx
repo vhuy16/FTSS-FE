@@ -28,6 +28,11 @@ type NavItem = {
 
 const navItems: NavItem[] = [
     {
+        icon: <PieChartIcon />,
+        name: 'Doanh thu',
+        path: '/dashboard',
+    },
+    {
         icon: <CalenderIcon />,
         name: 'Danh sách công việc',
         path: '/calenderIcon',
@@ -49,11 +54,11 @@ const navItems: NavItem[] = [
         path: '/listSetup',
     },
     {
-        name: 'Phân loại',
+        name: 'Danh mục',
         icon: <GridIcon />,
         subItems: [
-            { name: 'Danh sách phân loại', path: '/listCategory' },
-            { name: 'Danh sách phân loại con', path: '/listSubCategory' },
+            { name: 'Danh sách danh mục', path: '/listCategory' },
+            { name: 'Danh sách danh mục phụ', path: '/listSubCategory' },
         ],
     },
 ];

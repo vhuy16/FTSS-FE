@@ -73,14 +73,18 @@ export default function ListOrderTable() {
                             ? 'warning'
                             : params.row.payment.paymentStatus === 'Completed'
                             ? 'success'
-                            : 'error'
+                            : params.row.payment.paymentStatus === 'Canceled'
+                            ? 'error'
+                            : 'warning'
                     }
                 >
                     {params.row.payment.paymentStatus === 'Processing'
                         ? 'Đang chờ thanh toán'
                         : params.row.payment.paymentStatus === 'Completed'
                         ? 'Đã thanh toán'
-                        : 'Đã hủy'}
+                        : params.row.payment.paymentStatus === 'Canceled'
+                        ? 'Đã hủy'
+                        : 'Đang hoàn trả'}
                 </Badge>
             ),
         },
@@ -108,17 +112,33 @@ export default function ListOrderTable() {
                     size="sm"
                     color={
                         params.row.status === 'PENDING_DELIVERY'
-                            ? 'success'
+                            ? 'primary'
                             : params.row.status === 'PROCESSING'
                             ? 'warning'
-                            : 'error'
+                            : params.row.status === 'PROCESSED'
+                            ? 'info'
+                            : params.row.status === 'CANCELLED'
+                            ? 'error'
+                            : params.row.status === 'COMPLETED'
+                            ? 'success'
+                            : params.row.status === 'RETURNED'
+                            ? 'light'
+                            : 'dark'
                     }
                 >
-                    {params.row.status === 'PROCESSING'
-                        ? 'Đang xử lý'
-                        : params.row.status === 'PENDING_DELIVERY'
+                    {params.row.status === 'PENDING_DELIVERY'
                         ? 'Đang giao'
-                        : 'Hoàn tất'}
+                        : params.row.status === 'PROCESSING'
+                        ? 'Đang xử lý'
+                        : params.row.status === 'PROCESSED'
+                        ? 'Đã xử lý'
+                        : params.row.status === 'CANCELLED'
+                        ? 'Đã hủy'
+                        : params.row.status === 'COMPLETED'
+                        ? 'Hoàn tất'
+                        : params.row.status === 'RETURNED'
+                        ? 'Hoàn trả'
+                        : 'Hoàn tiền'}
                 </Badge>
             ),
         },

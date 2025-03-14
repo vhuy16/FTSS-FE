@@ -14,6 +14,8 @@ import ConfirmEditRole from '../popup_modal/ConfirmEditRole';
 import { UserProfile } from '@redux/slices/userSlice';
 import { Order } from '@redux/slices/orderListSlice';
 import { useNavigate } from 'react-router-dom';
+import Badge from '@components/ui/badge/Badge';
+import ConfirmEditStatusOrder from '../popup_modal/ConfirmEditStatusOrder';
 
 const ITEM_HEIGHT = 48;
 type OrderPopupProps = {
@@ -21,9 +23,8 @@ type OrderPopupProps = {
 };
 export default function OrderPopup({ order }: OrderPopupProps) {
     const [anchorEl1, setAnchorEl1] = React.useState<null | HTMLElement>(null);
-    const [isModalOpenBan, setIsModalOpenBan] = React.useState(false);
-    const [isModalOpenEditRole, setIsModalOpenEditRole] = React.useState(false);
-    const [newRole, setNewRole] = React.useState('');
+    const [isModalOpenEditStatus, setIsModalOpenEditStatus] = React.useState(false);
+    const [status, setStatus] = React.useState('');
     const navigate = useNavigate();
     const open1 = Boolean(anchorEl1);
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -85,73 +86,117 @@ export default function OrderPopup({ order }: OrderPopupProps) {
                 </MenuItem>
 
                 <div>
-                    <MenuItem onMouseEnter={handlePopoverOpen}>
-                        <ListItemIcon>
-                            <UpdateOutlinedIcon fontSize="small" className="text-blue-600" />
-                        </ListItemIcon>
-                        <ListItemText>Cập nhật trạng thái</ListItemText>
+                    {order.status !== 'CANCELLED' && order.status !== 'RETURNED' && order.status !== 'COMPLETED' && (
+                        <MenuItem onMouseEnter={handlePopoverOpen}>
+                            <ListItemIcon>
+                                <UpdateOutlinedIcon fontSize="small" className="text-blue-600" />
+                            </ListItemIcon>
+                            <ListItemText>Cập nhật trạng thái</ListItemText>
 
-                        <ListItemIcon className="flex justify-end">
-                            <KeyboardArrowRightIcon fontSize="small" className="text-black" />
-                        </ListItemIcon>
-                        {/* <Typography variant="body2" sx={{ color: 'text.secondary' }}></Typography> */}
-                    </MenuItem>
-                    <Popover
-                        id="mouse-over-popover"
-                        open={Boolean(anchorEl && document.body.contains(anchorEl))}
-                        anchorEl={anchorEl}
-                        anchorOrigin={{
-                            vertical: 'top',
-                            horizontal: 'right', // Xuất hiện bên phải
-                        }}
-                        transformOrigin={{
-                            vertical: 'top',
-                            horizontal: 'left', // Xuất phát từ bên trái của Popover
-                        }}
-                        onClose={handlePopoverClose}
-                        disableRestoreFocus
-                        PaperProps={{
-                            sx: { marginLeft: '4px', marginTop: '4px' }, // Cách menu cha 1rem
-                        }}
-                        // Đóng Popover khi rời chuột
-                    >
-                        <MenuItem
-                            onClick={() => {
-                                handleClose();
-                                setNewRole('Customer');
-                                setIsModalOpenEditRole(true);
-                            }}
-                        >
-                            Đã xử lý
+                            <ListItemIcon className="flex justify-end">
+                                <KeyboardArrowRightIcon fontSize="small" className="text-black" />
+                            </ListItemIcon>
                         </MenuItem>
-                        <MenuItem
-                            onClick={() => {
-                                handleClose();
-                                setNewRole('Manager');
-                                setIsModalOpenEditRole(true);
+                    )}
+
+                    {order.status !== 'CANCELLED' && order.status !== 'RETURNED' && order.status !== 'COMPLETED' && (
+                        <Popover
+                            id="mouse-over-popover"
+                            open={Boolean(anchorEl && document.body.contains(anchorEl))}
+                            anchorEl={anchorEl}
+                            anchorOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right', // Xuất hiện bên phải
                             }}
-                        >
-                            Đang giao
-                        </MenuItem>
-                        <MenuItem
-                            onClick={() => {
-                                handleClose();
-                                setNewRole('Technician');
-                                setIsModalOpenEditRole(true);
+                            transformOrigin={{
+                                vertical: 'top',
+                                horizontal: 'left', // Xuất phát từ bên trái của Popover
                             }}
+                            onClose={handlePopoverClose}
+                            disableRestoreFocus
+                            PaperProps={{
+                                sx: { marginLeft: '4px', marginTop: '4px' }, // Cách menu cha 1rem
+                            }}
+                            // Đóng Popover khi rời chuột
                         >
-                            Hoàn tất
-                        </MenuItem>
-                    </Popover>
+                            {order.status === 'PROCESSING' ? (
+                                <>
+                                    <MenuItem
+                                        onClick={() => {
+                                            setStatus('PROCESSED');
+                                            setIsModalOpenEditStatus(true);
+                                            handleClose();
+                                        }}
+                                    >
+                                        <Badge size="md" color="info">
+                                            Đã xử lý
+                                        </Badge>
+                                    </MenuItem>
+                                    <MenuItem
+                                        onClick={() => {
+                                            setStatus('CANCELLED');
+                                            setIsModalOpenEditStatus(true);
+                                            handleClose();
+                                        }}
+                                    >
+                                        <Badge size="md" color="error">
+                                            Hủy
+                                        </Badge>
+                                    </MenuItem>
+                                </>
+                            ) : order.status === 'PROCESSED' ? (
+                                <>
+                                    <MenuItem
+                                        onClick={() => {
+                                            setStatus('PENDING_DELIVERY');
+                                            setIsModalOpenEditStatus(true);
+                                            handleClose();
+                                        }}
+                                    >
+                                        <Badge size="md" color="primary">
+                                            Đang giao
+                                        </Badge>
+                                    </MenuItem>
+                                </>
+                            ) : order.status === 'PENDING_DELIVERY' ? (
+                                <>
+                                    <MenuItem
+                                        onClick={() => {
+                                            setStatus('COMPLETED');
+                                            setIsModalOpenEditStatus(true);
+                                            handleClose();
+                                        }}
+                                    >
+                                        <Badge size="md" color="success">
+                                            Hoàn tất
+                                        </Badge>
+                                    </MenuItem>
+                                    <MenuItem
+                                        onClick={() => {
+                                            setStatus('RETURNED');
+                                            setIsModalOpenEditStatus(true);
+                                            handleClose();
+                                        }}
+                                    >
+                                        <Badge size="md" color="light">
+                                            Hoàn trả
+                                        </Badge>
+                                    </MenuItem>
+                                </>
+                            ) : (
+                                <></>
+                            )}
+                        </Popover>
+                    )}
                 </div>
             </Menu>
-            {/* <ConfirmDelete isModalOpenBan={isModalOpenBan} setIsModalOpenBan={setIsModalOpenBan} />
-            <ConfirmEditRole
-                user={user}
-                newRole={newRole}
-                isModalOpenEditRole={isModalOpenEditRole}
-                setIsModalOpenEditRole={setIsModalOpenEditRole}
-            /> */}
+
+            <ConfirmEditStatusOrder
+                order={order}
+                status={status}
+                isModalOpenEditStatus={isModalOpenEditStatus}
+                setIsModalOpenEditStatus={setIsModalOpenEditStatus}
+            />
         </div>
     );
 }

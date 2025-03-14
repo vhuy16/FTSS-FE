@@ -15,6 +15,7 @@ import { getAllProductForAdmin, getProductByNameForAdmin } from '@redux/slices/p
 import ProductPopup from '../popup/ProductPopup';
 import AddProductModal from '../modal/AddProductModal';
 import { getAllCategory, SubCategory } from '@redux/slices/categorySlice';
+import AddCategoryModal from '../modal/AddCategoryModal';
 
 const paginationModel = { page: 0, pageSize: 5 };
 const StyledDataGrid = styled(DataGrid)((theme) => ({
@@ -37,6 +38,19 @@ export default function ListCategoryTable() {
     const columns: GridColDef[] = [
         { field: 'stt', headerName: 'STT', width: 50, headerClassName: 'super-app-theme--header' },
         { field: 'id', headerName: 'Mã danh mục', width: 350, headerClassName: 'super-app-theme--header' },
+        {
+            field: 'image',
+            headerName: 'Ảnh',
+            width: 150,
+            headerClassName: 'super-app-theme--header',
+            renderCell: (params) => (
+                <div className="flex items-center gap-3 h-full">
+                    <div className="w-10 h-10 overflow-hidden rounded-[10px]">
+                        <img src={params.row.linkImage} alt={params.row.categoryName} />
+                    </div>
+                </div>
+            ),
+        },
         { field: 'categoryName', headerName: 'Tên danh mục', width: 150, headerClassName: 'super-app-theme--header' },
         { field: 'description', headerName: 'Mô tả', width: 150, headerClassName: 'super-app-theme--header' },
         {
@@ -164,7 +178,7 @@ export default function ListCategoryTable() {
                     />
                 </Box>
             )}
-            {/* <AddProductModal isModalAddOpen={isModalAddOpen} setIsModalAddOpen={setIsModalAddOpen}></AddProductModal> */}
+            <AddCategoryModal isModalAddOpen={isModalAddOpen} setIsModalAddOpen={setIsModalAddOpen}></AddCategoryModal>
         </div>
     );
 }
