@@ -10,6 +10,7 @@ import { useAppDispatch, useAppSelector } from "@redux/hook";
 import { useEffect, useState } from "react";
 import { getAllOrdersByUsers } from "@redux/slices/orderListSlice";
 import { getUserProfile } from "@redux/slices/userSlice";
+import LoadingPage from "@components/atom/Loading/LoadingPage";
 
 type OrderStatus = "PROCESSING" | "PENDING_DELIVERY" | "PROCESSED" | "COMPLETED" | "CANCELLED" | "RETURNED";
 
@@ -44,66 +45,80 @@ const breadcrumbItems = [
 const OrderListScreen = () => {
   const dispatch = useAppDispatch();
   const orderData = useAppSelector((state) => state.orderList.orders) || [];
+  const isLoading = useAppSelector((state) => state.orderList.loading);
+  const [activeTab, setActiveTab] = useState<OrderStatus>("PROCESSING");
   console.log("or", orderData);
 
   useEffect(() => {
     dispatch(getUserProfile());
-    dispatch(getAllOrdersByUsers());
   }, [dispatch]);
+  useEffect(() => {
+    dispatch(getAllOrdersByUsers(activeTab));
+  }, [dispatch, activeTab]);
 
-  const [activeTab, setActiveTab] = useState<OrderStatus>("PROCESSING");
-  const handleTabClick = (tab: OrderStatus) => setActiveTab(tab);
-  const orderStatusMap: Record<OrderStatus, string> = {
-    PROCESSING: "PROCESSING",
-    PROCESSED: "PROCESSED",
-    PENDING_DELIVERY: "PENDING_DELIVERY",
-    COMPLETED: "COMPLETED",
-    CANCELLED: "CANCELLED",
-    RETURNED: "RETURNED",
+  const handleTabClick = (tab: OrderStatus) => {
+    if (tab !== activeTab) {
+      setActiveTab(tab);
+    }
   };
 
-  const filteredOrders = orderData.filter((order) => order.status === orderStatusMap[activeTab]);
+  console.log("l", isLoading);
 
   return (
     <OrderListScreenWrapper className="page-py-spacing">
-      <Container>
-        <Breadcrumb items={breadcrumbItems} />
-        <UserDashboardWrapper>
-          <UserMenu />
-          <UserContent>
-            <Title titleText={"Đơn hàng"} />
-            <div className="order-tabs mb-12">
-              <div className="order-tabs-heads p-8">
-                {Object.keys(orderStatusMap).map((key) => (
-                  <button
-                    key={key}
-                    type="button"
-                    className={`order-tabs-head mr-7 text-xl italic ${
-                      activeTab === key ? "order-tabs-head-active" : ""
-                    }`}
-                    onClick={() => handleTabClick(key as OrderStatus)}
-                  >
-                    {key === "PROCESSING" && "Đang xử lí"}
-                    {key === "PROCESSED" && "Đã xử lí"}
-                    {key === "PENDING_DELIVERY" && "Chờ giao hàng"}
-                    {key === "COMPLETED" && "Đã giao hàng"}
-                    {key === "CANCELLED" && "Đã hủy"}
-                    {key === "RETURNED" && "Trả hàng/Hoàn tiền"}
-                  </button>
-                ))}
-              </div>
+      {isLoading ? (
+        <LoadingPage />
+      ) : (
+        <Container>
+          <Breadcrumb items={breadcrumbItems} />
+          <UserDashboardWrapper>
+            <UserMenu />
+            <UserContent>
+              <Title titleText={"Đơn hàng"} />
+              <div className="order-tabs mb-12">
+                <div className="order-tabs-heads p-8">
+                  {(
+                    [
+                      "PROCESSING",
+                      "PROCESSED",
+                      "PENDING_DELIVERY",
+                      "COMPLETED",
+                      "CANCELLED",
+                      "RETURNED",
+                    ] as OrderStatus[]
+                  ).map((key) => (
+                    <button
+                      key={key}
+                      type="button"
+                      className={`order-tabs-head mr-7 text-xl italic ${
+                        activeTab === key ? "order-tabs-head-active" : ""
+                      }`}
+                      onClick={() => handleTabClick(key as OrderStatus)}
+                    >
+                      {key === "PROCESSING" && "Đang xử lí"}
+                      {key === "PROCESSED" && "Đã xử lí"}
+                      {key === "PENDING_DELIVERY" && "Chờ giao hàng"}
+                      {key === "COMPLETED" && "Đã giao hàng"}
+                      {key === "CANCELLED" && "Đã hủy"}
+                      {key === "RETURNED" && "Trả hàng/Hoàn tiền"}
+                    </button>
+                  ))}
+                </div>
 
-              <div className="order-tabs-contents">
-                {filteredOrders.length > 0 ? (
-                  <OrderItemList orders={filteredOrders} />
-                ) : (
-                  <p className="text-center text-gray-500">Không có đơn hàng nào.</p>
-                )}
+                <div className="order-tabs-contents">
+                  {isLoading ? (
+                    <LoadingPage />
+                  ) : orderData.length > 0 ? (
+                    <OrderItemList orders={orderData} />
+                  ) : (
+                    <p className="text-center text-gray-500">Không có đơn hàng nào.</p>
+                  )}
+                </div>
               </div>
-            </div>
-          </UserContent>
-        </UserDashboardWrapper>
-      </Container>
+            </UserContent>
+          </UserDashboardWrapper>
+        </Container>
+      )}
     </OrderListScreenWrapper>
   );
 };

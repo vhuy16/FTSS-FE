@@ -1,15 +1,28 @@
 import Breadcrumb from "@common/Breadcrum";
 import Title from "@common/Title";
+import Loading from "@components/atom/Loading/Loading";
+import LoadingPage from "@components/atom/Loading/LoadingPage";
+import SimpleModal, { ModalContent, ModalHeader } from "@components/atom/modal/Modal";
 import UserMenu from "@components/atom/user/UserMenu";
 import { AssignmentTurnedIn, Cancel, CheckCircle, FeedOutlined, LocalShipping, StarBorder } from "@mui/icons-material";
 import { useAppDispatch, useAppSelector } from "@redux/hook";
-import { getAllOrdersByUsers } from "@redux/slices/orderListSlice";
-import { BaseBtnGreen, BaseButtonOuterspace, BaseButtonWhite, BaseButtonWhitesmoke } from "@styles/button";
+import { getAllOrdersByUsers, Order, OrderDetail } from "@redux/slices/orderListSlice";
+import { getOrderById, updateOrder } from "@redux/slices/orderSlice";
+import {
+  BaseBtnGreen,
+  BaseButtonGreen,
+  BaseButtonOuterspace,
+  BaseButtonWhite,
+  BaseButtonWhitesmoke,
+  BaseLinkRed,
+} from "@styles/button";
 import { Container } from "@styles/styles";
 import { breakpoints, defaultTheme } from "@styles/themes/default";
 import { UserContent, UserDashboardWrapper } from "@styles/user";
 import { currencyFormat } from "@ultils/helper";
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
 import styled from "styled-components";
 type OrderStatus = "PROCESSING" | "PENDING_DELIVERY" | "PROCESSED" | "COMPLETED";
 const OrderDetailScreenWrapper = styled.main`
@@ -141,6 +154,55 @@ const OrderDetailStatusWrapper = styled.div<{ currentIndex: number; totalSteps: 
   }
 `;
 
+const OrderDetailStatusWrapperv2 = styled.div`
+  .refund-status-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin: 100px 0;
+  }
+
+  .refund-status-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 500px; /* Độ dài thanh ngang */
+    position: relative;
+  }
+
+  .status-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+  }
+
+  .status-dot {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: gray;
+    position: relative;
+    z-index: 1;
+  }
+
+  .status-line {
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    width: 420px; /* Chiều dài thanh nối */
+    height: 2px;
+    background-color: gray;
+    z-index: 0;
+  }
+
+  .status-label {
+    margin-top: 5px;
+    font-size: 12px;
+    color: #666;
+  }
+`;
+
 const OrderDetailMessageWrapper = styled.div`
   background-color: ${defaultTheme.color_green_v1};
   max-width: 100%;
@@ -202,6 +264,67 @@ const OrderDetailMessageWrapper = styled.div`
   }
 `;
 
+const OrderDetailMessageWrapperv2 = styled.div`
+  background-color: #fffcf5;
+  max-width: 100%;
+  margin: 0 auto;
+  min-height: 68px;
+  padding: 16px 24px;
+  border-radius: 8px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* Tạo khoảng cách giữa các phần tử */
+  align-items: flex-start;
+
+  /* Tạo mũi tên chỉ xuống */
+  &::after {
+    content: "";
+    position: absolute;
+    top: -14px;
+    left: 20%;
+    border-bottom: 14px solid ${defaultTheme.color_green_v1};
+    border-top: 14px solid transparent;
+    border-left: 14px solid transparent;
+    border-right: 14px solid transparent;
+  }
+
+  /* Responsive chỉnh khoảng cách trên */
+  @media (max-width: ${breakpoints.sm}) {
+    margin-top: 10px;
+  }
+
+  /* Căn chỉnh layout phù hợp với ảnh */
+  .order-message-content {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .order-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: flex-end;
+    width: 100%;
+  }
+
+  .order-buttons button {
+    width: 236px;
+    padding: 20px;
+    border-radius: 6px;
+    border: 0.5px;
+    font-size: 14px;
+    cursor: pointer;
+    border: 0.5px solid ${defaultTheme.color_gray};
+  }
+
+  .request-button {
+    border: 1px solid ${defaultTheme.color_gray};
+    color: black;
+    background-color: white;
+  }
+`;
 const OrderDetailListWrapper = styled.div`
   padding: 24px;
   margin-top: 40px;
@@ -323,10 +446,22 @@ const breadcrumbItems = [
 ];
 
 const OrderDetailScreen = () => {
-  const { orderId } = useParams();
+  const { orderId } = useParams<{ orderId: string }>();
+  const [order, setOrder] = useState<Order | null>(null);
   const dispatch = useAppDispatch();
-  const order = useAppSelector((state) => state.orderList.orders.find((o) => o.id === orderId));
-  console.log("or", order);
+  useEffect(() => {
+    if (!orderId) return;
+
+    (async () => {
+      try {
+        const res = await dispatch(getOrderById(orderId));
+        setOrder(res.payload as Order);
+      } catch (error) {
+        console.error("Lỗi khi lấy đơn hàng:", error);
+      }
+    })();
+  }, [dispatch, orderId]);
+
   const formatDate = (dateString?: string | null) => {
     if (!dateString) return "Không xác định"; // Giá trị mặc định nếu không có ngày hợp lệ
 
@@ -349,126 +484,205 @@ const OrderDetailScreen = () => {
     PENDING_DELIVERY: <LocalShipping className="status-icon" />,
     COMPLETED: <CheckCircle className="status-icon" />,
   };
+  const [isModalOpenDelete, setIsModalOpenDelete] = useState(false);
+  const openModalDelete = () => {
+    setIsModalOpenDelete(true);
+  };
+  const closeModalDelete = () => {
+    setIsModalOpenDelete(false);
+  };
+  const isLoading = useAppSelector((state) => state.order.isLoading);
+  const isLoadingUpdate = useAppSelector((state) => state.order.isLoadingUpdate);
 
+  const handleCancelOrder = async () => {
+    try {
+      await dispatch(updateOrder({ id: orderId ?? "", status: "CANCELLED" }));
+      toast.success("Đơn hàng đã được hủy!");
+
+      const res = await dispatch(getOrderById(orderId ?? ""));
+      setOrder(res.payload as Order);
+
+      setIsModalOpenDelete(false);
+    } catch (error) {
+      toast.error("Hủy đơn hàng thất bại!");
+      console.error("Lỗi khi hủy đơn hàng:", error);
+    }
+  };
   return (
     <OrderDetailScreenWrapper className="page-py-spacing">
-      <Container>
-        <Breadcrumb items={breadcrumbItems} />
-        <UserDashboardWrapper>
-          <UserMenu />
-          <UserContent>
-            <OrderDetailContainer>
-              <div className="flex items-center justify-start btn-and-title-wrapper">
-                <Link to="/order" className="btn-go-back inline-flex items-center justify-center text-xxl">
-                  <i className="bi bi-chevron-left"></i>
-                </Link>
-                <Title titleText={"Thông tin đơn hàng"} />
-              </div>
-              <div className="order-d-wrapper">
-                <div className="order-d-top flex justify-between items-start">
-                  <div className="order-d-top-l">
-                    <h4 className="text-3xl order-d-no">Mã đặt hàng: {order?.id}</h4>
-                    <p className="text-lg font-medium text-gray">{formatDate(order?.createDate)}</p>
-                    <p className="text-lg font-medium text-gray">Địa chỉ: {order?.address}</p>
-                  </div>
-                  <div className="order-d-top-r text-xxl text-gray font-semibold">
-                    <h4 className="text-3xl mb-7"> {order?.status}</h4>
-                  </div>
+      {isLoading ? (
+        <LoadingPage />
+      ) : (
+        <Container>
+          <Breadcrumb items={breadcrumbItems} />
+          <UserDashboardWrapper>
+            <UserMenu />
+            <UserContent>
+              <OrderDetailContainer>
+                <div className="flex items-center justify-start btn-and-title-wrapper">
+                  <Link to="/order" className="btn-go-back inline-flex items-center justify-center text-xxl">
+                    <i className="bi bi-chevron-left"></i>
+                  </Link>
+                  <Title titleText={"Thông tin đơn hàng"} />
                 </div>
-                {/* status orderorder */}
-                <OrderDetailStatusWrapper
-                  currentIndex={statusSteps.indexOf(order?.status as OrderStatus)}
-                  totalSteps={statusSteps.length}
-                >
-                  <div className="order-status">
-                    {statusSteps.map((status, index) => {
-                      const currentIndex = statusSteps.indexOf(order?.status as OrderStatus);
-                      const isDone = index < currentIndex;
-                      const isCurrent = index === currentIndex;
-                      const isPending = index > currentIndex;
+                <div className="order-d-wrapper">
+                  <div className="order-d-top flex justify-between items-start">
+                    <div className="order-d-top-l">
+                      <h4 className="text-3xl order-d-no">Mã đặt hàng: {order?.id}</h4>
+                      <p className="text-lg font-medium text-gray">{formatDate(order?.createDate)}</p>
+                      <p className="text-lg font-medium text-gray">Địa chỉ: {order?.address}</p>
+                    </div>
+                    <div className="order-d-top-r text-xxl text-gray font-semibold">
+                      <h4 className="text-3xl mb-7"> {order?.status}</h4>
+                    </div>
+                  </div>
+                  {/* status orderorder */}
+                  {["PROCESSING", "PENDING_DELIVERY", "PROCESSED", "COMPLETED"].includes(order?.status || "") ? (
+                    <OrderDetailStatusWrapper
+                      currentIndex={statusSteps.indexOf(order?.status as OrderStatus)}
+                      totalSteps={statusSteps.length}
+                    >
+                      <div className="order-status">
+                        {statusSteps.map((status, index) => {
+                          const currentIndex = statusSteps.indexOf(order?.status as OrderStatus);
+                          const isDone = index < currentIndex;
+                          const isCurrent = index === currentIndex;
+                          const isPending = index > currentIndex;
 
-                      return (
-                        <div className="order-status-1">
-                          <div
-                            key={status}
-                            className={`order-status-dot 
+                          return (
+                            <div className="order-status-1">
+                              <div
+                                key={status}
+                                className={`order-status-dot 
             ${isCurrent ? "status-current" : ""} 
             ${isDone ? "status-done" : ""} 
             ${isPending ? "status-pending" : ""}`}
-                          >
-                            {statusIcons[status]}
-                            <span className="status-text">{orderStatusMap[status]}</span> {/* Thêm chữ */}
+                              >
+                                {statusIcons[status]}
+                                <span className="status-text">{orderStatusMap[status]}</span> {/* Thêm chữ */}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </OrderDetailStatusWrapper>
+                  ) : (
+                    <OrderDetailStatusWrapperv2>
+                      <div className="refund-status-container">
+                        <div className="refund-status-bar">
+                          <div className="status-step">
+                            <div className="status-dot"></div>
+                            <div className="status-line"></div>
+                            <span className="status-label">Gửi yêu cầu</span>
+                          </div>
+
+                          <div className="status-step">
+                            <div className="status-dot"></div>
+                            <span className="status-label">Được chấp nhận</span>
                           </div>
                         </div>
-                      );
-                    })}
-                  </div>
-                </OrderDetailStatusWrapper>
-
-                <OrderDetailMessageWrapper>
-                  <div className="order-message-content">
-                    <p className="font-semibold">
-                      Hãy kiểm tra cẩn thận tất cả các sản phẩm trong đơn hàng trước khi bấm "Đã nhận được hàng".
-                    </p>
-                    <p className="text-gray-600">{formatDate(order?.createDate)}.</p>
-                  </div>
-
-                  <div className="order-buttons">
-                    <BaseBtnGreen className="confirm-button">Đã Nhận Hàng</BaseBtnGreen>
-                    <BaseButtonWhite className="request-button">Yêu Cầu Trả Hàng/Hoàn Tiền</BaseButtonWhite>
-                    <BaseButtonWhite className="request-button">Yêu Cầu Hóa Đơn Điện Tử</BaseButtonWhite>
-                  </div>
-                </OrderDetailMessageWrapper>
-                {/*  list sp */}
-                <OrderDetailListWrapper className="order-d-list">
-                  {order?.orderDetails?.map((item, index) => (
-                    <>
-                      <div className="order-d-item grid">
-                        {/* Hình ảnh sản phẩm */}
-                        <div className="order-d-item-img">
-                          <img src={item.linkImage} alt={item.productName} className="object-fit-cover" />
-                        </div>
-
-                        {/* Thông tin sản phẩm */}
-                        <div className="order-d-item-info">
-                          <p className="text-xl font-bold">{item.productName}</p>
-                          <p className="text-gray">x{item.quantity}</p>
-                        </div>
-
-                        {/* Giá sản phẩm */}
-                        <div className="order-d-item-price">
-                          <p className="text-red-500 font-bold">{currencyFormat(item.price)}</p>
-                        </div>
                       </div>
-                      {/* Thông tin tổng đơn hàng */}
-                    </>
-                  ))}
-                  <div className="order-summary">
-                    <table className="w-full border-separate border-spacing-y-2">
-                      <tbody>
-                        <tr>
-                          <td className="text-right text-gray-500">Phí vận chuyển</td>
-                          <td className="text-right">{currencyFormat(order?.shipCost ?? 0)}</td>
-                        </tr>
-                        <tr className="border-t border-gray-300">
-                          <td className="text-right font-bold">Thành tiền</td>
-                          <td className="text-right text-4xl font-bold text-red-500">
-                            {currencyFormat(order?.totalPrice ?? 0)}
-                          </td>
-                        </tr>
-                        <tr>
-                          <td className="text-right text-gray-500">Phương thức Thanh toán</td>
-                          <td className="text-right text-xl">{order?.payment?.paymentMethod}</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </OrderDetailListWrapper>
-              </div>
-            </OrderDetailContainer>
-          </UserContent>
-        </UserDashboardWrapper>
-      </Container>
+                    </OrderDetailStatusWrapperv2>
+                  )}
+                  {order?.status === "COMPLETED" ? (
+                    <OrderDetailMessageWrapper>
+                      <div className="order-message-content">
+                        <p className="font-semibold">
+                          Hãy kiểm tra cẩn thận tất cả các sản phẩm trong đơn hàng trước khi bấm "Đã nhận được hàng".
+                        </p>
+                        <p className="text-gray-600">{formatDate(order?.createDate)}.</p>
+                      </div>
+
+                      <div className="order-buttons">
+                        <BaseBtnGreen className="confirm-button">Đã Nhận Hàng</BaseBtnGreen>
+                        <BaseButtonWhite className="request-button">Yêu Cầu Trả Hàng/Hoàn Tiền</BaseButtonWhite>
+                      </div>
+                    </OrderDetailMessageWrapper>
+                  ) : ["PROCESSING"].includes(order?.status || "") ? (
+                    <OrderDetailMessageWrapperv2>
+                      <div className="order-message-content">
+                        <p className="font-semibold">Đơn hàng của bạn sẽ được chuẩn bị và chuyển đi</p>
+                        <p className="text-gray-600">{formatDate(order?.createDate)}.</p>
+                      </div>
+
+                      <div className="order-buttons">
+                        <BaseButtonWhite className="request-button">Liên hệ người bán</BaseButtonWhite>
+                        <BaseButtonWhite className="request-button" onClick={openModalDelete}>
+                          Hủy đơn hàng
+                        </BaseButtonWhite>
+                      </div>
+                    </OrderDetailMessageWrapperv2>
+                  ) : null}
+
+                  {/*  list sp */}
+                  <OrderDetailListWrapper className="order-d-list">
+                    {order?.orderDetails?.map((item, index) => (
+                      <>
+                        <div className="order-d-item grid">
+                          {/* Hình ảnh sản phẩm */}
+                          <div className="order-d-item-img">
+                            <img src={item.linkImage} alt={item.productName} className="object-fit-cover" />
+                          </div>
+
+                          {/* Thông tin sản phẩm */}
+                          <div className="order-d-item-info">
+                            <p className="text-xl font-bold">{item.productName}</p>
+                            <p className="text-gray">x{item.quantity}</p>
+                          </div>
+
+                          {/* Giá sản phẩm */}
+                          <div className="order-d-item-price">
+                            <p className="text-red-500 font-bold">{currencyFormat(item.price)}</p>
+                          </div>
+                        </div>
+                        {/* Thông tin tổng đơn hàng */}
+                      </>
+                    ))}
+                    <div className="order-summary">
+                      <table className="w-full border-separate border-spacing-y-2">
+                        <tbody>
+                          <tr>
+                            <td className="text-right text-gray-500">Phí vận chuyển</td>
+                            <td className="text-right">{currencyFormat(order?.shipCost ?? 0)}</td>
+                          </tr>
+                          <tr className="border-t border-gray-300">
+                            <td className="text-right font-bold">Thành tiền</td>
+                            <td className="text-right text-4xl font-bold text-red-500">
+                              {currencyFormat(order?.totalPrice ?? 0)}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="text-right text-gray-500">Phương thức Thanh toán</td>
+                            <td className="text-right text-xl">{order?.payment?.paymentMethod}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </OrderDetailListWrapper>
+                </div>
+              </OrderDetailContainer>
+            </UserContent>
+          </UserDashboardWrapper>
+        </Container>
+      )}
+      <SimpleModal isOpen={isModalOpenDelete} onClose={closeModalDelete}>
+        <ModalHeader></ModalHeader>
+        <ModalContent>
+          <h2 className="text-xl font-bold text-center">Hủy đơn hàng</h2>
+          <p className="text-center text-gray-600 mt-2">Bạn có chắc chắn muốn hủy đơn hàng không?</p>
+          <div className="flex justify-between mt-6">
+            <button
+              onClick={closeModalDelete}
+              className="w-1/2 py-2 border border-red-600 text-red-600 font-semibold rounded-lg mr-2"
+            >
+              Không
+            </button>
+            <button onClick={handleCancelOrder} className="w-1/2 py-2 bg-red-600 text-white font-semibold rounded-lg">
+              {isLoadingUpdate ? <Loading /> : "Xác nhận "}
+            </button>
+          </div>
+        </ModalContent>
+      </SimpleModal>
     </OrderDetailScreenWrapper>
   );
 };
