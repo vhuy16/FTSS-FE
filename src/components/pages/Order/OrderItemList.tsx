@@ -3,9 +3,10 @@ import OrderItem from "./OrderItem";
 import { Order } from "@redux/slices/orderListSlice";
 import { breakpoints, defaultTheme } from "@styles/themes/default";
 import styled from "styled-components";
-import { BaseBtnGreen, BaseLinkOutlineGreen } from "@styles/button";
+import { BaseBtnGreen, BaseLinkOutlineGreen, BaseLinkRed } from "@styles/button";
 import { useNavigate } from "react-router-dom";
-import { formatDate } from "@ultils/helper";
+import { currencyFormat, formatDate } from "@ultils/helper";
+import { HorizontalLine, HorizontalLineTAb } from "@styles/styles";
 
 interface OrderItemListProps {
   orders: Order[]; // Changed to an array of Order
@@ -98,7 +99,57 @@ const OrderItemListWrapper = styled.div`
       }
     }
   }
+  .order-items-last {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+  }
+
+  .total-price {
+    text-align: right;
+    flex-shrink: 0;
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 18px;
+  }
+
+  .total-price-text {
+    color: #ee4d2d;
+    font-size: 25px;
+    margin-left: 10px;
+  }
+
+  .order-btn {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  .order-btn button {
+    padding: 10px 30px;
+    font-size: 18px;
+    border-radius: 4px;
+  }
+  .btn-primary {
+    background-color: #ee4d2d;
+    color: white;
+    border: none;
+  }
+  .btn-secondary {
+    background-color: white;
+    border: 1px solid #ccc;
+  }
+  .btn-third {
+    background-color: #d0011b;
+    color: white;
+    border: none;
+  }
+  .btn-dropdown {
+    background-color: white;
+    border: 1px solid #ccc;
+  }
 `;
+
 const OrderItemList: React.FC<OrderItemListProps> = ({ orders }) => {
   const navigate = useNavigate();
   console.log("or", orders);
@@ -112,39 +163,40 @@ const OrderItemList: React.FC<OrderItemListProps> = ({ orders }) => {
               <h3 className="text-gray-800 order-item-title font-bold">Mã đặt hàng: {order.id}</h3>
               <BaseBtnGreen onClick={() => navigate(`/order-detail/${order.id}`)}>Xem chi tiết</BaseBtnGreen>
             </div>
-            <div className="order-info-group flex flex-wrap">
-              <div className="order-info-item">
-                <span className="text-gray font-semibold">Ngày đặt hàng:</span>
-                <span className="text-silver font-semibold">{formatDate(order.createDate)}</span>
-              </div>
-              <div className="order-info-item">
-                <span className="text-gray font-semibold">Trạng thái:</span>
-                <span className="text-silver font-semibold">
-                  {order.status === "PENDING"
-                    ? "Chờ thanh toán"
-                    : order.status === "PROCESSING"
-                    ? "Đang xử lý"
-                    : order.status === "CANCELLED"
-                    ? "Đã hủy"
-                    : order.status === "PAID"
-                    ? "Đã thanh toán"
-                    : order.status}
-                </span>
-              </div>
-              <div className="order-info-item">
-                <span className="text-gray font-semibold">Địa chỉ:</span>
-                <span className="text-silver font-semibold">{order.address}</span>
-              </div>
-              <div className="order-info-item">
-                <span className="text-gray font-semibold">Phương thức thanh toán:</span>
-                <span className="text-silver font-semibold">{order.payment.paymentMethod}</span>
-              </div>
-            </div>
+            <HorizontalLineTAb></HorizontalLineTAb>
           </div>
           {/* Hiển thị danh sách sản phẩm của đơn hàng */}
           {order.orderDetails?.map((item, index) => (
             <OrderItem key={`${order.id}-${index}`} order={order} item={item} />
           ))}
+          <HorizontalLineTAb></HorizontalLineTAb>
+          <div className="order-items-last">
+            {/* Tổng tiền */}
+            <div className="total-price">
+              Thành tiền: <span className="total-price-text">{currencyFormat(order.totalPrice)}</span>
+            </div>
+            {/* Các nút thao tác */}
+            <div className="order-btn">
+              {order.status === "CANCELLED" && (
+                <>
+                  <button className="btn-primary">Mua lại</button>
+                  <button className="btn-secondary">Liên hệ shop</button>
+                </>
+              )}
+              {order.status === "PROCESSING" && (
+                <>
+                  <button className="btn-third">Hủy đơn</button>
+                  <button className="btn-secondary">Yêu Cầu Trả Hàng/Hoàn Tiền</button>
+                </>
+              )}
+              {order.status === "COMPLETED" && (
+                <>
+                  <button className="btn-primary">Đánh Giá</button>
+                  <button className="btn-secondary">Liên hệ người bán</button>
+                </>
+              )}
+            </div>
+          </div>
         </div>
       ))}
     </OrderItemListWrapper>

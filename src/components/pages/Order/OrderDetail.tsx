@@ -1,6 +1,7 @@
 import Breadcrumb from "@common/Breadcrum";
 import Title from "@common/Title";
 import UserMenu from "@components/atom/user/UserMenu";
+import { AssignmentTurnedIn, Cancel, CheckCircle, FeedOutlined, LocalShipping, StarBorder } from "@mui/icons-material";
 import { useAppDispatch, useAppSelector } from "@redux/hook";
 import { getAllOrdersByUsers } from "@redux/slices/orderListSlice";
 import { BaseBtnGreen, BaseButtonOuterspace, BaseButtonWhite, BaseButtonWhitesmoke } from "@styles/button";
@@ -8,11 +9,9 @@ import { Container } from "@styles/styles";
 import { breakpoints, defaultTheme } from "@styles/themes/default";
 import { UserContent, UserDashboardWrapper } from "@styles/user";
 import { currencyFormat } from "@ultils/helper";
-import { get } from "http";
-import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import styled from "styled-components";
-
+type OrderStatus = "PROCESSING" | "PENDING_DELIVERY" | "PROCESSED" | "COMPLETED";
 const OrderDetailScreenWrapper = styled.main`
   .btn-and-title-wrapper {
     margin-bottom: 24px;
@@ -47,85 +46,97 @@ const OrderDetailContainer = styled.div`
   padding: 40px;
   box-shadow: 2px 2px 5px 5px rgba(0, 0, 0, 0.03); /* Tạo hiệu ứng tách biệt */
 `;
+const statusSteps: OrderStatus[] = ["PROCESSING", "PROCESSED", "PENDING_DELIVERY", "COMPLETED"];
+const OrderDetailStatusWrapper = styled.div<{ currentIndex: number; totalSteps: number }>`
+  margin: 0 40px;
 
-const OrderDetailStatusWrapper = styled.div`
-  margin: 0 36px;
   @media (max-width: ${breakpoints.sm}) {
     margin: 0 10px;
-    overflow-x: scroll;
+    overflow-x: auto;
   }
 
   .order-status {
-    height: 4px;
-    margin: 60px 0;
-    max-width: 580px;
-    width: 500px;
-    margin-left: auto;
-    margin-right: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 740px;
+    width: 100%;
+    margin: 100px auto 90px;
     position: relative;
-    margin-bottom: 70px;
 
-    @media (max-width: ${breakpoints.sm}) {
-      margin-right: 40px;
-      margin-left: 40px;
+    &::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(
+        to right,
+        #4caf50 ${({ currentIndex, totalSteps }) => (currentIndex / (totalSteps - 1)) * 100}%,
+        #ddd ${({ currentIndex, totalSteps }) => (currentIndex / (totalSteps - 1)) * 100}%
+      );
+      z-index: 0;
+      transform: translateY(-50%);
+      transition: background 0.3s ease-in-out;
     }
 
     &-dot {
-      width: 20px;
-      height: 20px;
+      position: relative;
+      z-index: 1;
+      width: 70px;
+      height: 70px;
       border-radius: 50%;
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      border: 3px solid #4caf50;
+      background-color: #fff;
+      transition: all 0.3s ease-in-out;
 
-      &:nth-child(1) {
-        left: 0;
+      .status-icon {
+        font-size: 40px;
+        color: #4caf50;
       }
 
-      &:nth-child(2) {
-        left: calc(33.3333% - 10px);
-      }
-
-      &:nth-child(3) {
-        left: calc(66.6666% - 10px);
-      }
-      &:nth-child(4) {
-        right: 0;
-      }
-
-      &.status-done {
-        background-color: ${defaultTheme.color_outerspace};
-        .order-status-text {
-          color: ${defaultTheme.color_outerspace};
-        }
+      .status-text {
+        margin-top: 15px; /* Khoảng cách chữ với dot */
+        font-size: 18px;
+        color: #4caf50;
+        text-align: center;
+        position: absolute;
+        bottom: -40px; /* Dịch xuống dưới */
+        left: 50%;
+        transform: translateX(-50%);
       }
 
       &.status-current {
-        position: absolute;
-        &::after {
-          content: "";
-          position: absolute;
-          width: 12px;
-          height: 12px;
-          background-color: ${defaultTheme.color_outerspace};
-          left: 50%;
-          top: 50%;
-          transform: translate(-50%, -50%);
-          z-index: 30;
-          border-radius: 50%;
-        }
-
-        .order-status-text {
-          color: ${defaultTheme.color_outerspace};
+        background-color: #4caf50;
+        border: 3px solid #4caf50;
+        .status-icon {
+          color: #fff;
         }
       }
-    }
 
-    &-text {
-      position: absolute;
-      top: calc(100% + 10px);
-      left: 70%;
-      transform: translateX(-50%);
+      &.status-done {
+        background-color: white;
+        border: 3px solid #4caf50;
+        .status-icon {
+          color: #4caf50;
+        }
+      }
+
+      &.status-pending {
+        border: 3px solid #ddd;
+        background-color: #f5f5f5;
+        .status-icon {
+          color: #bbb;
+        }
+        .status-text {
+          color: #bbb;
+        }
+      }
     }
   }
 `;
@@ -272,17 +283,6 @@ const OrderDetailListWrapper = styled.div`
     }
   }
 
-  /* Quà tặng */
-  .gift-label {
-    display: inline-block;
-    background: #ff4d4f;
-    color: white;
-    font-size: 0.75rem;
-    font-weight: bold;
-    padding: 2px 6px;
-    border-radius: 4px;
-  }
-
   /* Phần tổng kết */
   .order-summary {
     width: 100%;
@@ -304,7 +304,7 @@ const OrderDetailListWrapper = styled.div`
   }
 
   .order-summary .text-red-500 {
-    color: #e11d48;
+    color: #fd053b;
   }
 
   .order-summary .text-gray-500 {
@@ -317,9 +317,9 @@ const OrderDetailListWrapper = styled.div`
 `;
 
 const breadcrumbItems = [
-  { label: "Home", link: "/" },
-  { label: "Order", link: "/order" },
-  { label: "Order Details", link: "/order_detail" },
+  { label: "Trang chủ", link: "/" },
+  { label: "Đơn hàng", link: "/order" },
+  { label: "Thông tin đơn hàng", link: "/order_detail" },
 ];
 
 const OrderDetailScreen = () => {
@@ -334,6 +334,20 @@ const OrderDetailScreen = () => {
     if (isNaN(date.getTime())) return "Không hợp lệ"; // Kiểm tra nếu ngày không hợp lệ
 
     return date.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric" });
+  };
+
+  const orderStatusMap: Record<OrderStatus, string> = {
+    PROCESSING: "PROCESSING",
+    PENDING_DELIVERY: "PENDING_DELIVERY",
+    COMPLETED: "COMPLETED",
+    PROCESSED: "PROCESSED",
+  };
+
+  const statusIcons: Record<OrderStatus, JSX.Element> = {
+    PROCESSING: <FeedOutlined className="status-icon" />,
+    PROCESSED: <AssignmentTurnedIn className="status-icon" />,
+    PENDING_DELIVERY: <LocalShipping className="status-icon" />,
+    COMPLETED: <CheckCircle className="status-icon" />,
   };
 
   return (
@@ -359,31 +373,35 @@ const OrderDetailScreen = () => {
                   </div>
                   <div className="order-d-top-r text-xxl text-gray font-semibold">
                     <h4 className="text-3xl mb-7"> {order?.status}</h4>
-                    Tổng tiền: <span className="text-outerspace">{order?.totalPrice} </span>
                   </div>
                 </div>
-                <OrderDetailStatusWrapper className="order-d-status">
-                  <div className="order-status bg-silver">
-                    <div className="order-status-dot status-done bg-silver">
-                      <span className="order-status-text font-semibold text-center no-wrap text-silver">
-                        Đã đặt hàng
-                      </span>
-                    </div>
-                    <div className="order-status-dot status-current bg-silver">
-                      <span className="order-status-text font-semibold text-center no-wrap text-silver">
-                        Đang xử lí
-                      </span>
-                    </div>
-                    <div className="order-status-dot bg-silver">
-                      <span className="order-status-text font-semibold text-center no-wrap text-silver">
-                        Đang vận chuyển
-                      </span>
-                    </div>
-                    <div className="order-status-dot bg-silver">
-                      <span className="order-status-text font-semibold text-center no-wrap text-silver">
-                        Đã vận chuyển
-                      </span>
-                    </div>
+                {/* status orderorder */}
+                <OrderDetailStatusWrapper
+                  currentIndex={statusSteps.indexOf(order?.status as OrderStatus)}
+                  totalSteps={statusSteps.length}
+                >
+                  <div className="order-status">
+                    {statusSteps.map((status, index) => {
+                      const currentIndex = statusSteps.indexOf(order?.status as OrderStatus);
+                      const isDone = index < currentIndex;
+                      const isCurrent = index === currentIndex;
+                      const isPending = index > currentIndex;
+
+                      return (
+                        <div className="order-status-1">
+                          <div
+                            key={status}
+                            className={`order-status-dot 
+            ${isCurrent ? "status-current" : ""} 
+            ${isDone ? "status-done" : ""} 
+            ${isPending ? "status-pending" : ""}`}
+                          >
+                            {statusIcons[status]}
+                            <span className="status-text">{orderStatusMap[status]}</span> {/* Thêm chữ */}
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </OrderDetailStatusWrapper>
 
@@ -404,46 +422,43 @@ const OrderDetailScreen = () => {
                 {/*  list sp */}
                 <OrderDetailListWrapper className="order-d-list">
                   {order?.orderDetails?.map((item, index) => (
-                    <div className="order-d-item grid">
-                      {/* Hình ảnh sản phẩm */}
-                      <div className="order-d-item-img">
-                        <img src={item.linkImage} alt={item.productName} className="object-fit-cover" />
-                      </div>
+                    <>
+                      <div className="order-d-item grid">
+                        {/* Hình ảnh sản phẩm */}
+                        <div className="order-d-item-img">
+                          <img src={item.linkImage} alt={item.productName} className="object-fit-cover" />
+                        </div>
 
-                      {/* Thông tin sản phẩm */}
-                      <div className="order-d-item-info">
-                        <p className="text-xl font-bold">{item.productName}</p>
-                        <p className="text-gray">x{item.quantity}</p>
-                      </div>
+                        {/* Thông tin sản phẩm */}
+                        <div className="order-d-item-info">
+                          <p className="text-xl font-bold">{item.productName}</p>
+                          <p className="text-gray">x{item.quantity}</p>
+                        </div>
 
-                      {/* Giá sản phẩm */}
-                      <div className="order-d-item-price">
-                        <p className="text-red-500 font-bold">{currencyFormat(item.price)}</p>
+                        {/* Giá sản phẩm */}
+                        <div className="order-d-item-price">
+                          <p className="text-red-500 font-bold">{currencyFormat(item.price)}</p>
+                        </div>
                       </div>
-                    </div>
+                      {/* Thông tin tổng đơn hàng */}
+                    </>
                   ))}
-
-                  {/* Thông tin tổng đơn hàng */}
                   <div className="order-summary">
                     <table className="w-full border-separate border-spacing-y-2">
                       <tbody>
-                        <tr>
-                          <td className="text-right text-gray-500">Tổng tiền hàng</td>
-                          <td className="text-right">{currencyFormat(order?.totalPrice ?? 0)}</td>
-                        </tr>
                         <tr>
                           <td className="text-right text-gray-500">Phí vận chuyển</td>
                           <td className="text-right">{currencyFormat(order?.shipCost ?? 0)}</td>
                         </tr>
                         <tr className="border-t border-gray-300">
                           <td className="text-right font-bold">Thành tiền</td>
-                          <td className="text-right text-xl font-bold text-red-500">
+                          <td className="text-right text-4xl font-bold text-red-500">
                             {currencyFormat(order?.totalPrice ?? 0)}
                           </td>
                         </tr>
                         <tr>
                           <td className="text-right text-gray-500">Phương thức Thanh toán</td>
-                          <td className="text-right">{order?.payment?.paymentMethod}</td>
+                          <td className="text-right text-xl">{order?.payment?.paymentMethod}</td>
                         </tr>
                       </tbody>
                     </table>
