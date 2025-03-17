@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import myAxios from '@setup/axiosConfig';
 
 export type Product = {
@@ -27,10 +27,12 @@ type ListCateAndProduct = {
 type initialStateProduct = {
     data: ProductData | null;
     listProductForAdmin: Product[];
+    selectedProduct: Product;
     listCateAndProduct: ListCateAndProduct[];
     isLoading: boolean;
     isLoadingGetCateWithProduct: boolean;
     isLoadingAdd: boolean;
+    isLoadingEdit: boolean;
     isLoadingDelete: boolean;
     isLoadingEnable: boolean;
     isError: boolean;
@@ -134,6 +136,22 @@ export const addProducts = createAsyncThunk('product/addProducts', async (formDa
         console.log(error);
     }
 });
+export const editProducts = createAsyncThunk(
+    'product/editProducts',
+    async ({ formData, id }: { formData: FormData; id: string }, { dispatch }) => {
+        try {
+            const response = await myAxios.put(`product/${id}`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+            await dispatch(getAllProductForAdmin());
+            return response.data;
+        } catch (error: any) {
+            console.log(error);
+        }
+    },
+);
 export const deleteProduct = createAsyncThunk(
     'product/deleteProduct',
     async (id: string, { rejectWithValue, dispatch }) => {
@@ -164,10 +182,22 @@ export const enableProduct = createAsyncThunk(
 const initialState: initialStateProduct = {
     data: null,
     listProductForAdmin: [],
+    selectedProduct: {
+        id: '',
+        productName: '',
+        description: '',
+        quantity: 0,
+        subCategoryName: '',
+        categoryName: '',
+        price: 0,
+        status: '',
+        images: '',
+    },
     listCateAndProduct: [],
     isLoading: false,
     isLoadingGetCateWithProduct: false,
     isLoadingAdd: false,
+    isLoadingEdit: false,
     isLoadingDelete: false,
     isLoadingEnable: false,
     isError: false,
@@ -176,7 +206,12 @@ const initialState: initialStateProduct = {
 const productSlice = createSlice({
     name: 'product',
     initialState,
-    reducers: {},
+    reducers: {
+        selectProduct: (state, action: PayloadAction<Product>) => {
+            const product = action.payload;
+            state.selectedProduct = product;
+        },
+    },
     extraReducers: (builder) => {
         builder
             .addCase(getAllProduct.pending, (state) => {
@@ -287,6 +322,20 @@ const productSlice = createSlice({
                 state.isLoadingGetCateWithProduct = false;
                 state.isError = true;
             });
+        builder
+            .addCase(editProducts.pending, (state) => {
+                state.isLoadingEdit = true;
+                state.isError = false;
+            })
+            .addCase(editProducts.fulfilled, (state, action) => {
+                state.isLoadingEdit = false;
+                state.isError = false;
+            })
+            .addCase(editProducts.rejected, (state, action) => {
+                state.isLoadingEdit = false;
+                state.isError = true;
+            });
     },
 });
+export const { selectProduct } = productSlice.actions;
 export default productSlice.reducer;

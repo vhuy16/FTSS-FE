@@ -17,6 +17,7 @@ import AddProductModal from '../modal/AddProductModal';
 import { getSetupPackagesShop } from '@redux/slices/setupSlice';
 import AddSetupModal from '../modal/AddSetupModal';
 import SetupPopup from '../popup/SetupPopup';
+import EditSetupModal from '../modal/EditSetupModal';
 
 const paginationModel = { page: 0, pageSize: 5 };
 const StyledDataGrid = styled(DataGrid)((theme) => ({
@@ -32,6 +33,7 @@ const StyledDataGrid = styled(DataGrid)((theme) => ({
 export default function ListSetupTable() {
     const listSetup = useAppSelector((state) => state.setupPackage.setupPackages);
     const [isModalAddOpen, setIsModalAddOpen] = useState(false);
+    const [isModalEditOpen, setIsModalEditOpen] = useState(false);
     const dispatch = useAppDispatch();
     useEffect(() => {
         dispatch(getSetupPackagesShop());
@@ -103,7 +105,7 @@ export default function ListSetupTable() {
             sortable: false,
             renderCell: (params) => (
                 <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
-                    <SetupPopup setup={params.row} />
+                    <SetupPopup setup={params.row} setIsModalEditOpen={setIsModalEditOpen} />
                 </Box>
             ),
         },
@@ -209,6 +211,7 @@ export default function ListSetupTable() {
                 </Box>
             )}
             <AddSetupModal isModalAddOpen={isModalAddOpen} setIsModalAddOpen={setIsModalAddOpen}></AddSetupModal>
+            <EditSetupModal isModalEditOpen={isModalEditOpen} setIsModalEditOpen={setIsModalEditOpen} />
         </div>
     );
 }

@@ -1,14 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import { useAppDispatch, useAppSelector } from '@redux/hook';
 import { getAllCategory, getAllSubCategoryByCateName } from '@redux/slices/categorySlice';
-import { addProducts } from '@redux/slices/productSlice';
+import { addProducts, editProducts, Product } from '@redux/slices/productSlice';
 import { toast } from 'react-toastify';
 import Loading from '../Loading/Loading';
-type ModalAddProps = {
-    isModalAddOpen: boolean;
-    setIsModalAddOpen: (isOpen: boolean) => void;
+import { Checkbox, FormControlLabel } from '@mui/material';
+type ModalEditProps = {
+    isModalEditOpen: boolean;
+    setIsModalEditOpen: (isOpen: boolean) => void;
 };
 const style = {
     position: 'absolute',
@@ -17,17 +18,20 @@ const style = {
     transform: 'translate(-50%, -50%)',
     width: 700,
 };
-export default function AddProductModal({ isModalAddOpen, setIsModalAddOpen }: ModalAddProps) {
+export default function EditProductModal({ isModalEditOpen, setIsModalEditOpen }: ModalEditProps) {
     const dispatch = useAppDispatch();
+    const product = useAppSelector((state) => state.product.selectedProduct);
     const listCate = useAppSelector((state) => state.category.categories);
     const listSubCate = useAppSelector((state) => state.category.subCates);
-    const isLoading = useAppSelector((state) => state.product.isLoadingAdd);
-
+    const isLoading = useAppSelector((state) => state.product.isLoadingEdit);
+    const [checked, setChecked] = useState(false);
     const [cateName, setCateName] = useState('');
     const [subCate, setSubCate] = useState({ name: '', id: '' });
     const [data, setData] = useState<{
         productName: string;
         description: string;
+        cateName: string;
+        subCateName: string;
         price: number;
         quantity: number;
         subCategoryId: string;
@@ -35,6 +39,8 @@ export default function AddProductModal({ isModalAddOpen, setIsModalAddOpen }: M
     }>({
         productName: '',
         description: '',
+        cateName: '',
+        subCateName: '',
         price: 0,
         quantity: 0,
         subCategoryId: '',
@@ -42,53 +48,99 @@ export default function AddProductModal({ isModalAddOpen, setIsModalAddOpen }: M
     });
 
     useEffect(() => {
-        if (isModalAddOpen) {
+        if (isModalEditOpen) {
             dispatch(getAllCategory());
         }
-    }, [isModalAddOpen]);
+    }, [isModalEditOpen]);
     useEffect(() => {
-        if (isModalAddOpen) {
+        if (isModalEditOpen) {
             dispatch(getAllSubCategoryByCateName(cateName));
         }
     }, [cateName]);
     const handleSubmit = async () => {
-        if (
-            data.productName &&
-            data.description &&
-            data.subCategoryId &&
-            data.subCategoryId != '1' &&
-            data.price != 0 &&
-            data.quantity != 0 &&
-            data.images.length > 0
-        ) {
-            const formData = new FormData();
-            formData.append('ProductName', data.productName);
-            formData.append('Description', data.description);
+        const formData = new FormData();
+        formData.append('ProductName', data.productName);
+        formData.append('Description', data.description);
+        formData.append('Status', '');
+        if (data.price == 0) {
+            formData.append('Price', '');
+        } else {
             formData.append('Price', data.price.toString());
+        }
+        if (data.quantity == 0) {
+            formData.append('Quantity', '');
+        } else {
             formData.append('Quantity', data.quantity.toString());
-            formData.append('SubCategoryId', data.subCategoryId);
-            formData.append('Size', '3x4x5');
+        }
 
+        if (data.subCategoryId == '1') {
+            formData.append('SubCategoryId', '');
+        } else {
+            formData.append('SubCategoryId', data.subCategoryId);
+        }
+        formData.append('Size', '3x4x5');
+
+        if (data.images.length == 0) {
+            formData.append('ImageLink', '');
+        } else {
             for (let i = 0; i < data.images.length; i++) {
                 formData.append('ImageLink', data.images[i]);
             }
-
-            await dispatch(addProducts(formData));
-            setIsModalAddOpen(false);
-            toast.success('Thêm sản phẩm thành công');
-        } else {
-            toast.error('Vui lòng nhập đủ thông tin');
+        }
+        try {
+            const res = await dispatch(
+                editProducts({
+                    formData: formData,
+                    id: product.id,
+                }),
+            ).unwrap();
+            if (res.status == '200') {
+                setIsModalEditOpen(false);
+                setChecked(false);
+                setData({
+                    productName: '',
+                    description: '',
+                    cateName: '',
+                    subCateName: '',
+                    price: 0,
+                    quantity: 0,
+                    subCategoryId: '',
+                    images: [],
+                });
+                toast.success('Cập nhật sản phẩm thành công');
+            } else {
+                toast.error('Cập nhật sản phẩm thất bại');
+            }
+        } catch (error) {
+            console.log(error);
         }
     };
+
+    const handleChangeCheckBox = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setChecked(event.target.checked);
+    };
+
     return (
         <>
             {/* Modal */}
             <div>
                 <Modal
-                    open={isModalAddOpen}
+                    open={isModalEditOpen}
                     onClose={() => {
-                        setIsModalAddOpen(false);
+                        setIsModalEditOpen(false);
+                        setChecked(false);
+                        setData({
+                            productName: '',
+                            description: '',
+                            cateName: '',
+                            subCateName: '',
+                            price: 0,
+                            quantity: 0,
+                            subCategoryId: '',
+                            images: [],
+                        });
                     }}
+                    disableEnforceFocus
                     aria-labelledby="modal-modal-title"
                     aria-describedby="modal-modal-description"
                 >
@@ -98,13 +150,24 @@ export default function AddProductModal({ isModalAddOpen, setIsModalAddOpen }: M
                                 <div className="relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
                                     <div className="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600">
                                         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                                            Thêm sản phẩm
+                                            Cập nhật sản phẩm
                                         </h3>
                                         <button
                                             type="button"
                                             className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
                                             onClick={() => {
-                                                setIsModalAddOpen(false);
+                                                setIsModalEditOpen(false);
+                                                setChecked(false);
+                                                setData({
+                                                    productName: '',
+                                                    description: '',
+                                                    cateName: '',
+                                                    subCateName: '',
+                                                    price: 0,
+                                                    quantity: 0,
+                                                    subCategoryId: '',
+                                                    images: [],
+                                                });
                                             }}
                                         >
                                             <svg
@@ -137,7 +200,7 @@ export default function AddProductModal({ isModalAddOpen, setIsModalAddOpen }: M
                                                     name="name"
                                                     id="name"
                                                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                                    placeholder="Nhập tên sản phẩm"
+                                                    placeholder={product.productName}
                                                     required={true}
                                                     onChange={(e) => setData({ ...data, productName: e.target.value })}
                                                 />
@@ -154,7 +217,7 @@ export default function AddProductModal({ isModalAddOpen, setIsModalAddOpen }: M
                                                     name="price"
                                                     id="brand"
                                                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                                    placeholder="Nhập giá tiền"
+                                                    placeholder={JSON.stringify(product.price)}
                                                     required={true}
                                                     onChange={(e) =>
                                                         setData({ ...data, price: parseInt(e.target.value) })
@@ -173,84 +236,99 @@ export default function AddProductModal({ isModalAddOpen, setIsModalAddOpen }: M
                                                     name="quantity"
                                                     id="brand"
                                                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                                    placeholder="Nhập số lượng"
+                                                    placeholder={JSON.stringify(product.quantity)}
                                                     required={true}
                                                     onChange={(e) =>
                                                         setData({ ...data, quantity: parseInt(e.target.value) })
                                                     }
                                                 />
                                             </div>
-                                            <div className="sm:col-span-3">
-                                                <label
-                                                    htmlFor="price"
-                                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                                >
-                                                    Danh mục
-                                                </label>
-                                                <select
-                                                    id="category"
-                                                    onChange={(e) => {
-                                                        setCateName(e.target.value);
-                                                        setSubCate({ name: '', id: '' });
-                                                    }}
-                                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                                >
-                                                    <option selected={true}>Chọn danh mục</option>
-                                                    {listCate ? (
-                                                        listCate.map((cate) => (
-                                                            <option value={cate.categoryName}>
-                                                                {cate.categoryName}
-                                                            </option>
-                                                        ))
-                                                    ) : (
-                                                        <></>
-                                                    )}
-                                                </select>
+                                            <div className="sm:col-span-6">
+                                                <FormControlLabel
+                                                    control={
+                                                        <Checkbox checked={checked} onChange={handleChangeCheckBox} />
+                                                    }
+                                                    label="Chọn lại danh mục cho sản phẩm"
+                                                />
                                             </div>
-                                            <div className="sm:col-span-3">
-                                                <label
-                                                    htmlFor="category"
-                                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                                >
-                                                    Danh mục phụ
-                                                </label>
-                                                <select
-                                                    id="category"
-                                                    value={JSON.stringify(subCate)}
-                                                    onChange={(e) => {
-                                                        setSubCate(JSON.parse(e.target.value));
-                                                        setData({
-                                                            ...data,
-                                                            subCategoryId: JSON.parse(e.target.value).id,
-                                                        });
-                                                    }}
-                                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                                >
-                                                    <option
-                                                        selected={true}
-                                                        value={JSON.stringify({
-                                                            name: 'Chọn danh mục phụ',
-                                                            id: '1',
-                                                        })}
+
+                                            {checked && (
+                                                <div className="sm:col-span-3">
+                                                    <label
+                                                        htmlFor="price"
+                                                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                                                     >
-                                                        Chọn danh mục phụ
-                                                    </option>
-                                                    {listSubCate ? (
-                                                        listSubCate.map((cate) => (
-                                                            <option
-                                                                value={JSON.stringify({
-                                                                    name: cate.categoryName,
-                                                                    id: cate.id,
-                                                                })}
-                                                            >
-                                                                {cate.subCategoryName}
-                                                            </option>
-                                                        ))
-                                                    ) : (
-                                                        <></>
-                                                    )}
-                                                </select>
-                                            </div>
+                                                        Danh mục
+                                                    </label>
+                                                    <select
+                                                        id="category"
+                                                        onChange={(e) => {
+                                                            setCateName(e.target.value);
+                                                            setSubCate({ name: '', id: '' });
+                                                        }}
+                                                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                                    >
+                                                        <option selected={true}>Chọn danh mục</option>
+                                                        {listCate ? (
+                                                            listCate.map((cate) => (
+                                                                <option key={cate.id} value={cate.categoryName}>
+                                                                    {cate.categoryName}
+                                                                </option>
+                                                            ))
+                                                        ) : (
+                                                            <></>
+                                                        )}
+                                                    </select>
+                                                </div>
+                                            )}
+                                            {checked && (
+                                                <div className="sm:col-span-3">
+                                                    <label
+                                                        htmlFor="category"
+                                                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                                    >
+                                                        Danh mục phụ
+                                                    </label>
+                                                    <select
+                                                        id="category"
+                                                        value={JSON.stringify(subCate)}
+                                                        onChange={(e) => {
+                                                            setSubCate(JSON.parse(e.target.value));
+                                                            setData({
+                                                                ...data,
+                                                                subCategoryId: JSON.parse(e.target.value).id,
+                                                            });
+                                                        }}
+                                                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                                    >
+                                                        <option
+                                                            selected={true}
+                                                            value={JSON.stringify({
+                                                                name: 'Chọn danh mục phụ',
+                                                                id: '1',
+                                                            })}
+                                                        >
+                                                            Chọn danh mục phụ
+                                                        </option>
+                                                        {listSubCate ? (
+                                                            listSubCate.map((cate) => (
+                                                                <option
+                                                                    key={cate.id}
+                                                                    value={JSON.stringify({
+                                                                        name: cate.categoryName,
+                                                                        id: cate.id,
+                                                                    })}
+                                                                >
+                                                                    {cate.subCategoryName}
+                                                                </option>
+                                                            ))
+                                                        ) : (
+                                                            <></>
+                                                        )}
+                                                    </select>
+                                                </div>
+                                            )}
+
                                             <div className="sm:col-span-6">
                                                 <label
                                                     htmlFor="description"
@@ -262,7 +340,7 @@ export default function AddProductModal({ isModalAddOpen, setIsModalAddOpen }: M
                                                     id="description"
                                                     rows={4}
                                                     className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                                    placeholder="Viết mô tả sản phẩm tại đây"
+                                                    placeholder={product.description}
                                                     required={true}
                                                     onChange={(e) => setData({ ...data, description: e.target.value })}
                                                 ></textarea>
@@ -292,23 +370,24 @@ export default function AddProductModal({ isModalAddOpen, setIsModalAddOpen }: M
                                                 onClick={handleSubmit}
                                                 className="text-white inline-flex items-center bg-blackGreen  hover:bg-blackGreenHover focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 mt-3 mr-3"
                                             >
-                                                {/* <svg
-                                                    className="mr-1 -ml-1 w-6 h-6"
-                                                    fill="currentColor"
-                                                    viewBox="0 0 20 20"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                >
-                                                    <path
-                                                        fill-rule="evenodd"
-                                                        d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
-                                                        clip-rule="evenodd"
-                                                    ></path>
-                                                </svg> */}
-                                                {isLoading ? <Loading></Loading> : 'Thêm'}
+                                                {isLoading ? <Loading></Loading> : 'Lưu'}
                                             </button>
 
                                             <button
-                                                onClick={() => setIsModalAddOpen(false)}
+                                                onClick={() => {
+                                                    setIsModalEditOpen(false);
+                                                    setChecked(false);
+                                                    setData({
+                                                        productName: '',
+                                                        description: '',
+                                                        cateName: '',
+                                                        subCateName: '',
+                                                        price: 0,
+                                                        quantity: 0,
+                                                        subCategoryId: '',
+                                                        images: [],
+                                                    });
+                                                }}
                                                 className="text-red-600 inline-flex items-center mt-3 font-bold text-sm underline"
                                             >
                                                 <svg

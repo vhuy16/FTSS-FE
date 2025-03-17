@@ -14,6 +14,7 @@ import OrderPopup from '../popup/OrderPopup';
 import { getAllProductForAdmin, getProductByNameForAdmin } from '@redux/slices/productSlice';
 import ProductPopup from '../popup/ProductPopup';
 import AddProductModal from '../modal/AddProductModal';
+import EditProductModal from '../modal/EditProductModal';
 
 const paginationModel = { page: 0, pageSize: 5 };
 const StyledDataGrid = styled(DataGrid)((theme) => ({
@@ -29,7 +30,7 @@ const StyledDataGrid = styled(DataGrid)((theme) => ({
 export default function ListProductTable() {
     const listProduct = useAppSelector((state) => state.product.listProductForAdmin);
     const [isModalAddOpen, setIsModalAddOpen] = useState(false);
-    const [products, setProducts] = useState<any[]>([]);
+    const [isModalEditOpen, setIsModalEditOpen] = useState(false);
     const dispatch = useAppDispatch();
     useEffect(() => {
         dispatch(getAllProductForAdmin());
@@ -95,7 +96,7 @@ export default function ListProductTable() {
             sortable: false,
             renderCell: (params) => (
                 <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
-                    <ProductPopup product={params.row} />
+                    <ProductPopup product={params.row} setIsModalEditOpen={setIsModalEditOpen} />
                 </Box>
             ),
         },
@@ -208,6 +209,7 @@ export default function ListProductTable() {
                 </Box>
             )}
             <AddProductModal isModalAddOpen={isModalAddOpen} setIsModalAddOpen={setIsModalAddOpen}></AddProductModal>
+            <EditProductModal isModalEditOpen={isModalEditOpen} setIsModalEditOpen={setIsModalEditOpen} />
         </div>
     );
 }
