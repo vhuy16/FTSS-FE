@@ -12,19 +12,24 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import Popover from '@mui/material/Popover';
 import ConfirmDelete from '../popup_modal/ConfirmDelete';
 import 'flowbite';
-import { Product } from '@redux/slices/productSlice';
+import { Product, selectProduct } from '@redux/slices/productSlice';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import ConfirmDeleteProduct from '../popup_modal/ConfirmDeleteProduct';
 import ConfirmActivateProduct from '../popup_modal/ConfirmActivateProduct';
+import EditProductModal from '../modal/EditProductModal';
+import { useAppDispatch } from '@redux/hook';
 
 const ITEM_HEIGHT = 48;
 type ProductPopupProps = {
     product: Product;
+    setIsModalEditOpen: (isOpen: boolean) => void;
 };
-export default function ProductPopup({ product }: ProductPopupProps) {
+export default function ProductPopup({ product, setIsModalEditOpen }: ProductPopupProps) {
+    const dispatch = useAppDispatch();
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const [isModalOpenDelete, setIsModalOpenDelete] = React.useState(false);
     const [isModalOpenActivate, setIsModalOpenActivate] = React.useState(false);
+
     const open = Boolean(anchorEl);
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
@@ -32,6 +37,7 @@ export default function ProductPopup({ product }: ProductPopupProps) {
     const handleClose = () => {
         setAnchorEl(null);
     };
+
     return (
         <div>
             <IconButton
@@ -61,22 +67,11 @@ export default function ProductPopup({ product }: ProductPopupProps) {
                     },
                 }}
             >
-                {/* <MenuItem
-                    onClick={() => {
-                        handleClose();
-                        setIsModalOpenDelete(true);
-                    }}
-                >
-                    <ListItemIcon>
-                        <RemoveRedEyeOutlinedIcon fontSize="small" className="text-green-400" />
-                    </ListItemIcon>
-                    <ListItemText>Xem chi tiết</ListItemText>
-                </MenuItem> */}
-
                 <MenuItem
                     onClick={() => {
                         handleClose();
-                        setIsModalOpenDelete(true);
+                        setIsModalEditOpen(true);
+                        dispatch(selectProduct(product));
                     }}
                 >
                     <ListItemIcon>

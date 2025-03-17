@@ -97,7 +97,7 @@ export default function AddSetupModal({ isModalAddOpen, setIsModalAddOpen }: Mod
                 };
             }),
         );
-        if (data.SetupName && data.Description && data.ImageFile && ProductJson) {
+        if (data.SetupName && data.Description && data.ImageFile && JSON.parse(ProductJson).length >= 3) {
             if (data.SetupName.length < 10) {
                 const formData = new FormData();
                 formData.append('SetupName', data.SetupName);
@@ -113,13 +113,15 @@ export default function AddSetupModal({ isModalAddOpen, setIsModalAddOpen }: Mod
                     }
                 } catch (error) {
                     setIsModalAddOpen(false);
-                    toast.error('Thêm mẫu thiết kế bể cá thất bại');
+                    toast.error(
+                        'Thêm mẫu thiết kế bể cá thất bại! Bể, Lọc, Đèn là 3 thành phần bắt buộc khi tạo bể cá',
+                    );
                 }
             } else {
                 toast.error('Tên mẫu thiếu kế phải là chữ in hoa và ít hơn 10 kí tự');
             }
         } else {
-            toast.error('Vui lòng nhập đủ thông tin');
+            toast.error('Vui lòng nhập đủ thông tin! Bể, Lọc, Đèn là 3 thành phần bắt buộc khi tạo bể cá');
         }
     };
     return (
