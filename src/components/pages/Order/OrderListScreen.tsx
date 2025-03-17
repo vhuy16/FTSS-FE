@@ -11,7 +11,7 @@ import { useEffect, useState } from "react";
 import { getAllOrdersByUsers } from "@redux/slices/orderListSlice";
 import { getUserProfile } from "@redux/slices/userSlice";
 
-type OrderStatus = "processing" | "pendingDelivery" | "delivered" | "paid" | "cancelled" | "returned";
+type OrderStatus = "PROCESSING" | "PENDING_DELIVERY" | "PROCESSED" | "COMPLETED" | "CANCELLED" | "RETURNED";
 
 const OrderListScreenWrapper = styled.div`
   background-color: #f6f6f6;
@@ -37,29 +37,29 @@ const OrderListScreenWrapper = styled.div`
 `;
 
 const breadcrumbItems = [
-  { label: "Home", link: "/" },
-  { label: "Order", link: "/order" },
+  { label: "Trang chủ", link: "/" },
+  { label: "Đơn hàng", link: "/order" },
 ];
 
 const OrderListScreen = () => {
   const dispatch = useAppDispatch();
   const orderData = useAppSelector((state) => state.orderList.orders) || [];
+  console.log("or", orderData);
 
   useEffect(() => {
     dispatch(getUserProfile());
     dispatch(getAllOrdersByUsers());
   }, [dispatch]);
 
-  const [activeTab, setActiveTab] = useState<OrderStatus>("processing");
+  const [activeTab, setActiveTab] = useState<OrderStatus>("PROCESSING");
   const handleTabClick = (tab: OrderStatus) => setActiveTab(tab);
-
   const orderStatusMap: Record<OrderStatus, string> = {
-    processing: "PROCESSING",
-    pendingDelivery: "PENDING_DELIVERY",
-    delivered: "DELIVERED",
-    paid: "PAID",
-    cancelled: "CANCELLED",
-    returned: "RETURNED",
+    PROCESSING: "PROCESSING",
+    PROCESSED: "PROCESSED",
+    PENDING_DELIVERY: "PENDING_DELIVERY",
+    COMPLETED: "COMPLETED",
+    CANCELLED: "CANCELLED",
+    RETURNED: "RETURNED",
   };
 
   const filteredOrders = orderData.filter((order) => order.status === orderStatusMap[activeTab]);
@@ -83,12 +83,12 @@ const OrderListScreen = () => {
                     }`}
                     onClick={() => handleTabClick(key as OrderStatus)}
                   >
-                    {key === "processing" && "Đang xử lí"}
-                    {key === "pendingDelivery" && "Chờ giao hàng"}
-                    {key === "delivered" && "Đã giao hàng"}
-                    {key === "paid" && "Đã thanh toán"}
-                    {key === "cancelled" && "Đã hủy"}
-                    {key === "refunded" && "Trả hàng/Hoàn tiền"}
+                    {key === "PROCESSING" && "Đang xử lí"}
+                    {key === "PROCESSED" && "Đã xử lí"}
+                    {key === "PENDING_DELIVERY" && "Chờ giao hàng"}
+                    {key === "COMPLETED" && "Đã giao hàng"}
+                    {key === "CANCELLED" && "Đã hủy"}
+                    {key === "RETURNED" && "Trả hàng/Hoàn tiền"}
                   </button>
                 ))}
               </div>
