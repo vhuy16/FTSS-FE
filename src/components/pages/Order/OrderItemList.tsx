@@ -1,12 +1,18 @@
 import PropTypes from "prop-types";
 import OrderItem from "./OrderItem";
-import { Order } from "@redux/slices/orderListSlice";
+import { getAllOrdersByUsers, Order } from "@redux/slices/orderListSlice";
 import { breakpoints, defaultTheme } from "@styles/themes/default";
 import styled from "styled-components";
 import { BaseBtnGreen, BaseLinkOutlineGreen, BaseLinkRed } from "@styles/button";
 import { useNavigate } from "react-router-dom";
 import { currencyFormat, formatDate } from "@ultils/helper";
 import { HorizontalLine, HorizontalLineTAb } from "@styles/styles";
+import SimpleModal, { ModalContent, ModalHeader } from "@components/atom/modal/Modal";
+import Loading from "@components/atom/Loading/Loading";
+import { useState } from "react";
+import { useAppDispatch, useAppSelector } from "@redux/hook";
+import { updateOrder } from "@redux/slices/orderSlice";
+import { toast } from "react-toastify";
 
 interface OrderItemListProps {
   orders: Order[]; // Changed to an array of Order
@@ -153,6 +159,29 @@ const OrderItemListWrapper = styled.div`
 const OrderItemList: React.FC<OrderItemListProps> = ({ orders }) => {
   const navigate = useNavigate();
   console.log("or", orders);
+  const [isModalOpenDelete, setIsModalOpenDelete] = useState(false);
+  const isLoadingUpdate = useAppSelector((state) => state.order.isLoadingUpdate);
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+  const dispatch = useAppDispatch();
+  const openModalDelete = () => {
+    setIsModalOpenDelete(true);
+  };
+  const closeModalDelete = () => {
+    setIsModalOpenDelete(false);
+  };
+  const handleCancelOrder = async () => {
+    if (!selectedOrderId) return;
+
+    try {
+      await dispatch(updateOrder({ id: selectedOrderId, status: "CANCELLED" }));
+      toast.success("Đơn hàng đã được hủy!");
+      dispatch(getAllOrdersByUsers());
+      setIsModalOpenDelete(false);
+    } catch (error) {
+      toast.error("Hủy đơn hàng thất bại!");
+      console.error("Lỗi khi hủy đơn hàng:", error);
+    }
+  };
   return (
     <OrderItemListWrapper>
       {orders?.map((order) => (
@@ -185,7 +214,15 @@ const OrderItemList: React.FC<OrderItemListProps> = ({ orders }) => {
               )}
               {order.status === "PROCESSING" && (
                 <>
-                  <button className="btn-third">Hủy đơn</button>
+                  <button
+                    className="btn-third"
+                    onClick={() => {
+                      setSelectedOrderId(order.id);
+                      openModalDelete();
+                    }}
+                  >
+                    Hủy đơn
+                  </button>
                   <button className="btn-secondary">Yêu Cầu Trả Hàng/Hoàn Tiền</button>
                 </>
               )}
@@ -199,6 +236,24 @@ const OrderItemList: React.FC<OrderItemListProps> = ({ orders }) => {
           </div>
         </div>
       ))}
+      <SimpleModal isOpen={isModalOpenDelete} onClose={closeModalDelete}>
+        <ModalHeader></ModalHeader>
+        <ModalContent>
+          <h2 className="text-xl font-bold text-center">Hủy đơn hàng</h2>
+          <p className="text-center text-gray-600 mt-2">Bạn có chắc chắn muốn hủy đơn hàng không?</p>
+          <div className="flex justify-between mt-6">
+            <button
+              onClick={closeModalDelete}
+              className="w-1/2 py-2 border border-red-600 text-red-600 font-semibold rounded-lg mr-2"
+            >
+              Không
+            </button>
+            <button onClick={handleCancelOrder} className="w-1/2 py-2 bg-red-600 text-white font-semibold rounded-lg">
+              {isLoadingUpdate ? <Loading /> : "Xác nhận "}
+            </button>
+          </div>
+        </ModalContent>
+      </SimpleModal>
     </OrderItemListWrapper>
   );
 };

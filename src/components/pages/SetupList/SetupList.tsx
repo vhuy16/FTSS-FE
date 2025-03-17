@@ -11,13 +11,13 @@ import { currencyFormat, formatDate } from "@ultils/helper";
 import { ReactNode, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { ModalBox, ModalContent, ModalHeader, ModalOverlay } from "../Setup/SetupStyles";
 import ReactDOM from "react-dom";
 import { toast } from "react-toastify";
 import beca from "@images/beca.jpg";
 import Loading from "@components/atom/Loading/Loading";
 import LoadingPage from "@components/atom/Loading/LoadingPage";
 import { getUserProfile } from "@redux/slices/userSlice";
+import SimpleModal, { ModalContent, ModalHeader } from "@components/atom/modal/Modal";
 const WishListScreenWrapper = styled.main`
   .wishlist {
     gap: 20px;
@@ -160,23 +160,6 @@ const breadcrumbItems = [
   { label: "Home", link: "/" },
   { label: "Build của tôi", link: "/setup-package" },
 ];
-
-/* ------------------ Modal ------------------ */
-interface SimpleModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  children: ReactNode;
-}
-
-const SimpleModal: React.FC<SimpleModalProps> = ({ isOpen, onClose, children }) => {
-  if (!isOpen) return null;
-  return ReactDOM.createPortal(
-    <ModalOverlay onClick={onClose}>
-      <ModalBox onClick={(e) => e.stopPropagation()}>{children}</ModalBox>
-    </ModalOverlay>,
-    document.body
-  );
-};
 
 const SetupList = () => {
   const setupData = useAppSelector((state) => state.setupPackage.setupPackages);
