@@ -158,7 +158,7 @@ const WishItemWrapper = styled.div`
 
 const breadcrumbItems = [
   { label: "Home", link: "/" },
-  { label: "Build của tôi", link: "/setup-package" },
+  { label: "Hồ cá của tôi", link: "/setup-package" },
 ];
 
 const SetupList = () => {
@@ -283,7 +283,7 @@ const SetupList = () => {
                   </button>
                   <button
                     onClick={handleDeleteSetup}
-                    className="w-1/2 py-2 bg-red-600 text-white font-semibold rounded-lg"
+                    className="w-1/2 py-2 bg-red-600 text-white font-semibold rounded-lg flex justify-center items-center"
                   >
                     {isLoadingSetup ? <Loading /> : <>Có</>}
                   </button>

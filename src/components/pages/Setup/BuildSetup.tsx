@@ -377,7 +377,10 @@ const BuildSetup: React.FC<ProductItemProps> = () => {
             >
               Không
             </button>
-            <button onClick={handleDeleteProduct} className="w-1/2 py-2 bg-red-600 text-white font-semibold rounded-lg">
+            <button
+              onClick={handleDeleteProduct}
+              className="w-1/2 py-2 bg-red-600 text-white font-semibold rounded-lg flex justify-center items-center"
+            >
               Có
             </button>
           </div>
