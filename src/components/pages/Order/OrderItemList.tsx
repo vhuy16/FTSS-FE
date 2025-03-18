@@ -248,7 +248,10 @@ const OrderItemList: React.FC<OrderItemListProps> = ({ orders }) => {
             >
               Không
             </button>
-            <button onClick={handleCancelOrder} className="w-1/2 py-2 bg-red-600 text-white font-semibold rounded-lg">
+            <button
+              onClick={handleCancelOrder}
+              className="w-1/2 py-2 bg-red-600 text-white font-semibold rounded-lg flex justify-center items-center"
+            >
               {isLoadingUpdate ? <Loading /> : "Xác nhận "}
             </button>
           </div>
