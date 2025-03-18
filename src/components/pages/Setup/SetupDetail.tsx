@@ -11,6 +11,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { currencyFormat } from '@ultils/helper';
 import { getSetupDetail } from '@redux/slices/setupDetailSlice';
 import {
+
     BannerBox,
     BuildHeaderCard,
     ContentWrapper,
@@ -31,13 +32,16 @@ import {
 } from './SetupStyles';
 import { BaseBtnGreen, BaseButtonGreen } from '@styles/button';
 import { updateSetupPackage } from '@redux/slices/setupSlice';
-import { addSetup, removeCart, selectSetup } from '@redux/slices/cartSlice';
-import Loading from '@components/atom/Loading/Loading';
+import { addSetup } from "@redux/slices/cartSlice";
+import Loading from "@components/atom/Loading/Loading";
+import SimpleModal, { ModalContent, ModalHeader } from "@components/atom/modal/Modal";
+
 
 const breadcrumbItems = [
     { label: 'Trang chủ', link: '/' },
     { label: 'Build hồ cá', link: '/setup-package' },
 ];
+
 
 /* ------------------ Modal ------------------ */
 interface SimpleModalProps {
@@ -55,6 +59,7 @@ const SimpleModal: React.FC<SimpleModalProps> = ({ isOpen, onClose, children }) 
         document.body,
     );
 };
+
 
 interface ProductItemProps {
     products: Product;

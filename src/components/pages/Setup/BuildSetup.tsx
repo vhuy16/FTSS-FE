@@ -15,10 +15,6 @@ import {
   ContentWrapper,
   FilterWrapper,
   LeftSide,
-  ModalBox,
-  ModalContent,
-  ModalHeader,
-  ModalOverlay,
   ProductCard,
   ProductList,
   QuantityWrapper,
@@ -31,28 +27,12 @@ import {
 import { BaseBtnGreen } from "@styles/button";
 import { createSetupPackage } from "@redux/slices/setupSlice";
 import Loading from "@components/atom/Loading/Loading";
+import SimpleModal, { ModalContent, ModalHeader } from "@components/atom/modal/Modal";
 
 const breadcrumbItems = [
   { label: "Trang chủ", link: "/" },
   { label: "Build hồ cá", link: "/setup-package" },
 ];
-
-/* ------------------ Modal ------------------ */
-interface SimpleModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  children: ReactNode;
-}
-
-const SimpleModal: React.FC<SimpleModalProps> = ({ isOpen, onClose, children }) => {
-  if (!isOpen) return null;
-  return ReactDOM.createPortal(
-    <ModalOverlay onClick={onClose}>
-      <ModalBox onClick={(e) => e.stopPropagation()}>{children}</ModalBox>
-    </ModalOverlay>,
-    document.body
-  );
-};
 
 interface ProductItemProps {
   products: Product;

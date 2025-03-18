@@ -289,50 +289,6 @@ export const breadcrumbItems = [
   { label: "Build hồ cá", link: "/setup-package" },
 ];
 
-export const ModalOverlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-export const ModalBox = styled.div`
-  background: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  width: 800px;
-  max-width: 100%;
-`;
-
-export const ModalHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-
-  h2 {
-    margin: 0;
-    font-size: 20px;
-    font-weight: 700;
-  }
-
-  button {
-    background: transparent;
-    border: none;
-    font-size: 20px;
-    cursor: pointer;
-  }
-`;
-
-export const ModalContent = styled.div`
-  font-size: 16px;
-`;
 export const ProductList = styled.div`
   padding: 16px 24px;
   display: flex;
