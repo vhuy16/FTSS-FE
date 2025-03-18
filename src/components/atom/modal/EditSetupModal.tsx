@@ -40,11 +40,26 @@ const MenuProps = {
 export default function EditSetupModal({ isModalEditOpen, setIsModalEditOpen }: ModalAddProps) {
     const dispatch = useAppDispatch();
     const setup = useAppSelector((state) => state.setupPackage.selectedSetup);
+    useEffect(() => {
+        if (setup) {
+            const products = setup.products.map((p) =>
+                JSON.stringify({
+                    ProductId: p.id,
+                    name: p.productName,
+                    cateName: p.categoryName,
+                    Quantity: p.quantity,
+                }),
+            );
+            setListProduct(products);
+        }
+    }, [setup]);
     const [listProduct, setListProduct] = useState<string[]>([]);
     const [checked, setChecked] = useState(false);
     const isLoadingEdit = useAppSelector((state) => state.setupPackage.isLoadingEdit);
     const isLoadingCate = useAppSelector((state) => state.product.isLoadingGetCateWithProduct);
     const listCateWithProduct = useAppSelector((state) => state.product.listCateAndProduct);
+    console.log('setup', setup);
+    console.log('listProduct', listProduct);
 
     const [data, setData] = useState<{
         SetupName: string;
@@ -119,7 +134,7 @@ export default function EditSetupModal({ isModalEditOpen, setIsModalEditOpen }: 
                 const res = await dispatch(
                     editSetup({ formData: formData, id: setup?.setupPackageId as string }),
                 ).unwrap();
-                if (res.status == 201) {
+                if (res.status == 200) {
                     setIsModalEditOpen(false);
                     setChecked(false);
                     setData({
@@ -235,7 +250,12 @@ export default function EditSetupModal({ isModalEditOpen, setIsModalEditOpen }: 
                                                     required={true}
                                                     value={data.SetupName}
                                                     onChange={(e) =>
-                                                        setData({ ...data, SetupName: e.target.value.toUpperCase() })
+                                                        setData({
+                                                            ...data,
+                                                            SetupName:
+                                                                e.target.value.charAt(0).toUpperCase() +
+                                                                e.target.value.slice(1).toLowerCase(),
+                                                        })
                                                     }
                                                 />
                                             </div>

@@ -9,6 +9,10 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs, { Dayjs } from 'dayjs';
+import { getDataChartOne } from '@redux/slices/dashboardSlice';
+import Button from '@components/ui/button/Button';
+import { DownloadIcon, EyeIcon } from '@icons/admin_icon';
+import Loading from '../Loading/Loading';
 
 interface ChartOneState {
     series: {
@@ -20,6 +24,7 @@ interface ChartOneState {
 const ChartOneSeller: React.FC = () => {
     const dispatch = useAppDispatch();
     const dataChartOne = useAppSelector((state) => state.dashboard.dataChartOne);
+    const isLoading = useAppSelector((state) => state.dashboard.isLoadingChartOne);
     const dayChartOne = dataChartOne.map((data) => data.day);
     const valueChartOne = dataChartOne.map((data) => data.revenue);
     const options: ApexOptions = {
@@ -137,10 +142,13 @@ const ChartOneSeller: React.FC = () => {
     const [endDay, setEndDay] = React.useState<Dayjs | null>(
         dayjs(dayjs(dayChartOne[dayChartOne.length - 1], 'DD/MM/YYYY').format('YYYY/MM/DD')),
     );
+    const data = dataChartOne.map((order) => {
+        const [day, month, year] = order.day.split('/'); // Tách ngày, tháng, năm
+        const formattedDate = `${month}/${day}/${year}`; // Chuyển thành MM/DD/YYYY
+        return [formattedDate, order.revenue];
+    });
 
-    // console.log('value', startDay?.format('YYYY/MM/DD'));
-    // console.log('valueee', dayChartOne[dayChartOne.length - 1]);
-    console.log('value', startDay?.format('YYYY/MM/DD'));
+    const dataCSV = [['Ngày', 'Doanh thu'], ...data, ['', 10]];
 
     return (
         <div className="col-span-12 rounded-sm border border-stroke bg-white px-5 pt-7 pb-5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7 xl:col-span-8">
@@ -204,8 +212,30 @@ const ChartOneSeller: React.FC = () => {
                 <DemoContainer components={['DatePicker', 'DatePicker']}>
                     <DatePicker label="Ngày bắt đầu" value={startDay} onChange={(newValue) => setStartDay(newValue)} />
                     <DatePicker label="Ngày kết thúc" value={endDay} onChange={(newValue) => setEndDay(newValue)} />
+                    <div className="flex justify-between items-center w-full">
+                        <Button
+                            size="ssm"
+                            variant="primary"
+                            onClick={() => {
+                                dispatch(
+                                    getDataChartOne({
+                                        startDay: startDay?.format('YYYY/MM/DD') as string,
+                                        endDay: endDay?.format('YYYY/MM/DD') as string,
+                                    }),
+                                );
+                            }}
+                        >
+                            {isLoading ? <Loading></Loading> : <>Xem</>}
+                        </Button>
+                        <Button size="ssm" variant="primary" startIcon={<DownloadIcon />}>
+                            <CSVLink data={dataCSV} filename="Doanhthu">
+                                Tải về
+                            </CSVLink>
+                        </Button>
+                    </div>
                 </DemoContainer>
             </LocalizationProvider>
+
             <div>
                 <div id="chartOne" className="-ml-5">
                     <ReactApexChart options={options} series={series} type="area" height={350} />
