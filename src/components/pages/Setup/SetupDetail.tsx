@@ -11,16 +11,11 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { currencyFormat } from '@ultils/helper';
 import { getSetupDetail } from '@redux/slices/setupDetailSlice';
 import {
-
     BannerBox,
     BuildHeaderCard,
     ContentWrapper,
     FilterWrapper,
     LeftSide,
-    ModalBox,
-    ModalContent,
-    ModalHeader,
-    ModalOverlay,
     ProductCard,
     ProductList,
     QuantityWrapper,
@@ -32,34 +27,14 @@ import {
 } from './SetupStyles';
 import { BaseBtnGreen, BaseButtonGreen } from '@styles/button';
 import { updateSetupPackage } from '@redux/slices/setupSlice';
-import { addSetup } from "@redux/slices/cartSlice";
-import Loading from "@components/atom/Loading/Loading";
-import SimpleModal, { ModalContent, ModalHeader } from "@components/atom/modal/Modal";
-
+import { addSetup } from '@redux/slices/cartSlice';
+import Loading from '@components/atom/Loading/Loading';
+import SimpleModal, { ModalContent, ModalHeader } from '@components/atom/modal/Modal';
 
 const breadcrumbItems = [
     { label: 'Trang chủ', link: '/' },
     { label: 'Build hồ cá', link: '/setup-package' },
 ];
-
-
-/* ------------------ Modal ------------------ */
-interface SimpleModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-    children: ReactNode;
-}
-
-const SimpleModal: React.FC<SimpleModalProps> = ({ isOpen, onClose, children }) => {
-    if (!isOpen) return null;
-    return ReactDOM.createPortal(
-        <ModalOverlay onClick={onClose}>
-            <ModalBox onClick={(e) => e.stopPropagation()}>{children}</ModalBox>
-        </ModalOverlay>,
-        document.body,
-    );
-};
-
 
 interface ProductItemProps {
     products: Product;
@@ -86,12 +61,9 @@ const SetupDetail: React.FC<ProductItemProps> = () => {
     const isLoadingSetup = useAppSelector((state) => state.setupPackage.loading);
     const [subCategories, setSubCategories] = useState<string[]>(['Tất cả']);
     const [selectedSubcategory, setSelectedSubcategory] = useState<string>('Tất cả');
-    const isLoadingAdd = useAppSelector((state) => state.cart.loading);
 
     const navigate = useNavigate();
-    useEffect(() => {
-        dispatch(removeCart());
-    }, []);
+
     useEffect(() => {
         window.scrollTo(0, 0);
         dispatch(getSetupDetail(setupPackageId as string));
@@ -392,15 +364,14 @@ const SetupDetail: React.FC<ProductItemProps> = () => {
                         <BaseButtonGreen
                             type="submit"
                             className="checkout-btn"
-                            onClick={async () => {
+                            onClick={() => {
                                 const token = localStorage.getItem('access_token');
                                 if (totalPrice === 0) {
                                     toast.warning('Vui lòng chọn sản phẩm để thanh toán');
                                 } else {
                                     if (token) {
-                                        const res = await dispatch(addSetup(setupPackageId)).unwrap();
-                                        dispatch(selectSetup(res.cartItems));
-                                        navigate('/checkout');
+                                        dispatch(addSetup(setupPackageId));
+                                        // navigate("/checkout");
                                     } else {
                                         toast.warning('Xin mời đăng nhập trước để thanh toán');
                                         navigate('/login');
@@ -408,7 +379,7 @@ const SetupDetail: React.FC<ProductItemProps> = () => {
                                 }
                             }}
                         >
-                            {isLoadingAdd ? <Loading></Loading> : <>Tiến hành thanh toán</>}
+                            Tiến hành thanh toán
                         </BaseButtonGreen>
                     </RightSide>
                 </ContentWrapper>
@@ -487,7 +458,7 @@ const SetupDetail: React.FC<ProductItemProps> = () => {
                         </button>
                         <button
                             onClick={handleDeleteProduct}
-                            className="w-1/2 py-2 bg-red-600 text-white font-semibold rounded-lg"
+                            className="w-1/2 py-2 bg-red-600 text-white font-semibold rounded-lg flex justify-center items-center"
                         >
                             {isLoadingSetup ? <Loading /> : <>Có</>}
                         </button>
@@ -532,164 +503,10 @@ const SetupDetail: React.FC<ProductItemProps> = () => {
                             {isLoadingSetup ? <Loading /> : <>Lưu</>}
                         </button>
                     </div>
-
-                  )}
-                </SetupItem>
-              ))}
-            </SetupItemsList>
-          </LeftSide>
-          <RightSide>
-            <TempPriceBox>
-              <h3>Tạm tính:</h3>
-              <p className="price">{currencyFormat(totalPrice)}</p>
-              <p className="note">
-                Giá chưa bao gồm khuyến mãi Build Hồ Cá. <a href="#xemchi">Xem chi tiết</a>
-              </p>
-            </TempPriceBox>
-            <BaseButtonGreen
-              type="submit"
-              className="checkout-btn"
-              onClick={() => {
-                const token = localStorage.getItem("access_token");
-                if (totalPrice === 0) {
-                  toast.warning("Vui lòng chọn sản phẩm để thanh toán");
-                } else {
-                  if (token) {
-                    dispatch(addSetup(setupPackageId));
-                    // navigate("/checkout");
-                  } else {
-                    toast.warning("Xin mời đăng nhập trước để thanh toán");
-                    navigate("/login");
-                  }
-                }
-              }}
-            >
-              Tiến hành thanh toán
-            </BaseButtonGreen>
-          </RightSide>
-        </ContentWrapper>
-      </Container>
-      <SimpleModal isOpen={isModalOpen} onClose={closeModal}>
-        <ModalHeader>
-          <h2>{selectedCategoryName}</h2>
-          <button onClick={closeModal}>&times;</button>
-        </ModalHeader>
-        <ModalContent>
-          <FilterWrapper>
-            <div className="filter-group">
-              <span>Chọn theo loại:</span>
-              {subCategories.map(
-                (
-                  subcat // Sử dụng state subCategories
-                ) => (
-                  <button
-                    key={subcat}
-                    className={`filter-btn ${selectedSubcategory === subcat ? "active" : ""}`}
-                    onClick={() => setSelectedSubcategory(subcat)}
-                  >
-                    {subcat}
-                  </button>
-                )
-              )}
-            </div>
-          </FilterWrapper>
-          {isLoading ? (
-            <Loading />
-          ) : filterProductsBySubcategory(products, selectedSubcategory).length > 0 ? (
-            <ProductList>
-              {filterProductsBySubcategory(products, selectedSubcategory).map((prod: Product) => (
-                <ProductCard key={prod.id}>
-                  <img src={prod.images[0]} alt={prod.productName} />
-                  <div className="product-info">
-                    <h3 className="product-name">{prod.productName}</h3>
-                    <span className="new-price">{currencyFormat(prod.price)}</span>
-                  </div>
-                  <div className="buttons">
-                    <button
-                      className="detail-btn"
-                      onClick={() => {
-                        if (prod.status === "Available") {
-                          navigate(`/product/${prod.id}`);
-                        } else {
-                          toast.error("Sản Phẩm Đã Dừng Hoạt Động");
-                        }
-                      }}
-                    >
-                      Xem chi tiết
-                    </button>
-                    <button className="select-btn" onClick={() => handleSelectProduct(prod)}>
-                      Chọn
-                    </button>
-                  </div>
-                </ProductCard>
-              ))}
-            </ProductList>
-          ) : (
-            <p>Không có sản phẩm nào.</p>
-          )}
-        </ModalContent>
-      </SimpleModal>
-      <SimpleModal isOpen={isModalOpenDelete} onClose={closeModalDelete}>
-        <ModalHeader></ModalHeader>
-        <ModalContent>
-          <h2 className="text-xl font-bold text-center">Xóa sản phẩm</h2>
-          <p className="text-center text-gray-600 mt-2">Bạn có muốn xóa sản phẩm này?</p>
-          <div className="flex justify-between mt-6">
-            <button
-              onClick={closeModalDelete}
-              className="w-1/2 py-2 border border-red-600 text-red-600 font-semibold rounded-lg mr-2"
-            >
-              Không
-            </button>
-            <button
-              onClick={handleDeleteProduct}
-              className="w-1/2 py-2 bg-red-600 text-white font-semibold rounded-lg flex justify-center items-center"
-            >
-              {isLoadingSetup ? <Loading /> : <>Có</>}
-            </button>
-          </div>
-        </ModalContent>
-      </SimpleModal>
-      <SimpleModal isOpen={isModalOpenSave} onClose={closeModalSave}>
-        <div className="p-8 bg-white rounded-lg">
-          <h2 className="text-xl font-bold text-center">Cập Nhật thông tin</h2>
-          <div className="mt-4">
-            <label className="block text-gray-700 font-semibold">Tên</label>
-            <input
-              type="text"
-              value={setupName}
-              onChange={(e) => setSetupName(e.target.value)}
-              className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-300"
-              placeholder="Nhập tên..."
-            />
-          </div>
-          <div className="mt-4">
-            <label className="block text-gray-700 font-semibold">Mô tả</label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="w-full mt-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-300"
-              placeholder="Nhập mô tả..."
-              rows={3}
-            />
-          </div>
-          <div className="flex justify-between mt-6">
-            <button
-              onClick={closeModalSave}
-              className="w-1/2 py-2 border border-gray-600 text-gray-600 font-semibold rounded-lg mr-2"
-            >
-              Hủy
-            </button>
-            <button className="w-1/2 py-2 bg-blue-600 text-white font-semibold rounded-lg" onClick={handleSave}>
-              {" "}
-              {isLoadingSetup ? <Loading /> : <>Lưu</>}
-            </button>
-          </div>
-        </div>
-      </SimpleModal>
-    </SetupScreenWrapper>
-  );
-
+                </div>
+            </SimpleModal>
+        </SetupScreenWrapper>
+    );
 };
 
 export default SetupDetail;
