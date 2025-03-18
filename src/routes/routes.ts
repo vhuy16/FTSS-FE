@@ -33,6 +33,7 @@ import ListSetUp from '@components/pages/manager/ListSetUp';
 import OrderDetail from '@components/pages/manager/OrderDetail';
 import ListCategory from '@components/pages/manager/ListCategory';
 import ListSubCategory from '@components/pages/manager/ListSubCategory';
+import ManagerProfiles from '@components/pages/manager/ManagerProfile';
 
 export type RouteType = {
     path: string;
@@ -160,6 +161,11 @@ if (role === 'Admin') {
         {
             path: '/dashboard',
             component: Dashboard,
+            layout: ManagerLayout,
+        },
+        {
+            path: '/manager/profile',
+            component: ManagerProfiles,
             layout: ManagerLayout,
         },
         {
