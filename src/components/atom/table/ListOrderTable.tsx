@@ -73,7 +73,7 @@ export default function ListOrderTable() {
                             ? 'warning'
                             : params.row.payment.paymentStatus === 'Completed'
                             ? 'success'
-                            : params.row.payment.paymentStatus === 'Canceled'
+                            : params.row.payment.paymentStatus === 'Cancelled'
                             ? 'error'
                             : 'warning'
                     }
@@ -82,7 +82,7 @@ export default function ListOrderTable() {
                         ? 'Đang chờ thanh toán'
                         : params.row.payment.paymentStatus === 'Completed'
                         ? 'Đã thanh toán'
-                        : params.row.payment.paymentStatus === 'Canceled'
+                        : params.row.payment.paymentStatus === 'Cancelled'
                         ? 'Đã hủy'
                         : 'Đang hoàn trả'}
                 </Badge>

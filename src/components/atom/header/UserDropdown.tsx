@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { DropdownItem } from '@components/ui/dropdown/DropdownItem';
 import { Dropdown } from '@components/ui/dropdown/Dropdown';
 import { Link } from 'react-router-dom';
-import logo from '@images/logo.png';
 import { useAppDispatch, useAppSelector } from '@redux/hook';
 import { getUserProfile } from '@redux/slices/userSlice';
+import Avatar from './Avatar';
 
 export default function UserDropdown() {
     const dispatch = useAppDispatch();
@@ -24,7 +24,7 @@ export default function UserDropdown() {
         <div className="relative">
             <button onClick={toggleDropdown} className="flex items-center text-gray-400 dark:text-gray-400">
                 <span className="mr-3 overflow-hidden rounded-full h-11 w-11">
-                    <img src={logo} alt="Admin" />
+                    <Avatar name={user?.username as string}></Avatar>
                 </span>
 
                 {/* <span className="block mr-1 font-medium text-theme-sm">Admin</span> */}
