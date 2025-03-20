@@ -27,7 +27,7 @@ import {
 } from './SetupStyles';
 import { BaseBtnGreen, BaseButtonGreen } from '@styles/button';
 import { updateSetupPackage } from '@redux/slices/setupSlice';
-import { addSetup } from '@redux/slices/cartSlice';
+import { addSetup, removeCart, selectSetup } from '@redux/slices/cartSlice';
 import Loading from '@components/atom/Loading/Loading';
 import SimpleModal, { ModalContent, ModalHeader } from '@components/atom/modal/Modal';
 
@@ -44,6 +44,7 @@ interface ProductItemProps {
 const SetupDetail: React.FC<ProductItemProps> = () => {
     const dispatch = useAppDispatch();
     const listCategory = useAppSelector((state) => state.category.categories);
+    const isLoadingAdd = useAppSelector((state) => state.cart.loading);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isModalOpenDelete, setIsModalOpenDelete] = useState(false);
     const [isModalOpenSave, setIsModalOpenSave] = useState(false);
@@ -63,7 +64,9 @@ const SetupDetail: React.FC<ProductItemProps> = () => {
     const [selectedSubcategory, setSelectedSubcategory] = useState<string>('Tất cả');
 
     const navigate = useNavigate();
-
+    useEffect(() => {
+        dispatch(removeCart());
+    }, []);
     useEffect(() => {
         window.scrollTo(0, 0);
         dispatch(getSetupDetail(setupPackageId as string));
@@ -247,7 +250,7 @@ const SetupDetail: React.FC<ProductItemProps> = () => {
                         <p>Mô tả: {setupData?.description}</p>
                     </div>
                     <BaseBtnGreen onClick={openModalSave} className="save-btn">
-                        Lưu thay đổi
+                        Chỉnh sửa
                     </BaseBtnGreen>
                 </BuildHeaderCard>
                 <ContentWrapper>
@@ -364,14 +367,15 @@ const SetupDetail: React.FC<ProductItemProps> = () => {
                         <BaseButtonGreen
                             type="submit"
                             className="checkout-btn"
-                            onClick={() => {
+                            onClick={async () => {
                                 const token = localStorage.getItem('access_token');
                                 if (totalPrice === 0) {
                                     toast.warning('Vui lòng chọn sản phẩm để thanh toán');
                                 } else {
                                     if (token) {
-                                        dispatch(addSetup(setupPackageId));
-                                        // navigate("/checkout");
+                                        const res = await dispatch(addSetup(setupPackageId)).unwrap();
+                                        dispatch(selectSetup(res.cartItems));
+                                        navigate('/checkout');
                                     } else {
                                         toast.warning('Xin mời đăng nhập trước để thanh toán');
                                         navigate('/login');
@@ -379,7 +383,7 @@ const SetupDetail: React.FC<ProductItemProps> = () => {
                                 }
                             }}
                         >
-                            Tiến hành thanh toán
+                            {isLoadingAdd ? <Loading></Loading> : 'Tiến hành thanh toán'}
                         </BaseButtonGreen>
                     </RightSide>
                 </ContentWrapper>
@@ -467,7 +471,7 @@ const SetupDetail: React.FC<ProductItemProps> = () => {
             </SimpleModal>
             <SimpleModal isOpen={isModalOpenSave} onClose={closeModalSave}>
                 <div className="p-8 bg-white rounded-lg">
-                    <h2 className="text-xl font-bold text-center">Cập Nhật thông tin</h2>
+                    <h2 className="text-xl font-bold text-center">Chỉnh sửa thông tin bể cá</h2>
                     <div className="mt-4">
                         <label className="block text-gray-700 font-semibold">Tên</label>
                         <input
@@ -496,7 +500,7 @@ const SetupDetail: React.FC<ProductItemProps> = () => {
                             Hủy
                         </button>
                         <button
-                            className="w-1/2 py-2 bg-blue-600 text-white font-semibold rounded-lg"
+                            className="w-1/2 py-2 bg-green-150 text-white font-semibold rounded-lg flex justify-center items-center"
                             onClick={handleSave}
                         >
                             {' '}
