@@ -232,15 +232,11 @@ const BuildSetup: React.FC<ProductItemProps> = () => {
                   {selectedProducts.some((p) => p.categoryName === cat.categoryName) ? (
                     <div>
                       {/* Thêm điều kiện ẩn nút "Chọn thêm" khi là loại bể */}
-                      <div className="titleCategory">
-                        <div className="text-title">{cat.categoryName}</div>
-                        {/* ẩn nút "Chọn thêm" khi là loại bể */}
-                        {cat.categoryName !== "Bể" && (
-                          <div className="change-btn">
-                            <BaseBtnGreen onClick={() => openModal(cat.categoryName)}>Chọn thêm</BaseBtnGreen>
-                          </div>
-                        )}
-                      </div>
+                      {cat.categoryName !== "Bể" && (
+                        <div className="change-btn">
+                          <BaseBtnGreen onClick={() => openModal(cat.categoryName)}>Chọn thêm</BaseBtnGreen>
+                        </div>
+                      )}
                       {selectedProducts
                         .filter((product) => product.categoryName === cat.categoryName)
                         .map((product) => (

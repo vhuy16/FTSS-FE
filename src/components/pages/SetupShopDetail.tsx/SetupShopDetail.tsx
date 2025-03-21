@@ -2,17 +2,21 @@ import styled from "styled-components";
 import { Container } from "@styles/styles";
 import Breadcrumb from "@common/Breadcrumb";
 import { product_one } from "./data";
-import ProductPreview from "@components/atom/products/ProductPreview";
 import { Link, useParams } from "react-router-dom";
-import { BaseBtnGreen, BaseButtonGreen } from "@styles/button";
+
 import { breakpoints, defaultTheme } from "@styles/themes/default";
-import ProductDescriptionTab from "@components/atom/products/ProductDescriptionTab";
-import ProductSimilar from "@components/atom/products/ProductSimilar";
+
 import ProductServices from "@components/atom/products/ProductServices";
 import { useAppDispatch, useAppSelector } from "@redux/hook";
-import { addItem } from "@redux/slices/cartSlice";
+import {
+  addItem,
+  addSetup,
+  deleteSelectSetupId,
+  removeCart,
+  selectSetup,
+  selectSetupId,
+} from "@redux/slices/cartSlice";
 import { useEffect, useState } from "react";
-import { getProductDetail } from "@redux/slices/productDetailSlice";
 import { currencyFormat } from "@ultils/helper";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
@@ -262,13 +266,17 @@ const AddToCartButton = styled.button`
 const SetupShopDetailScreen: React.FC = () => {
   const dispatch = useAppDispatch();
   const setupData = useAppSelector((state) => state.setupPackageDetail.data);
+  const isLoading = useAppSelector((state) => state.cart.loading);
   const { setupPackageId } = useParams();
   const navigate = useNavigate();
   useEffect(() => {
     window.scrollTo(0, 0);
     dispatch(getSetupDetail(setupPackageId as string));
   }, [setupPackageId]);
-
+  useEffect(() => {
+    dispatch(removeCart());
+    dispatch(deleteSelectSetupId());
+  }, []);
   const stars = Array.from({ length: 5 }, (_, index) => (
     <span
       key={index}
@@ -354,7 +362,32 @@ const SetupShopDetailScreen: React.FC = () => {
                   <span className="prod-add-btn-icon">
                     <i className="bi bi-tools"></i>
                   </span>
-                  <span className="prod-add-btn-text">Thêm vào build</span>
+                  <span className="prod-add-btn-text">Thêm vào hồ cá của tôi</span>
+                </AddToCartButton>
+                <AddToCartButton
+                  onClick={async () => {
+                    const token = localStorage.getItem("access_token");
+                    if (token) {
+                      if (setupPackageId) {
+                        const res = await dispatch(addSetup(setupPackageId)).unwrap();
+                        dispatch(selectSetup(res.cartItems));
+                        dispatch(selectSetupId(res.setupId));
+                        navigate("/checkout");
+                      }
+                    } else {
+                      toast.warning("Bạn cần đăng nhập để mua sản phẩm");
+                      setTimeout(() => {
+                        window.location.href = "/login";
+                      }, 1000);
+                    }
+                  }}
+                >
+                  {!isLoading && (
+                    <span className="prod-add-btn-icon">
+                      <i className="bi bi-cart"></i>
+                    </span>
+                  )}
+                  <span className="prod-add-btn-text">{isLoading ? <Loading></Loading> : "Mua ngay"}</span>
                 </AddToCartButton>
               </ActionsWrapper>
 

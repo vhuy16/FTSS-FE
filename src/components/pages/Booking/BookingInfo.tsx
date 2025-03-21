@@ -201,36 +201,6 @@ const BookingInfo = () => {
     setFormError(errors);
     return check;
   };
-  const handlePayNow = async () => {
-    const check = validateForm();
-    if (check) {
-      const data: DataCheckOut = {
-        shipCost: ship?.total_fee as number,
-        cartItem: cart.map((item: CartItem) => {
-          return item.cartItemId;
-        }),
-        address: formValue.street + ", " + formValue.ward + ", " + formValue.district + ", " + formValue.province,
-        voucherId: formValue.VoucherId,
-        paymentMethod: formValue.PaymentMethod,
-        phoneNumber: formValue.phone,
-        name: formValue.customer_name,
-      };
-
-      try {
-        const res: string = await dispatch(createOrder(data)).unwrap();
-        if (res !== "") {
-          await toast.success("Vui lòng chờ để thanh toán");
-          setTimeout(() => {
-            window.location.href = res;
-          }, 1000);
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    } else {
-      console.log("payment invalid");
-    }
-  };
   return (
     <BillingOrderWrapper className="billing-and-order grid items-start">
       <BillingDetailsWrapper>

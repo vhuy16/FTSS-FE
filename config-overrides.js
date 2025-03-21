@@ -6,7 +6,7 @@ module.exports = function override(config) {
         '@atom': 'src/components/atom',
         '@pages': 'src/components/pages',
         '@ui': 'src/components/ui',
-        // '@api': 'src/api',
+        '@hooks': 'src/hooks',
         '@layouts': 'src/layouts',
         '@routes': 'src/routes',
         '@images': 'src/assets/images',

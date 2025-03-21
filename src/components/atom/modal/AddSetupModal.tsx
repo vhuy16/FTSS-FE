@@ -202,7 +202,12 @@ export default function AddSetupModal({ isModalAddOpen, setIsModalAddOpen }: Mod
                                                     required={true}
                                                     value={data.SetupName}
                                                     onChange={(e) =>
-                                                        setData({ ...data, SetupName: e.target.value.toUpperCase() })
+                                                        setData({
+                                                            ...data,
+                                                            SetupName:
+                                                                e.target.value.charAt(0).toUpperCase() +
+                                                                e.target.value.slice(1).toLowerCase(),
+                                                        })
                                                     }
                                                 />
                                             </div>

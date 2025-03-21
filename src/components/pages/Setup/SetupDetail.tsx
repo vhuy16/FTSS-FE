@@ -1,4 +1,6 @@
 import React, { useState, useEffect, ReactNode } from "react";
+import ReactDOM from "react-dom";
+import styled from "styled-components";
 import { Container } from "@styles/styles";
 import Breadcrumb from "@common/Breadcrumb";
 import { useAppDispatch, useAppSelector } from "@redux/hook";
@@ -9,6 +11,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { currencyFormat } from "@ultils/helper";
 import { getSetupDetail } from "@redux/slices/setupDetailSlice";
 import {
+  BannerBox,
   BuildHeaderCard,
   ContentWrapper,
   FilterWrapper,
@@ -24,10 +27,9 @@ import {
 } from "./SetupStyles";
 import { BaseBtnGreen, BaseButtonGreen } from "@styles/button";
 import { updateSetupPackage } from "@redux/slices/setupSlice";
-import { addSetup } from "@redux/slices/cartSlice";
+import { addSetup, deleteSelectSetupId, removeCart, selectSetup, selectSetupId } from "@redux/slices/cartSlice";
 import Loading from "@components/atom/Loading/Loading";
 import SimpleModal, { ModalContent, ModalHeader } from "@components/atom/modal/Modal";
-import { log } from "console";
 
 const breadcrumbItems = [
   { label: "Trang chủ", link: "/" },
@@ -42,6 +44,7 @@ interface ProductItemProps {
 const SetupDetail: React.FC<ProductItemProps> = () => {
   const dispatch = useAppDispatch();
   const listCategory = useAppSelector((state) => state.category.categories);
+  const isLoadingAdd = useAppSelector((state) => state.cart.loading);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalOpenDelete, setIsModalOpenDelete] = useState(false);
   const [isModalOpenSave, setIsModalOpenSave] = useState(false);
@@ -61,7 +64,10 @@ const SetupDetail: React.FC<ProductItemProps> = () => {
   const [selectedSubcategory, setSelectedSubcategory] = useState<string>("Tất cả");
 
   const navigate = useNavigate();
-
+  useEffect(() => {
+    dispatch(removeCart());
+    dispatch(deleteSelectSetupId());
+  }, []);
   useEffect(() => {
     window.scrollTo(0, 0);
     dispatch(getSetupDetail(setupPackageId as string));
@@ -207,44 +213,6 @@ const SetupDetail: React.FC<ProductItemProps> = () => {
     }
   };
 
-  //luu product
-  const handleSaveProduct = async () => {
-    try {
-      if (!setupPackageId || selectedProducts.length === 0) {
-        toast.error("Vui lòng nhập đầy đủ thông tin.");
-        return;
-      }
-
-      // Tạo mảng JSON chứa thông tin sản phẩm
-      const productsData = selectedProducts.map((product) => ({
-        ProductId: product.id,
-        Quantity: product.quantity,
-      }));
-
-      // Chuyển mảng JSON thành chuỗi
-      const productsJson = JSON.stringify(productsData);
-
-      // Tạo FormData và thêm các trường dữ liệu
-      const formData = new FormData();
-      formData.append("SetupName", setupName.trim());
-      formData.append("Description", description.trim());
-      formData.append("ProductItemsJson", productsJson); // Thêm chuỗi JSON vào FormData
-      formData.append("ImageFile", imageFile || "");
-
-      const response = await dispatch(updateSetupPackage({ setupPackageId, formData }));
-
-      if (response?.payload?.status === "200" || response?.payload?.status === "201") {
-        toast.success("Cập nhật thành công!");
-        dispatch(getSetupDetail(setupPackageId as string));
-        closeModalSave();
-      } else {
-        toast.error(response?.payload);
-      }
-    } catch (error) {
-      console.error("Lỗi khi cập nhật setup package:", error);
-      toast.error("Cập nhật thất bại, vui lòng thử lại.");
-    }
-  };
   const handleQuantityChange = (productId: string, newQuantity: number) => {
     setSelectedProducts((prev) =>
       prev.map((product) => (product.id === productId ? { ...product, quantity: newQuantity } : product))
@@ -272,10 +240,6 @@ const SetupDetail: React.FC<ProductItemProps> = () => {
     }
     return products.filter((product) => product.subCategoryName === subcategory);
   };
-  console.log("name", setupName);
-  console.log("idid", setupPackageId);
-  console.log("des", description);
-  console.log("le", selectedProducts.length);
 
   return (
     <SetupScreenWrapper>
@@ -297,15 +261,12 @@ const SetupDetail: React.FC<ProductItemProps> = () => {
                 <SetupItem key={cat.id}>
                   {selectedProducts.some((p) => p.categoryName === cat.categoryName) ? (
                     <div>
-                      <div className="titleCategory">
-                        <div className="text-title">{cat.categoryName}</div>
-                        {/* ẩn nút "Chọn thêm" khi là loại bể */}
-                        {cat.categoryName !== "Bể" && (
-                          <div className="change-btn">
-                            <BaseBtnGreen onClick={() => openModal(cat.categoryName)}>Chọn thêm</BaseBtnGreen>
-                          </div>
-                        )}
-                      </div>
+                      {/* Thêm điều kiện ẩn nút "Chọn thêm" khi là loại bể */}
+                      {cat.categoryName !== "Bể" && (
+                        <div className="change-btn">
+                          <BaseBtnGreen onClick={() => openModal(cat.categoryName)}>Chọn thêm</BaseBtnGreen>
+                        </div>
+                      )}
                       {selectedProducts
                         .filter((product) => product.categoryName === cat.categoryName)
                         .map((product) => (
@@ -361,9 +322,6 @@ const SetupDetail: React.FC<ProductItemProps> = () => {
                   )}
                 </SetupItem>
               ))}
-              <BaseButtonGreen className="save-product" onClick={handleSaveProduct}>
-                Lưu thay đổi
-              </BaseButtonGreen>
             </SetupItemsList>
           </LeftSide>
           <RightSide>
@@ -377,14 +335,16 @@ const SetupDetail: React.FC<ProductItemProps> = () => {
             <BaseButtonGreen
               type="submit"
               className="checkout-btn"
-              onClick={() => {
+              onClick={async () => {
                 const token = localStorage.getItem("access_token");
                 if (totalPrice === 0) {
                   toast.warning("Vui lòng chọn sản phẩm để thanh toán");
                 } else {
                   if (token) {
-                    dispatch(addSetup(setupPackageId));
-                    // navigate("/checkout");
+                    const res = await dispatch(addSetup(setupPackageId)).unwrap();
+                    dispatch(selectSetup(res.cartItems));
+                    dispatch(selectSetupId(res.setupId));
+                    navigate("/checkout");
                   } else {
                     toast.warning("Xin mời đăng nhập trước để thanh toán");
                     navigate("/login");
@@ -392,7 +352,7 @@ const SetupDetail: React.FC<ProductItemProps> = () => {
                 }
               }}
             >
-              Tiến hành thanh toán
+              {isLoadingAdd ? <Loading></Loading> : "Tiến hành thanh toán"}
             </BaseButtonGreen>
           </RightSide>
         </ContentWrapper>
@@ -406,15 +366,19 @@ const SetupDetail: React.FC<ProductItemProps> = () => {
           <FilterWrapper>
             <div className="filter-group">
               <span>Chọn theo loại:</span>
-              {subCategories.map((subcat) => (
-                <button
-                  key={subcat}
-                  className={`filter-btn ${selectedSubcategory === subcat ? "active" : ""}`}
-                  onClick={() => setSelectedSubcategory(subcat)}
-                >
-                  {subcat}
-                </button>
-              ))}
+              {subCategories.map(
+                (
+                  subcat // Sử dụng state subCategories
+                ) => (
+                  <button
+                    key={subcat}
+                    className={`filter-btn ${selectedSubcategory === subcat ? "active" : ""}`}
+                    onClick={() => setSelectedSubcategory(subcat)}
+                  >
+                    {subcat}
+                  </button>
+                )
+              )}
             </div>
           </FilterWrapper>
           {isLoading ? (
@@ -476,7 +440,7 @@ const SetupDetail: React.FC<ProductItemProps> = () => {
       </SimpleModal>
       <SimpleModal isOpen={isModalOpenSave} onClose={closeModalSave}>
         <div className="p-8 bg-white rounded-lg">
-          <h2 className="text-xl font-bold text-center">Cập Nhật thông tin</h2>
+          <h2 className="text-xl font-bold text-center">Chỉnh sửa thông tin bể cá</h2>
           <div className="mt-4">
             <label className="block text-gray-700 font-semibold">Tên</label>
             <input
@@ -505,7 +469,7 @@ const SetupDetail: React.FC<ProductItemProps> = () => {
               Hủy
             </button>
             <button
-              className="w-1/2 py-2 bg-blue-600 text-white font-semibold rounded-lg flex justify-center items-center"
+              className="w-1/2 py-2 bg-green-150 text-white font-semibold rounded-lg flex justify-center items-center"
               onClick={handleSave}
             >
               {" "}
