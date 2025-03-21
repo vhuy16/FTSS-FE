@@ -10,7 +10,14 @@ import ProductDescriptionTab from '@components/atom/products/ProductDescriptionT
 import ProductSimilar from '@components/atom/products/ProductSimilar';
 import ProductServices from '@components/atom/products/ProductServices';
 import { useAppDispatch, useAppSelector } from '@redux/hook';
-import { addItem, addSetup, removeCart, selectSetup } from '@redux/slices/cartSlice';
+import {
+    addItem,
+    addSetup,
+    deleteSelectSetupId,
+    removeCart,
+    selectSetup,
+    selectSetupId,
+} from '@redux/slices/cartSlice';
 import { useEffect, useState } from 'react';
 import { getProductDetail } from '@redux/slices/productDetailSlice';
 import { currencyFormat } from '@ultils/helper';
@@ -270,6 +277,7 @@ const SetupShopDetailScreen: React.FC = () => {
     }, [setupPackageId]);
     useEffect(() => {
         dispatch(removeCart());
+        dispatch(deleteSelectSetupId());
     }, []);
     const stars = Array.from({ length: 5 }, (_, index) => (
         <span
@@ -369,6 +377,7 @@ const SetupShopDetailScreen: React.FC = () => {
                                             if (setupPackageId) {
                                                 const res = await dispatch(addSetup(setupPackageId)).unwrap();
                                                 dispatch(selectSetup(res.cartItems));
+                                                dispatch(selectSetupId(res.setupId));
                                                 navigate('/checkout');
                                             }
                                         } else {
