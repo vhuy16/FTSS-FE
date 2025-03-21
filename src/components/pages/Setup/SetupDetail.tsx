@@ -27,7 +27,7 @@ import {
 } from './SetupStyles';
 import { BaseBtnGreen, BaseButtonGreen } from '@styles/button';
 import { updateSetupPackage } from '@redux/slices/setupSlice';
-import { addSetup, removeCart, selectSetup } from '@redux/slices/cartSlice';
+import { addSetup, deleteSelectSetupId, removeCart, selectSetup, selectSetupId } from '@redux/slices/cartSlice';
 import Loading from '@components/atom/Loading/Loading';
 import SimpleModal, { ModalContent, ModalHeader } from '@components/atom/modal/Modal';
 
@@ -66,6 +66,7 @@ const SetupDetail: React.FC<ProductItemProps> = () => {
     const navigate = useNavigate();
     useEffect(() => {
         dispatch(removeCart());
+        dispatch(deleteSelectSetupId());
     }, []);
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -375,6 +376,7 @@ const SetupDetail: React.FC<ProductItemProps> = () => {
                                     if (token) {
                                         const res = await dispatch(addSetup(setupPackageId)).unwrap();
                                         dispatch(selectSetup(res.cartItems));
+                                        dispatch(selectSetupId(res.setupId));
                                         navigate('/checkout');
                                     } else {
                                         toast.warning('Xin mời đăng nhập trước để thanh toán');

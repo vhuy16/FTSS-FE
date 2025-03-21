@@ -20,6 +20,7 @@ interface CartState {
     loading: boolean;
     error: string | null;
     message: string | null;
+    setupId: string;
 }
 
 const initialState: CartState = {
@@ -28,6 +29,7 @@ const initialState: CartState = {
     loading: false,
     error: null,
     message: null,
+    setupId: '',
 };
 
 // Async thunk để thêm sản phẩm vào giỏ hàng
@@ -119,6 +121,12 @@ const cartSlice = createSlice({
         selectSetup: (state, action: PayloadAction<CartItem[]>) => {
             const cartItem = action.payload;
             state.cartselected = cartItem;
+        },
+        selectSetupId: (state, action: PayloadAction<string>) => {
+            state.setupId = action.payload;
+        },
+        deleteSelectSetupId: (state) => {
+            state.setupId = '';
         },
         removeCart: (state) => {
             state.cartselected = [];
@@ -225,6 +233,14 @@ const cartSlice = createSlice({
     },
 });
 
-export const { clearCart, selectCart, updateSelectedCart, deleteSelectedCart, selectSetup, removeCart } =
-    cartSlice.actions;
+export const {
+    clearCart,
+    selectCart,
+    updateSelectedCart,
+    deleteSelectedCart,
+    selectSetup,
+    removeCart,
+    selectSetupId,
+    deleteSelectSetupId,
+} = cartSlice.actions;
 export default cartSlice.reducer;

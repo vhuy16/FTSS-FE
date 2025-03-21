@@ -121,6 +121,7 @@ const Billing = () => {
     const cart = useAppSelector((state) => state.cart.cartselected);
     const ship = useAppSelector((state) => state.shipment.ship);
     const user = useAppSelector((state) => state.userProfile.user);
+    const setupId = useAppSelector((state) => state.cart.setupId);
     const [idProvice, setIdProvince] = useState({ id: '0', name: 'chon tinh' });
     const [district, setDistrict] = useState({ id: '0', name: '', city_id: '' });
     const [ward, setWard] = useState({ id: '0', name: '' });
@@ -146,7 +147,8 @@ const Billing = () => {
         voucherId: string | null;
         paymentMethod: string;
         phoneNumber: string;
-        name: string;
+        recipientName: string;
+        setupPackageId: string | null;
     };
     const [formValue, setFormValue] = useState(initFormValue);
     const [formError, setFormError] = useState({
@@ -237,7 +239,8 @@ const Billing = () => {
                 voucherId: formValue.VoucherId,
                 paymentMethod: formValue.PaymentMethod,
                 phoneNumber: formValue.phone,
-                name: formValue.customer_name,
+                recipientName: formValue.customer_name,
+                setupPackageId: null,
             };
 
             try {
