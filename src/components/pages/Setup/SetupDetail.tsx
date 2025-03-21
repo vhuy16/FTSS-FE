@@ -50,7 +50,7 @@ const SetupDetail: React.FC<ProductItemProps> = () => {
   const [isModalOpenSave, setIsModalOpenSave] = useState(false);
   const [selectedCategoryName, setSelectedCategoryName] = useState("");
   const [selectedProducts, setSelectedProducts] = useState<(Product & { quantity: number })[]>([]);
-  const products = useAppSelector((state) => state.product.data?.items);
+  const products = useAppSelector((state) => state.product?.data?.items);
   const { setupPackageId } = useParams();
   const setupData = useAppSelector((state) => state.setupPackageDetail.data);
   const [setupName, setSetupName] = useState("");

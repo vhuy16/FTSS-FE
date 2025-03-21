@@ -47,7 +47,7 @@ const BuildSetup: React.FC<ProductItemProps> = () => {
   const [isModalOpenSave, setIsModalOpenSave] = useState(false);
   const [selectedCategoryName, setSelectedCategoryName] = useState<string>("");
   const [selectedProducts, setSelectedProducts] = useState<(Product & { quantity: number })[]>([]);
-  const products = useAppSelector((state) => state.product.data?.items);
+  const products = useAppSelector((state) => state.product?.data?.items);
   const [setupName, setSetupName] = useState("");
   const [description, setDescription] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
