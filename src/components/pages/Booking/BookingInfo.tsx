@@ -1,9 +1,7 @@
 import styled from "styled-components";
 import { Input } from "@styles/form";
 import { BaseButtonGreen } from "@styles/button";
-import CheckoutSummary from "./CheckoutSummary";
 import { breakpoints, defaultTheme } from "@styles/themes/default";
-import ShippingPayment from "../ShippingPayment/ShippingPayment";
 import { useAppDispatch, useAppSelector } from "@redux/hook";
 import { useEffect, useState } from "react";
 import { getAllDistrict, getAllProvince, getAllWard } from "@redux/slices/addressSlice";
@@ -14,11 +12,9 @@ import { useNavigate } from "react-router-dom";
 import { getUserProfile } from "@redux/slices/userSlice";
 import { createOrder } from "@redux/slices/orderSlice";
 import { createShipment } from "@redux/slices/shipmentSlice";
-import Loading from "../Loading/Loading";
 
 const BillingOrderWrapper = styled.div`
   gap: 60px;
-  grid-template-columns: 2fr 1fr;
 
   @media (max-width: ${breakpoints.xl}) {
     gap: 40px;
@@ -53,7 +49,7 @@ const BillingDetailsWrapper = styled.div`
       select {
         height: 45px;
         border-radius: 4px;
-        background: ${defaultTheme.color_whitesmoke};
+        /* background: ${defaultTheme.color_whitesmoke}; */
         padding-left: 12px;
         padding-right: 12px;
         width: 100%;
@@ -112,7 +108,7 @@ const isPhoneNumberValid = (phone: string) => {
   const phoneRegex = /^[0-9]{10,11}$/;
   return phoneRegex.test(phone);
 };
-const Billing = () => {
+const BookingInfo = () => {
   const dispatch = useAppDispatch();
   const listProvince = useAppSelector((state) => state.address.listProvince);
   const listDistrict = useAppSelector((state) => state.address.listDistrict);
@@ -238,7 +234,7 @@ const Billing = () => {
   return (
     <BillingOrderWrapper className="billing-and-order grid items-start">
       <BillingDetailsWrapper>
-        <h4 className="text-xxl font-bold text-outerspace">Thông tin người nhận hàng</h4>
+        <h4 className="text-xxl font-bold text-outerspace">Thông tin khách hàng</h4>
         <div className="checkout-form">
           <div className="input-elem-group elem-col-2">
             <div className="input-elem">
@@ -380,16 +376,10 @@ const Billing = () => {
               {formError.street && <div className="text-red text-sm">{formError.street}</div>}
             </div>
           </div>
-          <div className="horiz-line-separator w-full"></div>
-          <ShippingPayment />
-          <BaseButtonGreen className="pay-now-btn" onClick={handlePayNow}>
-            {isLoadingOrder ? <Loading></Loading> : <>Thanh toán ngay</>}
-          </BaseButtonGreen>
         </div>
       </BillingDetailsWrapper>
-      <CheckoutSummary />
     </BillingOrderWrapper>
   );
 };
 
-export default Billing;
+export default BookingInfo;

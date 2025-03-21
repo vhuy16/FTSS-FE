@@ -21,6 +21,7 @@ import { getSetupDetail } from "@redux/slices/setupDetailSlice";
 import SetupPreview from "../SetupShop/SetupPreview";
 import SetupDescriptionTab from "../SetupShop/SetupDescriptionTab";
 import { addSetUpToBuild } from "@redux/slices/setupSlice";
+import SetupSimilar from "../SetupShop/SetupSimilar";
 
 const DetailsScreenWrapper = styled.main`
   margin: 40px 0;
@@ -364,7 +365,7 @@ const SetupShopDetailScreen: React.FC = () => {
           )}
         </DetailsContent>
         <SetupDescriptionTab setup={setupData} />
-        <ProductSimilar />
+        <SetupSimilar />
       </Container>
     </DetailsScreenWrapper>
   );
