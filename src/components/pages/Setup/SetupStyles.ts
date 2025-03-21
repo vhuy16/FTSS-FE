@@ -67,11 +67,20 @@ export const SetupItem = styled.div`
   gap: 12px;
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Tạo hiệu ứng tách biệt */
 
-  .change-btn {
+  .titleCategory {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     align-items: center;
+    .text-title {
+      font-size: 18px;
+      font-weight: 600;
+      padding-left: 20px;
+    }
+    .change-btn {
+      align-items: center;
+    }
   }
+
   .setup-item-content {
     display: flex;
     align-items: center;

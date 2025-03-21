@@ -95,8 +95,8 @@ const OrderListScreen = () => {
                       }`}
                       onClick={() => handleTabClick(key as OrderStatus)}
                     >
-                      {key === "PROCESSING" && "Đang xử lí"}
-                      {key === "PROCESSED" && "Đã xử lí"}
+                      {key === "PROCESSING" && "Đang xử lý"}
+                      {key === "PROCESSED" && "Đã xử lý"}
                       {key === "PENDING_DELIVERY" && "Chờ giao hàng"}
                       {key === "COMPLETED" && "Đã giao hàng"}
                       {key === "CANCELLED" && "Đã hủy"}

@@ -72,7 +72,7 @@ const OrderDetailStatusWrapper = styled.div<{ currentIndex: number; totalSteps: 
     display: flex;
     align-items: center;
     justify-content: space-between;
-    max-width: 740px;
+    max-width: 900px;
     width: 100%;
     margin: 100px auto 90px;
     position: relative;
@@ -122,6 +122,8 @@ const OrderDetailStatusWrapper = styled.div<{ currentIndex: number; totalSteps: 
         bottom: -40px; /* Dịch xuống dưới */
         left: 50%;
         transform: translateX(-50%);
+        display: inline-block;
+        white-space: nowrap;
       }
 
       &.status-current {
@@ -472,10 +474,10 @@ const OrderDetailScreen = () => {
   };
 
   const orderStatusMap: Record<OrderStatus, string> = {
-    PROCESSING: "PROCESSING",
-    PENDING_DELIVERY: "PENDING_DELIVERY",
-    COMPLETED: "COMPLETED",
-    PROCESSED: "PROCESSED",
+    PROCESSING: "Đang xử lý",
+    PENDING_DELIVERY: "Đang giao hàng",
+    COMPLETED: "Hoàn thành",
+    PROCESSED: "Đã xử lý",
   };
 
   const statusIcons: Record<OrderStatus, JSX.Element> = {
@@ -533,7 +535,22 @@ const OrderDetailScreen = () => {
                       <p className="text-lg font-medium text-gray">Địa chỉ: {order?.address}</p>
                     </div>
                     <div className="order-d-top-r text-xxl text-gray font-semibold">
-                      <h4 className="text-3xl mb-7"> {order?.status}</h4>
+                      <h4
+                        className={`text-3xl mb-7 ${
+                          order?.status === "CANCELLED"
+                            ? "text-red"
+                            : order?.status === "RETURNED"
+                            ? "text-yellow"
+                            : "text-green"
+                        }`}
+                      >
+                        {order?.status === "PROCESSING" && "Đang xử lý"}
+                        {order?.status === "PROCESSED" && "Đã xử lý"}
+                        {order?.status === "PENDING_DELIVERY" && "Chờ giao hàng"}
+                        {order?.status === "COMPLETED" && "Đã giao hàng"}
+                        {order?.status === "CANCELLED" && "Đã hủy"}
+                        {order?.status === "RETURNED" && "Trả hàng/Hoàn tiền"}
+                      </h4>
                     </div>
                   </div>
                   {/* status orderorder */}
