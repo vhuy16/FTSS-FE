@@ -47,7 +47,7 @@ const BuildSetup: React.FC<ProductItemProps> = () => {
   const [isModalOpenSave, setIsModalOpenSave] = useState(false);
   const [selectedCategoryName, setSelectedCategoryName] = useState<string>("");
   const [selectedProducts, setSelectedProducts] = useState<(Product & { quantity: number })[]>([]);
-  const products = useAppSelector((state) => state.product.data?.items);
+  const products = useAppSelector((state) => state.product?.data?.items);
   const [setupName, setSetupName] = useState("");
   const [description, setDescription] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -231,12 +231,15 @@ const BuildSetup: React.FC<ProductItemProps> = () => {
                 <SetupItem key={cat.id}>
                   {selectedProducts.some((p) => p.categoryName === cat.categoryName) ? (
                     <div>
-                      {/* Thêm điều kiện ẩn nút "Chọn thêm" khi là loại bể */}
-                      {cat.categoryName !== "Bể" && (
-                        <div className="change-btn">
-                          <BaseBtnGreen onClick={() => openModal(cat.categoryName)}>Chọn thêm</BaseBtnGreen>
-                        </div>
-                      )}
+                      <div className="titleCategory">
+                        <div className="text-title">{cat.categoryName}</div>
+                        {/* Thêm điều kiện ẩn nút "Chọn thêm" khi là loại bể */}
+                        {cat.categoryName !== "Bể" && (
+                          <div className="change-btn">
+                            <BaseBtnGreen onClick={() => openModal(cat.categoryName)}>Chọn thêm</BaseBtnGreen>
+                          </div>
+                        )}
+                      </div>
                       {selectedProducts
                         .filter((product) => product.categoryName === cat.categoryName)
                         .map((product) => (

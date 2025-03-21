@@ -50,7 +50,7 @@ const SetupDetail: React.FC<ProductItemProps> = () => {
   const [isModalOpenSave, setIsModalOpenSave] = useState(false);
   const [selectedCategoryName, setSelectedCategoryName] = useState("");
   const [selectedProducts, setSelectedProducts] = useState<(Product & { quantity: number })[]>([]);
-  const products = useAppSelector((state) => state.product.data?.items);
+  const products = useAppSelector((state) => state.product?.data?.items);
   const { setupPackageId } = useParams();
   const setupData = useAppSelector((state) => state.setupPackageDetail.data);
   const [setupName, setSetupName] = useState("");
@@ -212,6 +212,43 @@ const SetupDetail: React.FC<ProductItemProps> = () => {
       toast.error("Cập nhật thất bại, vui lòng thử lại.");
     }
   };
+  const handleSaveProduct = async () => {
+    try {
+      if (!setupPackageId || selectedProducts.length === 0) {
+        toast.error("Vui lòng nhập đầy đủ thông tin.");
+        return;
+      }
+
+      // Tạo mảng JSON chứa thông tin sản phẩm
+      const productsData = selectedProducts.map((product) => ({
+        ProductId: product.id,
+        Quantity: product.quantity,
+      }));
+
+      // Chuyển mảng JSON thành chuỗi
+      const productsJson = JSON.stringify(productsData);
+
+      // Tạo FormData và thêm các trường dữ liệu
+      const formData = new FormData();
+      formData.append("SetupName", setupName.trim());
+      formData.append("Description", description.trim());
+      formData.append("ProductItemsJson", productsJson); // Thêm chuỗi JSON vào FormData
+      formData.append("ImageFile", imageFile || "");
+
+      const response = await dispatch(updateSetupPackage({ setupPackageId, formData }));
+
+      if (response?.payload?.status === "200" || response?.payload?.status === "201") {
+        toast.success("Cập nhật thành công!");
+        dispatch(getSetupDetail(setupPackageId as string));
+        closeModalSave();
+      } else {
+        toast.error(response?.payload);
+      }
+    } catch (error) {
+      console.error("Lỗi khi cập nhật setup package:", error);
+      toast.error("Cập nhật thất bại, vui lòng thử lại.");
+    }
+  };
 
   const handleQuantityChange = (productId: string, newQuantity: number) => {
     setSelectedProducts((prev) =>
@@ -261,12 +298,15 @@ const SetupDetail: React.FC<ProductItemProps> = () => {
                 <SetupItem key={cat.id}>
                   {selectedProducts.some((p) => p.categoryName === cat.categoryName) ? (
                     <div>
-                      {/* Thêm điều kiện ẩn nút "Chọn thêm" khi là loại bể */}
-                      {cat.categoryName !== "Bể" && (
-                        <div className="change-btn">
-                          <BaseBtnGreen onClick={() => openModal(cat.categoryName)}>Chọn thêm</BaseBtnGreen>
-                        </div>
-                      )}
+                      <div className="titleCategory">
+                        <div className="text-title">{cat.categoryName}</div>
+                        {/* Thêm điều kiện ẩn nút "Chọn thêm" khi là loại bể */}
+                        {cat.categoryName !== "Bể" && (
+                          <div className="change-btn">
+                            <BaseBtnGreen onClick={() => openModal(cat.categoryName)}>Chọn thêm</BaseBtnGreen>
+                          </div>
+                        )}
+                      </div>
                       {selectedProducts
                         .filter((product) => product.categoryName === cat.categoryName)
                         .map((product) => (
@@ -322,6 +362,9 @@ const SetupDetail: React.FC<ProductItemProps> = () => {
                   )}
                 </SetupItem>
               ))}
+              <BaseButtonGreen className="save-btn" onClick={handleSaveProduct}>
+                {isLoadingSetup ? <Loading></Loading> : "Lưu sản phẩm"}
+              </BaseButtonGreen>
             </SetupItemsList>
           </LeftSide>
           <RightSide>
