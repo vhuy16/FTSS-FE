@@ -17,6 +17,7 @@ import orderListReducer from './slices/orderListSlice';
 import setupPackageReducer from './slices/setupSlice';
 import setupPackageDetailReducer from './slices/setupDetailSlice';
 import dashboardReducer from './slices/dashboardSlice';
+import missionReducer from './slices/missionSlide';
 export const store = configureStore({
     reducer: {
         address: addressReducer,
@@ -37,6 +38,7 @@ export const store = configureStore({
         setupPackage: setupPackageReducer,
         setupPackageDetail: setupPackageDetailReducer,
         dashboard: dashboardReducer,
+        mission: missionReducer,
     },
 });
 

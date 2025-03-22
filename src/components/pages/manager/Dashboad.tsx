@@ -153,12 +153,4 @@ const DashboardSeller: React.FC = () => {
     );
 };
 
-// const DashboardSeller = () => {
-//     return (
-//         <>
-//             <ChartOneSeller />
-//             <ChartTwoSeller />
-//         </>
-//     );
-// };
 export default DashboardSeller;

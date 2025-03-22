@@ -23,7 +23,8 @@ function AppContent() {
         location.pathname.startsWith('/listSetup') ||
         location.pathname.startsWith('/listCategory') ||
         location.pathname.startsWith('/listSubCategory') ||
-        location.pathname.startsWith('/manager/profile');
+        location.pathname.startsWith('/manager/profile') ||
+        location.pathname.startsWith('/calendar');
     return (
         <div className="App">
             {!isAdminRoute && <GlobalStyles />}
