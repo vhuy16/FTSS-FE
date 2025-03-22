@@ -35,7 +35,7 @@ const navItems: NavItem[] = [
     {
         icon: <CalenderIcon />,
         name: 'Danh sách công việc',
-        path: '/calenderIcon',
+        path: '/calendar',
     },
     {
         icon: <ListIcon />,

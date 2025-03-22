@@ -429,7 +429,7 @@ span.flatpickr-weekday,
     @apply hidden;
 }
 .fc-addEventButton-button {
-    @apply !rounded-lg !border-0 !bg-brand-500 !px-4 !py-2.5 !text-sm !font-medium hover:!bg-brand-600 focus:!shadow-none;
+    @apply !bg-blackGreen text-white shadow-theme-xs hover:!bg-blackGreenHover disabled:bg-brand-300;
 }
 .fc-toolbar-title {
     @apply !text-lg !font-medium text-gray-800 dark:text-white/90;
