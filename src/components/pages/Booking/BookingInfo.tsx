@@ -125,7 +125,7 @@ const BookingInfo: React.FC<BookingInfoProps> = ({ setFormValues, formValues }) 
   const listProvince = useAppSelector((state) => state.address.listProvince);
   const listDistrict = useAppSelector((state) => state.address.listDistrict);
   const listWard = useAppSelector((state) => state.address.listWard);
-  const [idProvice, setIdProvince] = useState({ id: "0", name: "chon tinh" });
+  const [idProvice, setIdProvince] = useState({ id: "700000", name: "Hồ Chí Minh" });
   const [district, setDistrict] = useState({ id: "0", name: "", city_id: "" });
   const [ward, setWard] = useState({ id: "0", name: "" });
   const [infoDefault, setInfoDefault] = useState(false);
@@ -257,20 +257,27 @@ const BookingInfo: React.FC<BookingInfoProps> = ({ setFormValues, formValues }) 
             </div>
           </div>
           <div className="input-elem-group elem-col-3">
-            {/* Mặc định tỉnh là Hồ Chí Minh */}
             <div className="input-elem">
-              <label className="text-base text-outerspace font-semibold">Thành Phố*</label>
-              <input
-                type="text"
-                value="Hồ Chí Minh"
-                readOnly
-                className="block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50"
-              />
+              <label htmlFor="" className="text-base text-outerspace font-semibold">
+                Tỉnh*
+              </label>
+              <select
+                id="Tinh"
+                value={JSON.stringify(idProvice)}
+                onChange={(e) => {
+                  setIdProvince(JSON.parse(e.target.value));
+                  setFormValues({ ...formValues, province: JSON.parse(e.target.value).name });
+                }}
+                className="block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              >
+                <option value="">{idProvice.name}</option>
+              </select>
+              {formError.province && <div className="text-red text-sm">{formError.province}</div>}
             </div>
-
-            {/* Chọn Quận/Huyện thuộc Hồ Chí Minh */}
             <div className="input-elem">
-              <label className="text-base text-outerspace font-semibold">Quận*</label>
+              <label htmlFor="" className="text-base text-outerspace font-semibold">
+                Huyện/Thành phố*
+              </label>
               <select
                 id="huyen"
                 value={JSON.stringify(district)}
@@ -278,43 +285,57 @@ const BookingInfo: React.FC<BookingInfoProps> = ({ setFormValues, formValues }) 
                   setDistrict(JSON.parse(e.target.value));
                   setFormValues({ ...formValues, district: JSON.parse(e.target.value).name });
                 }}
-                className="block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50"
+                className="block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               >
-                <option value="">Chọn quận...</option>
-                {listDistrict
-                  .filter((district) => district.city_id === "700000") // Chỉ lấy quận thuộc HCM
-                  .map((district, index) => (
-                    <option key={index} value={JSON.stringify({ id: district.id, name: district.name })}>
+                <option value="">Chọn huyện ...</option>
+                {listDistrict.map((district, index) => {
+                  return (
+                    <option
+                      key={index}
+                      value={JSON.stringify({
+                        id: district.id,
+                        name: district.name,
+                        city_id: district.city_id,
+                      })}
+                    >
                       {district.name}
                     </option>
-                  ))}
+                  );
+                })}
               </select>
               {formError.district && <div className="text-red text-sm">{formError.district}</div>}
             </div>
-
-            {/* Chọn Phường/Xã */}
             <div className="input-elem">
-              <label className="text-base text-outerspace font-semibold">Phường*</label>
+              <label htmlFor="" className="text-base text-outerspace font-semibold">
+                Phường/Xã*
+              </label>
               <select
-                id="phuong"
+                id="Phuong"
                 value={JSON.stringify(ward)}
                 onChange={(e) => {
                   setWard(JSON.parse(e.target.value));
                   setFormValues({ ...formValues, ward: JSON.parse(e.target.value).name });
                 }}
-                className="block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50"
+                className="block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               >
-                <option value="">Chọn phường...</option>
-                {listWard.map((ward, index) => (
-                  <option key={index} value={JSON.stringify({ id: ward.id, name: ward.name })}>
-                    {ward.name}
-                  </option>
-                ))}
+                <option value="">Chọn phường ...</option>
+                {listWard.map((ward, index) => {
+                  return (
+                    <option
+                      key={index}
+                      value={JSON.stringify({
+                        id: ward.id,
+                        name: ward.name,
+                      })}
+                    >
+                      {ward.name}
+                    </option>
+                  );
+                })}
               </select>
               {formError.ward && <div className="text-red text-sm">{formError.ward}</div>}
             </div>
           </div>
-
           <div className="input-elem-group elem-col-1">
             <div className="input-elem">
               <label htmlFor="" className="text-base text-outerspace font-semibold">
