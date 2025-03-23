@@ -17,8 +17,10 @@ import orderListReducer from "./slices/orderListSlice";
 import setupPackageReducer from "./slices/setupSlice";
 import setupPackageDetailReducer from "./slices/setupDetailSlice";
 import dashboardReducer from "./slices/dashboardSlice";
-import serviceListReducer from "./slices/listServiceSlice";
+import listServiceReducer from "./slices/listServiceSlice";
 import bookingServiceReducer from "./slices/bookingSlice";
+import missionReducer from "./slices/missionSlide";
+
 export const store = configureStore({
   reducer: {
     address: addressReducer,
@@ -39,8 +41,9 @@ export const store = configureStore({
     setupPackage: setupPackageReducer,
     setupPackageDetail: setupPackageDetailReducer,
     dashboard: dashboardReducer,
-    serviceList: serviceListReducer,
+    serviceList: listServiceReducer,
     bookingService: bookingServiceReducer,
+    mission: missionReducer,
   },
 });
 

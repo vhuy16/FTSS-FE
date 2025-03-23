@@ -36,6 +36,7 @@ import ListSubCategory from "@components/pages/manager/ListSubCategory";
 import ManagerProfiles from "@components/pages/manager/ManagerProfile";
 import BookingService from "@components/pages/Booking/BookingService";
 import SetupBookingList from "@components/pages/Booking/SetupBookingList";
+import Calendar from "@components/pages/manager/Calendar";
 
 export type RouteType = {
   path: string;
@@ -171,6 +172,11 @@ if (role === "Admin") {
       layout: ManagerLayout,
     },
     {
+      path: "/calendar",
+      component: Calendar,
+      layout: ManagerLayout,
+    },
+    {
       path: "*",
       component: NotFoundScreen,
       layout: null,
@@ -248,7 +254,6 @@ if (role === "Admin") {
       component: ErrorScreen,
       layout: MainLayout,
     },
-
     {
       path: "/order",
       component: OrderListScreen,

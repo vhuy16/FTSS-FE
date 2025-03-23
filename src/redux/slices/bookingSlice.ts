@@ -12,10 +12,14 @@ interface BookingData {
   fullName: string;
   orderId: string;
 }
+interface UnavailableDate {
+  scheduleDate: string;
+}
 interface BookingState {
   loading: boolean;
   error: string | null;
   bookingData: BookingData | null;
+  unavailableDates: UnavailableDate[];
 }
 
 export const createBookingService = createAsyncThunk<BookingData, any, { rejectValue: string }>(
@@ -34,11 +38,21 @@ export const createBookingService = createAsyncThunk<BookingData, any, { rejectV
     }
   }
 );
+export const getAllUnavailableDates = createAsyncThunk("booking/getAllUnavailableDates", async () => {
+  try {
+    const response = await myAxios.get(`/booking/date-unavailable`);
+    return response.data.data;
+  } catch (error: any) {
+    console.error("Error fetching user profile:", error);
+    throw error;
+  }
+});
 
 const initialState: BookingState = {
   loading: false,
   error: null,
   bookingData: null,
+  unavailableDates: [],
 };
 const bookingSlice = createSlice({
   name: "booking",
@@ -46,7 +60,6 @@ const bookingSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-
       .addCase(createBookingService.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -57,6 +70,19 @@ const bookingSlice = createSlice({
         state.bookingData = action.payload;
       })
       .addCase(createBookingService.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
+    builder
+      .addCase(getAllUnavailableDates.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getAllUnavailableDates.fulfilled, (state, action: PayloadAction<UnavailableDate[]>) => {
+        state.loading = false;
+        state.unavailableDates = action.payload;
+      })
+      .addCase(getAllUnavailableDates.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });

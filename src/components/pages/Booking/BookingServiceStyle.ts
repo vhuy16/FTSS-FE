@@ -160,14 +160,6 @@ export const BookingServiceStyle = styled.main`
     margin-top: 2rem;
   }
 
-  .bookButton.enabled {
-    background-color: #2563eb;
-  }
-
-  .bookButton.enabled:hover {
-    background-color: #1d4ed8;
-  }
-
   .bookButton.disabled {
     background-color: #d1d5db;
     cursor: not-allowed;

@@ -16,7 +16,7 @@ import { currencyFormat } from "@ultils/helper";
 import { useParams } from "react-router-dom";
 import { getOrderById } from "@redux/slices/orderSlice";
 import { toast } from "react-toastify";
-import { createBookingService } from "@redux/slices/bookingSlice";
+import { createBookingService, getAllUnavailableDates } from "@redux/slices/bookingSlice";
 import { BaseBtnGreen } from "@styles/button";
 import Loading from "@components/atom/Loading/Loading";
 
@@ -28,6 +28,8 @@ const BookingService = () => {
   const services = useAppSelector((state) => state.serviceList.servicePackages);
   const orderDetail = useAppSelector((state) => state.order.order);
   const isLoadingBooking = useAppSelector((state) => state.bookingService.loading);
+  const unavailableDates = useAppSelector((state) => state.bookingService.unavailableDates);
+  const [disabledDates, setDisabledDates] = useState<Dayjs[]>([]);
   const initFormValue = {
     Address: "",
     phone: "",
@@ -42,7 +44,14 @@ const BookingService = () => {
     window.scrollTo(0, 0);
     dispatch(getOrderById(setupBookingId as string));
     dispatch(getAllServices());
+    dispatch(getAllUnavailableDates());
   }, [dispatch]);
+  useEffect(() => {
+    if (unavailableDates.length > 0) {
+      const formattedDates = unavailableDates.map((item) => dayjs(item.scheduleDate));
+      setDisabledDates(formattedDates);
+    }
+  }, [unavailableDates]);
   const handleDateChange = (date: Dayjs | null) => {
     setSelectedDate(date);
   };
@@ -67,7 +76,6 @@ const BookingService = () => {
       !formValue.Address ||
       !formValue.district ||
       !formValue.phone ||
-      !formValue.province ||
       !formValue.ward ||
       !formValue.street
     ) {
@@ -158,6 +166,12 @@ const BookingService = () => {
                   <DateCalendar
                     value={selectedDate}
                     onChange={handleDateChange}
+                    shouldDisableDate={(date) => disabledDates.some((disabledDate) => date.isSame(disabledDate, "day"))}
+                    slotProps={{
+                      day: (ownerState) => ({
+                        className: disabledDates.some((d) => ownerState.day.isSame(d, "day")) ? "unavailable-day" : "",
+                      }),
+                    }}
                     sx={{
                       bgcolor: "white",
                       borderRadius: "10px",
@@ -196,6 +210,19 @@ const BookingService = () => {
                         fontSize: "14px",
                         fontWeight: "bold",
                       },
+                      "& .MuiPickersDay-root.unavailable-day": {
+                        position: "relative",
+                        textDecoration: "none",
+                        "&::after": {
+                          content: '""',
+                          position: "absolute",
+                          width: "80%",
+                          height: "2px",
+                          backgroundColor: "gray", // Màu gạch ngang
+                          bottom: "50%",
+                          left: "10%",
+                        },
+                      },
                     }}
                     dayOfWeekFormatter={(day) => {
                       const weekdays = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];
@@ -214,7 +241,6 @@ const BookingService = () => {
               !formValue.Address ||
               !formValue.district ||
               !formValue.phone ||
-              !formValue.province ||
               !formValue.ward ||
               !formValue.street
             }
@@ -225,7 +251,6 @@ const BookingService = () => {
               formValue.Address &&
               formValue.district &&
               formValue.phone &&
-              formValue.province &&
               formValue.street &&
               formValue.ward
                 ? "enabled"
