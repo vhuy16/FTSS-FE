@@ -108,17 +108,28 @@ const isPhoneNumberValid = (phone: string) => {
   const phoneRegex = /^[0-9]{10,11}$/;
   return phoneRegex.test(phone);
 };
-const BookingInfo = () => {
+type BookingInfoProps = {
+  setFormValues: (value: any) => void;
+  formValues: {
+    Address: string;
+    phone: string;
+    customer_name: string;
+    street: string;
+    district: string;
+    province: string;
+    ward: string;
+  };
+};
+const BookingInfo: React.FC<BookingInfoProps> = ({ setFormValues, formValues }) => {
   const dispatch = useAppDispatch();
   const listProvince = useAppSelector((state) => state.address.listProvince);
   const listDistrict = useAppSelector((state) => state.address.listDistrict);
   const listWard = useAppSelector((state) => state.address.listWard);
-  const isLoadingOrder = useAppSelector((state) => state.order.isLoading);
-  const cart = useAppSelector((state) => state.cart.cartselected);
-  const ship = useAppSelector((state) => state.shipment.ship);
   const [idProvice, setIdProvince] = useState({ id: "0", name: "chon tinh" });
   const [district, setDistrict] = useState({ id: "0", name: "", city_id: "" });
   const [ward, setWard] = useState({ id: "0", name: "" });
+  const [infoDefault, setInfoDefault] = useState(false);
+  const user = useAppSelector((state) => state.userProfile.user);
 
   const initFormValue = {
     phone: "",
@@ -127,20 +138,7 @@ const BookingInfo = () => {
     district: "",
     province: "",
     ward: "",
-    CartItem: [],
-    ShipCost: 0,
-    VoucherId: null,
     Address: "",
-    PaymentMethod: "VnPay",
-  };
-  type DataCheckOut = {
-    cartItem: string[];
-    shipCost: number;
-    address: string;
-    voucherId: string | null;
-    paymentMethod: string;
-    phoneNumber: string;
-    name: string;
   };
   const [formValue, setFormValue] = useState(initFormValue);
   const [formError, setFormError] = useState({
@@ -151,6 +149,22 @@ const BookingInfo = () => {
     district: "",
     ward: "",
   });
+
+  useEffect(() => {
+    dispatch(getUserProfile());
+  }, []);
+  useEffect(() => {
+    if (!infoDefault) {
+      setFormValues({ ...formValues, customer_name: "", phone: "", Address: "" });
+    } else {
+      setFormValues({
+        ...formValues,
+        customer_name: user?.fullName as string,
+        phone: user?.phoneNumber as string,
+        Address: user?.address as string,
+      });
+    }
+  }, [infoDefault]);
   useEffect(() => {
     dispatch(getAllProvince());
     if (idProvice.id != "0") {
@@ -205,6 +219,16 @@ const BookingInfo = () => {
     <BillingOrderWrapper className="billing-and-order grid items-start">
       <BillingDetailsWrapper>
         <h4 className="text-xxl font-bold text-outerspace">Thông tin khách hàng</h4>
+        <div className="input-check-group flex items-center flex-wrap mt-2">
+          <input
+            id="default-checkbox"
+            type="checkbox"
+            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+            checked={infoDefault}
+            onChange={(e) => setInfoDefault(e.target.checked)}
+          />
+          <p className="text-base ml-4">Sử dụng thông tin mặc định của tài khoản</p>
+        </div>
         <div className="checkout-form">
           <div className="input-elem-group elem-col-2">
             <div className="input-elem">
@@ -214,8 +238,8 @@ const BookingInfo = () => {
               <Input
                 type="text"
                 placeholder="Tên"
-                value={formValue.customer_name}
-                onChange={(e) => setFormValue({ ...formValue, customer_name: e.target.value })}
+                value={formValues.customer_name}
+                onChange={(e) => setFormValues({ ...formValues, customer_name: e.target.value })}
               />
               {formError.name && <div className="text-red text-sm">{formError.name}</div>}
             </div>
@@ -226,8 +250,8 @@ const BookingInfo = () => {
               <Input
                 type="text"
                 placeholder="SĐT"
-                value={formValue.phone}
-                onChange={(e) => setFormValue({ ...formValue, phone: e.target.value })}
+                value={formValues.phone}
+                onChange={(e) => setFormValues({ ...formValues, phone: e.target.value })}
               />
               {formError.phone && <div className="text-red text-sm">{formError.phone}</div>}
             </div>
@@ -242,7 +266,7 @@ const BookingInfo = () => {
                 value={JSON.stringify(idProvice)}
                 onChange={(e) => {
                   setIdProvince(JSON.parse(e.target.value));
-                  setFormValue({ ...formValue, province: JSON.parse(e.target.value).name });
+                  setFormValues({ ...formValues, province: JSON.parse(e.target.value).name });
                 }}
                 className="block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               >
@@ -272,14 +296,7 @@ const BookingInfo = () => {
                 value={JSON.stringify(district)}
                 onChange={(e) => {
                   setDistrict(JSON.parse(e.target.value));
-                  setFormValue({ ...formValue, district: JSON.parse(e.target.value).name });
-                  dispatch(
-                    createShipment({
-                      district: JSON.parse(e.target.value).id,
-                      city: JSON.parse(e.target.value).city_id,
-                      amount: cart.reduce((a: number, b: CartItem) => a + b.price, 0),
-                    })
-                  );
+                  setFormValues({ ...formValues, district: JSON.parse(e.target.value).name });
                 }}
                 className="block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               >
@@ -310,7 +327,7 @@ const BookingInfo = () => {
                 value={JSON.stringify(ward)}
                 onChange={(e) => {
                   setWard(JSON.parse(e.target.value));
-                  setFormValue({ ...formValue, ward: JSON.parse(e.target.value).name });
+                  setFormValues({ ...formValues, ward: JSON.parse(e.target.value).name });
                 }}
                 className="block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               >
@@ -340,8 +357,8 @@ const BookingInfo = () => {
               <Input
                 type="text"
                 placeholder="Đường"
-                value={formValue.street}
-                onChange={(e) => setFormValue({ ...formValue, street: e.target.value })}
+                value={formValues.street}
+                onChange={(e) => setFormValues({ ...formValues, street: e.target.value })}
               />
               {formError.street && <div className="text-red text-sm">{formError.street}</div>}
             </div>

@@ -47,7 +47,6 @@ const OrderListScreen = () => {
   const orderData = useAppSelector((state) => state.orderList.orders) || [];
   const isLoading = useAppSelector((state) => state.orderList.loading);
   const [activeTab, setActiveTab] = useState<OrderStatus>("PROCESSING");
-  console.log("or", orderData);
 
   useEffect(() => {
     dispatch(getUserProfile());
@@ -61,8 +60,6 @@ const OrderListScreen = () => {
       setActiveTab(tab);
     }
   };
-
-  console.log("l", isLoading);
 
   return (
     <OrderListScreenWrapper className="page-py-spacing">

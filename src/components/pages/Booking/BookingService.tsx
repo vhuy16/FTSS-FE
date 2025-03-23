@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaClock, FaWater, FaFish } from "react-icons/fa";
 import { BookingContainer, BookingServiceStyle, CalendarContainer, InfoWrapper } from "./BookingServiceStyle";
 import { Container, HorizontalLine, HorizontalLineTAb } from "@styles/styles";
@@ -7,98 +7,91 @@ import { Order } from "@redux/slices/orderListSlice";
 import BookingInfo from "./BookingInfo";
 import { DateCalendar, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import "dayjs/locale/vi";
 import { Box } from "@mui/material";
-
-interface Service {
-  id: number;
-  name: string;
-  price: number;
-}
-
-interface Product {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-  image: string;
-}
+import { getAllServices, ServicePackage } from "@redux/slices/listServiceSlice";
+import { useAppDispatch, useAppSelector } from "@redux/hook";
+import { currencyFormat } from "@ultils/helper";
+import { useParams } from "react-router-dom";
+import { getOrderById } from "@redux/slices/orderSlice";
+import { toast } from "react-toastify";
+import { createBookingService } from "@redux/slices/bookingSlice";
+import { BaseBtnGreen } from "@styles/button";
+import Loading from "@components/atom/Loading/Loading";
 
 const BookingService = () => {
-  const [order, setOrder] = useState<Order | null>(null);
-  const [selectedDate, setSelectedDate] = useState<string | null>(null);
-  const [selectedTime, setSelectedTime] = useState<string | null>(null);
-  const [selectedServices, setSelectedServices] = useState<number[]>([]);
-  const [customerInfo, setCustomerInfo] = useState({
-    fullName: "",
+  const { setupBookingId } = useParams();
+  const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
+  const [selectedServices, setSelectedServices] = useState<string[]>([]);
+  const dispatch = useAppDispatch();
+  const services = useAppSelector((state) => state.serviceList.servicePackages);
+  const orderDetail = useAppSelector((state) => state.order.order);
+  const isLoadingBooking = useAppSelector((state) => state.bookingService.loading);
+  const initFormValue = {
+    Address: "",
     phone: "",
-    address: "",
-    notes: "",
-  });
+    customer_name: "",
+    street: "",
+    district: "",
+    province: "",
+    ward: "",
+  };
+  const [formValue, setFormValue] = useState(initFormValue);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    dispatch(getOrderById(setupBookingId as string));
+    dispatch(getAllServices());
+  }, [dispatch]);
+  const handleDateChange = (date: Dayjs | null) => {
+    setSelectedDate(date);
+  };
+  const formattedDate = selectedDate?.format("YYYY-MM-DD");
 
-  const dates = [
-    { day: "WED", date: "19" },
-    { day: "THU", date: "20" },
-    { day: "FRI", date: "21" },
-    { day: "SAT", date: "22" },
-    { day: "SUN", date: "23" },
-  ];
+  const products = orderDetail?.setupPackage?.products;
 
-  const timeSlots = ["09:00 AM", "10:00 AM", "11:00 AM", "02:00 PM", "03:00 PM", "04:00 PM"];
+  const toggleService = (serviceId: string) => {
+    setSelectedServices((prev) => {
+      const newServices = new Set(prev);
+      newServices.has(serviceId) ? newServices.delete(serviceId) : newServices.add(serviceId);
+      return Array.from(newServices);
+    });
+  };
+  const handleSave = async () => {
+    if (
+      !selectedDate ||
+      selectedServices.length === 0 ||
+      !selectedDate ||
+      selectedServices.length === 0 ||
+      !formValue.customer_name ||
+      !formValue.Address ||
+      !formValue.district ||
+      !formValue.phone ||
+      !formValue.province ||
+      !formValue.ward ||
+      !formValue.street
+    ) {
+      toast("Vui lòng nhập đầy đủ thông tin.");
+      return;
+    }
+    try {
+      const bookingData = {
+        serviceIds: selectedServices.map((id) => ({ serviceId: id })),
+        orderId: setupBookingId,
+        scheduleDate: formattedDate,
+        address: `${formValue.street}, ${formValue.ward}, ${formValue.district}, ${formValue.province}`,
+        phoneNumber: formValue.phone,
+        fullName: formValue.customer_name,
+      };
 
-  const services: Service[] = [
-    { id: 1, name: "Water Change", price: 50 },
-    { id: 2, name: "Filter Cleaning", price: 30 },
-    { id: 3, name: "Algae Removal", price: 40 },
-    { id: 4, name: "Fish Health Check", price: 45 },
-    { id: 5, name: "Tank Decoration Setup", price: 60 },
-  ];
-
-  const products: Product[] = [
-    {
-      id: 1,
-      name: "Premium Water Filter",
-      description: "High-performance filtration system",
-      price: 199,
-      image: "https://images.unsplash.com/photo-1584132967334-10e028bd69f7",
-    },
-    {
-      id: 2,
-      name: "LED Aquarium Light",
-      description: "Full spectrum LED lighting",
-      price: 129,
-      image: "https://images.unsplash.com/photo-1584132967334-10e028bd69f7",
-    },
-    {
-      id: 3,
-      name: "Water Conditioner",
-      description: "Professional grade water treatment",
-      price: 24.99,
-      image: "https://images.unsplash.com/photo-1584132967334-10e028bd69f7",
-    },
-  ];
-
-  const toggleService = (serviceId: number) => {
-    setSelectedServices((prev) =>
-      prev.includes(serviceId) ? prev.filter((id) => id !== serviceId) : [...prev, serviceId]
-    );
+      await dispatch(createBookingService(bookingData));
+      toast.success("Đặt lịch thành công");
+    } catch (error) {
+      console.error("Lỗi khi lưu setup package:", error);
+      toast.error("Lưu thất bại, vui lòng thử lại.");
+    }
   };
 
-  const handleInfoChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setCustomerInfo((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-  const handleDateSelect = (selectInfo: any) => {
-    const date = new Date(selectInfo.start);
-    const day = date.toLocaleDateString("en-US", { weekday: "short" });
-    const formattedDate = date.getDate();
-
-    setSelectedDate(`${day} ${formattedDate}`);
-  };
   const breadcrumbItems = [
     { label: "Trang chủ", link: "/" },
     { label: "Đặt lịch", link: "/booking" },
@@ -109,44 +102,30 @@ const BookingService = () => {
         <Breadcrumb items={breadcrumbItems} />
         <div className="bookingContainer">
           <div className="flexContainer">
-            <div className="imageContainer">
-              <img
-                src="https://images.unsplash.com/photo-1584132967334-10e028bd69f7"
-                alt="Ocean Blue Premium Aquarium"
-                className="image"
-              />
-            </div>
             <div className="build-info">
-              <h1 className="title">Ocean Blue Premium Aquarium</h1>
-              <p className="subtitle">Freshwater Planted Aquarium</p>
+              <h1 className="title">{orderDetail?.setupPackage.setupName}</h1>
               <div className="iconText">
-                <FaWater className="icon" />
-                <span>100L Capacity</span>
+                {/* <FaWater className="icon" /> */}
+                <span>Size: {orderDetail?.setupPackage.size}</span>
               </div>
-              <div className="iconText">
-                <FaFish className="icon" />
-                <span>Tropical Community Setup</span>
-              </div>
-              <p className="description">
-                Professional aquarium setup with advanced filtration system, LED lighting, and diverse tropical fish
-                community. Regular maintenance required for optimal fish health and water quality.
-              </p>
+              <p className="description">Mô tả: {orderDetail?.setupPackage.description}</p>
             </div>
           </div>
           <HorizontalLine />
           <div className="product">
             <h2 className="sectionTitle">Sản phẩm</h2>
             <div className="productContainer">
-              {products.map((product) => (
+              {products?.map((product) => (
                 <div key={product.id} className="productCard">
-                  <img src={product.image} alt={product.name} className="productImage" />
-                  <h3 className="productName">{product.name}</h3>
-                  <p className="productDescription">{product.description}</p>
-                  <p className="productPrice">${product.price}</p>
+                  <img src={product.images} alt={product.productName} className="productImage" />
+                  <h3 className="productName">{product.productName}</h3>
+                  <p className="productDescription">Số lượng: {product.quantity}</p>
+                  <p className="productPrice">{currencyFormat(product.price)}</p>
                 </div>
               ))}
             </div>
           </div>
+          <HorizontalLine />
           <div className="service">
             <h2 className="sectionTitle">Chọn loại dịch vụ</h2>
             <div className="serviceGrid">
@@ -156,27 +135,18 @@ const BookingService = () => {
                   onClick={() => toggleService(service.id)}
                   className={`serviceButton ${selectedServices.includes(service.id) ? "selected" : "unselected"}`}
                 >
-                  <div className="service-name">{service.name}</div>
-                  <div className="service-price">${service.price}</div>
+                  <div className="service-name">{service.serviceName}</div>
+                  <div className="service-price">{currencyFormat(service.price)}</div>
                 </button>
               ))}
             </div>
           </div>
-
           <InfoWrapper>
             <BookingContainer>
-              <BookingInfo />
+              <BookingInfo setFormValues={setFormValue} formValues={formValue} />
             </BookingContainer>
             <CalendarContainer>
               <h2 className="sectionTitle">Chọn ngày</h2>
-              {/* <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="vi">
-              <DateCalendar
-                dayOfWeekFormatter={(day) => {
-                  const weekdays = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];
-                  return weekdays[dayjs(day, "dd").day()];
-                }}
-              />
-            </LocalizationProvider> */}
               <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="vi">
                 <Box
                   sx={{
@@ -186,6 +156,8 @@ const BookingService = () => {
                   }}
                 >
                   <DateCalendar
+                    value={selectedDate}
+                    onChange={handleDateChange}
                     sx={{
                       bgcolor: "white",
                       borderRadius: "10px",
@@ -234,22 +206,35 @@ const BookingService = () => {
               </LocalizationProvider>
             </CalendarContainer>
           </InfoWrapper>
-          {/* <button
+          <BaseBtnGreen
             disabled={
               !selectedDate ||
-              !selectedTime ||
               selectedServices.length === 0 ||
-              !customerInfo.fullName ||
-              !customerInfo.phone
+              !formValue.customer_name ||
+              !formValue.Address ||
+              !formValue.district ||
+              !formValue.phone ||
+              !formValue.province ||
+              !formValue.ward ||
+              !formValue.street
             }
             className={`bookButton ${
-              selectedDate && selectedTime && selectedServices.length > 0 && customerInfo.fullName && customerInfo.phone
+              selectedDate &&
+              selectedServices.length > 0 &&
+              formValue.customer_name &&
+              formValue.Address &&
+              formValue.district &&
+              formValue.phone &&
+              formValue.province &&
+              formValue.street &&
+              formValue.ward
                 ? "enabled"
                 : "disabled"
             }`}
+            onClick={handleSave}
           >
-            Book Maintenance
-          </button> */}
+            {isLoadingBooking ? <Loading /> : "Đặt lịch "}
+          </BaseBtnGreen>
         </div>
       </Container>
     </BookingServiceStyle>

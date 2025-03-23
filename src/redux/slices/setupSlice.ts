@@ -49,7 +49,7 @@ const initialState: SetupState = {
 
 export const getSetupPackages = createAsyncThunk("setup/getSetupPackages", async () => {
   try {
-    const response = await myAxios.get(`https://ftss.id.vn/api/v1/setuppackage?page=1&size=10`);
+    const response = await myAxios.get(`/setuppackage?page=1&size=10`);
     return response.data.data;
   } catch (error: any) {
     console.error("Error fetching setup packages:", error);
@@ -58,7 +58,7 @@ export const getSetupPackages = createAsyncThunk("setup/getSetupPackages", async
 });
 export const getSetupPackagesShop = createAsyncThunk("setup/getSetupPackagesShop", async () => {
   try {
-    const response = await myAxios.get(`https://ftss.id.vn/api/v1/setuppackage/all-shop?page=1&size=100`);
+    const response = await myAxios.get(`/setuppackage/all-shop?page=1&size=100`);
     return response.data.data.setupPackages;
   } catch (error: any) {
     console.error("Error fetching setup packages:", error);
@@ -67,7 +67,7 @@ export const getSetupPackagesShop = createAsyncThunk("setup/getSetupPackagesShop
 });
 export const getAllSetupPackagesSimilar = createAsyncThunk("setup/getAllSetupPackagesSimilar", async () => {
   try {
-    const response = await myAxios.get(`https://ftss.id.vn/api/v1/setuppackage/all-shop?page=1&size=4`);
+    const response = await myAxios.get(`/setuppackage/all-shop?page=1&size=4`);
     return response.data.data.setupPackages;
   } catch (error: any) {
     console.error("Error fetching setup packages:", error);
@@ -78,7 +78,7 @@ export const createSetupPackage = createAsyncThunk(
   "setup/createSetupPackage",
   async (formData: FormData, { rejectWithValue, dispatch }) => {
     try {
-      const response = await myAxios.post(`https://ftss.id.vn/api/v1/setuppackage`, formData, {
+      const response = await myAxios.post(`/setuppackage`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -101,7 +101,7 @@ export const updateSetupPackage = createAsyncThunk(
   "setup/updateSetupPackage",
   async ({ setupPackageId, formData }: { setupPackageId: string; formData: FormData }, { rejectWithValue }) => {
     try {
-      const response = await myAxios.put(`https://ftss.id.vn/api/v1/setuppackage/${setupPackageId}`, formData, {
+      const response = await myAxios.put(`/setuppackage/${setupPackageId}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

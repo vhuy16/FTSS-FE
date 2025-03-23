@@ -18,6 +18,7 @@ import Loading from "@components/atom/Loading/Loading";
 import LoadingPage from "@components/atom/Loading/LoadingPage";
 import { getUserProfile } from "@redux/slices/userSlice";
 import SimpleModal, { ModalContent, ModalHeader } from "@components/atom/modal/Modal";
+import { getAllOrdersByUsers } from "@redux/slices/orderListSlice";
 const WishListScreenWrapper = styled.main`
   .wishlist {
     gap: 20px;
@@ -162,17 +163,17 @@ const breadcrumbItems = [
 ];
 
 const SetupBookingList = () => {
-  const setupData = useAppSelector((state) => state.setupPackage.setupPackages);
-  const [isModalOpenDelete, setisModalOpenDelete] = useState(false);
-  const [selectedSetupId, setSelectedSetupId] = useState<string | null>(null);
-  const isLoadingSetup = useAppSelector((state) => state.setupPackage.loading);
-
+  const orders = useAppSelector((state) => state.orderList.orders) || [];
+  const ordersWithSetup = orders.filter((order) => order.setupPackage !== null);
+  const isLoadingSetup = useAppSelector((state) => state.orderList.loading);
   const dispatch = useAppDispatch();
   useEffect(() => {
     dispatch(getUserProfile());
-    dispatch(getSetupPackages());
+    dispatch(getAllOrdersByUsers("COMPLETED"));
   }, []);
   const navigate = useNavigate();
+  const setupData = ordersWithSetup.map((order) => order);
+  console.log("ok", setupData);
 
   return (
     <WishListScreenWrapper className="page-py-spacing">
@@ -181,16 +182,13 @@ const SetupBookingList = () => {
         <UserDashboardWrapper>
           <UserMenu />
           <UserContent>
-            <div className="flex justify-between items-center">
-              <Title titleText="Build của tôi" />
-            </div>
             {isLoadingSetup ? (
               <LoadingPage />
             ) : setupData && setupData.length > 0 ? (
               <div className="wishlist grid">
                 {setupData?.map((setup) => {
                   return (
-                    <WishItemWrapper className="wish-item flex" key={setup.setupPackageId}>
+                    <WishItemWrapper className="wish-item flex" key={setup.setupPackage?.setupPackageId}>
                       <div className="wish-item-img flex items-stretch">
                         <div className="wish-item-img-wrapper">
                           <img src={beca} className="object-fit-cover" alt="" />
@@ -198,31 +196,35 @@ const SetupBookingList = () => {
                       </div>
                       <div className="wish-item-info flex justify-between">
                         <div className="wish-item-info-l flex flex-col">
-                          <p className="wish-item-title text-xl font-bold text-outerspace">{setup.setupName}</p>
+                          <p className="wish-item-title text-xl font-bold text-outerspace">
+                            {setup.setupPackage?.setupName}
+                          </p>
                           <ul className="flex flex-col">
                             <li>
                               <span className="text-lg font-bold">Ngày tạo:</span>
                               <span className="text-lg text-gray font-medium capitalize">
-                                {formatDate(setup.createDate)}
+                                {formatDate(setup.setupPackage?.createDate)}
                               </span>
                             </li>
                             <li>
                               <span className="text-lg font-bold">Mô tả:</span>
-                              <span className="text-lg text-gray font-medium capitalize">{setup.description}</span>
+                              <span className="text-lg text-gray font-medium capitalize">
+                                {setup.setupPackage?.description}
+                              </span>
                             </li>
                           </ul>
                         </div>
                         <div className="wish-item-info-r flex items-center">
-                          <span className="wish-item-price text-xl text-gray font-bold">
-                            {/* {currencyFormat(setup.totalPrice)} */}
+                          <span className="wish-item-price text-xl text-red font-bold">
+                            {currencyFormat(setup.totalPrice)}
                           </span>
                           <BaseBtnGreen
                             onClick={() => {
-                              navigate(`/setup-package/${setup.setupPackageId}`);
+                              navigate(`/setup-booking/${setup.id}`);
                             }}
                             className="wish-cart-btn"
                           >
-                            Xem chi tiết
+                            Đặt lịch
                           </BaseBtnGreen>
                         </div>
                       </div>

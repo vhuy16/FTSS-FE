@@ -290,7 +290,7 @@ if (role === "Admin") {
       layout: MainLayout,
     },
     {
-      path: "/booking",
+      path: "/setup-booking/:setupBookingId",
       component: BookingService,
       layout: MainLayout,
     },
