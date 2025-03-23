@@ -101,4 +101,11 @@ export const FormElement = styled.div`
       color: ${defaultTheme.color_sea_green};
     }
   }
+  .form-control-change-btn {
+    white-space: nowrap;
+    padding-left: 8px;
+    &:hover {
+      color: ${defaultTheme.color_sea_green};
+    }
+  }
 `;

@@ -75,10 +75,10 @@ export const BookingServiceStyle = styled.main`
 
   .product {
     .productContainer {
-      display: flex;
-      gap: 1rem;
-      overflow-x: auto;
-      padding-bottom: 3rem;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      overflow-x: hidden;
     }
 
     .productCard {
@@ -107,7 +107,7 @@ export const BookingServiceStyle = styled.main`
     }
 
     .productPrice {
-      color: #2563eb;
+      color: red;
       font-weight: bold;
       margin-top: 0.5rem;
     }
@@ -151,20 +151,13 @@ export const BookingServiceStyle = styled.main`
 
   .bookButton {
     width: 100%;
-    padding: 1rem;
+    padding: 1.5rem;
     border-radius: 0.5rem;
     font-weight: 600;
     color: white;
     transition: background-color 0.2s;
     border: none;
-  }
-
-  .bookButton.enabled {
-    background-color: #2563eb;
-  }
-
-  .bookButton.enabled:hover {
-    background-color: #1d4ed8;
+    margin-top: 2rem;
   }
 
   .bookButton.disabled {

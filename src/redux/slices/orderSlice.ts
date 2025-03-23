@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import myAxios from '@setup/axiosConfig';
+import { SetupPackage } from './setupSlice';
 
 type DataCheckOut = {
     cartItem: string[];
