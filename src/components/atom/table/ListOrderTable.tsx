@@ -38,11 +38,11 @@ export default function ListOrderTable() {
         {
             field: 'id',
             headerName: 'Mã đơn hàng',
-            width: 320,
+            width: 150,
             headerClassName: 'super-app-theme--header',
             renderCell: (params) => (
                 <span onClick={(event) => event.stopPropagation()} style={{ cursor: 'pointer', userSelect: 'none' }}>
-                    {params.value}
+                    {params.row.oderCode}
                 </span>
             ),
         },
@@ -98,7 +98,7 @@ export default function ListOrderTable() {
         {
             field: 'paymentMethod',
             headerName: 'Phương thức thanh toán',
-            width: 200,
+            width: 220,
             headerClassName: 'super-app-theme--header',
             renderCell: (params) => params.row.payment.paymentMethod,
         },
@@ -270,7 +270,7 @@ export default function ListOrderTable() {
                         onRowSelectionModelChange={(row) => {
                             const orders = listOrder.filter((order) => row.includes(order.id as string));
                             const dataCSV = orders.map((order) => ({
-                                'Mã đơn hàng': order.id,
+                                'Mã đơn hàng': order.oderCode,
                                 'Ngày tạo': order.createDate,
                                 'Tên khách hàng': order.userResponse.name,
                                 'Số điện thoại': order.userResponse.phoneNumber,

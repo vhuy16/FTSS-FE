@@ -250,7 +250,7 @@ const Billing = () => {
                 if (res !== '') {
                     await toast.success('Vui lòng chờ để thanh toán');
                     setTimeout(() => {
-                        // window.location.href = res;
+                        window.location.href = res;
                     }, 1000);
                 }
             } catch (error) {
