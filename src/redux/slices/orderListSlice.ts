@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import myAxios from '@setup/axiosConfig';
+import { SetupPackage } from './setupSlice';
 
 export type Order = {
     id: string;
@@ -21,6 +22,7 @@ export type Order = {
         paymentMethod: string | null;
     };
     oderCode: string;
+    setupPackage: SetupPackage;
 };
 export interface OrderDetail {
     productName: string;

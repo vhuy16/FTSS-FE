@@ -64,7 +64,7 @@ const Calendar: React.FC = () => {
         }
     }, [eventStartDate]);
     useEffect(() => {
-        const newListMission = listMission.map((mission) => {
+        const newListMission = listMission?.map((mission) => {
             return {
                 ...mission,
                 title: mission.missionName,
@@ -209,7 +209,7 @@ const Calendar: React.FC = () => {
                                         onChange={(e) => setData({ ...data, bookingId: e.target.value })}
                                     >
                                         <option selected>Chọn công việc...</option>
-                                        {listBooking.map((booking) => (
+                                        {listBooking?.map((booking) => (
                                             <option value={booking.id}>{booking.id}</option>
                                         ))}
                                     </select>
@@ -229,7 +229,7 @@ const Calendar: React.FC = () => {
                                         }
                                     >
                                         <option selected>Chọn nhân viên...</option>
-                                        {listTech.map((tech) => (
+                                        {listTech?.map((tech) => (
                                             <option value={JSON.stringify({ name: tech.techName, id: tech.techId })}>
                                                 {tech.techName}
                                             </option>

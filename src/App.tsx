@@ -24,7 +24,8 @@ function AppContent() {
         location.pathname.startsWith('/listCategory') ||
         location.pathname.startsWith('/listSubCategory') ||
         location.pathname.startsWith('/manager/profile') ||
-        location.pathname.startsWith('/calendar');
+        location.pathname.startsWith('/calendar') ||
+        location.pathname.startsWith('/listBooking');
     return (
         <div className="App">
             {!isAdminRoute && <GlobalStyles />}

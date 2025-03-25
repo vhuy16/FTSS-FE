@@ -46,6 +46,7 @@ type Order = {
     orderDetails: OrderDetail[];
     payment: Payment;
     oderCode: string;
+    setupPackage: SetupPackage;
 };
 type initialStateProduct = {
     url: string;
