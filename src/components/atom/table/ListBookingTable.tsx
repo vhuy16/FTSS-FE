@@ -13,6 +13,7 @@ import OrderPopup from '../popup/OrderPopup';
 import { useNavigate } from 'react-router-dom';
 import { Order } from '@redux/slices/orderListSlice';
 import { CSVLink } from 'react-csv';
+import { getAllBooking } from '@redux/slices/missionSlide';
 
 const paginationModel = { page: 0, pageSize: 5 };
 const StyledDataGrid = styled(DataGrid)((theme) => ({
@@ -25,128 +26,104 @@ const StyledDataGrid = styled(DataGrid)((theme) => ({
         color: 'white',
     },
 }));
-export default function ListOrderTable() {
-    const listOrder = useAppSelector((state) => state.order.listOrder);
+export default function ListBookingTable() {
+    const listBooking = useAppSelector((state) => state.mission.listBooking);
     const [selectedRow, setSelectedRow] = useState<any[]>([]);
     const dispatch = useAppDispatch();
     useEffect(() => {
-        dispatch(getAllOrder());
+        dispatch(getAllBooking());
     }, []);
     const columns: GridColDef[] = [
         { field: 'stt', headerName: 'STT', width: 50, headerClassName: 'super-app-theme--header' },
 
         {
             field: 'id',
-            headerName: 'Mã đơn hàng',
-            width: 150,
+            headerName: 'Mã đơn ',
+            width: 300,
             headerClassName: 'super-app-theme--header',
             renderCell: (params) => (
                 <span onClick={(event) => event.stopPropagation()} style={{ cursor: 'pointer', userSelect: 'none' }}>
-                    {params.row.oderCode}
+                    {params.row.id}
                 </span>
             ),
         },
         {
-            field: 'customerName',
+            field: 'address',
+            headerName: 'Địa chỉ bảo trì',
+            width: 120,
+            headerClassName: 'super-app-theme--header',
+        },
+        {
+            field: 'fullName',
             headerName: 'Tên khách hàng',
             width: 150,
             headerClassName: 'super-app-theme--header',
-            renderCell: (params) => params.row.userResponse.name,
         },
         {
-            field: 'createDate',
-            headerName: 'Ngày tạo',
+            field: 'phoneNumber',
+            headerName: 'Số điện thoại',
             width: 120,
             headerClassName: 'super-app-theme--header',
-            renderCell: (params) => params.row.createDate.split('T')[0],
-        },
-        {
-            field: 'paymentStatus',
-            headerName: 'Trạng thái thanh toán',
-            width: 200,
-            headerClassName: 'super-app-theme--header',
-            renderCell: (params) => (
-                <Badge
-                    size="sm"
-                    color={
-                        params.row.payment.paymentStatus === 'Processing'
-                            ? 'warning'
-                            : params.row.payment.paymentStatus === 'Completed'
-                            ? 'success'
-                            : params.row.payment.paymentStatus === 'Cancelled'
-                            ? 'error'
-                            : 'warning'
-                    }
-                >
-                    {params.row.payment.paymentStatus === 'Processing'
-                        ? 'Đang chờ thanh toán'
-                        : params.row.payment.paymentStatus === 'Completed'
-                        ? 'Đã thanh toán'
-                        : params.row.payment.paymentStatus === 'Cancelled'
-                        ? 'Đã hủy'
-                        : 'Đang hoàn trả'}
-                </Badge>
-            ),
         },
         {
             field: 'totalPrice',
-            headerName: 'Tổng tiền',
-            width: 120,
+            headerName: 'Giá tiền',
+            width: 80,
             headerClassName: 'super-app-theme--header',
             renderCell: (params) => currencyFormat(params.row.totalPrice),
         },
         {
-            field: 'paymentMethod',
-            headerName: 'Phương thức thanh toán',
-            width: 220,
+            field: 'scheduleDate',
+            headerName: 'Ngày bảo trì',
+            width: 120,
             headerClassName: 'super-app-theme--header',
-            renderCell: (params) => params.row.payment.paymentMethod,
+            renderCell: (params) => params.row.scheduleDate.split('T')[0],
         },
         {
             field: 'status',
-            headerName: 'Trạng thái đơn hàng',
-            width: 200,
+            headerName: 'Trạng thái',
+            width: 150,
             headerClassName: 'super-app-theme--header',
             renderCell: (params) => (
                 <Badge
                     size="sm"
                     color={
-                        params.row.status === 'PENDING_DELIVERY'
-                            ? 'primary'
-                            : params.row.status === 'PROCESSING'
-                            ? 'warning'
-                            : params.row.status === 'PROCESSED'
-                            ? 'info'
-                            : params.row.status === 'CANCELLED'
-                            ? 'error'
-                            : params.row.status === 'COMPLETED'
-                            ? 'success'
-                            : params.row.status === 'RETURNED'
+                        params.row.status === 'FREE'
                             ? 'light'
-                            : 'dark'
+                            : params.row.status === 'NOTPAID'
+                            ? 'warning'
+                            : params.row.status === 'PAID'
+                            ? 'success'
+                            : 'warning'
                     }
                 >
-                    {params.row.status === 'PENDING_DELIVERY'
-                        ? 'Đang giao'
-                        : params.row.status === 'PROCESSING'
-                        ? 'Đang xử lý'
-                        : params.row.status === 'PROCESSED'
-                        ? 'Đã xử lý'
-                        : params.row.status === 'CANCELLED'
-                        ? 'Đã hủy'
-                        : params.row.status === 'COMPLETED'
-                        ? 'Hoàn tất'
-                        : params.row.status === 'RETURNED'
-                        ? 'Hoàn trả'
-                        : 'Hoàn tiền'}
+                    {params.row.status === 'FREE'
+                        ? 'Có gói bảo trì'
+                        : params.row.status === 'NOTPAID'
+                        ? 'Chưa thanh toán'
+                        : params.row.status === 'PAID'
+                        ? 'Đã thanh toán'
+                        : 'warning'}
                 </Badge>
             ),
         },
         {
+            field: 'isAssigned',
+            headerName: 'Trạng thái phân công',
+            width: 250,
+            headerClassName: 'super-app-theme--header',
+            renderCell: (params) => (
+                <Badge size="sm" color={params.row.isAssigned === true ? 'success' : 'warning'}>
+                    {params.row.isAssigned === true ? 'Đã phân công ' : 'Chưa phân công'}
+                </Badge>
+            ),
+        },
+
+        {
             field: 'actions',
             headerName: '',
             flex: 1,
-            width: 200,
+            width: 80,
             headerClassName: 'super-app-theme--header',
             align: 'right',
             headerAlign: 'right',
@@ -161,14 +138,14 @@ export default function ListOrderTable() {
             ),
         },
     ];
-    const navigate = useNavigate();
-    const handleCellDoubleClick = (params: GridCellParams) => {
-        if (params.field === 'id') {
-            navigate(`/listOrder/${params.row.id}`);
-        }
-    };
-    const rows = listOrder?.map((order, index) => {
-        return { ...order, stt: index + 1 };
+    // const navigate = useNavigate();
+    // const handleCellDoubleClick = (params: GridCellParams) => {
+    //     if (params.field === 'id') {
+    //         navigate(`/listBooking/${params.row.id}`);
+    //     }
+    // };
+    const rows = listBooking?.map((booking, index) => {
+        return { ...booking, stt: index + 1 };
     });
 
     return (
@@ -199,13 +176,13 @@ export default function ListOrderTable() {
                     />
                 </div>
                 <Button size="ssm" variant="primary" startIcon={<DownloadIcon />}>
-                    <CSVLink data={selectedRow} filename="order">
+                    <CSVLink data={selectedRow} filename="booking">
                         Tải về
                     </CSVLink>
                 </Button>
             </div>
 
-            {listOrder && (
+            {listBooking && (
                 <Box
                     sx={{
                         minHeight: 400,
@@ -217,7 +194,7 @@ export default function ListOrderTable() {
                     <StyledDataGrid
                         rows={rows}
                         columns={columns}
-                        onCellDoubleClick={handleCellDoubleClick}
+                        // onCellDoubleClick={handleCellDoubleClick}
                         initialState={{
                             pagination: {
                                 paginationModel: {
@@ -268,17 +245,16 @@ export default function ListOrderTable() {
                         disableColumnFilter
                         checkboxSelection
                         onRowSelectionModelChange={(row) => {
-                            const orders = listOrder.filter((order) => row.includes(order.id as string));
-                            const dataCSV = orders.map((order) => ({
-                                'Mã đơn hàng': order.oderCode,
-                                'Ngày tạo': order.createDate,
-                                'Tên khách hàng': order.userResponse.name,
-                                'Số điện thoại': order.userResponse.phoneNumber,
-                                'Trạng thái đơn hàng': order.status,
-                                'Trạng thái thanh toán': order.payment.paymentStatus,
-                                'Phương thức thanh toán': order.payment.paymentMethod,
-                                'Địa chỉ giao hàng': order.address,
-                                'Tổng tiền': order.totalPrice,
+                            const bookings = listBooking.filter((booking) => row.includes(booking.id as string));
+                            const dataCSV = bookings.map((booking) => ({
+                                'Mã đơn ': booking.id,
+                                'Ngày bảo trì': booking.scheduleDate,
+                                'Tên khách hàng': booking.fullName,
+                                'Số điện thoại': booking.phoneNumber,
+                                'Địa chỉ bảo trì': booking.address,
+                                'Trạng thái': booking.status,
+                                'Trạng thái phân công': booking.isAssigned,
+                                'Tổng tiền': booking.totalPrice,
                             }));
                             setSelectedRow(dataCSV);
                         }}

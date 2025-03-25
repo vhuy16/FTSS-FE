@@ -8,6 +8,7 @@ import {
     BoxCubeIcon,
     CalenderIcon,
     ChevronDownIcon,
+    DocsIcon,
     GridIcon,
     HorizontaLDots,
     ListIcon,
@@ -41,6 +42,14 @@ const navItems: NavItem[] = [
         icon: <ListIcon />,
         name: 'Danh sách đơn hàng',
         path: '/listOrder',
+    },
+    {
+        name: 'Bảo trì',
+        icon: <DocsIcon />,
+        subItems: [
+            { name: 'Danh sách đơn bảo trì', path: '/listBooking' },
+            { name: 'Danh sách dịch vụ bảo trì', path: '/listSubCategory' },
+        ],
     },
     {
         icon: <TableIcon />,

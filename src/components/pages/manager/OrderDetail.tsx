@@ -25,15 +25,23 @@ export default function OrderDetail() {
                         <div className="2xl:container pb-14">
                             <div className="flex justify-start item-start space-y-2 flex-col">
                                 <h1 className="text-xl dark:text-white lg:text-xl font-semibold leading-7 lg:leading-9 text-gray-800">
-                                    Đơn hàng {orderDetail.id}
+                                    Đơn hàng {orderDetail.oderCode}
                                 </h1>
                                 <p className="text-base text-gray-600 font-medium leading-6">
                                     Trạng thái:{' '}
-                                    {orderDetail.status === 'PROCESSING'
-                                        ? 'Đang xử lý'
-                                        : orderDetail.status === 'PENDING_DELIVERY'
+                                    {orderDetail.status === 'PENDING_DELIVERY'
                                         ? 'Đang giao'
-                                        : 'Đã hủy'}
+                                        : orderDetail.status === 'PROCESSING'
+                                        ? 'Đang xử lý'
+                                        : orderDetail.status === 'PROCESSED'
+                                        ? 'Đã xử lý'
+                                        : orderDetail.status === 'CANCELLED'
+                                        ? 'Đã hủy'
+                                        : orderDetail.status === 'COMPLETED'
+                                        ? 'Hoàn tất'
+                                        : orderDetail.status === 'RETURNED'
+                                        ? 'Hoàn trả'
+                                        : 'Hoàn tiền'}
                                 </p>
                                 <p className="text-base dark:text-gray-300 font-medium leading-6 text-gray-600">
                                     Ngày đặt: {orderDetail.createDate.split('T')[0]}

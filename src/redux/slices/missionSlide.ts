@@ -75,7 +75,7 @@ export const assignBooking = createAsyncThunk('mission/assignBooking', async (da
 });
 export const getAllBooking = createAsyncThunk('mission/getAllBooking', async () => {
     try {
-        const response = await myAxios.get(`/booking?page=1&size=100&isAssigned=false`);
+        const response = await myAxios.get(`/booking?page=1&size=10&isAscending=false`);
         return response.data.data;
     } catch (error: any) {
         console.log(error);
