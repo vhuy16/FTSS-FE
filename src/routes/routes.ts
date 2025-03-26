@@ -38,6 +38,8 @@ import BookingService from '@components/pages/Booking/BookingService';
 import SetupBookingList from '@components/pages/Booking/SetupBookingList';
 import Calendar from '@components/pages/manager/Calendar';
 import ListBooking from '@components/pages/manager/ListBooking';
+import AddMission from '@components/pages/manager/AddMission';
+import ListService from '@components/pages/manager/ListService';
 
 export type RouteType = {
     path: string;
@@ -178,8 +180,18 @@ if (role === 'Admin') {
             layout: ManagerLayout,
         },
         {
+            path: '/addMission',
+            component: AddMission,
+            layout: ManagerLayout,
+        },
+        {
             path: '/listBooking',
             component: ListBooking,
+            layout: ManagerLayout,
+        },
+        {
+            path: '/listService',
+            component: ListService,
             layout: ManagerLayout,
         },
         {

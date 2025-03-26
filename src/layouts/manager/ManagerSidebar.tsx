@@ -48,7 +48,7 @@ const navItems: NavItem[] = [
         icon: <DocsIcon />,
         subItems: [
             { name: 'Danh sách đơn bảo trì', path: '/listBooking' },
-            { name: 'Danh sách dịch vụ bảo trì', path: '/listSubCategory' },
+            { name: 'Danh sách dịch vụ bảo trì', path: '/listService' },
         ],
     },
     {

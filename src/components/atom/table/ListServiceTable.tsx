@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { DownloadIcon } from '@icons/admin_icon';
+import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
 import Button from '@components/ui/button/Button';
 import { Box, styled } from '@mui/material';
-import { DataGrid, GridCellParams, GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useAppDispatch, useAppSelector } from '@redux/hook';
 import { getAllUser } from '@redux/slices/userSlice';
 import UserPopup from '../popup/UserPopup';
@@ -10,11 +11,12 @@ import { getAllOrder } from '@redux/slices/orderSlice';
 import { currencyFormat } from '@ultils/helper';
 import Badge from '@components/ui/badge/Badge';
 import OrderPopup from '../popup/OrderPopup';
-import { useNavigate } from 'react-router-dom';
-import { Order } from '@redux/slices/orderListSlice';
-import { CSVLink } from 'react-csv';
-import { getAllBooking } from '@redux/slices/missionSlide';
-import BookingPopup from '../popup/BookingPopup';
+import { getAllProductForAdmin, getProductByNameForAdmin } from '@redux/slices/productSlice';
+import ProductPopup from '../popup/ProductPopup';
+import AddProductModal from '../modal/AddProductModal';
+import { getAllCategory, getAllSubCategory, SubCategory } from '@redux/slices/categorySlice';
+import AddSubCategoryModal from '../modal/AddSubCategoryModal';
+import { getAllService } from '@redux/slices/missionSlide';
 
 const paginationModel = { page: 0, pageSize: 5 };
 const StyledDataGrid = styled(DataGrid)((theme) => ({
@@ -27,128 +29,49 @@ const StyledDataGrid = styled(DataGrid)((theme) => ({
         color: 'white',
     },
 }));
-export default function ListBookingTable() {
-    const listBooking = useAppSelector((state) => state.mission.listBooking);
-    const [selectedRow, setSelectedRow] = useState<any[]>([]);
+export default function ListServiceTable() {
+    const listService = useAppSelector((state) => state.mission.listService);
+    const [isModalAddOpen, setIsModalAddOpen] = useState(false);
     const dispatch = useAppDispatch();
     useEffect(() => {
-        dispatch(getAllBooking());
+        dispatch(getAllService());
     }, []);
     const columns: GridColDef[] = [
         { field: 'stt', headerName: 'STT', width: 50, headerClassName: 'super-app-theme--header' },
+        { field: 'id', headerName: 'Mã dịch vụ', width: 350, headerClassName: 'super-app-theme--header' },
+        {
+            field: 'serviceName',
+            headerName: 'Tên dịch vụ',
+            width: 200,
+            headerClassName: 'super-app-theme--header',
+        },
 
         {
-            field: 'id',
-            headerName: 'Mã đơn ',
-            width: 300,
-            headerClassName: 'super-app-theme--header',
-            renderCell: (params) => (
-                <span onClick={(event) => event.stopPropagation()} style={{ cursor: 'pointer', userSelect: 'none' }}>
-                    {params.row.id}
-                </span>
-            ),
-        },
-        {
-            field: 'address',
-            headerName: 'Địa chỉ bảo trì',
-            width: 120,
-            headerClassName: 'super-app-theme--header',
-        },
-        {
-            field: 'fullName',
-            headerName: 'Tên khách hàng',
+            field: 'price',
+            headerName: 'Giá',
             width: 150,
             headerClassName: 'super-app-theme--header',
+            renderCell: (params) => currencyFormat(params.row.price),
         },
-        {
-            field: 'phoneNumber',
-            headerName: 'Số điện thoại',
-            width: 120,
-            headerClassName: 'super-app-theme--header',
-        },
-        {
-            field: 'totalPrice',
-            headerName: 'Giá tiền',
-            width: 80,
-            headerClassName: 'super-app-theme--header',
-            renderCell: (params) => currencyFormat(params.row.totalPrice),
-        },
-        {
-            field: 'scheduleDate',
-            headerName: 'Ngày bảo trì',
-            width: 120,
-            headerClassName: 'super-app-theme--header',
-            renderCell: (params) => params.row.scheduleDate.split('T')[0],
-        },
-        {
-            field: 'status',
-            headerName: 'Trạng thái',
-            width: 150,
-            headerClassName: 'super-app-theme--header',
-            renderCell: (params) => (
-                <Badge
-                    size="sm"
-                    color={
-                        params.row.status === 'FREE'
-                            ? 'light'
-                            : params.row.status === 'NOTPAID'
-                            ? 'warning'
-                            : params.row.status === 'PAID'
-                            ? 'success'
-                            : 'warning'
-                    }
-                >
-                    {params.row.status === 'FREE'
-                        ? 'Có gói bảo trì'
-                        : params.row.status === 'NOTPAID'
-                        ? 'Chưa thanh toán'
-                        : params.row.status === 'PAID'
-                        ? 'Đã thanh toán'
-                        : 'warning'}
-                </Badge>
-            ),
-        },
-        {
-            field: 'isAssigned',
-            headerName: 'Trạng thái phân công',
-            width: 250,
-            headerClassName: 'super-app-theme--header',
-            renderCell: (params) => (
-                <Badge size="sm" color={params.row.isAssigned === true ? 'success' : 'warning'}>
-                    {params.row.isAssigned === true ? 'Đã phân công ' : 'Chưa phân công'}
-                </Badge>
-            ),
-        },
-
         {
             field: 'actions',
             headerName: '',
             flex: 1,
-            width: 80,
+            width: 200,
             headerClassName: 'super-app-theme--header',
             align: 'right',
             headerAlign: 'right',
             sortable: false,
             renderCell: (params) => (
-                <Box
-                    sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}
-                    onClick={(event) => event.stopPropagation()}
-                >
-                    <BookingPopup booking={params.row} />
+                <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+                    {/* <ProductPopup product={params.row} /> */}
                 </Box>
             ),
         },
     ];
-    // const navigate = useNavigate();
-    // const handleCellDoubleClick = (params: GridCellParams) => {
-    //     if (params.field === 'id') {
-    //         navigate(`/listBooking/${params.row.id}`);
-    //     }
-    // };
-    const rows = listBooking?.map((booking, index) => {
-        return { ...booking, stt: index + 1 };
+    const rows = listService?.map((service, index) => {
+        return { ...service, stt: index + 1 };
     });
-
     return (
         <div>
             <div className="flex justify-between mb-4">
@@ -176,14 +99,19 @@ export default function ListBookingTable() {
                         className="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-200 bg-transparent py-2.5 pl-12 pr-14 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-800 dark:bg-gray-900 dark:bg-white/[0.03] dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 xl:w-[430px]"
                     />
                 </div>
-                <Button size="ssm" variant="primary" startIcon={<DownloadIcon />}>
-                    <CSVLink data={selectedRow} filename="booking">
-                        Tải về
-                    </CSVLink>
+                <Button
+                    size="ssm"
+                    variant="primary"
+                    startIcon={<AddCircleOutlineOutlinedIcon />}
+                    onClick={() => {
+                        setIsModalAddOpen(true);
+                    }}
+                >
+                    Thêm mới
                 </Button>
             </div>
 
-            {listBooking && (
+            {listService && (
                 <Box
                     sx={{
                         minHeight: 400,
@@ -193,9 +121,9 @@ export default function ListBookingTable() {
                     }}
                 >
                     <StyledDataGrid
+                        // autoHeight
                         rows={rows}
                         columns={columns}
-                        // onCellDoubleClick={handleCellDoubleClick}
                         initialState={{
                             pagination: {
                                 paginationModel: {
@@ -222,12 +150,6 @@ export default function ListBookingTable() {
                                 position: 'relative',
                                 index: '0',
                             },
-                            '& .MuiDataGrid-columnHeaderTitleContainer': {
-                                backgroundColor: '#2d3748',
-                                color: '#fff',
-                                position: 'relative',
-                                index: '0',
-                            },
                             '& .MuiDataGrid-columnHeaderTitle': {
                                 fontWeight: 'bold',
                             },
@@ -241,27 +163,16 @@ export default function ListBookingTable() {
                                 outline: 'none', // Bỏ viền khi đang focus trong ô
                             },
                         }}
-                        // disableRowSelectionOnClick
+                        disableRowSelectionOnClick
                         disableColumnMenu
                         disableColumnFilter
-                        checkboxSelection
-                        onRowSelectionModelChange={(row) => {
-                            const bookings = listBooking.filter((booking) => row.includes(booking.id as string));
-                            const dataCSV = bookings.map((booking) => ({
-                                'Mã đơn ': booking.id,
-                                'Ngày bảo trì': booking.scheduleDate,
-                                'Tên khách hàng': booking.fullName,
-                                'Số điện thoại': booking.phoneNumber,
-                                'Địa chỉ bảo trì': booking.address,
-                                'Trạng thái': booking.status,
-                                'Trạng thái phân công': booking.isAssigned,
-                                'Tổng tiền': booking.totalPrice,
-                            }));
-                            setSelectedRow(dataCSV);
-                        }}
                     />
                 </Box>
             )}
+            {/* <AddSubCategoryModal
+                isModalAddOpen={isModalAddOpen}
+                setIsModalAddOpen={setIsModalAddOpen}
+            ></AddSubCategoryModal> */}
         </div>
     );
 }
