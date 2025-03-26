@@ -31,11 +31,17 @@ export type Booking = {
     orderId: string;
     isAssigned: boolean;
 };
+export type Service = {
+    id: string;
+    serviceName: string;
+    price: number;
+};
 type MissionType = {
     isLoading: boolean | null;
     isLoadingAssignBooking: boolean | null;
     listMission: Mission[];
     listBooking: Booking[];
+    listService: Service[];
     listTechnician: Technician[];
     isError: boolean | null;
 };
@@ -43,6 +49,7 @@ const initialState: MissionType = {
     isLoading: false,
     isLoadingAssignBooking: false,
     listMission: [],
+    listService: [],
     listTechnician: [],
     listBooking: [],
     isError: false,
@@ -76,6 +83,14 @@ export const assignBooking = createAsyncThunk('mission/assignBooking', async (da
 export const getAllBooking = createAsyncThunk('mission/getAllBooking', async () => {
     try {
         const response = await myAxios.get(`/booking?page=1&size=10&isAscending=false`);
+        return response.data.data;
+    } catch (error: any) {
+        console.log(error);
+    }
+});
+export const getAllService = createAsyncThunk('mission/getAllService', async () => {
+    try {
+        const response = await myAxios.get(`/booking/servicepackage?page=1&size=100`);
         return response.data.data;
     } catch (error: any) {
         console.log(error);
@@ -126,6 +141,20 @@ const missionSlice = createSlice({
                 state.isError = null;
             })
             .addCase(getAllBooking.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+            });
+        builder
+            .addCase(getAllService.pending, (state) => {
+                state.isLoading = true;
+                state.isError = null;
+            })
+            .addCase(getAllService.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.listService = action.payload;
+                state.isError = null;
+            })
+            .addCase(getAllService.rejected, (state, action) => {
                 state.isLoading = false;
                 state.isError = true;
             });
