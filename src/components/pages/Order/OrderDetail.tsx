@@ -510,6 +510,8 @@ const OrderDetailScreen = () => {
       console.error("Lỗi khi hủy đơn hàng:", error);
     }
   };
+  console.log("orderDetail", order);
+
   return (
     <OrderDetailScreenWrapper className="page-py-spacing">
       {isLoading ? (
