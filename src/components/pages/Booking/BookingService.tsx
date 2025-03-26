@@ -54,6 +54,13 @@ const BookingService = () => {
       setDisabledDates(formattedDates);
     }
   }, [unavailableDates]);
+  useEffect(() => {
+    if (orderDetail?.isEligible) {
+      setSelectedServices(services.map((s) => s.id)); // Chọn tất cả dịch vụ
+    } else {
+      setSelectedServices([]);
+    }
+  }, [orderDetail?.isEligible, services]);
   const handleDateChange = (date: Dayjs | null) => {
     setSelectedDate(date);
   };
@@ -79,6 +86,7 @@ const BookingService = () => {
       !formValue.district ||
       !formValue.phone ||
       !formValue.ward ||
+      !formValue.province ||
       !formValue.street
     ) {
       toast("Vui lòng nhập đầy đủ thông tin.");
@@ -106,7 +114,8 @@ const BookingService = () => {
     { label: "Trang chủ", link: "/" },
     { label: "Đặt lịch", link: "/booking" },
   ];
-  console.log("ordercong", orderDetail);
+  console.log("pro", formValue);
+
   // tong tien dich vuvu
   const totalPrice = orderDetail?.isEligible
     ? 0
@@ -158,9 +167,7 @@ const BookingService = () => {
                   <button
                     key={service.id}
                     onClick={() => toggleService(service.id)}
-                    className={`serviceButton ${
-                      orderDetail?.isEligible || selectedServices.includes(service.id) ? "selected" : "unselected"
-                    }`}
+                    className={`serviceButton ${selectedServices.includes(service.id) ? "selected" : "unselected"}`}
                     disabled={orderDetail?.isEligible} // Nếu đủ điều kiện, disable để giữ chọn tất cả dịch vụ
                   >
                     <div className="service-name">{service.serviceName}</div>
@@ -275,6 +282,7 @@ const BookingService = () => {
                 !formValue.district ||
                 !formValue.phone ||
                 !formValue.ward ||
+                !formValue.province ||
                 !formValue.street
               }
               className={`bookButton ${
@@ -285,6 +293,7 @@ const BookingService = () => {
                 formValue.district &&
                 formValue.phone &&
                 formValue.street &&
+                formValue.province &&
                 formValue.ward
                   ? "enabled"
                   : "disabled"

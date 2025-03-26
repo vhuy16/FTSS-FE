@@ -174,6 +174,11 @@ const BookingInfo: React.FC<BookingInfoProps> = ({ setFormValues, formValues }) 
       dispatch(getAllWard(district.id));
     }
   }, [idProvice.id, district.id]);
+
+  useEffect(() => {
+    // Cập nhật formValues.province ngay khi component mount
+    setFormValues((prev: any) => ({ ...prev, province: idProvice.name }));
+  }, []);
   const validateForm = () => {
     const errors = {
       name: "",
@@ -215,6 +220,8 @@ const BookingInfo: React.FC<BookingInfoProps> = ({ setFormValues, formValues }) 
     setFormError(errors);
     return check;
   };
+  console.log("valueform", formValues);
+
   return (
     <BillingOrderWrapper className="billing-and-order grid items-start">
       <BillingDetailsWrapper>
@@ -265,12 +272,13 @@ const BookingInfo: React.FC<BookingInfoProps> = ({ setFormValues, formValues }) 
                 id="Tinh"
                 value={JSON.stringify(idProvice)}
                 onChange={(e) => {
-                  setIdProvince(JSON.parse(e.target.value));
-                  setFormValues({ ...formValues, province: JSON.parse(e.target.value).name });
+                  const selectedProvince = JSON.parse(e.target.value);
+                  setIdProvince(selectedProvince);
+                  setFormValues((prev: any) => ({ ...prev, province: selectedProvince.name }));
                 }}
                 className="block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               >
-                <option value="">{idProvice.name}</option>
+                <option value={JSON.stringify(idProvice)}>{idProvice.name}</option>
               </select>
               {formError.province && <div className="text-red text-sm">{formError.province}</div>}
             </div>
