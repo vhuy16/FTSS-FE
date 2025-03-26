@@ -77,16 +77,16 @@ export const BookingServiceStyle = styled.main`
     .productContainer {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
+      gap: 15px;
       overflow-x: hidden;
     }
 
     .productCard {
       flex-shrink: 0;
       width: 16rem;
-      background-color: #f9fafb;
+      background-color: #f0f4f7;
       border-radius: 0.5rem;
-      padding: 1rem;
+      padding: 1.5rem;
     }
 
     .productImage {

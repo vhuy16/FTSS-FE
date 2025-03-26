@@ -35,6 +35,11 @@ const OrderListScreenWrapper = styled.div`
       min-width: 80px;
     }
   }
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
 `;
 
 const breadcrumbItems = [
@@ -45,9 +50,15 @@ const breadcrumbItems = [
 const OrderListScreen = () => {
   const dispatch = useAppDispatch();
   const orderData = useAppSelector((state) => state.orderList.orders) || [];
+  const ordersWithSetup = orderData.filter((or) => or.setupPackage !== null);
+  const ordersWithProduct = orderData.filter((or) => or.setupPackage == null);
   const isLoading = useAppSelector((state) => state.orderList.loading);
   const [activeTab, setActiveTab] = useState<OrderStatus>("PROCESSING");
+  const [selectedCategory, setSelectedCategory] = useState<"PRODUCT" | "FISH_TANK">("PRODUCT");
 
+  const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedCategory(event.target.value as "PRODUCT" | "FISH_TANK");
+  };
   useEffect(() => {
     dispatch(getUserProfile());
   }, [dispatch]);
@@ -60,7 +71,6 @@ const OrderListScreen = () => {
       setActiveTab(tab);
     }
   };
-
   return (
     <OrderListScreenWrapper className="page-py-spacing">
       {isLoading ? (
@@ -71,7 +81,15 @@ const OrderListScreen = () => {
           <UserDashboardWrapper>
             <UserMenu />
             <UserContent>
-              <Title titleText={"Đơn hàng"} />
+              <div className="header">
+                <Title titleText={"Đơn hàng"} />
+                <div className="inline-block ml-4">
+                  <select value={selectedCategory} onChange={handleCategoryChange} className="p-2 border rounded-md">
+                    <option value="PRODUCT">Sản phẩm</option>
+                    <option value="FISH_TANK">Hồ Cá</option>
+                  </select>
+                </div>
+              </div>
               <div className="order-tabs mb-12">
                 <div className="order-tabs-heads p-8">
                   {(
@@ -105,8 +123,14 @@ const OrderListScreen = () => {
                 <div className="order-tabs-contents">
                   {isLoading ? (
                     <LoadingPage />
-                  ) : orderData.length > 0 ? (
-                    <OrderItemList orders={orderData} />
+                  ) : selectedCategory === "PRODUCT" ? (
+                    ordersWithProduct.length > 0 ? (
+                      <OrderItemList orders={ordersWithProduct} />
+                    ) : (
+                      <p className="text-center text-gray-500">Không có đơn hàng nào.</p>
+                    )
+                  ) : ordersWithSetup.length > 0 ? (
+                    <OrderItemList orders={ordersWithSetup} />
                   ) : (
                     <p className="text-center text-gray-500">Không có đơn hàng nào.</p>
                   )}

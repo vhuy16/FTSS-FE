@@ -158,7 +158,6 @@ const OrderItemListWrapper = styled.div`
 
 const OrderItemList: React.FC<OrderItemListProps> = ({ orders }) => {
   const navigate = useNavigate();
-  console.log("or", orders);
   const [isModalOpenDelete, setIsModalOpenDelete] = useState(false);
   const isLoadingUpdate = useAppSelector((state) => state.order.isLoadingUpdate);
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
@@ -182,6 +181,7 @@ const OrderItemList: React.FC<OrderItemListProps> = ({ orders }) => {
       console.error("Lỗi khi hủy đơn hàng:", error);
     }
   };
+  console.log("or", orders);
   return (
     <OrderItemListWrapper>
       {orders?.map((order) => (
@@ -228,7 +228,13 @@ const OrderItemList: React.FC<OrderItemListProps> = ({ orders }) => {
               )}
               {order.status === "COMPLETED" && (
                 <>
-                  <button className="btn-primary">Đánh Giá</button>
+                  {order.setupPackage ? (
+                    <button className="btn-primary" onClick={() => navigate(`/setup-booking/${order.id}`)}>
+                      Đặt Lịch
+                    </button>
+                  ) : (
+                    <button className="btn-primary">Đánh Giá</button>
+                  )}
                   <button className="btn-secondary">Liên hệ người bán</button>
                 </>
               )}

@@ -19,6 +19,8 @@ import LoadingPage from "@components/atom/Loading/LoadingPage";
 import { getUserProfile } from "@redux/slices/userSlice";
 import SimpleModal, { ModalContent, ModalHeader } from "@components/atom/modal/Modal";
 import { getAllOrdersByUsers } from "@redux/slices/orderListSlice";
+import { getAllBookingofUsers } from "@redux/slices/bookingSlice";
+import { getOrderById } from "@redux/slices/orderSlice";
 const WishListScreenWrapper = styled.main`
   .wishlist {
     gap: 20px;
@@ -27,8 +29,12 @@ const WishListScreenWrapper = styled.main`
 
 const WishItemWrapper = styled.div`
   gap: 30px;
-  max-width: 900px;
+  max-width: 1500px;
   position: relative;
+  background-color: #fff;
+  border-radius: 0.3rem !important;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 
   @media (max-width: ${breakpoints.xl}) {
     column-gap: 20px;
@@ -163,18 +169,17 @@ const breadcrumbItems = [
 ];
 
 const SetupBookingList = () => {
-  const orders = useAppSelector((state) => state.orderList.orders) || [];
-  const ordersWithSetup = orders.filter((order) => order.setupPackage !== null);
-  const isLoadingSetup = useAppSelector((state) => state.orderList.loading);
+  const listBooking = useAppSelector((state) => state.bookingService.bookingList) || [];
+  const isLoadingBooking = useAppSelector((state) => state.bookingService.loading);
+
   const dispatch = useAppDispatch();
   useEffect(() => {
     dispatch(getUserProfile());
-    dispatch(getAllOrdersByUsers("COMPLETED"));
+    dispatch(getAllBookingofUsers());
   }, []);
   const navigate = useNavigate();
-  const setupData = ordersWithSetup.map((order) => order);
-  console.log("ok", setupData);
 
+  console.log("booking", listBooking);
   return (
     <WishListScreenWrapper className="page-py-spacing">
       <Container>
@@ -182,59 +187,51 @@ const SetupBookingList = () => {
         <UserDashboardWrapper>
           <UserMenu />
           <UserContent>
-            {isLoadingSetup ? (
-              <LoadingPage />
-            ) : setupData && setupData.length > 0 ? (
-              <div className="wishlist grid">
-                {setupData?.map((setup) => {
-                  return (
-                    <WishItemWrapper className="wish-item flex" key={setup.setupPackage?.setupPackageId}>
-                      <div className="wish-item-img flex items-stretch">
-                        <div className="wish-item-img-wrapper">
-                          <img src={beca} className="object-fit-cover" alt="" />
+            <div className="header">
+              <Title titleText={"Danh sách đặt lịch"} />
+            </div>
+            <div className="order-tabs-contents">
+              {isLoadingBooking ? (
+                <LoadingPage />
+              ) : listBooking && Array.isArray(listBooking) && listBooking.length > 0 ? (
+                <div className="wishlist grid">
+                  {listBooking?.map((booking) => {
+                    return (
+                      <WishItemWrapper className="wish-item flex" key={booking.id}>
+                        <div className="wish-item-img flex items-stretch">
+                          <div className="wish-item-img-wrapper">
+                            <div>{formatDate(booking.scheduleDate)}</div>
+                          </div>
                         </div>
-                      </div>
-                      <div className="wish-item-info flex justify-between">
-                        <div className="wish-item-info-l flex flex-col">
-                          <p className="wish-item-title text-xl font-bold text-outerspace">
-                            {setup.setupPackage?.setupName}
-                          </p>
-                          <ul className="flex flex-col">
-                            <li>
-                              <span className="text-lg font-bold">Ngày tạo:</span>
-                              <span className="text-lg text-gray font-medium capitalize">
-                                {formatDate(setup.setupPackage?.createDate)}
-                              </span>
-                            </li>
-                            <li>
-                              <span className="text-lg font-bold">Mô tả:</span>
-                              <span className="text-lg text-gray font-medium capitalize">
-                                {setup.setupPackage?.description}
-                              </span>
-                            </li>
-                          </ul>
+                        <div className="wish-item-info flex justify-between">
+                          <div className="wish-item-info-l flex flex-col">
+                            <p className="wish-item-title text-xl font-bold text-outerspace">{booking.status}</p>
+                            <ul className="flex flex-col">
+                              <li>
+                                <span className="text-lg font-bold">Mã đặt dịch vụ :</span>
+                                <span className="text-lg text-gray font-medium capitalize">{booking.id}</span>
+                              </li>
+                              <li>
+                                <span className="text-lg font-bold">Mô tả:</span>
+                                <span className="text-lg text-gray font-medium capitalize">{booking.phoneNumber}</span>
+                              </li>
+                            </ul>
+                          </div>
+                          <div className="wish-item-info-r flex items-center">
+                            <span className="wish-item-price text-xl text-red font-bold">
+                              {currencyFormat(booking.totalPrice)}
+                            </span>
+                            <BaseBtnGreen className="wish-cart-btn">Xem chi tiết</BaseBtnGreen>
+                          </div>
                         </div>
-                        <div className="wish-item-info-r flex items-center">
-                          <span className="wish-item-price text-xl text-red font-bold">
-                            {currencyFormat(setup.totalPrice)}
-                          </span>
-                          <BaseBtnGreen
-                            onClick={() => {
-                              navigate(`/setup-booking/${setup.id}`);
-                            }}
-                            className="wish-cart-btn"
-                          >
-                            Đặt lịch
-                          </BaseBtnGreen>
-                        </div>
-                      </div>
-                    </WishItemWrapper>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="text-center text-gray-600 text-xl mt-6">Không có setup nào. Vui lòng tạo !!</div>
-            )}
+                      </WishItemWrapper>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="text-center text-gray-600 text-xl mt-6">Không có setup nào. Vui lòng tạo !!</div>
+              )}
+            </div>
           </UserContent>
         </UserDashboardWrapper>
       </Container>
