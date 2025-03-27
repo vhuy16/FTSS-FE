@@ -108,15 +108,28 @@ const UserMenu = () => {
           </li>
           <li className="nav-menu-item">
             <Link
-              to="/setup-booking"
+              to="/booking-history"
               className={`nav-menu-link flex items-center ${
-                location.pathname === "//setup-booking" || location.pathname === "/setup-booking" ? "active" : ""
+                location.pathname === "//booking-history" || location.pathname === "/booking-history" ? "active" : ""
               }`}
             >
               <span className="nav-link-icon flex items-center justify-center">
                 <img src="./assets/icons/ac_user.svg" alt="" />
               </span>
               <span className="text-base font-semibold nav-link-text no-wrap">Danh sách bảo trì</span>
+            </Link>
+          </li>
+          <li className="nav-menu-item">
+            <Link
+              to="/setup-booking"
+              className={`nav-menu-link flex items-center ${
+                location.pathname === "/setup-booking" || location.pathname === "/setup-booking/add" ? "active" : ""
+              }`}
+            >
+              <span className="nav-link-icon flex items-center justify-center">
+                <img src="./assets/icons/ac_user.svg" alt="" />
+              </span>
+              <span className="text-base font-semibold nav-link-text no-wrap">Đặt lịch</span>
             </Link>
           </li>
           <li className="nav-menu-item">

@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import myAxios from "@setup/axiosConfig";
+import { ServicePackage } from "./listServiceSlice";
 export interface BookingData {
   id: string;
   scheduleDate: string;
@@ -12,6 +13,7 @@ export interface BookingData {
   fullName: string;
   orderId: string;
 }
+
 interface UnavailableDate {
   scheduleDate: string;
 }
@@ -24,12 +26,28 @@ export interface BookingList {
   totalPrice: number;
   orderId: string;
   isAssigned: boolean;
+  services: ServicePackage[];
+}
+export interface BookingDetail {
+  id: string;
+  scheduleDate: string;
+  status: string;
+  address: string;
+  phoneNumber: string;
+  totalPrice: number;
+  userId: string;
+  userName: string;
+  fullName: string;
+  orderId: string;
+  isAssigned: boolean;
+  services: ServicePackage[];
 }
 export interface BookingState {
   loading: boolean;
   error: string | null;
   bookingData: BookingData | null;
   bookingList: BookingList[];
+  bookingDetail: BookingDetail | null | undefined;
   unavailableDates: UnavailableDate[];
 }
 
@@ -68,11 +86,24 @@ export const getAllBookingofUsers = createAsyncThunk("booking/getAllBookingofUse
     throw error;
   }
 });
+export const getDetailBookingofUsers = createAsyncThunk(
+  "booking/getDetailBookingofUsers",
+  async (id: string, { rejectWithValue }) => {
+    try {
+      const response = await myAxios.get(`/booking${id}`);
+      return response.data.data;
+    } catch (error: any) {
+      console.log(error);
+      return rejectWithValue(error.response?.data?.message || "Lấy sản phẩm chi tiết thất bại");
+    }
+  }
+);
 
 const initialState: BookingState = {
   loading: false,
   error: null,
   bookingData: null,
+  bookingDetail: null,
   bookingList: [],
   unavailableDates: [],
 };
@@ -118,6 +149,20 @@ const bookingSlice = createSlice({
         state.bookingList = action.payload;
       })
       .addCase(getAllBookingofUsers.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
+    builder
+      .addCase(getDetailBookingofUsers.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getDetailBookingofUsers.fulfilled, (state, action: PayloadAction<BookingDetail>) => {
+        state.loading = true;
+        state.error = null;
+        state.bookingDetail = action.payload;
+      })
+      .addCase(getDetailBookingofUsers.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });
