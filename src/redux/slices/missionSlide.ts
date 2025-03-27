@@ -12,6 +12,7 @@ export type Mission = {
     technicianId: string;
     technicianName: string;
     bookingId: string | null;
+    orderId: string | null;
 };
 export type Technician = {
     techId: string;
@@ -30,6 +31,7 @@ export type Booking = {
     fullName: string;
     orderId: string;
     isAssigned: boolean;
+    services: Service[];
 };
 export type Service = {
     id: string;
@@ -38,20 +40,24 @@ export type Service = {
 };
 type MissionType = {
     isLoading: boolean | null;
+    isLoadingUpdate: boolean | null;
     isLoadingAssignBooking: boolean | null;
     listMission: Mission[];
     listBooking: Booking[];
+    booking: Booking | null;
     listService: Service[];
     listTechnician: Technician[];
-    isError: boolean | null;
+    isError: boolean;
 };
 const initialState: MissionType = {
     isLoading: false,
+    isLoadingUpdate: false,
     isLoadingAssignBooking: false,
     listMission: [],
     listService: [],
     listTechnician: [],
     listBooking: [],
+    booking: null,
     isError: false,
 };
 
@@ -80,9 +86,17 @@ export const assignBooking = createAsyncThunk('mission/assignBooking', async (da
         console.log(error);
     }
 });
+export const assignBookingOrder = createAsyncThunk('mission/assignBookingOrder', async (data: any) => {
+    try {
+        const response = await myAxios.post(`/booking`, data);
+        return response.data;
+    } catch (error: any) {
+        console.log(error);
+    }
+});
 export const getAllBooking = createAsyncThunk('mission/getAllBooking', async () => {
     try {
-        const response = await myAxios.get(`/booking?page=1&size=10&isAscending=false`);
+        const response = await myAxios.get(`/booking?page=1&size=100&isAscending=false`);
         return response.data.data;
     } catch (error: any) {
         console.log(error);
@@ -96,6 +110,30 @@ export const getAllService = createAsyncThunk('mission/getAllService', async () 
         console.log(error);
     }
 });
+export const getBookingById = createAsyncThunk('mission/getBookingById', async (id: string) => {
+    try {
+        const response = await myAxios.get(`/booking${id}`);
+        return response.data.data;
+    } catch (error: any) {
+        console.log(error);
+    }
+});
+export const updateMission = createAsyncThunk(
+    'mission/updateMission',
+    async ({ formData, id }: { formData: FormData; id: string }, { dispatch }) => {
+        try {
+            const response = await myAxios.put(`/booking/update-mission/${id}`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+            await dispatch(getAllMission());
+            return response.data;
+        } catch (error: any) {
+            console.log(error);
+        }
+    },
+);
 
 const missionSlice = createSlice({
     name: 'mission',
@@ -105,12 +143,12 @@ const missionSlice = createSlice({
         builder
             .addCase(getAllMission.pending, (state) => {
                 state.isLoading = true;
-                state.isError = null;
+                state.isError = false;
             })
             .addCase(getAllMission.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.listMission = action.payload;
-                state.isError = null;
+                state.isError = false;
             })
             .addCase(getAllMission.rejected, (state, action) => {
                 state.isLoading = false;
@@ -119,12 +157,12 @@ const missionSlice = createSlice({
         builder
             .addCase(getAlltechnician.pending, (state) => {
                 state.isLoading = true;
-                state.isError = null;
+                state.isError = false;
             })
             .addCase(getAlltechnician.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.listTechnician = action.payload;
-                state.isError = null;
+                state.isError = false;
             })
             .addCase(getAlltechnician.rejected, (state, action) => {
                 state.isLoading = false;
@@ -133,12 +171,12 @@ const missionSlice = createSlice({
         builder
             .addCase(getAllBooking.pending, (state) => {
                 state.isLoading = true;
-                state.isError = null;
+                state.isError = false;
             })
             .addCase(getAllBooking.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.listBooking = action.payload;
-                state.isError = null;
+                state.isError = false;
             })
             .addCase(getAllBooking.rejected, (state, action) => {
                 state.isLoading = false;
@@ -147,12 +185,12 @@ const missionSlice = createSlice({
         builder
             .addCase(getAllService.pending, (state) => {
                 state.isLoading = true;
-                state.isError = null;
+                state.isError = false;
             })
             .addCase(getAllService.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.listService = action.payload;
-                state.isError = null;
+                state.isError = false;
             })
             .addCase(getAllService.rejected, (state, action) => {
                 state.isLoading = false;
@@ -161,14 +199,54 @@ const missionSlice = createSlice({
         builder
             .addCase(assignBooking.pending, (state) => {
                 state.isLoadingAssignBooking = true;
-                state.isError = null;
+                state.isError = false;
             })
             .addCase(assignBooking.fulfilled, (state, action) => {
                 state.isLoadingAssignBooking = false;
-                state.isError = null;
+                state.isError = false;
             })
             .addCase(assignBooking.rejected, (state, action) => {
                 state.isLoadingAssignBooking = false;
+                state.isError = true;
+            });
+        builder
+            .addCase(assignBookingOrder.pending, (state) => {
+                state.isLoadingAssignBooking = true;
+                state.isError = false;
+            })
+            .addCase(assignBookingOrder.fulfilled, (state, action) => {
+                state.isLoadingAssignBooking = false;
+                state.isError = false;
+            })
+            .addCase(assignBookingOrder.rejected, (state, action) => {
+                state.isLoadingAssignBooking = false;
+                state.isError = true;
+            });
+        builder
+            .addCase(getBookingById.pending, (state) => {
+                state.isLoading = true;
+                state.isError = false;
+            })
+            .addCase(getBookingById.fulfilled, (state, action) => {
+                state.booking = action.payload;
+                state.isLoading = false;
+                state.isError = false;
+            })
+            .addCase(getBookingById.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+            });
+        builder
+            .addCase(updateMission.pending, (state) => {
+                state.isLoadingUpdate = true;
+                state.isError = false;
+            })
+            .addCase(updateMission.fulfilled, (state, action) => {
+                state.isLoadingUpdate = false;
+                state.isError = false;
+            })
+            .addCase(updateMission.rejected, (state, action) => {
+                state.isLoadingUpdate = false;
                 state.isError = true;
             });
     },

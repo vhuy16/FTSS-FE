@@ -8,7 +8,14 @@ import { Modal } from '@ui/modal';
 import { useModal } from '@hooks/useModal';
 import { format } from 'date-fns';
 import { useAppDispatch, useAppSelector } from '@redux/hook';
-import { getAllBooking, getAllMission, getAlltechnician, updateMission } from '@redux/slices/missionSlide';
+import {
+    assignBooking,
+    assignBookingOrder,
+    getAllBooking,
+    getAllMission,
+    getAlltechnician,
+} from '@redux/slices/missionSlide';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Loading from '@components/atom/Loading/Loading';
 type Mission = {
@@ -21,7 +28,7 @@ type Mission = {
     phoneNumber: string | null;
     technicianId: string;
     technicianName: string;
-    bookingId: string | null;
+    orderId: string | null;
 };
 
 interface CalendarEvent extends Mission {
@@ -30,24 +37,30 @@ interface CalendarEvent extends Mission {
     };
 }
 
-const Calendar: React.FC = () => {
+const AddMissionOrder: React.FC = () => {
     const dispatch = useAppDispatch();
     const listMission = useAppSelector((state) => state.mission.listMission);
     const listTech = useAppSelector((state) => state.mission.listTechnician);
+    const isLoadingAssignBooking = useAppSelector((state) => state.mission.isLoadingAssignBooking);
     const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
     const [eventTitle, setEventTitle] = useState('');
     const [eventStartDate, setEventStartDate] = useState('');
-    const [eventEndDate, setEventEndDate] = useState('');
     const [eventLevel, setEventLevel] = useState('');
-    const [orderId, setOrderId] = useState('');
-    const [missionId, setMissionId] = useState('');
-    const [techName, setTechName] = useState('');
+    const [des, setDes] = useState('');
+    const [tech, setTech] = useState('');
     const [events, setEvents] = useState<CalendarEvent[]>([]);
     const calendarRef = useRef<FullCalendar>(null);
     const { isOpen, openModal, closeModal } = useModal();
-    const [data, setData] = useState({ bookingId: '', technicianId: '', missionName: '', missionDescription: '' });
+    const [data, setData] = useState({
+        orderId: '',
+        technicianId: '',
+        missionName: '',
+        missionDescription: '',
+    });
 
-    const isLoadingUpdate = useAppSelector((state) => state.mission.isLoadingUpdate);
+    const [searchParams] = useSearchParams();
+    const orderId = searchParams.get('orderId');
+    const navigate = useNavigate();
 
     const calendarsEvents: { [key: string]: string } = {
         Cancel: 'danger',
@@ -58,15 +71,12 @@ const Calendar: React.FC = () => {
 
     useEffect(() => {
         dispatch(getAllMission());
-        dispatch(getAllBooking());
     }, []);
     useEffect(() => {
-        if (isOpen) {
-            const data = {
-                scheduleDate: eventStartDate,
-            };
-            dispatch(getAlltechnician(data));
-        }
+        const data = {
+            scheduleDate: eventStartDate,
+        };
+        dispatch(getAlltechnician(data));
     }, [eventStartDate]);
     useEffect(() => {
         const newListMission = listMission?.map((mission) => {
@@ -78,60 +88,52 @@ const Calendar: React.FC = () => {
                 extendedProps: {
                     calendar: mission.status,
                     des: mission.missionDescription,
-                    tech: mission.technicianId,
-                    bookingId: mission.bookingId,
-                    techName: mission.technicianName,
-                    orderId: mission.orderId,
-                    missionId: mission.id,
+                    tech: mission.technicianName,
                 },
             };
         });
         setEvents(newListMission);
     }, [listMission]);
-
+    const handleDateSelect = (selectInfo: DateSelectArg) => {
+        resetModalFields();
+        setEventStartDate(selectInfo.startStr);
+        openModal();
+    };
     const handleEventClick = (clickInfo: EventClickArg) => {
         const event = clickInfo.event;
         setSelectedEvent(event as unknown as CalendarEvent);
         setEventTitle(event.title);
-        setEventStartDate(event.start ? format(event.start, 'yyyy-MM-dd') : '');
+        setDes(event.extendedProps.des);
+        setTech(event.extendedProps.tech);
         setEventLevel(event.extendedProps.calendar);
-        setTechName(event.extendedProps.techName);
-        setOrderId(event.extendedProps.orderId);
-        setMissionId(event.extendedProps.missionId);
-        setData({
-            missionName: event.title,
-            missionDescription: event.extendedProps.des,
-            technicianId: event.extendedProps.tech,
-            bookingId: event.extendedProps.bookingId,
-        });
-
+        setEventStartDate(event.start ? format(event.start, 'yyyy-MM-dd') : '');
         openModal();
     };
 
-    const handleUpdateEvent = async () => {
-        const formData = new FormData();
-        formData.append('MissionName', data.missionName);
-        formData.append('MissionDescription', data.missionDescription);
-        formData.append('TechnicianId', data.technicianId);
-        formData.append('MissionSchedule', eventStartDate);
-        formData.append('Address', '');
-        formData.append('PhoneNumber', '');
+    const handleAddEvent = async () => {
+        const newEvent = {
+            orderId: orderId,
+            technicianId: data.technicianId,
+            missionName: data.missionName,
+            missionDescription: data.missionDescription,
+            missionSchedule: eventStartDate,
+        };
         try {
-            const res = await dispatch(updateMission({ formData: formData, id: missionId })).unwrap();
-            if (res.status == '200') {
+            const res = await dispatch(assignBookingOrder(newEvent)).unwrap();
+            if (res.status == '201') {
+                navigate('/calendar');
                 toast.success('Giao nhiệm vụ cho nhân viên thành công');
                 closeModal();
                 resetModalFields();
             } else {
-                toast.error('Cập nhật công việc không thành công');
+                toast.error('Không thể giao công việc');
             }
         } catch (error) {
-            toast.error(`Nhân viên bảo trì đang bận ngày ${eventStartDate}`);
+            toast.error('Không thể giao công việc');
         }
     };
-
     const resetModalFields = () => {
-        setData({ bookingId: '', technicianId: '', missionName: '', missionDescription: '' });
+        setData({ orderId: '', technicianId: '', missionName: '', missionDescription: '' });
         setSelectedEvent(null);
     };
     const renderEventContent = (eventInfo: any) => {
@@ -153,14 +155,21 @@ const Calendar: React.FC = () => {
                         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
                         initialView="dayGridMonth"
                         headerToolbar={{
-                            left: 'prev,next',
+                            left: 'prev,next addEventButton',
                             center: 'title',
                             right: 'dayGridMonth',
                         }}
                         events={events}
                         selectable={true}
+                        select={handleDateSelect}
                         eventClick={handleEventClick}
                         eventContent={renderEventContent}
+                        customButtons={{
+                            addEventButton: {
+                                text: 'Tạo mới +',
+                                click: openModal,
+                            },
+                        }}
                     />
                 </div>
                 <Modal
@@ -174,7 +183,7 @@ const Calendar: React.FC = () => {
                     <div className="flex flex-col px-2 overflow-y-auto custom-scrollbar">
                         <div>
                             <h5 className="mb-2 font-semibold text-gray-800 modal-title text-theme-xl dark:text-white/90 lg:text-2xl">
-                                {selectedEvent ? 'Chỉnh sửa công việc' : 'Thêm công việc'}
+                                {selectedEvent ? 'Chi tiết công việc' : 'Thêm công việc'}
                             </h5>
                         </div>
                         <div className="mt-8">
@@ -186,41 +195,61 @@ const Calendar: React.FC = () => {
                                     <input
                                         id="event-title"
                                         type="text"
-                                        value={data.missionName}
+                                        value={selectedEvent ? eventTitle : data.missionName}
                                         onChange={(e) => setData({ ...data, missionName: e.target.value })}
                                         placeholder="Viết tiêu đề của công việc tại đây"
                                         className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                                     />
                                 </div>
                             </div>
-                            <div className="mt-6 flex gap-4">
-                                <div className="w-full">
-                                    <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                                        Chọn nhân viên
-                                    </label>
-                                    <select
-                                        id="employee"
-                                        className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
-      focus:ring-blue-500 focus:border-blue-500 p-2.5 
-      dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                        onChange={(e) =>
-                                            setData({ ...data, technicianId: JSON.parse(e.target.value).id })
-                                        }
-                                    >
-                                        <option
-                                            selected
-                                            value={JSON.stringify({ name: techName, id: data.technicianId })}
-                                        >
-                                            {techName}
-                                        </option>
-                                        {listTech?.map((tech) => (
-                                            <option value={JSON.stringify({ name: tech.fullName, id: tech.techId })}>
-                                                {tech.fullName}
-                                            </option>
-                                        ))}
-                                    </select>
+                            {selectedEvent && (
+                                <div className="mt-6">
+                                    <div>
+                                        <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                                            Nhân viên
+                                        </label>
+                                        <input
+                                            id="event-title"
+                                            type="text"
+                                            value={tech}
+                                            placeholder="Viết mô tả của công việc tại đây"
+                                            className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                        />
+                                    </div>
                                 </div>
-                            </div>
+                            )}
+                            {!selectedEvent && (
+                                <div className="mt-6 flex gap-4">
+                                    <div className="w-full">
+                                        <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                                            Chọn nhân viên
+                                        </label>
+                                        <select
+                                            id="employee"
+                                            className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
+  focus:ring-blue-500 focus:border-blue-500 p-2.5 
+  dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                            onChange={(e) =>
+                                                setData({ ...data, technicianId: JSON.parse(e.target.value).id })
+                                            }
+                                        >
+                                            <option
+                                                selected
+                                                value={JSON.stringify({ name: 'Chọn nhân viên', id: '1' })}
+                                            >
+                                                Chọn nhân viên...
+                                            </option>
+                                            {listTech?.map((tech) => (
+                                                <option
+                                                    value={JSON.stringify({ name: tech.fullName, id: tech.techId })}
+                                                >
+                                                    {tech.fullName}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+                            )}
 
                             <div className="mt-6">
                                 <div>
@@ -236,7 +265,7 @@ const Calendar: React.FC = () => {
                                         className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                                         placeholder="Viết mô tả công việc tại đây"
                                         required={true}
-                                        value={data.missionDescription}
+                                        value={selectedEvent ? des : data.missionDescription}
                                         onChange={(e) => setData({ ...data, missionDescription: e.target.value })}
                                     ></textarea>
                                 </div>
@@ -260,7 +289,14 @@ const Calendar: React.FC = () => {
                                                             name="event-level"
                                                             value={key}
                                                             id={`modal${key}`}
-                                                            checked={eventLevel === key}
+                                                            checked={
+                                                                selectedEvent
+                                                                    ? eventLevel === key
+                                                                    : key == 'NotStarted'
+                                                                    ? true
+                                                                    : false
+                                                            }
+                                                            disabled={eventLevel !== key && eventLevel !== ''}
                                                             onChange={() => setEventLevel(key)}
                                                         />
                                                         <span className="flex items-center justify-center w-5 h-5 mr-2 border border-gray-300 rounded-full box dark:border-gray-700">
@@ -280,20 +316,7 @@ const Calendar: React.FC = () => {
                                     ))}
                                 </div>
                             </div>
-                            <div className="mt-6">
-                                <div>
-                                    <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                                        {data.bookingId ? 'ID đơn bảo trì' : 'ID đơn hàng'}
-                                    </label>
-                                    <input
-                                        id="event-title"
-                                        type="text"
-                                        value={data.bookingId ? data.bookingId : orderId}
-                                        placeholder="Viết tiêu đề của công việc tại đây"
-                                        className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                    />
-                                </div>
-                            </div>
+
                             <div className="mt-6">
                                 <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
                                     Ngày làm
@@ -309,22 +332,24 @@ const Calendar: React.FC = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="flex items-center gap-3 mt-6 modal-footer sm:justify-center">
-                            <button
-                                onClick={closeModal}
-                                type="button"
-                                className="text-red-600 inline-flex items-center mt-3 font-bold text-sm underline"
-                            >
-                                Hủy
-                            </button>
-                            <button
-                                onClick={handleUpdateEvent}
-                                type="button"
-                                className="text-white inline-flex items-center bg-blackGreen  hover:bg-blackGreenHover focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 mt-3 mr-3"
-                            >
-                                {isLoadingUpdate ? <Loading></Loading> : 'Lưu'}
-                            </button>
-                        </div>
+                        {!selectedEvent && (
+                            <div className="flex items-center gap-3 mt-6 modal-footer sm:justify-center">
+                                <button
+                                    onClick={closeModal}
+                                    type="button"
+                                    className="text-red-600 inline-flex items-center mt-3 font-bold text-sm underline"
+                                >
+                                    Hủy
+                                </button>
+                                <button
+                                    onClick={handleAddEvent}
+                                    type="button"
+                                    className="text-white inline-flex items-center bg-blackGreen  hover:bg-blackGreenHover focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 mt-3 mr-3"
+                                >
+                                    {isLoadingAssignBooking ? <Loading></Loading> : 'Thêm'}
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </Modal>
             </div>
@@ -332,4 +357,4 @@ const Calendar: React.FC = () => {
     );
 };
 
-export default Calendar;
+export default AddMissionOrder;

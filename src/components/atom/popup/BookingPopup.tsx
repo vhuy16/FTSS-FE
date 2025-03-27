@@ -8,6 +8,7 @@ import AddIcon from '@mui/icons-material/Add';
 import 'flowbite';
 import { useNavigate } from 'react-router-dom';
 import { Booking } from '@redux/slices/missionSlide';
+import RemoveRedEyeOutlinedIcon from '@mui/icons-material/RemoveRedEyeOutlined';
 
 const ITEM_HEIGHT = 48;
 type bookingPopupProps = {
@@ -37,45 +38,54 @@ export default function BookingPopup({ booking }: bookingPopupProps) {
             >
                 <MoreHorizIcon />
             </IconButton>
-            {booking.isAssigned === false && (
-                <Menu
-                    id="long-menu"
-                    MenuListProps={{
-                        'aria-labelledby': 'long-button',
-                    }}
-                    anchorEl={anchorEl1}
-                    open={open1}
-                    onClose={handleClose}
-                    slotProps={{
-                        paper: {
-                            style: {
-                                maxHeight: ITEM_HEIGHT * 4.5,
-                                width: '25ch',
-                            },
+            <Menu
+                id="long-menu"
+                MenuListProps={{
+                    'aria-labelledby': 'long-button',
+                }}
+                anchorEl={anchorEl1}
+                open={open1}
+                onClose={handleClose}
+                slotProps={{
+                    paper: {
+                        style: {
+                            maxHeight: ITEM_HEIGHT * 4.5,
+                            width: '25ch',
                         },
-                    }}
-                >
-                    <div>
-                        {booking.isAssigned === false && (
-                            <MenuItem
-                                onClick={() => {
-                                    navigate(
-                                        `/addMission?bookingId=${booking.id}&scheduleDate=${
-                                            booking.scheduleDate.split('T')[0]
-                                        }`,
-                                    );
-                                    handleClose();
-                                }}
-                            >
-                                <ListItemIcon>
-                                    <AddIcon fontSize="small" className="text-green-600" />
-                                </ListItemIcon>
-                                <ListItemText>Thêm nhiệm vụ</ListItemText>
-                            </MenuItem>
-                        )}
-                    </div>
-                </Menu>
-            )}
+                    },
+                }}
+            >
+                <div>
+                    <MenuItem
+                        onClick={() => {
+                            navigate(`/listBooking/${booking.id}`);
+                            handleClose();
+                        }}
+                    >
+                        <ListItemIcon>
+                            <RemoveRedEyeOutlinedIcon fontSize="small" className="text-green-400" />
+                        </ListItemIcon>
+                        <ListItemText>Xem chi tiết</ListItemText>
+                    </MenuItem>
+                    {booking.isAssigned === false && (
+                        <MenuItem
+                            onClick={() => {
+                                navigate(
+                                    `/addMissionBooking?bookingId=${booking.id}&scheduleDate=${
+                                        booking.scheduleDate.split('T')[0]
+                                    }`,
+                                );
+                                handleClose();
+                            }}
+                        >
+                            <ListItemIcon>
+                                <AddIcon fontSize="small" className="text-yellow-600" />
+                            </ListItemIcon>
+                            <ListItemText>Thêm nhiệm vụ</ListItemText>
+                        </MenuItem>
+                    )}
+                </div>
+            </Menu>
         </div>
     );
 }
