@@ -26,8 +26,10 @@ function AppContent() {
         location.pathname.startsWith('/manager/profile') ||
         location.pathname.startsWith('/calendar') ||
         location.pathname.startsWith('/listBooking') ||
-        location.pathname.startsWith('/addMission') ||
-        location.pathname.startsWith('/listService');
+        location.pathname.startsWith('/addMissionBooking') ||
+        location.pathname.startsWith('/addMissionOrder') ||
+        location.pathname.startsWith('/listService') ||
+        location.pathname.startsWith('/listOrder-delivery');
     return (
         <div className="App">
             {!isAdminRoute && <GlobalStyles />}
