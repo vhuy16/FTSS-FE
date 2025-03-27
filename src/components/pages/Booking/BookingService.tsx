@@ -197,16 +197,20 @@ const BookingService = () => {
                     <DateCalendar
                       value={selectedDate}
                       onChange={handleDateChange}
-                      shouldDisableDate={
-                        (date) =>
+                      shouldDisableDate={(date) => {
+                        const next7Days = dayjs().add(7, "day"); // Định nghĩa next7Days trong hàm
+                        return (
                           date.isBefore(dayjs(), "day") || // Không cho chọn ngày trước hiện tại
+                          date.isAfter(next7Days, "day") || // Không cho chọn ngày sau 7 ngày tiếp theo
                           disabledDates.some((disabledDate) => date.isSame(disabledDate, "day")) ||
                           date.isSame(dayjs(), "day") // k cho chon ngay hien tai
-                      }
+                        );
+                      }}
                       slotProps={{
                         day: (ownerState) => ({
                           className:
                             ownerState.day.isBefore(dayjs(), "day") ||
+                            ownerState.day.isAfter(dayjs().add(7, "day"), "day") ||
                             disabledDates.some((d) => ownerState.day.isSame(d, "day")) ||
                             ownerState.day.isSame(dayjs(), "day")
                               ? "unavailable-day"

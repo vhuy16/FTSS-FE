@@ -113,6 +113,80 @@ export const BookingServiceStyle = styled.main`
     }
   }
 
+  .setup {
+    margin-left: 2rem;
+    .flexContainer {
+      display: flex;
+      gap: 3rem;
+      margin-bottom: 2rem;
+    }
+    .build-info {
+      .title-setup {
+        font-size: 1.3rem;
+        font-weight: bold;
+      }
+
+      .subtitle {
+        color: #4b5563;
+        margin-top: 0.25rem;
+      }
+
+      .iconText {
+        display: flex;
+        align-items: center;
+        color: #4b5563;
+        margin-top: 0.5rem;
+      }
+
+      .icon {
+        margin-right: 0.25rem;
+      }
+
+      .description {
+        color: #4b5563;
+        margin-top: 1rem;
+        line-height: 1.625;
+      }
+    }
+    .productContainer {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+      overflow-x: hidden;
+    }
+
+    .productCard {
+      flex-shrink: 0;
+      width: 16rem;
+      background-color: #f0f4f7;
+      border-radius: 0.5rem;
+      padding: 1.5rem;
+    }
+
+    .productImage {
+      width: 100%;
+      height: 10rem;
+      object-fit: cover;
+      border-radius: 0.5rem;
+    }
+
+    .productName {
+      font-weight: 600;
+      margin-top: 0.5rem;
+    }
+
+    .productDescription {
+      font-size: 0.875rem;
+      color: #4b5563;
+    }
+
+    .productPrice {
+      color: red;
+      font-weight: bold;
+      margin-top: 0.5rem;
+    }
+  }
+
   .service {
     .serviceGrid {
       display: grid;
