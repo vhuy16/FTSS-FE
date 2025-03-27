@@ -38,8 +38,11 @@ import BookingService from "@components/pages/Booking/BookingService";
 import SetupBookingList from "@components/pages/Booking/SetupBookingList";
 import Calendar from "@components/pages/manager/Calendar";
 import ListBooking from "@components/pages/manager/ListBooking";
-import AddMission from "@components/pages/manager/AddMission";
+import AddMissionBooking from "@components/pages/manager/AddMissionBooking";
 import ListService from "@components/pages/manager/ListService";
+import BookingDetail from "@components/pages/manager/BookingDetail";
+import ListOrderDelivery from "@components/pages/manager/ListOrderDelivery";
+import AddMissionOrder from "@components/pages/manager/AddMissionOrder";
 import BookingHistory from "@components/pages/Booking/BookingHistory";
 import BookingHistoryDetail from "@components/pages/Booking/BookingHistoryDetail";
 
@@ -182,8 +185,13 @@ if (role === "Admin") {
       layout: ManagerLayout,
     },
     {
-      path: "/addMission",
-      component: AddMission,
+      path: "/addMissionBooking",
+      component: AddMissionBooking,
+      layout: ManagerLayout,
+    },
+    {
+      path: "/addMissionOrder",
+      component: AddMissionOrder,
       layout: ManagerLayout,
     },
     {
@@ -194,6 +202,16 @@ if (role === "Admin") {
     {
       path: "/listService",
       component: ListService,
+      layout: ManagerLayout,
+    },
+    {
+      path: "/listOrder-delivery",
+      component: ListOrderDelivery,
+      layout: ManagerLayout,
+    },
+    {
+      path: "/listBooking/:id",
+      component: BookingDetail,
       layout: ManagerLayout,
     },
     {

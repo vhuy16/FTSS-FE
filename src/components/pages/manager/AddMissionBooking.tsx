@@ -31,7 +31,7 @@ interface CalendarEvent extends Mission {
     };
 }
 
-const AddMission: React.FC = () => {
+const AddMissionBooking: React.FC = () => {
     const dispatch = useAppDispatch();
     const listMission = useAppSelector((state) => state.mission.listMission);
     const listTech = useAppSelector((state) => state.mission.listTechnician);
@@ -340,4 +340,4 @@ const AddMission: React.FC = () => {
     );
 };
 
-export default AddMission;
+export default AddMissionBooking;

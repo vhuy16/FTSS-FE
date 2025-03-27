@@ -38,10 +38,14 @@ const navItems: NavItem[] = [
         name: 'Danh sách công việc',
         path: '/calendar',
     },
+
     {
+        name: 'Đơn hàng',
         icon: <ListIcon />,
-        name: 'Danh sách đơn hàng',
-        path: '/listOrder',
+        subItems: [
+            { name: 'Tất cả đơn hàng', path: '/listOrder' },
+            { name: 'Cần giao và lắp đặt', path: '/listOrder-delivery' },
+        ],
     },
     {
         name: 'Bảo trì',
