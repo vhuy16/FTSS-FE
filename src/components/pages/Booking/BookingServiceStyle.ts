@@ -6,7 +6,10 @@ export const ContentWrapper = styled.div`
 `;
 export const BookingServiceStyle = styled.main`
   padding: 40px 0;
-
+  .text-title {
+    font-size: 17px;
+    font-weight: 600;
+  }
   .bookingContainer {
     background-color: #fff;
     border: 1px solid #dee2e6 !important;
@@ -28,6 +31,8 @@ export const BookingServiceStyle = styled.main`
     display: flex;
     gap: 3rem;
     margin-bottom: 2rem;
+    align-items: center;
+    justify-content: space-between;
   }
   .image {
     width: 10rem;
@@ -66,6 +71,19 @@ export const BookingServiceStyle = styled.main`
     }
   }
 
+  .customer-info {
+    .description {
+      color: #4b5563;
+      line-height: 1.625;
+      padding-bottom: 0.2rem;
+    }
+    .title {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #1e3a8a;
+      margin-bottom: 1rem;
+    }
+  }
   .sectionTitle {
     font-size: 1.125rem;
     font-weight: 600;
@@ -115,6 +133,8 @@ export const BookingServiceStyle = styled.main`
 
   .setup {
     margin-left: 2rem;
+    padding: 3rem;
+    background-color: rgb(241 242 243 / var(--tw-bg-opacity, 1));
     .flexContainer {
       display: flex;
       gap: 3rem;
@@ -158,7 +178,7 @@ export const BookingServiceStyle = styled.main`
     .productCard {
       flex-shrink: 0;
       width: 16rem;
-      background-color: #f0f4f7;
+      background-color: #ffff;
       border-radius: 0.5rem;
       padding: 1.5rem;
     }

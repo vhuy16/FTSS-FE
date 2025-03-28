@@ -61,7 +61,25 @@ const BookingHistory = () => {
                       <div className="p-6">
                         <div className="flex flex-wrap justify-between items-start gap-4 mb-4">
                           <div>
-                            <h2 className="text-xl font-semibold text-gray-900 hover:text-blue-600 cursor-pointer">
+                            <span
+                              className={`px-3 py-1 rounded-md text-sm font-medium
+                                                    ${
+                                                      booking.status === "FREE"
+                                                        ? "bg-yellow-100 text-yellow-600"
+                                                        : booking.status === "NOTPAID"
+                                                        ? "bg-red-100 text-red-600"
+                                                        : "bg-green-100 text-green-600"
+                                                    }
+                                        `}
+                            >
+                              {booking.status === "FREE"
+                                ? "Miễn phí"
+                                : booking.status === "NOTPAID"
+                                ? "Đang thanh toán"
+                                : "Đã thanh toán"}
+                            </span>
+
+                            <h2 className="text-xl font-semibold text-gray-900 hover:text-blue-600 cursor-pointer mt-2">
                               Booking #{booking.id}
                             </h2>
                             {/* <StatusTag status={booking.status} /> */}

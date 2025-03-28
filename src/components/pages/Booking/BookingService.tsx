@@ -13,7 +13,7 @@ import { Box } from "@mui/material";
 import { getAllServices, ServicePackage } from "@redux/slices/listServiceSlice";
 import { useAppDispatch, useAppSelector } from "@redux/hook";
 import { currencyFormat } from "@ultils/helper";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { getOrderById } from "@redux/slices/orderSlice";
 import { toast } from "react-toastify";
 import { createBookingService, getAllUnavailableDates } from "@redux/slices/bookingSlice";
@@ -75,6 +75,7 @@ const BookingService = () => {
       return Array.from(newServices);
     });
   };
+  const navigate = useNavigate();
   const handleSave = async () => {
     if (
       !selectedDate ||
@@ -102,8 +103,14 @@ const BookingService = () => {
         fullName: formValue.customer_name,
       };
 
-      await dispatch(createBookingService(bookingData));
-      toast.success("Đặt lịch thành công");
+      const response = await dispatch(createBookingService(bookingData));
+      // Xử lý kết quả
+      if (response?.payload?.status === "200" || response?.payload?.status === "201") {
+        toast.success("Đặt dịch vụ thành công!");
+        navigate(`/booking-history`);
+      } else {
+        toast.error(response?.payload);
+      }
     } catch (error) {
       console.error("Lỗi khi lưu setup package:", error);
       toast.error("Lưu thất bại, vui lòng thử lại.");
@@ -114,7 +121,6 @@ const BookingService = () => {
     { label: "Trang chủ", link: "/" },
     { label: "Đặt lịch", link: "/booking" },
   ];
-  console.log("pro", formValue);
 
   // tong tien dich vuvu
   const totalPrice = orderDetail?.isEligible

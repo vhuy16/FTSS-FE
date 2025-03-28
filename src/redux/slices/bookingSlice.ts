@@ -51,19 +51,19 @@ export interface BookingState {
   unavailableDates: UnavailableDate[];
 }
 
-export const createBookingService = createAsyncThunk<BookingData, any, { rejectValue: string }>(
+export const createBookingService = createAsyncThunk(
   "booking/createBookingService",
-  async (bookingData: any, { rejectWithValue }) => {
+  async (bookingData: any, { dispatch }) => {
     try {
       const response = await myAxios.post(`/booking/booking-schedule`, bookingData, {
         headers: {
           "Content-Type": "application/json",
         },
       });
-      return response.data.data;
+      await dispatch(getAllBookingofUsers());
+      return response.data;
     } catch (error: any) {
       console.error("Error creating booking:", error);
-      return rejectWithValue(error.response?.data?.message || "Error creating booking");
     }
   }
 );
@@ -117,10 +117,9 @@ const bookingSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(createBookingService.fulfilled, (state, action: PayloadAction<BookingData>) => {
+      .addCase(createBookingService.fulfilled, (state, action) => {
         state.loading = false;
         state.error = null;
-        state.bookingData = action.payload;
       })
       .addCase(createBookingService.rejected, (state, action) => {
         state.loading = false;

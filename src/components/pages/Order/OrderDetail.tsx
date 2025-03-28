@@ -532,7 +532,7 @@ const OrderDetailScreen = () => {
                 <div className="order-d-wrapper">
                   <div className="order-d-top flex justify-between items-start">
                     <div className="order-d-top-l">
-                      <h4 className="text-3xl order-d-no">Mã đặt hàng: {order?.id}</h4>
+                      <h4 className="text-3xl order-d-no">Mã đặt hàng: #{order?.oderCode}</h4>
                       <p className="text-lg font-medium text-gray">{formatDate(order?.createDate)}</p>
                       <p className="text-lg font-medium text-gray">Địa chỉ: {order?.address}</p>
                     </div>
