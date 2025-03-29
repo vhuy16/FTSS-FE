@@ -9,6 +9,7 @@ import { useAppDispatch, useAppSelector } from '@redux/hook';
 import { getAllUser } from '@redux/slices/userSlice';
 import Loading from '../Loading/Loading';
 import UserPopup from '../popup/UserPopup';
+import LoadingPage from '../Loading/LoadingPage';
 
 const paginationModel = { page: 0, pageSize: 5 };
 const StyledDataGrid = styled(DataGrid)((theme) => ({
@@ -24,6 +25,7 @@ const StyledDataGrid = styled(DataGrid)((theme) => ({
 export default function ListUserTable() {
     const listUser = useAppSelector((state) => state.userProfile.listUser);
     const isLoading = useAppSelector((state) => state.userProfile.isLoading);
+    const isLoadingGetAllUser = useAppSelector((state) => state.userProfile.isLoadingGetAllUser);
     const dispatch = useAppDispatch();
     useEffect(() => {
         dispatch(getAllUser());
@@ -87,7 +89,9 @@ export default function ListUserTable() {
     const rows = rowsUser?.map((user, index) => {
         return { ...user, stt: index + 1, id: user.userId };
     });
-    return (
+    return isLoadingGetAllUser && listUser.length === 0 ? (
+        <LoadingPage></LoadingPage>
+    ) : (
         <div>
             <div className="flex justify-between mb-4">
                 <div className="relative">

@@ -14,7 +14,6 @@ import ListItemText from '@mui/material/ListItemText';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import Checkbox from '@mui/material/Checkbox';
 import 'flowbite';
-import { createSetupPackage } from '@redux/slices/setupSlice';
 type ModalAddProps = {
     isModalAddOpen: boolean;
     setIsModalAddOpen: (isOpen: boolean) => void;

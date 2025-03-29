@@ -73,6 +73,8 @@ type CategoryState = {
     isLoading: boolean;
     isLoadingAdd: boolean;
     isLoadingAddSubCate: boolean;
+    isLoadingGetAllCategory: boolean;
+    isLoadingGetAllSubCategory: boolean;
     categories: categoryType[];
     subCates: SubCategory[];
     subCategory: SubCategory[];
@@ -83,6 +85,8 @@ const initialState: CategoryState = {
     isLoading: false,
     isLoadingAdd: false,
     isLoadingAddSubCate: false,
+    isLoadingGetAllCategory: false,
+    isLoadingGetAllSubCategory: false,
     categories: [],
     subCates: [],
     subCategory: [],
@@ -96,16 +100,16 @@ const ListCategorySlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(getAllCategory.pending, (state) => {
-                state.isLoading = true;
+                state.isLoadingGetAllCategory = true;
                 state.isError = false;
             })
             .addCase(getAllCategory.fulfilled, (state, action) => {
-                state.isLoading = false;
+                state.isLoadingGetAllCategory = false;
                 state.categories = action.payload;
                 state.isError = false;
             })
             .addCase(getAllCategory.rejected, (state, action) => {
-                state.isLoading = false;
+                state.isLoadingGetAllCategory = false;
                 state.isError = true;
             });
         builder
@@ -124,16 +128,16 @@ const ListCategorySlice = createSlice({
             });
         builder
             .addCase(getAllSubCategory.pending, (state) => {
-                state.isLoading = true;
+                state.isLoadingGetAllSubCategory = true;
                 state.isError = false;
             })
             .addCase(getAllSubCategory.fulfilled, (state, action) => {
-                state.isLoading = false;
+                state.isLoadingGetAllSubCategory = false;
                 state.subCategory = action.payload;
                 state.isError = false;
             })
             .addCase(getAllSubCategory.rejected, (state, action) => {
-                state.isLoading = false;
+                state.isLoadingGetAllSubCategory = false;
                 state.isError = true;
             });
         builder

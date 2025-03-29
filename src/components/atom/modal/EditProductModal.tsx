@@ -7,6 +7,7 @@ import { addProducts, editProducts, Product } from '@redux/slices/productSlice';
 import { toast } from 'react-toastify';
 import Loading from '../Loading/Loading';
 import { Checkbox, FormControlLabel } from '@mui/material';
+import { tab } from '@testing-library/user-event/dist/tab';
 type ModalEditProps = {
     isModalEditOpen: boolean;
     setIsModalEditOpen: (isOpen: boolean) => void;
@@ -94,7 +95,7 @@ export default function EditProductModal({ isModalEditOpen, setIsModalEditOpen }
                     id: product.id,
                 }),
             ).unwrap();
-            if (res.status == '200') {
+            if (res?.status == '200') {
                 setIsModalEditOpen(false);
                 setChecked(false);
                 setData({
@@ -112,7 +113,7 @@ export default function EditProductModal({ isModalEditOpen, setIsModalEditOpen }
                 toast.error('Cập nhật sản phẩm thất bại');
             }
         } catch (error) {
-            console.log(error);
+            toast.error(error as string);
         }
     };
 

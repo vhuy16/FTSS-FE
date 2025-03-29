@@ -40,6 +40,9 @@ export type Service = {
 };
 type MissionType = {
     isLoading: boolean | null;
+    isLoadingGetAllMission: boolean | null;
+    isLoadingGetAllBooking: boolean | null;
+    isLoadingGetAllService: boolean | null;
     isLoadingUpdate: boolean | null;
     isLoadingAssignBooking: boolean | null;
     listMission: Mission[];
@@ -51,6 +54,9 @@ type MissionType = {
 };
 const initialState: MissionType = {
     isLoading: false,
+    isLoadingGetAllMission: false,
+    isLoadingGetAllBooking: false,
+    isLoadingGetAllService: false,
     isLoadingUpdate: false,
     isLoadingAssignBooking: false,
     listMission: [],
@@ -78,22 +84,27 @@ export const getAlltechnician = createAsyncThunk('mission/getAlltechnician', asy
         console.log(error);
     }
 });
-export const assignBooking = createAsyncThunk('mission/assignBooking', async (data: any) => {
+export const assignBooking = createAsyncThunk('mission/assignBooking', async (data: any, { rejectWithValue }) => {
     try {
         const response = await myAxios.post(`/booking/assign-booking`, data);
         return response.data;
     } catch (error: any) {
-        console.log(error);
+        const errorMessage = error.response?.data?.message || 'Something went wrong';
+        return rejectWithValue(errorMessage);
     }
 });
-export const assignBookingOrder = createAsyncThunk('mission/assignBookingOrder', async (data: any) => {
-    try {
-        const response = await myAxios.post(`/booking`, data);
-        return response.data;
-    } catch (error: any) {
-        console.log(error);
-    }
-});
+export const assignBookingOrder = createAsyncThunk(
+    'mission/assignBookingOrder',
+    async (data: any, { rejectWithValue }) => {
+        try {
+            const response = await myAxios.post(`/booking`, data);
+            return response.data;
+        } catch (error: any) {
+            const errorMessage = error.response?.data?.message || 'Something went wrong';
+            return rejectWithValue(errorMessage);
+        }
+    },
+);
 export const getAllBooking = createAsyncThunk('mission/getAllBooking', async () => {
     try {
         const response = await myAxios.get(`/booking?page=1&size=100&isAscending=false`);
@@ -120,7 +131,7 @@ export const getBookingById = createAsyncThunk('mission/getBookingById', async (
 });
 export const updateMission = createAsyncThunk(
     'mission/updateMission',
-    async ({ formData, id }: { formData: FormData; id: string }, { dispatch }) => {
+    async ({ formData, id }: { formData: FormData; id: string }, { dispatch, rejectWithValue }) => {
         try {
             const response = await myAxios.put(`/booking/update-mission/${id}`, formData, {
                 headers: {
@@ -130,7 +141,8 @@ export const updateMission = createAsyncThunk(
             await dispatch(getAllMission());
             return response.data;
         } catch (error: any) {
-            console.log(error);
+            const errorMessage = error.response?.data?.message || 'Something went wrong';
+            return rejectWithValue(errorMessage);
         }
     },
 );
@@ -142,16 +154,16 @@ const missionSlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(getAllMission.pending, (state) => {
-                state.isLoading = true;
+                state.isLoadingGetAllMission = true;
                 state.isError = false;
             })
             .addCase(getAllMission.fulfilled, (state, action) => {
-                state.isLoading = false;
+                state.isLoadingGetAllMission = false;
                 state.listMission = action.payload;
                 state.isError = false;
             })
             .addCase(getAllMission.rejected, (state, action) => {
-                state.isLoading = false;
+                state.isLoadingGetAllMission = false;
                 state.isError = true;
             });
         builder
@@ -170,30 +182,30 @@ const missionSlice = createSlice({
             });
         builder
             .addCase(getAllBooking.pending, (state) => {
-                state.isLoading = true;
+                state.isLoadingGetAllBooking = true;
                 state.isError = false;
             })
             .addCase(getAllBooking.fulfilled, (state, action) => {
-                state.isLoading = false;
+                state.isLoadingGetAllBooking = false;
                 state.listBooking = action.payload;
                 state.isError = false;
             })
             .addCase(getAllBooking.rejected, (state, action) => {
-                state.isLoading = false;
+                state.isLoadingGetAllBooking = false;
                 state.isError = true;
             });
         builder
             .addCase(getAllService.pending, (state) => {
-                state.isLoading = true;
+                state.isLoadingGetAllService = true;
                 state.isError = false;
             })
             .addCase(getAllService.fulfilled, (state, action) => {
-                state.isLoading = false;
+                state.isLoadingGetAllService = false;
                 state.listService = action.payload;
                 state.isError = false;
             })
             .addCase(getAllService.rejected, (state, action) => {
-                state.isLoading = false;
+                state.isLoadingGetAllService = false;
                 state.isError = true;
             });
         builder

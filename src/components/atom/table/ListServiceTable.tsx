@@ -17,6 +17,7 @@ import AddProductModal from '../modal/AddProductModal';
 import { getAllCategory, getAllSubCategory, SubCategory } from '@redux/slices/categorySlice';
 import AddSubCategoryModal from '../modal/AddSubCategoryModal';
 import { getAllService } from '@redux/slices/missionSlide';
+import LoadingPage from '../Loading/LoadingPage';
 
 const paginationModel = { page: 0, pageSize: 5 };
 const StyledDataGrid = styled(DataGrid)((theme) => ({
@@ -31,6 +32,7 @@ const StyledDataGrid = styled(DataGrid)((theme) => ({
 }));
 export default function ListServiceTable() {
     const listService = useAppSelector((state) => state.mission.listService);
+    const isLoading = useAppSelector((state) => state.mission.isLoadingGetAllService);
     const [isModalAddOpen, setIsModalAddOpen] = useState(false);
     const dispatch = useAppDispatch();
     useEffect(() => {
@@ -72,7 +74,9 @@ export default function ListServiceTable() {
     const rows = listService?.map((service, index) => {
         return { ...service, stt: index + 1 };
     });
-    return (
+    return isLoading && listService.length === 0 ? (
+        <LoadingPage></LoadingPage>
+    ) : (
         <div>
             <div className="flex justify-between mb-4">
                 <div className="relative">
@@ -170,9 +174,9 @@ export default function ListServiceTable() {
                 </Box>
             )}
             {/* <AddSubCategoryModal
-                isModalAddOpen={isModalAddOpen}
-                setIsModalAddOpen={setIsModalAddOpen}
-            ></AddSubCategoryModal> */}
+           isModalAddOpen={isModalAddOpen}
+           setIsModalAddOpen={setIsModalAddOpen}
+       ></AddSubCategoryModal> */}
         </div>
     );
 }

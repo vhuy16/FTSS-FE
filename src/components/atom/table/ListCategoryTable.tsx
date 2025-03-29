@@ -16,6 +16,7 @@ import ProductPopup from '../popup/ProductPopup';
 import AddProductModal from '../modal/AddProductModal';
 import { getAllCategory, SubCategory } from '@redux/slices/categorySlice';
 import AddCategoryModal from '../modal/AddCategoryModal';
+import LoadingPage from '../Loading/LoadingPage';
 
 const paginationModel = { page: 0, pageSize: 5 };
 const StyledDataGrid = styled(DataGrid)((theme) => ({
@@ -30,6 +31,7 @@ const StyledDataGrid = styled(DataGrid)((theme) => ({
 }));
 export default function ListCategoryTable() {
     const listCategory = useAppSelector((state) => state.category.categories);
+    const isLoading = useAppSelector((state) => state.category.isLoadingGetAllCategory);
     const [isModalAddOpen, setIsModalAddOpen] = useState(false);
     const dispatch = useAppDispatch();
     useEffect(() => {
@@ -81,7 +83,9 @@ export default function ListCategoryTable() {
     const rows = listCategory?.map((category, index) => {
         return { ...category, stt: index + 1 };
     });
-    return (
+    return isLoading && listCategory.length === 0 ? (
+        <LoadingPage></LoadingPage>
+    ) : (
         <div>
             <div className="flex justify-between mb-4">
                 <div className="relative">

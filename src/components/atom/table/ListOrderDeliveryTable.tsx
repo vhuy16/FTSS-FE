@@ -14,6 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import { Order } from '@redux/slices/orderListSlice';
 import { CSVLink } from 'react-csv';
 import OrderDeliveryPopup from '../popup/OrderDeliveryPopup';
+import LoadingPage from '../Loading/LoadingPage';
 
 const paginationModel = { page: 0, pageSize: 5 };
 const StyledDataGrid = styled(DataGrid)((theme) => ({
@@ -28,6 +29,7 @@ const StyledDataGrid = styled(DataGrid)((theme) => ({
 }));
 export default function ListOrderDeliveryTable() {
     const orders = useAppSelector((state) => state.order.listOrder);
+    const isLoading = useAppSelector((state) => state.order.isLoadingGetAllOrder);
     const [selectedRow, setSelectedRow] = useState<any[]>([]);
     const dispatch = useAppDispatch();
     useEffect(() => {
@@ -190,7 +192,9 @@ export default function ListOrderDeliveryTable() {
         return { ...order, stt: index + 1 };
     });
 
-    return (
+    return isLoading && orders.length === 0 ? (
+        <LoadingPage></LoadingPage>
+    ) : (
         <div>
             <div className="flex justify-between mb-4">
                 <div className="relative">

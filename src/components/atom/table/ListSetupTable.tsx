@@ -18,6 +18,7 @@ import { getSetupPackagesShop } from '@redux/slices/setupSlice';
 import AddSetupModal from '../modal/AddSetupModal';
 import SetupPopup from '../popup/SetupPopup';
 import EditSetupModal from '../modal/EditSetupModal';
+import LoadingPage from '../Loading/LoadingPage';
 
 const paginationModel = { page: 0, pageSize: 5 };
 const StyledDataGrid = styled(DataGrid)((theme) => ({
@@ -32,6 +33,7 @@ const StyledDataGrid = styled(DataGrid)((theme) => ({
 }));
 export default function ListSetupTable() {
     const listSetup = useAppSelector((state) => state.setupPackage.setupPackages);
+    const isLoading = useAppSelector((state) => state.setupPackage.isloadingGetAllPackageShop);
     const [isModalAddOpen, setIsModalAddOpen] = useState(false);
     const [isModalEditOpen, setIsModalEditOpen] = useState(false);
     const dispatch = useAppDispatch();
@@ -113,7 +115,9 @@ export default function ListSetupTable() {
     const rows = listSetup?.map((setup, index) => {
         return { ...setup, stt: index + 1, id: setup.setupPackageId };
     });
-    return (
+    return isLoading && listSetup.length === 0 ? (
+        <LoadingPage></LoadingPage>
+    ) : (
         <div>
             <div className="flex justify-between mb-4">
                 <div className="relative">

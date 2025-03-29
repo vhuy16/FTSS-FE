@@ -35,6 +35,7 @@ type initialStateProduct = {
     isLoadingEdit: boolean;
     isLoadingDelete: boolean;
     isLoadingEnable: boolean;
+    isLoadingGetAllProductForAdmin: boolean;
     isError: boolean;
 };
 
@@ -123,22 +124,26 @@ export const getAllCategoryWithProduct = createAsyncThunk(
         }
     },
 );
-export const addProducts = createAsyncThunk('product/addProducts', async (formData: FormData, { dispatch }) => {
-    try {
-        const response = await myAxios.post(`/product`, formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-        });
-        await dispatch(getAllProductForAdmin());
-        return response.data;
-    } catch (error: any) {
-        console.log(error);
-    }
-});
+export const addProducts = createAsyncThunk(
+    'product/addProducts',
+    async (formData: FormData, { dispatch, rejectWithValue }) => {
+        try {
+            const response = await myAxios.post(`/product`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+            await dispatch(getAllProductForAdmin());
+            return response.data;
+        } catch (error: any) {
+            console.log(error);
+            return rejectWithValue(error.response?.data?.message || 'Thêm sản phẩm thất bại');
+        }
+    },
+);
 export const editProducts = createAsyncThunk(
     'product/editProducts',
-    async ({ formData, id }: { formData: FormData; id: string }, { dispatch }) => {
+    async ({ formData, id }: { formData: FormData; id: string }, { dispatch, rejectWithValue }) => {
         try {
             const response = await myAxios.put(`product/${id}`, formData, {
                 headers: {
@@ -149,6 +154,7 @@ export const editProducts = createAsyncThunk(
             return response.data;
         } catch (error: any) {
             console.log(error);
+            return rejectWithValue(error.response?.data?.message || 'Cập nhật phẩm thất bại');
         }
     },
 );
@@ -200,6 +206,7 @@ const initialState: initialStateProduct = {
     isLoadingEdit: false,
     isLoadingDelete: false,
     isLoadingEnable: false,
+    isLoadingGetAllProductForAdmin: false,
     isError: false,
 };
 
@@ -243,16 +250,16 @@ const productSlice = createSlice({
             });
         builder
             .addCase(getAllProductForAdmin.pending, (state) => {
-                state.isLoading = true;
+                state.isLoadingGetAllProductForAdmin = true;
                 state.isError = false;
             })
             .addCase(getAllProductForAdmin.fulfilled, (state, action) => {
-                state.isLoading = false;
+                state.isLoadingGetAllProductForAdmin = false;
                 state.isError = false;
                 state.listProductForAdmin = action.payload;
             })
             .addCase(getAllProductForAdmin.rejected, (state, action) => {
-                state.isLoading = false;
+                state.isLoadingGetAllProductForAdmin = false;
                 state.isError = true;
             });
         builder
