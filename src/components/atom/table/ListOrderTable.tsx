@@ -6,12 +6,11 @@ import { DataGrid, GridCellParams, GridColDef, GridRowSelectionModel } from '@mu
 import { useAppDispatch, useAppSelector } from '@redux/hook';
 import { getAllUser } from '@redux/slices/userSlice';
 import UserPopup from '../popup/UserPopup';
-import { getAllOrder } from '@redux/slices/orderSlice';
+import { getAllOrder, Order } from '@redux/slices/orderSlice';
 import { currencyFormat } from '@ultils/helper';
 import Badge from '@components/ui/badge/Badge';
 import OrderPopup from '../popup/OrderPopup';
 import { useNavigate } from 'react-router-dom';
-import { Order } from '@redux/slices/orderListSlice';
 import { CSVLink } from 'react-csv';
 import LoadingPage from '../Loading/LoadingPage';
 
@@ -30,10 +29,23 @@ export default function ListOrderTable() {
     const listOrder = useAppSelector((state) => state.order.listOrder);
     const isLoading = useAppSelector((state) => state.order.isLoadingGetAllOrder);
     const [selectedRow, setSelectedRow] = useState<any[]>([]);
+    const [searchValue, setSearchValue] = useState('');
+    const [orders, setOrders] = useState<Order[]>([]);
     const dispatch = useAppDispatch();
+
     useEffect(() => {
         dispatch(getAllOrder());
     }, []);
+    useEffect(() => {
+        setOrders(listOrder);
+    }, [listOrder]);
+    useEffect(() => {
+        if (!searchValue) {
+            setOrders(listOrder);
+        } else {
+            setOrders(listOrder.filter((order) => order.oderCode.toLowerCase().includes(searchValue)));
+        }
+    }, [searchValue]);
     const columns: GridColDef[] = [
         { field: 'stt', headerName: 'STT', width: 50, headerClassName: 'super-app-theme--header' },
 
@@ -169,10 +181,9 @@ export default function ListOrderTable() {
             navigate(`/listOrder/${params.row.id}`);
         }
     };
-    const rows = listOrder?.map((order, index) => {
+    const rows = orders?.map((order, index) => {
         return { ...order, stt: index + 1 };
     });
-
     return isLoading && listOrder.length === 0 ? (
         <LoadingPage></LoadingPage>
     ) : (
@@ -199,6 +210,7 @@ export default function ListOrderTable() {
                     <input
                         type="text"
                         placeholder="Tìm kiếm..."
+                        onChange={(e) => setSearchValue(e.target.value.toLowerCase())}
                         className="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-200 bg-transparent py-2.5 pl-12 pr-14 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-800 dark:bg-gray-900 dark:bg-white/[0.03] dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 xl:w-[430px]"
                     />
                 </div>

@@ -35,7 +35,7 @@ const PasswordInput = ({ fieldName, name, errorMsg = '', formValue, setFormValue
             <div className="form-elem-block">
                 <Input
                     type={showPassword ? 'text' : 'password'}
-                    placeholder=""
+                    placeholder="Nhập mật khẩu"
                     name={name}
                     className="form-elem-control"
                     onChange={(e) => {
