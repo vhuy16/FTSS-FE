@@ -113,9 +113,7 @@ export default function AddSetupModal({ isModalAddOpen, setIsModalAddOpen }: Mod
                     }
                 } catch (error) {
                     setIsModalAddOpen(false);
-                    toast.error(
-                        'Thêm mẫu thiết kế bể cá thất bại! Bể, Lọc, Đèn là 3 thành phần bắt buộc khi tạo bể cá',
-                    );
+                    toast.error(error as string);
                 }
             } else {
                 toast.error('Tên mẫu thiếu kế phải là chữ in hoa và ít hơn 10 kí tự');

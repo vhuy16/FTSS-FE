@@ -1,6 +1,6 @@
 import PageBreadcrumb from '@common/PageBreadCrumb';
 import ListOrderTable from '@components/atom/table/ListOrderTable';
-import { useAppDispatch } from '@redux/hook';
+import { useAppDispatch, useAppSelector } from '@redux/hook';
 import { getDataChartOne } from '@redux/slices/dashboardSlice';
 import { useEffect } from 'react';
 export default function ListOrder() {

@@ -58,8 +58,6 @@ export default function EditSetupModal({ isModalEditOpen, setIsModalEditOpen }: 
     const isLoadingEdit = useAppSelector((state) => state.setupPackage.isLoadingEdit);
     const isLoadingCate = useAppSelector((state) => state.product.isLoadingGetCateWithProduct);
     const listCateWithProduct = useAppSelector((state) => state.product.listCateAndProduct);
-    console.log('setup', setup);
-    console.log('listProduct', listProduct);
 
     const [data, setData] = useState<{
         SetupName: string;
@@ -134,7 +132,7 @@ export default function EditSetupModal({ isModalEditOpen, setIsModalEditOpen }: 
                 const res = await dispatch(
                     editSetup({ formData: formData, id: setup?.setupPackageId as string }),
                 ).unwrap();
-                if (res.status == 200) {
+                if (res?.status == 200) {
                     setIsModalEditOpen(false);
                     setChecked(false);
                     setData({
@@ -147,9 +145,7 @@ export default function EditSetupModal({ isModalEditOpen, setIsModalEditOpen }: 
                 }
             } catch (error) {
                 setIsModalEditOpen(false);
-                toast.error(
-                    'Cập nhật mẫu thiết kế bể cá thất bại! Bể, Lọc, Đèn là 3 thành phần bắt buộc khi cập nhật bể cá',
-                );
+                toast.error(error as string);
             }
         } else {
             toast.error('Bể, Lọc, Đèn là 3 thành phần bắt buộc khi cập nhật bể cá');

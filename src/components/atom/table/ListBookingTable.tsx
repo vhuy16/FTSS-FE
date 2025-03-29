@@ -15,6 +15,7 @@ import { Order } from '@redux/slices/orderListSlice';
 import { CSVLink } from 'react-csv';
 import { getAllBooking } from '@redux/slices/missionSlide';
 import BookingPopup from '../popup/BookingPopup';
+import LoadingPage from '../Loading/LoadingPage';
 
 const paginationModel = { page: 0, pageSize: 5 };
 const StyledDataGrid = styled(DataGrid)((theme) => ({
@@ -29,6 +30,7 @@ const StyledDataGrid = styled(DataGrid)((theme) => ({
 }));
 export default function ListBookingTable() {
     const listBooking = useAppSelector((state) => state.mission.listBooking);
+    const isLoading = useAppSelector((state) => state.mission.isLoadingGetAllBooking);
     const [selectedRow, setSelectedRow] = useState<any[]>([]);
     const dispatch = useAppDispatch();
     useEffect(() => {
@@ -145,7 +147,9 @@ export default function ListBookingTable() {
         return { ...booking, stt: index + 1 };
     });
 
-    return (
+    return isLoading && listBooking.length === 0 ? (
+        <LoadingPage></LoadingPage>
+    ) : (
         <div>
             <div className="flex justify-between mb-4">
                 <div className="relative">

@@ -15,6 +15,7 @@ import { getAllProductForAdmin, getProductByNameForAdmin } from '@redux/slices/p
 import ProductPopup from '../popup/ProductPopup';
 import AddProductModal from '../modal/AddProductModal';
 import EditProductModal from '../modal/EditProductModal';
+import LoadingPage from '../Loading/LoadingPage';
 
 const paginationModel = { page: 0, pageSize: 5 };
 const StyledDataGrid = styled(DataGrid)((theme) => ({
@@ -29,6 +30,7 @@ const StyledDataGrid = styled(DataGrid)((theme) => ({
 }));
 export default function ListProductTable() {
     const listProduct = useAppSelector((state) => state.product.listProductForAdmin);
+    const isLoading = useAppSelector((state) => state.product.isLoadingGetAllProductForAdmin);
     const [isModalAddOpen, setIsModalAddOpen] = useState(false);
     const [isModalEditOpen, setIsModalEditOpen] = useState(false);
     const dispatch = useAppDispatch();
@@ -104,7 +106,9 @@ export default function ListProductTable() {
     const rows = listProduct?.map((product, index) => {
         return { ...product, stt: index + 1 };
     });
-    return (
+    return isLoading && listProduct.length === 0 ? (
+        <LoadingPage></LoadingPage>
+    ) : (
         <div>
             <div className="flex justify-between mb-4">
                 <div className="relative">

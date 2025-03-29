@@ -56,6 +56,7 @@ type initialStateProduct = {
     order: Order | null;
     isLoading: boolean;
     isLoadingUpdate: boolean;
+    isLoadingGetAllOrder: boolean;
     isError: boolean;
 };
 export const createOrder = createAsyncThunk('order/create', async (data: DataCheckOut, { rejectWithValue }) => {
@@ -105,6 +106,7 @@ const initialState: initialStateProduct = {
     order: null,
     isLoading: false,
     isLoadingUpdate: false,
+    isLoadingGetAllOrder: false,
     isError: false,
 };
 
@@ -129,16 +131,16 @@ const orderSlice = createSlice({
             });
         builder
             .addCase(getAllOrder.pending, (state) => {
-                state.isLoading = true;
+                state.isLoadingGetAllOrder = true;
                 state.isError = false;
             })
             .addCase(getAllOrder.fulfilled, (state, action) => {
-                state.isLoading = false;
+                state.isLoadingGetAllOrder = false;
                 state.isError = false;
                 state.listOrder = action.payload;
             })
             .addCase(getAllOrder.rejected, (state, action) => {
-                state.isLoading = false;
+                state.isLoadingGetAllOrder = false;
                 state.isError = true;
             });
         builder

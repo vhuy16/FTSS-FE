@@ -73,9 +73,13 @@ export default function AddProductModal({ isModalAddOpen, setIsModalAddOpen }: M
                 formData.append('ImageLink', data.images[i]);
             }
 
-            await dispatch(addProducts(formData));
-            setIsModalAddOpen(false);
-            toast.success('Thêm sản phẩm thành công');
+            try {
+                await dispatch(addProducts(formData));
+                setIsModalAddOpen(false);
+                toast.success('Thêm sản phẩm thành công');
+            } catch (error) {
+                toast.error(error as string);
+            }
         } else {
             toast.error('Vui lòng nhập đủ thông tin');
         }
