@@ -143,8 +143,8 @@ const Login = () => {
                                     </label>
                                     <Input
                                         type="text"
-                                        placeholder=""
                                         name=""
+                                        placeholder="Nhập tên đăng nhập"
                                         className="form-elem-control"
                                         onChange={(e) => {
                                             setFormValue({ ...formValue, username: e.target.value });

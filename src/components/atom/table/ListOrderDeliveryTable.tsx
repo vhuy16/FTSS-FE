@@ -6,12 +6,11 @@ import { DataGrid, GridCellParams, GridColDef, GridRowSelectionModel } from '@mu
 import { useAppDispatch, useAppSelector } from '@redux/hook';
 import { getAllUser } from '@redux/slices/userSlice';
 import UserPopup from '../popup/UserPopup';
-import { getAllOrder } from '@redux/slices/orderSlice';
+import { getAllOrder, Order } from '@redux/slices/orderSlice';
 import { currencyFormat } from '@ultils/helper';
 import Badge from '@components/ui/badge/Badge';
 import OrderPopup from '../popup/OrderPopup';
 import { useNavigate } from 'react-router-dom';
-import { Order } from '@redux/slices/orderListSlice';
 import { CSVLink } from 'react-csv';
 import OrderDeliveryPopup from '../popup/OrderDeliveryPopup';
 import LoadingPage from '../Loading/LoadingPage';
@@ -31,10 +30,22 @@ export default function ListOrderDeliveryTable() {
     const orders = useAppSelector((state) => state.order.listOrder);
     const isLoading = useAppSelector((state) => state.order.isLoadingGetAllOrder);
     const [selectedRow, setSelectedRow] = useState<any[]>([]);
+    const [listOrders, setListOrders] = useState<Order[]>([]);
+    const [searchValue, setSearchValue] = useState('');
     const dispatch = useAppDispatch();
     useEffect(() => {
         dispatch(getAllOrder());
     }, []);
+    useEffect(() => {
+        setListOrders(listOrder);
+    }, [orders]);
+    useEffect(() => {
+        if (!searchValue) {
+            setListOrders(listOrder);
+        } else {
+            setListOrders(listOrder.filter((order) => order.oderCode.toLowerCase().includes(searchValue)));
+        }
+    }, [searchValue]);
     const listOrder = orders.filter(
         (order) =>
             order.isAssigned === false &&
@@ -188,7 +199,7 @@ export default function ListOrderDeliveryTable() {
             navigate(`/listOrder/${params.row.id}`);
         }
     };
-    const rows = listOrder?.map((order, index) => {
+    const rows = listOrders?.map((order, index) => {
         return { ...order, stt: index + 1 };
     });
 
@@ -218,6 +229,7 @@ export default function ListOrderDeliveryTable() {
                     <input
                         type="text"
                         placeholder="Tìm kiếm..."
+                        onChange={(e) => setSearchValue(e.target.value.toLowerCase())}
                         className="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-200 bg-transparent py-2.5 pl-12 pr-14 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-800 dark:bg-gray-900 dark:bg-white/[0.03] dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 xl:w-[430px]"
                     />
                 </div>

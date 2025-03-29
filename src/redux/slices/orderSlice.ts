@@ -31,7 +31,7 @@ type OrderDetail = {
     subCategoryName: string;
 };
 
-type Order = {
+export type Order = {
     id: string;
     totalPrice: number;
     status: string;
