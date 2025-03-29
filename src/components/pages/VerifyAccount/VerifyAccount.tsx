@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, FormEvent } from "react";
+import React, { useRef, useEffect, FormEvent, useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
@@ -17,6 +17,8 @@ const VerifyAccount: React.FC = () => {
   const isVerify = useAppSelector((state) => state.verifyAccount.isVerified);
   const isLoadingVerify = useAppSelector((state) => state.verifyAccount.isLoading);
   const isErrorVerify = useAppSelector((state) => state.verifyAccount.isError);
+  const [countdown, setCountdown] = useState(30);
+  const [isDisabled, setIsDisabled] = useState(true);
 
   const navigate = useNavigate();
   useEffect(() => {
@@ -99,7 +101,19 @@ const VerifyAccount: React.FC = () => {
       });
     };
   }, []);
-
+  useEffect(() => {
+    if (countdown > 0) {
+      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+      return () => clearTimeout(timer);
+    } else {
+      setIsDisabled(false);
+    }
+  }, [countdown]);
+  const handleResend = () => {
+    setCountdown(30);
+    setIsDisabled(true);
+    // Gọi API gửi lại mã OTP ở đây
+  };
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     const otpCode = inputsRef.current.map((input) => input?.value || "").join("");
@@ -113,11 +127,13 @@ const VerifyAccount: React.FC = () => {
       const res = await dispatch(verifyAccount(data)).unwrap();
 
       console.log("res", res);
-      if (res) {
+      if (res == true) {
         localStorage.removeItem("userId");
         setTimeout(() => {
           navigate("/login");
         }, 3000);
+      } else {
+        toast.error("Vui lòng kiểm tra lại OTP!");
       }
     } catch (error) {
       console.log(error);
@@ -163,6 +179,20 @@ const VerifyAccount: React.FC = () => {
                   </form>
                 </div>
               </FormTitle>
+              <div className="mt-6 flex">
+                <p className="text-[15px] mr-2">Bạn chưa nhận được mã?</p>
+                <button
+                  className={`text-[15px] mr-3 transition-opacity duration-300 ${
+                    isDisabled
+                      ? "text-gray-400 opacity-50 cursor-not-allowed"
+                      : "text-blue-600 font-bold underline cursor-pointer"
+                  }`}
+                  onClick={handleResend}
+                  disabled={isDisabled}
+                >
+                  Gửi lại {isDisabled && `(${countdown} giây)`}
+                </button>
+              </div>
             </div>
           </div>
         </Container>

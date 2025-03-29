@@ -55,7 +55,7 @@ const BookingHistoryDetail = () => {
             <div className="flexContainer">
               <div className="build-info">
                 <h1 className="title">
-                  <span className="text-title">Đặt lịch: </span> #{bookingDetail?.id}
+                  <span className="text-title">Mã dịch vụ: </span> #{bookingDetail?.bookingCode}
                 </h1>
                 <div className="iconText">
                   {/* <FaWater className="icon" /> */}
@@ -152,11 +152,11 @@ const BookingHistoryDetail = () => {
                     <div className="flex justify-between items-center w-full">
                       <p className="text-base dark:text-white leading-4 text-gray-800">Trạng thái</p>
                       <p className="text-base dark:text-gray-300 leading-4 text-gray-600">
-                        {orderDetail.payment.paymentStatus == "Processing"
+                        {bookingDetail?.status == "NOTPAID"
                           ? "Đang chờ thanh toán"
-                          : orderDetail.payment.paymentStatus == "Completed"
+                          : orderDetail.payment.paymentStatus == "PAID"
                           ? "Đã thanh toán"
-                          : "Đã hủy"}
+                          : "Miễn phí"}
                       </p>
                     </div>
                     <div className="flex justify-between items-center w-full"></div>

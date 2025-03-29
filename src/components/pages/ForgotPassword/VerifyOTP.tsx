@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, FormEvent } from "react";
+import React, { useRef, useEffect, FormEvent, useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
@@ -16,6 +16,8 @@ const VerifyOTP: React.FC = () => {
   const dispatch = useAppDispatch();
   const userId = useAppSelector((state) => state.forgotPassword.data);
   const isLoading = useAppSelector((state) => state.verifyAccount.isLoading);
+  const [countdown, setCountdown] = useState(30);
+  const [isDisabled, setIsDisabled] = useState(true);
 
   const navigate = useNavigate();
   useEffect(() => {
@@ -98,6 +100,20 @@ const VerifyOTP: React.FC = () => {
       });
     };
   }, []);
+  useEffect(() => {
+    if (countdown > 0) {
+      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+      return () => clearTimeout(timer);
+    } else {
+      setIsDisabled(false);
+    }
+  }, [countdown]);
+
+  const handleResend = () => {
+    setCountdown(30);
+    setIsDisabled(true);
+    // Gọi API gửi lại mã OTP ở đây
+  };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -159,6 +175,20 @@ const VerifyOTP: React.FC = () => {
                   </form>
                 </div>
               </FormTitle>
+              <div className="mt-6 flex">
+                <p className="text-[15px] mr-2">Bạn chưa nhận được mã?</p>
+                <button
+                  className={`text-[15px] mr-3 transition-opacity duration-300 ${
+                    isDisabled
+                      ? "text-gray-400 opacity-50 cursor-not-allowed"
+                      : "text-blue-600 font-bold underline cursor-pointer"
+                  }`}
+                  onClick={handleResend}
+                  disabled={isDisabled}
+                >
+                  Gửi lại {isDisabled && `(${countdown} giây)`}
+                </button>
+              </div>
             </div>
           </div>
         </Container>
