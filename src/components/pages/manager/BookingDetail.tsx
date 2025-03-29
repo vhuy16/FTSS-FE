@@ -26,7 +26,7 @@ export default function BookingDetail() {
                         <div className="2xl:container pb-14">
                             <div className="flex justify-start item-start space-y-2 flex-col">
                                 <h1 className="text-xl dark:text-white lg:text-xl font-semibold leading-7 lg:leading-9 text-gray-800">
-                                    Đơn {bookingDetail.id}
+                                    Đơn {bookingDetail.bookingCode}
                                 </h1>
                                 <p className="text-base text-gray-600 font-medium leading-6">
                                     Trạng thái:{' '}

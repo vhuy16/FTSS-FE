@@ -44,6 +44,7 @@ const Calendar: React.FC = () => {
     const [orderId, setOrderId] = useState('');
     const [missionId, setMissionId] = useState('');
     const [techName, setTechName] = useState('');
+    const [bookingCode, setBookingCode] = useState('');
     const [events, setEvents] = useState<CalendarEvent[]>([]);
     const calendarRef = useRef<FullCalendar>(null);
     const { isOpen, openModal, closeModal } = useModal();
@@ -60,7 +61,6 @@ const Calendar: React.FC = () => {
 
     useEffect(() => {
         dispatch(getAllMission());
-        dispatch(getAllBooking());
     }, []);
     useEffect(() => {
         if (isOpen) {
@@ -281,7 +281,7 @@ dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 d
                         <div className="mt-6">
                             <div>
                                 <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                                    {data.bookingId ? 'ID đơn bảo trì' : 'ID đơn hàng'}
+                                    {data.bookingId ? 'Mã đơn bảo trì' : 'Mã đơn hàng'}
                                 </label>
                                 <input
                                     id="event-title"
