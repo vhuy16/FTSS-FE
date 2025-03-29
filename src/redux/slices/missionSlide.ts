@@ -32,6 +32,7 @@ export type Booking = {
     orderId: string;
     isAssigned: boolean;
     services: Service[];
+    bookingCode: string;
 };
 export type Service = {
     id: string;

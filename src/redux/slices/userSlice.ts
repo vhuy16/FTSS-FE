@@ -10,6 +10,9 @@ export type UserProfile = {
     phoneNumber: string;
     gender: string;
     role: string;
+    isDeleted: boolean;
+    cityId: string | null;
+    districtId: string | null;
 };
 
 type ProfileType = {
