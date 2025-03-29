@@ -39,6 +39,9 @@ export default function ListBookingTable() {
         dispatch(getAllBooking());
     }, []);
     useEffect(() => {
+        setBookings(listBooking);
+    }, [listBooking]);
+    useEffect(() => {
         if (!searchValue) {
             setBookings(listBooking);
         } else {
