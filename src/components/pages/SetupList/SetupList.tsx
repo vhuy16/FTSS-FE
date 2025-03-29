@@ -157,7 +157,7 @@ const WishItemWrapper = styled.div`
 `;
 
 const breadcrumbItems = [
-  { label: "Home", link: "/" },
+  { label: "Trang chủ", link: "/" },
   { label: "Hồ cá của tôi", link: "/setup-package" },
 ];
 
@@ -207,9 +207,9 @@ const SetupList = () => {
           <UserMenu />
           <UserContent>
             <div className="flex justify-between items-center">
-              <Title titleText="Build của tôi" />
+              <Title titleText="Hồ cá của tôi" />
               <BaseBtnGreen onClick={() => navigate(`/setup-package-build`)} className="wish-cart-btn">
-                Tạo setup
+                Tạo hồ cá
               </BaseBtnGreen>
             </div>
             {isLoadingSetup ? (

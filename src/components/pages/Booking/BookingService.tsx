@@ -83,7 +83,6 @@ const BookingService = () => {
       !selectedDate ||
       selectedServices.length === 0 ||
       !formValue.customer_name ||
-      !formValue.Address ||
       !formValue.district ||
       !formValue.phone ||
       !formValue.ward ||
@@ -128,6 +127,8 @@ const BookingService = () => {
     : services
         .filter((service) => selectedServices.includes(service.id))
         .reduce((acc, service) => acc + service.price, 0);
+  console.log("value", formValue.customer_name);
+
   return (
     <BookingServiceStyle>
       {isLoadingDetail ? (
@@ -288,7 +289,6 @@ const BookingService = () => {
                 !selectedDate ||
                 selectedServices.length === 0 ||
                 !formValue.customer_name ||
-                !formValue.Address ||
                 !formValue.district ||
                 !formValue.phone ||
                 !formValue.ward ||
@@ -299,7 +299,6 @@ const BookingService = () => {
                 selectedDate &&
                 selectedServices.length > 0 &&
                 formValue.customer_name &&
-                formValue.Address &&
                 formValue.district &&
                 formValue.phone &&
                 formValue.street &&

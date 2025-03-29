@@ -24,7 +24,7 @@ const WishListScreenWrapper = styled.main`
 `;
 
 const breadcrumbItems = [
-  { label: "Home", link: "/" },
+  { label: "Trang chủ", link: "/" },
   { label: "Danh sách bảo trì", link: "/booking-history" },
 ];
 const BookingHistory = () => {
@@ -48,7 +48,7 @@ const BookingHistory = () => {
           <UserMenu />
           <UserContent>
             <div className="container mx-auto px-4 py-8 min-h-screen bg-gray-50">
-              <Title titleText={"Đặt lịch của bạn"} />
+              <Title titleText={"Danh sách bảo trì"} />
               {isLoadingBooking ? (
                 <LoadingPage />
               ) : bookings && Array.isArray(bookings) && bookings.length > 0 ? (
@@ -80,7 +80,7 @@ const BookingHistory = () => {
                             </span>
 
                             <h2 className="text-xl font-semibold text-gray-900 hover:text-blue-600 cursor-pointer mt-2">
-                              Booking #{booking.id}
+                              Mã dịch vụ : #{booking.id}
                             </h2>
                             {/* <StatusTag status={booking.status} /> */}
                           </div>

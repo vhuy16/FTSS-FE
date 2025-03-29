@@ -25,7 +25,7 @@ const WishListScreenWrapper = styled.main`
 `;
 
 const breadcrumbItems = [
-  { label: "Home", link: "/" },
+  { label: "Trang chủ", link: "/" },
   { label: "Đặt lịch bảo trì", link: "/setup-booking" },
 ];
 const SetupBookingList = () => {
@@ -53,8 +53,7 @@ const SetupBookingList = () => {
             <UserMenu />
             <UserContent>
               <div className="container mx-auto px-4 py-8 min-h-screen bg-gray-50">
-                <h1 className="text-3xl font-bold text-gray-900 mb-8">Đặt lịch bảo trì</h1>
-
+                <Title titleText={"Đặt lịch bảo trì"} />
                 {ordersWithSetup.length === 0 ? (
                   <div className="text-center py-12 bg-white rounded-lg shadow">
                     <p className="text-gray-600">Bạn chưa có hồ cá nào ! Vui lòng mua hồ cá.</p>
