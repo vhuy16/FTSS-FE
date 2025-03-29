@@ -6,15 +6,19 @@ type forgotPasswordType = {
   email: string;
 };
 
-export const forgotPassword = createAsyncThunk("user/resetPassword", async (data: forgotPasswordType) => {
-  try {
-    const request = await myAxios.post(`/user/forgot-password`, data);
-    const response = request.data;
-    return response;
-  } catch (error: any) {
-    throw error.response?.data || error.message;
+export const forgotPassword = createAsyncThunk(
+  "user/resetPassword",
+  async (data: forgotPasswordType, { rejectWithValue }) => {
+    try {
+      const request = await myAxios.post(`/user/forgot-password`, data);
+      const response = request.data;
+      return response;
+    } catch (error: any) {
+      console.log(error);
+      return rejectWithValue(error.response?.data?.message || "Quên mật khẩu thất bại vui lòng thử lại");
+    }
   }
-});
+);
 
 type forgotPasswordStateType = {
   loading: boolean | null;

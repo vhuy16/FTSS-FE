@@ -53,7 +53,7 @@ export interface BookingState {
 
 export const createBookingService = createAsyncThunk(
   "booking/createBookingService",
-  async (bookingData: any, { dispatch }) => {
+  async (bookingData: any, { dispatch, rejectWithValue }) => {
     try {
       const response = await myAxios.post(`/booking/booking-schedule`, bookingData, {
         headers: {
@@ -63,7 +63,8 @@ export const createBookingService = createAsyncThunk(
       await dispatch(getAllBookingofUsers());
       return response.data;
     } catch (error: any) {
-      console.error("Error creating booking:", error);
+      console.log(error);
+      return rejectWithValue(error.response?.data?.message || "Đặt dịch vụ thất bại");
     }
   }
 );
