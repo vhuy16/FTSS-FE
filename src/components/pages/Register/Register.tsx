@@ -80,15 +80,6 @@ const isValidPassword = (password: string): boolean => {
   return passwordRegex.test(password);
 };
 
-export type RegisterType = {
-  email: string;
-  address: string;
-  phoneNumber: string;
-  password: string;
-  userName: string;
-  fullName: string;
-  gender: number;
-};
 const Register = () => {
   const dispatch = useAppDispatch();
   const listProvince = useAppSelector((state) => state.address.listProvince);
@@ -213,6 +204,8 @@ const Register = () => {
         userName: formValue.userName,
         fullName: formValue.first_name + " " + formValue.last_name,
         gender: formValue.gender,
+        cityId: idProvice.id,
+        districtId: district.id,
       };
       try {
         const res = await dispatch(createAccount(data)).unwrap();
@@ -232,9 +225,6 @@ const Register = () => {
       console.log("Form invalid");
     }
   };
-  //   console.log("idtinh", idProvice.id);
-  //   console.log("idhuyen", district.id);
-
   return (
     <SignUpScreenWrapper>
       <FormGridWrapper>

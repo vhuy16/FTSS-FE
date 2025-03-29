@@ -27,6 +27,7 @@ export interface BookingList {
   orderId: string;
   isAssigned: boolean;
   services: ServicePackage[];
+  bookingCode: string;
 }
 export interface BookingDetail {
   id: string;
@@ -41,6 +42,7 @@ export interface BookingDetail {
   orderId: string;
   isAssigned: boolean;
   services: ServicePackage[];
+  bookingCode: string;
 }
 export interface BookingState {
   loading: boolean;

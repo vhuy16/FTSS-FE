@@ -1,7 +1,17 @@
-import { RegisterType } from "@components/pages/Register/Register";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import myAxios from "@setup/axiosConfig";
 import axios from "axios";
+export type RegisterType = {
+  email: string;
+  address: string;
+  phoneNumber: string;
+  password: string;
+  userName: string;
+  fullName: string;
+  gender: number;
+  cityId: string;
+  districtId: string;
+};
 export const createAccount = createAsyncThunk("user/createAccount", async (data: RegisterType, { rejectWithValue }) => {
   try {
     const response = await myAxios.post("/user/register", data);

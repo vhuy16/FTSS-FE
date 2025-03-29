@@ -80,7 +80,7 @@ const BookingHistory = () => {
                             </span>
 
                             <h2 className="text-xl font-semibold text-gray-900 hover:text-blue-600 cursor-pointer mt-2">
-                              Mã dịch vụ : #{booking.id}
+                              Mã dịch vụ : #{booking.bookingCode}
                             </h2>
                             {/* <StatusTag status={booking.status} /> */}
                           </div>
