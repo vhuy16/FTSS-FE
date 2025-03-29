@@ -69,13 +69,19 @@ const SetupBookingList = () => {
                         <div className="p-6">
                           <div className="flex flex-wrap justify-between items-start gap-4 mb-4">
                             <div>
-                              <h2 className="text-xl font-semibold text-gray-900 hover:text-blue-600 cursor-pointer">
+                              <span
+                                className={`px-3 py-1 rounded-md text-sm font-medium
+                              ${setup?.isEligible ? "bg-red-100 text-red-600" : "bg-green-100 text-green-600"}
+                                     `}
+                              >
+                                {setup?.isEligible ? "Bạn có 1 lần bảo trì miễn phí" : "Dịch vụ bảo trì tính phí"}
+                              </span>
+
+                              <h2 className="text-xl font-semibold text-gray-900 hover:text-blue-600 cursor-pointer mt-4">
                                 Mã đặt hàng: #{setup?.oderCode}
                               </h2>
                             </div>
-                            {/* <div className="text-2xl font-bold text-gray-900">${booking.totalPrice.toFixed(2)}</div> */}
                           </div>
-
                           <div className="flex flex-wrap md:flex-nowrap gap-6">
                             <div className="w-full md:w-3/4">
                               <div className="flex justify-between mb-4">
