@@ -11,6 +11,7 @@ import { breakpoints, defaultTheme } from "@styles/themes/default";
 import { useAppDispatch, useAppSelector } from "@redux/hook";
 import { useEffect } from "react";
 import { getUserProfile } from "@redux/slices/userSlice";
+import LoadingPage from "@components/atom/Loading/LoadingPage";
 
 const AccountScreenWrapper = styled.main`
   .address-list {
@@ -62,114 +63,119 @@ const breadcrumbItems = [
 
 const Account = () => {
   const user = useAppSelector((state) => state.userProfile.user);
+  const isLoadingUser = useAppSelector((state) => state.userProfile.isLoading);
   const dispatch = useAppDispatch();
   useEffect(() => {
     dispatch(getUserProfile());
   }, []);
   return (
     <AccountScreenWrapper className="page-py-spacing">
-      <Container>
-        <Breadcrumb items={breadcrumbItems} />
-        <UserDashboardWrapper>
-          <UserMenu />
-          <UserContent>
-            <Title titleText={"Hồ sơ của tôi"} />
-            <h4 className="title-sm">Thông tin chi tiết</h4>
-            <form>
-              <div className="form-wrapper">
-                <FormElement className="form-elem">
-                  <label htmlFor="" className="form-label font-semibold text-base">
-                    Tên
-                  </label>
-                  <div className="form-input-wrapper flex items-center">
-                    <Input
-                      type="text"
-                      className="form-elem-control text-outerspace font-semibold"
-                      value={user?.fullName}
-                      readOnly
-                    />
-                    <button type="button" className="form-control-change-btn">
-                      Chỉnh sửa
-                    </button>
-                  </div>
-                </FormElement>
-                <FormElement className="form-elem">
-                  <label htmlFor="" className="form-label font-semibold text-base">
-                    Email
-                  </label>
-                  <div className="form-input-wrapper flex items-center">
-                    <Input
-                      type="email"
-                      className="form-elem-control text-outerspace font-semibold"
-                      value={user?.email}
-                      readOnly
-                    />
-                    <button type="button" className="form-control-change-btn">
-                      Chỉnh sửa
-                    </button>
-                  </div>
-                </FormElement>
-                <FormElement className="form-elem">
-                  <label htmlFor="" className="form-label font-semibold text-base">
-                    Số điện thoại
-                  </label>
-                  <div className="form-input-wrapper flex items-center">
-                    <Input
-                      type="text"
-                      className="form-elem-control text-outerspace font-semibold"
-                      value={user?.phoneNumber}
-                      readOnly
-                    />
-                    <button type="button" className="form-control-change-btn">
-                      Chỉnh sửa
-                    </button>
-                  </div>
-                </FormElement>
-                <FormElement className="form-elem">
-                  <label htmlFor="" className="form-label font-semibold text-base">
-                    Mật Khẩu
-                  </label>
-                  <div className="form-input-wrapper flex items-center">
-                    <Input
-                      type="password"
-                      className="form-elem-control text-outerspace font-semibold"
-                      value="Pass Key"
-                      readOnly
-                    />
-                    <button type="button" className="form-control-change-btn">
-                      Chỉnh sửa
-                    </button>
-                  </div>
-                </FormElement>
-              </div>
-            </form>
-            <div>
-              <h4 className="title-sm">Địa chỉ</h4>
-              <BaseLinkGreen to="/account/add">Thêm địa chỉ</BaseLinkGreen>
-              <div className="address-list grid">
-                <div className="address-item grid">
-                  <p className="text-outerspace text-lg font-semibold address-title">{user?.address}</p>
+      {isLoadingUser ? (
+        <LoadingPage />
+      ) : (
+        <Container>
+          <Breadcrumb items={breadcrumbItems} />
+          <UserDashboardWrapper>
+            <UserMenu />
+            <UserContent>
+              <Title titleText={"Hồ sơ của tôi"} />
+              <h4 className="title-sm">Thông tin chi tiết</h4>
+              <form>
+                <div className="form-wrapper">
+                  <FormElement className="form-elem">
+                    <label htmlFor="" className="form-label font-semibold text-base">
+                      Tên
+                    </label>
+                    <div className="form-input-wrapper flex items-center">
+                      <Input
+                        type="text"
+                        className="form-elem-control text-outerspace font-semibold"
+                        value={user?.fullName}
+                        readOnly
+                      />
+                      <button type="button" className="form-control-change-btn">
+                        Chỉnh sửa
+                      </button>
+                    </div>
+                  </FormElement>
+                  <FormElement className="form-elem">
+                    <label htmlFor="" className="form-label font-semibold text-base">
+                      Email
+                    </label>
+                    <div className="form-input-wrapper flex items-center">
+                      <Input
+                        type="email"
+                        className="form-elem-control text-outerspace font-semibold"
+                        value={user?.email}
+                        readOnly
+                      />
+                      <button type="button" className="form-control-change-btn">
+                        Chỉnh sửa
+                      </button>
+                    </div>
+                  </FormElement>
+                  <FormElement className="form-elem">
+                    <label htmlFor="" className="form-label font-semibold text-base">
+                      Số điện thoại
+                    </label>
+                    <div className="form-input-wrapper flex items-center">
+                      <Input
+                        type="text"
+                        className="form-elem-control text-outerspace font-semibold"
+                        value={user?.phoneNumber}
+                        readOnly
+                      />
+                      <button type="button" className="form-control-change-btn">
+                        Chỉnh sửa
+                      </button>
+                    </div>
+                  </FormElement>
+                  <FormElement className="form-elem">
+                    <label htmlFor="" className="form-label font-semibold text-base">
+                      Mật Khẩu
+                    </label>
+                    <div className="form-input-wrapper flex items-center">
+                      <Input
+                        type="password"
+                        className="form-elem-control text-outerspace font-semibold"
+                        value="Pass Key"
+                        readOnly
+                      />
+                      <button type="button" className="form-control-change-btn">
+                        Chỉnh sửa
+                      </button>
+                    </div>
+                  </FormElement>
+                </div>
+              </form>
+              <div>
+                <h4 className="title-sm">Địa chỉ</h4>
+                <BaseLinkGreen to="/account/add">Thêm địa chỉ</BaseLinkGreen>
+                <div className="address-list grid">
+                  <div className="address-item grid">
+                    <p className="text-outerspace text-lg font-semibold address-title">{user?.address}</p>
 
-                  <ul className="address-tags flex flex-wrap">
-                    <li className="text-gray text-base font-medium inline-flex items-center justify-center">
-                      Địa chỉ nhận hàng mặc định
-                    </li>
-                  </ul>
-                  <div className="address-btns flex">
-                    <Link to="/" className="text-base text-outerspace font-semibold">
-                      Xóa
-                    </Link>
-                    <div className="btn-separator"></div>
-                    <Link to="/" className="text-base text-outerspace font-semibold">
-                      Sửa
-                    </Link>
+                    <ul className="address-tags flex flex-wrap">
+                      <li className="text-gray text-base font-medium inline-flex items-center justify-center">
+                        Địa chỉ nhận hàng mặc định
+                      </li>
+                    </ul>
+                    <div className="address-btns flex">
+                      <Link to="/" className="text-base text-outerspace font-semibold">
+                        Xóa
+                      </Link>
+                      <div className="btn-separator"></div>
+                      <Link to="/" className="text-base text-outerspace font-semibold">
+                        Sửa
+                      </Link>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </UserContent>
-        </UserDashboardWrapper>
-      </Container>
+            </UserContent>
+          </UserDashboardWrapper>
+        </Container>
+      )}
     </AccountScreenWrapper>
   );
 };
