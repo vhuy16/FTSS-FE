@@ -157,7 +157,7 @@ const Billing = () => {
         street: '',
         province: '',
         district: '',
-
+        address: '',
         ward: '',
     });
     useEffect(() => {
@@ -173,6 +173,13 @@ const Billing = () => {
                 phone: user?.phoneNumber as string,
                 Address: user?.address as string,
             });
+            dispatch(
+                createShipment({
+                    district: user?.districtId as string,
+                    city: user?.cityId as string,
+                    amount: cart.reduce((a: number, b: CartItem) => a + b.price, 0),
+                }),
+            );
         }
     }, [infoDefault]);
     useEffect(() => {
@@ -191,6 +198,7 @@ const Billing = () => {
             street: '',
             province: '',
             district: '',
+            address: '',
             ward: '',
         };
         let check = true;
@@ -206,21 +214,28 @@ const Billing = () => {
             errors.phone = 'Vui lòng nhập đúng số điện thoại !';
             check = false;
         }
-        if (isEmptyValue(formValue.street)) {
-            errors.street = 'Tên đường không được để trống !';
-            check = false;
-        }
-        if (!formValue.province) {
-            errors.province = 'Vui lòng chọn Tỉnh !';
-            check = false;
-        }
-        if (!formValue.district) {
-            errors.district = 'Vui lòng chọn Huyện !';
-            check = false;
-        }
-        if (!formValue.ward) {
-            errors.ward = 'Vui lòng chọn Phường !';
-            check = false;
+        if (infoDefault) {
+            if (isEmptyValue(formValue.Address)) {
+                errors.address = 'Địa chỉ không được để trống !';
+                check = false;
+            }
+        } else {
+            if (isEmptyValue(formValue.street)) {
+                errors.street = 'Tên đường không được để trống !';
+                check = false;
+            }
+            if (!formValue.province) {
+                errors.province = 'Vui lòng chọn Tỉnh !';
+                check = false;
+            }
+            if (!formValue.district) {
+                errors.district = 'Vui lòng chọn Huyện !';
+                check = false;
+            }
+            if (!formValue.ward) {
+                errors.ward = 'Vui lòng chọn Phường !';
+                check = false;
+            }
         }
 
         setFormError(errors);
@@ -236,8 +251,9 @@ const Billing = () => {
                           return item.cartItemId;
                       })
                     : [],
-                address:
-                    formValue.street + ', ' + formValue.ward + ', ' + formValue.district + ', ' + formValue.province,
+                address: infoDefault
+                    ? formValue.Address
+                    : formValue.street + ', ' + formValue.ward + ', ' + formValue.district + ', ' + formValue.province,
                 voucherId: formValue.VoucherId,
                 paymentMethod: formValue.PaymentMethod,
                 phoneNumber: formValue.phone,
@@ -302,143 +318,155 @@ const Billing = () => {
                         </div>
                     </div>
 
-                    <div>
-                        <div className="input-elem-group elem-col-3">
-                            <div className="input-elem">
-                                <label htmlFor="" className="text-base text-outerspace font-semibold">
-                                    Tỉnh*
-                                </label>
-                                <select
-                                    id="Tinh"
-                                    value={JSON.stringify(idProvice)}
-                                    onChange={(e) => {
-                                        setIdProvince(JSON.parse(e.target.value));
-                                        setFormValue({ ...formValue, province: JSON.parse(e.target.value).name });
-                                    }}
-                                    className="block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                >
-                                    <option
-                                        value={JSON.stringify({
-                                            id: '',
-                                            name: '',
-                                        })}
+                    {!infoDefault ? (
+                        <div>
+                            <div className="input-elem-group elem-col-3">
+                                <div className="input-elem">
+                                    <label htmlFor="" className="text-base text-outerspace font-semibold">
+                                        Tỉnh*
+                                    </label>
+                                    <select
+                                        id="Tinh"
+                                        value={JSON.stringify(idProvice)}
+                                        onChange={(e) => {
+                                            setIdProvince(JSON.parse(e.target.value));
+                                            setFormValue({ ...formValue, province: JSON.parse(e.target.value).name });
+                                        }}
+                                        className="block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                     >
-                                        Chọn tỉnh ...
-                                    </option>
-                                    {listProvince.map((province, index) => {
-                                        return (
-                                            <option
-                                                key={index}
-                                                value={JSON.stringify({
-                                                    id: province.id,
-                                                    name: province.name,
-                                                })}
-                                            >
-                                                {province.name}
-                                            </option>
-                                        );
-                                    })}
-                                </select>
-                                {formError.province && <div className="text-red text-sm">{formError.province}</div>}
+                                        <option
+                                            value={JSON.stringify({
+                                                id: '',
+                                                name: '',
+                                            })}
+                                        >
+                                            Chọn tỉnh ...
+                                        </option>
+                                        {listProvince.map((province, index) => {
+                                            return (
+                                                <option
+                                                    key={index}
+                                                    value={JSON.stringify({
+                                                        id: province.id,
+                                                        name: province.name,
+                                                    })}
+                                                >
+                                                    {province.name}
+                                                </option>
+                                            );
+                                        })}
+                                    </select>
+                                    {formError.province && <div className="text-red text-sm">{formError.province}</div>}
+                                </div>
+                                <div className="input-elem">
+                                    <label htmlFor="" className="text-base text-outerspace font-semibold">
+                                        Huyện/Thành phố*
+                                    </label>
+                                    <select
+                                        id="huyen"
+                                        value={JSON.stringify(district)}
+                                        onChange={(e) => {
+                                            setDistrict(JSON.parse(e.target.value));
+                                            setFormValue({ ...formValue, district: JSON.parse(e.target.value).name });
+                                            dispatch(
+                                                createShipment({
+                                                    district: JSON.parse(e.target.value).id,
+                                                    city: JSON.parse(e.target.value).city_id,
+                                                    amount: cart.reduce((a: number, b: CartItem) => a + b.price, 0),
+                                                }),
+                                            );
+                                        }}
+                                        className="block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                    >
+                                        <option
+                                            value={JSON.stringify({
+                                                id: '',
+                                                name: '',
+                                            })}
+                                        >
+                                            Chọn huyện ...
+                                        </option>
+                                        {listDistrict.map((district, index) => {
+                                            return (
+                                                <option
+                                                    key={index}
+                                                    value={JSON.stringify({
+                                                        id: district.id,
+                                                        name: district.name,
+                                                        city_id: district.city_id,
+                                                    })}
+                                                >
+                                                    {district.name}
+                                                </option>
+                                            );
+                                        })}
+                                    </select>
+                                    {formError.district && <div className="text-red text-sm">{formError.district}</div>}
+                                </div>
+                                <div className="input-elem">
+                                    <label htmlFor="" className="text-base text-outerspace font-semibold">
+                                        Phường/Xã*
+                                    </label>
+                                    <select
+                                        id="Phuong"
+                                        value={JSON.stringify(ward)}
+                                        onChange={(e) => {
+                                            setWard(JSON.parse(e.target.value));
+                                            setFormValue({ ...formValue, ward: JSON.parse(e.target.value).name });
+                                        }}
+                                        className="block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                    >
+                                        <option
+                                            value={JSON.stringify({
+                                                id: '',
+                                                name: '',
+                                            })}
+                                        >
+                                            Chọn phường ...
+                                        </option>
+                                        {listWard.map((ward, index) => {
+                                            return (
+                                                <option
+                                                    key={index}
+                                                    value={JSON.stringify({
+                                                        id: ward.id,
+                                                        name: ward.name,
+                                                    })}
+                                                >
+                                                    {ward.name}
+                                                </option>
+                                            );
+                                        })}
+                                    </select>
+                                    {formError.ward && <div className="text-red text-sm">{formError.ward}</div>}
+                                </div>
                             </div>
-                            <div className="input-elem">
-                                <label htmlFor="" className="text-base text-outerspace font-semibold">
-                                    Huyện/Thành phố*
-                                </label>
-                                <select
-                                    id="huyen"
-                                    value={JSON.stringify(district)}
-                                    onChange={(e) => {
-                                        setDistrict(JSON.parse(e.target.value));
-                                        setFormValue({ ...formValue, district: JSON.parse(e.target.value).name });
-                                        dispatch(
-                                            createShipment({
-                                                district: JSON.parse(e.target.value).id,
-                                                city: JSON.parse(e.target.value).city_id,
-                                                amount: cart.reduce((a: number, b: CartItem) => a + b.price, 0),
-                                            }),
-                                        );
-                                    }}
-                                    className="block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                >
-                                    <option
-                                        value={JSON.stringify({
-                                            id: '',
-                                            name: '',
-                                        })}
-                                    >
-                                        Chọn huyện ...
-                                    </option>
-                                    {listDistrict.map((district, index) => {
-                                        return (
-                                            <option
-                                                key={index}
-                                                value={JSON.stringify({
-                                                    id: district.id,
-                                                    name: district.name,
-                                                    city_id: district.city_id,
-                                                })}
-                                            >
-                                                {district.name}
-                                            </option>
-                                        );
-                                    })}
-                                </select>
-                                {formError.district && <div className="text-red text-sm">{formError.district}</div>}
-                            </div>
-                            <div className="input-elem">
-                                <label htmlFor="" className="text-base text-outerspace font-semibold">
-                                    Phường/Xã*
-                                </label>
-                                <select
-                                    id="Phuong"
-                                    value={JSON.stringify(ward)}
-                                    onChange={(e) => {
-                                        setWard(JSON.parse(e.target.value));
-                                        setFormValue({ ...formValue, ward: JSON.parse(e.target.value).name });
-                                    }}
-                                    className="block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                >
-                                    <option
-                                        value={JSON.stringify({
-                                            id: '',
-                                            name: '',
-                                        })}
-                                    >
-                                        Chọn phường ...
-                                    </option>
-                                    {listWard.map((ward, index) => {
-                                        return (
-                                            <option
-                                                key={index}
-                                                value={JSON.stringify({
-                                                    id: ward.id,
-                                                    name: ward.name,
-                                                })}
-                                            >
-                                                {ward.name}
-                                            </option>
-                                        );
-                                    })}
-                                </select>
-                                {formError.ward && <div className="text-red text-sm">{formError.ward}</div>}
+                            <div className="input-elem-group elem-col-1">
+                                <div className="input-elem">
+                                    <label htmlFor="" className="text-base text-outerspace font-semibold">
+                                        Số nhà, tên đường*
+                                    </label>
+                                    <Input
+                                        type="text"
+                                        placeholder="Đường"
+                                        value={formValue.street}
+                                        onChange={(e) => setFormValue({ ...formValue, street: e.target.value })}
+                                    />
+                                    {formError.street && <div className="text-red text-sm">{formError.street}</div>}
+                                </div>
                             </div>
                         </div>
+                    ) : (
                         <div className="input-elem-group elem-col-1">
                             <div className="input-elem">
                                 <label htmlFor="" className="text-base text-outerspace font-semibold">
-                                    Số nhà, tên đường*
+                                    Địa chỉ*
                                 </label>
-                                <Input
-                                    type="text"
-                                    placeholder="Đường"
-                                    value={formValue.street}
-                                    onChange={(e) => setFormValue({ ...formValue, street: e.target.value })}
-                                />
-                                {formError.street && <div className="text-red text-sm">{formError.street}</div>}
+                                <Input type="text" placeholder="Địa chỉ" value={formValue.Address} />
+                                {formError.address && <div className="text-red text-sm">{formError.address}</div>}
                             </div>
                         </div>
-                    </div>
+                    )}
 
                     <div className="horiz-line-separator w-full"></div>
                     <ShippingPayment />

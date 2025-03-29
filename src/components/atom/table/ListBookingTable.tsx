@@ -13,7 +13,7 @@ import OrderPopup from '../popup/OrderPopup';
 import { useNavigate } from 'react-router-dom';
 import { Order } from '@redux/slices/orderListSlice';
 import { CSVLink } from 'react-csv';
-import { getAllBooking } from '@redux/slices/missionSlide';
+import { Booking, getAllBooking } from '@redux/slices/missionSlide';
 import BookingPopup from '../popup/BookingPopup';
 import LoadingPage from '../Loading/LoadingPage';
 
@@ -32,21 +32,30 @@ export default function ListBookingTable() {
     const listBooking = useAppSelector((state) => state.mission.listBooking);
     const isLoading = useAppSelector((state) => state.mission.isLoadingGetAllBooking);
     const [selectedRow, setSelectedRow] = useState<any[]>([]);
+    const [bookings, setBookings] = useState<Booking[]>([]);
+    const [searchValue, setSearchValue] = useState('');
     const dispatch = useAppDispatch();
     useEffect(() => {
         dispatch(getAllBooking());
     }, []);
+    useEffect(() => {
+        if (!searchValue) {
+            setBookings(listBooking);
+        } else {
+            setBookings(listBooking.filter((booking) => booking.bookingCode.toLowerCase().includes(searchValue)));
+        }
+    }, [searchValue]);
     const columns: GridColDef[] = [
         { field: 'stt', headerName: 'STT', width: 50, headerClassName: 'super-app-theme--header' },
 
         {
             field: 'id',
             headerName: 'Mã đơn ',
-            width: 300,
+            width: 150,
             headerClassName: 'super-app-theme--header',
             renderCell: (params) => (
                 <span onClick={(event) => event.stopPropagation()} style={{ cursor: 'pointer', userSelect: 'none' }}>
-                    {params.row.id}
+                    {params.row.bookingCode}
                 </span>
             ),
         },
@@ -54,20 +63,20 @@ export default function ListBookingTable() {
         {
             field: 'fullName',
             headerName: 'Tên khách hàng',
-            width: 120,
+            width: 150,
             headerClassName: 'super-app-theme--header',
         },
         {
             field: 'phoneNumber',
             headerName: 'Số điện thoại',
-            width: 120,
+            width: 150,
             headerClassName: 'super-app-theme--header',
         },
 
         {
             field: 'totalPrice',
             headerName: 'Giá tiền',
-            width: 100,
+            width: 120,
             headerClassName: 'super-app-theme--header',
             renderCell: (params) => currencyFormat(params.row.totalPrice),
         },
@@ -81,7 +90,7 @@ export default function ListBookingTable() {
         {
             field: 'status',
             headerName: 'Trạng thái',
-            width: 150,
+            width: 170,
             headerClassName: 'super-app-theme--header',
             renderCell: (params) => (
                 <Badge
@@ -143,7 +152,7 @@ export default function ListBookingTable() {
             navigate(`/listBooking/${params.row.id}`);
         }
     };
-    const rows = listBooking?.map((booking, index) => {
+    const rows = bookings?.map((booking, index) => {
         return { ...booking, stt: index + 1 };
     });
 
@@ -173,6 +182,7 @@ export default function ListBookingTable() {
                     <input
                         type="text"
                         placeholder="Tìm kiếm..."
+                        onChange={(e) => setSearchValue(e.target.value.toLowerCase())}
                         className="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-200 bg-transparent py-2.5 pl-12 pr-14 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-800 dark:bg-gray-900 dark:bg-white/[0.03] dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 xl:w-[430px]"
                     />
                 </div>
