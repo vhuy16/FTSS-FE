@@ -106,10 +106,15 @@ const BookingService = () => {
             const response = await dispatch(createBookingService(bookingData));
             // Xử lý kết quả
             if (response?.payload?.status === '200' || response?.payload?.status === '201') {
-                await toast.success('Vui lòng chờ để thanh toán');
-                setTimeout(() => {
-                    window.location.href = response?.payload?.data.url;
-                }, 1000);
+                if (orderDetail?.isEligible) {
+                    toast.success('Đặt lịch bảo trì thành công');
+                    navigate('/booking-history');
+                } else {
+                    await toast.success('Vui lòng chờ để thanh toán');
+                    setTimeout(() => {
+                        window.location.href = response?.payload?.data.url;
+                    }, 1000);
+                }
             } else {
                 toast.error(response?.payload);
             }
