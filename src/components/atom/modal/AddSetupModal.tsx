@@ -109,10 +109,15 @@ export default function AddSetupModal({ isModalAddOpen, setIsModalAddOpen }: Mod
                     const res = await dispatch(createSetupPackage(formData)).unwrap();
                     if (res.status == 201) {
                         setIsModalAddOpen(false);
+                        setData({
+                            SetupName: '',
+                            Description: '',
+                            ProductItemsJson: '',
+                            ImageFile: null,
+                        });
                         toast.success('Thêm mẫu thiết kế bể cá thành công');
                     }
                 } catch (error) {
-                    setIsModalAddOpen(false);
                     toast.error(error as string);
                 }
             } else {
@@ -147,6 +152,12 @@ export default function AddSetupModal({ isModalAddOpen, setIsModalAddOpen }: Mod
                                             className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
                                             onClick={() => {
                                                 setIsModalAddOpen(false);
+                                                setData({
+                                                    SetupName: '',
+                                                    Description: '',
+                                                    ProductItemsJson: '',
+                                                    ImageFile: null,
+                                                });
                                             }}
                                         >
                                             <svg
@@ -455,7 +466,15 @@ export default function AddSetupModal({ isModalAddOpen, setIsModalAddOpen }: Mod
                                             </button>
 
                                             <button
-                                                onClick={() => setIsModalAddOpen(false)}
+                                                onClick={() => {
+                                                    setIsModalAddOpen(false);
+                                                    setData({
+                                                        SetupName: '',
+                                                        Description: '',
+                                                        ProductItemsJson: '',
+                                                        ImageFile: null,
+                                                    });
+                                                }}
                                                 className="text-red-600 inline-flex items-center mt-3 font-bold text-sm underline"
                                             >
                                                 <svg
