@@ -11,73 +11,39 @@ interface ChartTwoState {
 }
 
 const ChartTwoSeller: React.FC = () => {
-    const dataChartTwo = useAppSelector((state) => state.dashboard.dataChartTwo);
-    const dayChartTwo = dataChartTwo.map((data) => data.day);
-    const valueChartTwo = dataChartTwo.map((data) => data.productQuantity);
+    const dataChartTwo = [
+        { category: 'Cá Cảnh', productQuantity: 44 },
+        { category: 'Thủy Sinh', productQuantity: 55 },
+        { category: 'Phụ Kiện', productQuantity: 41 },
+        { category: 'Dịch Vụ', productQuantity: 17 },
+        { category: 'Thức Ăn', productQuantity: 15 },
+    ];
+    const categoryLabels = dataChartTwo.map((data) => data.category);
+    const series = dataChartTwo.map((data) => data.productQuantity);
     const options: ApexOptions = {
-        colors: ['#3C50E0', '#80CAEE'],
         chart: {
-            fontFamily: 'Satoshi, sans-serif',
-            type: 'bar',
-            height: 335,
-            stacked: true,
-            toolbar: {
-                show: false,
-            },
-            zoom: {
-                enabled: false,
-            },
+            type: 'donut',
         },
+        labels: categoryLabels,
         responsive: [
             {
-                breakpoint: 1536,
+                breakpoint: 480,
                 options: {
-                    plotOptions: {
-                        bar: {
-                            columnWidth: '25%', // Adjust the column width as needed
-                        },
+                    chart: {
+                        width: 350,
+                    },
+                    legend: {
+                        position: 'top',
+                        horizontalAlign: 'center',
                     },
                 },
             },
         ],
-        plotOptions: {
-            bar: {
-                horizontal: false,
-                columnWidth: '25%', // You can adjust this as needed
-            },
-        },
-        dataLabels: {
-            enabled: false,
-        },
-        xaxis: {
-            categories: dayChartTwo,
-        },
         legend: {
             position: 'top',
-            horizontalAlign: 'left',
-            fontFamily: 'Satoshi',
-            fontWeight: 500,
-            fontSize: '14px',
-
-            markers: {
-                shape: 'circle',
-            },
-        },
-        fill: {
-            opacity: 1,
-        },
-        tooltip: {
-            marker: {
-                show: false, // Ẩn marker trong tooltip
-            },
+            horizontalAlign: 'center',
         },
     };
-    let series = [
-        {
-            name: 'Sản phẩm',
-            data: valueChartTwo,
-        },
-    ];
 
     return (
         <div className="col-span-12 rounded-sm border border-stroke bg-white p-7.5 shadow-default dark:border-strokedark dark:bg-boxdark xl:col-span-4">
@@ -91,7 +57,7 @@ const ChartTwoSeller: React.FC = () => {
 
             <div>
                 <div id="chartTwo" className="-ml-5 -mb-9">
-                    <ReactApexChart options={options} series={series} type="bar" height={350} />
+                    <ReactApexChart options={options} series={series} type="donut" height={350} />
                 </div>
             </div>
         </div>
