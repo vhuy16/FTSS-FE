@@ -74,6 +74,11 @@ const navItems: NavItem[] = [
             { name: 'Danh sách danh mục phụ', path: '/listSubCategory' },
         ],
     },
+    {
+        icon: <PageIcon />,
+        name: 'Danh sách mã khuyến mãi',
+        path: '/listVoucher',
+    },
 ];
 
 const othersItems: NavItem[] = [
