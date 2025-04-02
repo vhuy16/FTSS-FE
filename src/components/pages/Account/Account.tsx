@@ -5,11 +5,11 @@ import { UserContent, UserDashboardWrapper } from "@styles/user";
 import UserMenu from "@atom/user/UserMenu";
 import Title from "@common/Title";
 import { FormElement, Input } from "@styles/form";
-import { BaseLinkGreen } from "@styles/button";
+import { BaseBtnGreen, BaseLinkGreen } from "@styles/button";
 import { Link } from "react-router-dom";
 import { breakpoints, defaultTheme } from "@styles/themes/default";
 import { useAppDispatch, useAppSelector } from "@redux/hook";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { getUserProfile } from "@redux/slices/userSlice";
 import LoadingPage from "@components/atom/Loading/LoadingPage";
 
@@ -65,9 +65,17 @@ const Account = () => {
   const user = useAppSelector((state) => state.userProfile.user);
   const isLoadingUser = useAppSelector((state) => state.userProfile.isLoading);
   const dispatch = useAppDispatch();
+
+  const [formData, setFormData] = useState({
+    fullName: user?.fullName || "",
+    email: user?.email || "",
+    phoneNumber: user?.phoneNumber || "",
+  });
   useEffect(() => {
     dispatch(getUserProfile());
   }, []);
+  console.log("user", user);
+
   return (
     <AccountScreenWrapper className="page-py-spacing">
       {isLoadingUser ? (
@@ -91,11 +99,7 @@ const Account = () => {
                         type="text"
                         className="form-elem-control text-outerspace font-semibold"
                         value={user?.fullName}
-                        readOnly
                       />
-                      <button type="button" className="form-control-change-btn">
-                        Chỉnh sửa
-                      </button>
                     </div>
                   </FormElement>
                   <FormElement className="form-elem">
@@ -107,11 +111,7 @@ const Account = () => {
                         type="email"
                         className="form-elem-control text-outerspace font-semibold"
                         value={user?.email}
-                        readOnly
                       />
-                      <button type="button" className="form-control-change-btn">
-                        Chỉnh sửa
-                      </button>
                     </div>
                   </FormElement>
                   <FormElement className="form-elem">
@@ -123,11 +123,7 @@ const Account = () => {
                         type="text"
                         className="form-elem-control text-outerspace font-semibold"
                         value={user?.phoneNumber}
-                        readOnly
                       />
-                      <button type="button" className="form-control-change-btn">
-                        Chỉnh sửa
-                      </button>
                     </div>
                   </FormElement>
                   <FormElement className="form-elem">
@@ -137,20 +133,20 @@ const Account = () => {
                     <div className="form-input-wrapper flex items-center">
                       <Input
                         type="password"
-                        className="form-elem-control text-outerspace font-semibold"
+                        className="form-elem-control text-outerspace font-semibold border-0"
                         value="Pass Key"
-                        readOnly
                       />
-                      <button type="button" className="form-control-change-btn">
-                        Chỉnh sửa
-                      </button>
                     </div>
                   </FormElement>
+                  <div></div>
+                  <div className="flex justify-end mt-4 mb-4">
+                    <BaseBtnGreen type="submit">Lưu thay đổi</BaseBtnGreen>
+                  </div>
                 </div>
               </form>
               <div>
                 <h4 className="title-sm">Địa chỉ</h4>
-                <BaseLinkGreen to="/account/add">Thêm địa chỉ</BaseLinkGreen>
+
                 <div className="address-list grid">
                   <div className="address-item grid">
                     <p className="text-outerspace text-lg font-semibold address-title">{user?.address}</p>
