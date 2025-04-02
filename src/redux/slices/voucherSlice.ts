@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import myAxios from '@setup/axiosConfig';
 
 export type Voucher = {
@@ -15,17 +15,19 @@ export type Voucher = {
     modifyDate: string;
 };
 
-type MissionType = {
+type VoucherType = {
     isLoading: boolean;
     isLoadingAdd: boolean;
     isError: boolean;
     listVoucher: Voucher[];
+    selectedVoucher: Voucher | null;
 };
-const initialState: MissionType = {
+const initialState: VoucherType = {
     isLoading: false,
     isLoadingAdd: false,
     isError: false,
     listVoucher: [],
+    selectedVoucher: null,
 };
 
 export const getAllVoucher = createAsyncThunk('voucher/getAllVoucher', async (_, { rejectWithValue }) => {
@@ -51,7 +53,12 @@ export const addVoucher = createAsyncThunk('voucher/addVoucher', async (data: an
 const voucherSlice = createSlice({
     name: 'voucher',
     initialState,
-    reducers: {},
+    reducers: {
+        selectVoucher: (state, action: PayloadAction<Voucher>) => {
+            const voucher = action.payload;
+            state.selectedVoucher = voucher;
+        },
+    },
     extraReducers: (builder) => {
         builder
             .addCase(getAllVoucher.pending, (state) => {
@@ -82,5 +89,5 @@ const voucherSlice = createSlice({
             });
     },
 });
-
+export const { selectVoucher } = voucherSlice.actions;
 export default voucherSlice.reducer;

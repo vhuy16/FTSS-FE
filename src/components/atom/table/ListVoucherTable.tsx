@@ -7,10 +7,11 @@ import { useAppDispatch, useAppSelector } from '@redux/hook';
 import { currencyFormat } from '@ultils/helper';
 import Badge from '@components/ui/badge/Badge';
 import ProductPopup from '../popup/ProductPopup';
-import EditProductModal from '../modal/EditProductModal';
+import EditVoucherModal from '../modal/EditVoucherModal';
 import LoadingPage from '../Loading/LoadingPage';
-import { getAllVoucher } from '@redux/slices/voucherSlice';
+import { getAllVoucher, Voucher } from '@redux/slices/voucherSlice';
 import AddVoucherModal from '../modal/AddVoucherModal';
+import VoucherPopup from '../popup/VoucherPopup';
 
 const paginationModel = { page: 0, pageSize: 5 };
 const StyledDataGrid = styled(DataGrid)((theme) => ({
@@ -28,10 +29,22 @@ export default function ListVoucherTable() {
     const isLoading = useAppSelector((state) => state.voucher.isLoading);
     const [isModalAddOpen, setIsModalAddOpen] = useState(false);
     const [isModalEditOpen, setIsModalEditOpen] = useState(false);
+    const [searchValue, setSearchValue] = useState('');
+    const [vouchers, setVouchers] = useState<Voucher[]>([]);
     const dispatch = useAppDispatch();
     useEffect(() => {
         dispatch(getAllVoucher());
     }, []);
+    useEffect(() => {
+        setVouchers(listVoucher);
+    }, [listVoucher]);
+    useEffect(() => {
+        if (!searchValue) {
+            setVouchers(listVoucher);
+        } else {
+            setVouchers(listVoucher.filter((voucher) => voucher.voucherCode.toLowerCase().includes(searchValue)));
+        }
+    }, [searchValue]);
     const columns: GridColDef[] = [
         { field: 'stt', headerName: 'STT', width: 50, headerClassName: 'super-app-theme--header' },
         {
@@ -110,12 +123,12 @@ export default function ListVoucherTable() {
             sortable: false,
             renderCell: (params) => (
                 <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
-                    <ProductPopup product={params.row} setIsModalEditOpen={setIsModalEditOpen} />
+                    <VoucherPopup voucher={params.row} setIsModalEditOpen={setIsModalEditOpen} />
                 </Box>
             ),
         },
     ];
-    const rows = listVoucher?.map((voucher, index) => {
+    const rows = vouchers?.map((voucher, index) => {
         return { ...voucher, stt: index + 1 };
     });
     return isLoading && listVoucher.length === 0 ? (
@@ -144,6 +157,7 @@ export default function ListVoucherTable() {
                     <input
                         type="text"
                         placeholder="Tìm kiếm..."
+                        onChange={(e) => setSearchValue(e.target.value.toLowerCase())}
                         className="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-200 bg-transparent py-2.5 pl-12 pr-14 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-800 dark:bg-gray-900 dark:bg-white/[0.03] dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 xl:w-[430px]"
                     />
                 </div>
@@ -218,7 +232,7 @@ export default function ListVoucherTable() {
                 </Box>
             )}
             <AddVoucherModal isModalAddOpen={isModalAddOpen} setIsModalAddOpen={setIsModalAddOpen}></AddVoucherModal>
-            {/* <EditProductModal isModalEditOpen={isModalEditOpen} setIsModalEditOpen={setIsModalEditOpen} /> */}
+            <EditVoucherModal isModalEditOpen={isModalEditOpen} setIsModalEditOpen={setIsModalEditOpen} />
         </div>
     );
 }
