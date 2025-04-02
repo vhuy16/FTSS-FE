@@ -16,6 +16,8 @@ import LockOpenIcon from '@mui/icons-material/LockOpen';
 
 import { useAppDispatch } from '@redux/hook';
 import { selectVoucher, Voucher } from '@redux/slices/voucherSlice';
+import ConfirmDeleteVoucher from '../popup_modal/ConfirmDeleteVoucher';
+import ConfirmActivatevoucher from '../popup_modal/ConfirmActivateVoucher';
 
 const ITEM_HEIGHT = 48;
 type VoucherPopupProps = {
@@ -103,7 +105,7 @@ export default function VoucherPopup({ voucher, setIsModalEditOpen }: VoucherPop
                     </MenuItem>
                 )}
             </Menu>
-            {/* <ConfirmDeletevoucher
+            <ConfirmDeleteVoucher
                 isModalOpenDelete={isModalOpenDelete}
                 setIsModalOpenDelete={setIsModalOpenDelete}
                 voucher={voucher}
@@ -112,7 +114,7 @@ export default function VoucherPopup({ voucher, setIsModalEditOpen }: VoucherPop
                 isModalOpenActivate={isModalOpenActivate}
                 setIsModalOpenActivate={setIsModalOpenActivate}
                 voucher={voucher}
-            /> */}
+            />
         </div>
     );
 }
