@@ -20,7 +20,7 @@ import dashboardReducer from "./slices/dashboardSlice";
 import listServiceReducer from "./slices/listServiceSlice";
 import bookingServiceReducer from "./slices/bookingSlice";
 import missionReducer from "./slices/missionSlide";
-
+import voucherReducer from "./slices/voucherSlice";
 export const store = configureStore({
   reducer: {
     address: addressReducer,
@@ -44,6 +44,7 @@ export const store = configureStore({
     serviceList: listServiceReducer,
     bookingService: bookingServiceReducer,
     mission: missionReducer,
+    voucher: voucherReducer,
   },
 });
 

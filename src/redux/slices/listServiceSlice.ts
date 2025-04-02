@@ -18,7 +18,7 @@ export const initialState: ServiceStateType = {
   servicePackages: [],
 };
 
-export const getAllServices = createAsyncThunk("profile/getAllServices", async () => {
+export const getAllServices = createAsyncThunk("service/getAllServices", async () => {
   try {
     const response = await myAxios.get(`/booking/servicepackage?page=1&size=100&isAscending=false`);
     return response.data.data;
@@ -28,7 +28,7 @@ export const getAllServices = createAsyncThunk("profile/getAllServices", async (
   }
 });
 
-const userSlice = createSlice({
+const serviceSlice = createSlice({
   name: "listService",
   initialState,
   reducers: {},
@@ -52,4 +52,4 @@ const userSlice = createSlice({
   },
 });
 
-export default userSlice.reducer;
+export default serviceSlice.reducer;

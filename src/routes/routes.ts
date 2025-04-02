@@ -45,6 +45,7 @@ import ListOrderDelivery from "@components/pages/manager/ListOrderDelivery";
 import AddMissionOrder from "@components/pages/manager/AddMissionOrder";
 import BookingHistory from "@components/pages/Booking/BookingHistory";
 import BookingHistoryDetail from "@components/pages/Booking/BookingHistoryDetail";
+import IssueBlog from "@components/pages/Issue/IssueBlog";
 
 export type RouteType = {
   path: string;
@@ -350,6 +351,11 @@ if (role === "Admin") {
     {
       path: "/booking-detail/:id",
       component: BookingHistoryDetail,
+      layout: MainLayout,
+    },
+    {
+      path: "/issue-post",
+      component: IssueBlog,
       layout: MainLayout,
     },
   ];

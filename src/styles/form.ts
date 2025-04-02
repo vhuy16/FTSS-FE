@@ -79,6 +79,7 @@ export const FormElement = styled.div`
     padding: 2px 14px;
     margin: 4px 0;
     transition: ${defaultTheme.default_transition};
+    padding-left: 14px;
 
     &:focus {
       border-color: ${defaultTheme.color_sea_green};

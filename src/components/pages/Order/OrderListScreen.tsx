@@ -55,6 +55,7 @@ const OrderListScreen = () => {
   const isLoading = useAppSelector((state) => state.orderList.loading);
   const [activeTab, setActiveTab] = useState<OrderStatus>("PROCESSING");
   const [selectedCategory, setSelectedCategory] = useState<"PRODUCT" | "FISH_TANK">("PRODUCT");
+  const isLoadingProfile = useAppSelector((state) => state.userProfile.isLoading);
 
   const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedCategory(event.target.value as "PRODUCT" | "FISH_TANK");
@@ -73,7 +74,7 @@ const OrderListScreen = () => {
   };
   return (
     <OrderListScreenWrapper className="page-py-spacing">
-      {isLoading ? (
+      {isLoading && isLoadingProfile ? (
         <LoadingPage />
       ) : (
         <Container>
