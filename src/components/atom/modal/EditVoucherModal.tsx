@@ -6,7 +6,7 @@ import { getAllCategory, getAllSubCategoryByCateName } from '@redux/slices/categ
 import { addProducts } from '@redux/slices/productSlice';
 import { toast } from 'react-toastify';
 import Loading from '../Loading/Loading';
-import { addVoucher } from '@redux/slices/voucherSlice';
+import { addVoucher, editVoucher } from '@redux/slices/voucherSlice';
 type ModalEditProps = {
     isModalEditOpen: boolean;
     setIsModalEditOpen: (isOpen: boolean) => void;
@@ -20,7 +20,8 @@ const style = {
 };
 export default function EditVoucherModal({ isModalEditOpen, setIsModalEditOpen }: ModalEditProps) {
     const dispatch = useAppDispatch();
-    const isLoading = useAppSelector((state) => state.voucher.isLoadingAdd);
+    const isLoading = useAppSelector((state) => state.voucher.isLoadingEdit);
+    const voucher = useAppSelector((state) => state.voucher.selectedVoucher);
     const [data, setData] = useState<{
         discount: number;
         quantity: number;
@@ -29,13 +30,25 @@ export default function EditVoucherModal({ isModalEditOpen, setIsModalEditOpen }
         discountType: string;
         description: string;
     }>({
-        discount: 0,
-        quantity: 0,
-        maximumOrderValue: 0,
-        expiryDate: '',
-        discountType: 'Percentage',
-        description: '',
+        discount: voucher?.discount,
+        quantity: voucher?.quantity,
+        maximumOrderValue: voucher?.maximumOrderValue,
+        expiryDate: voucher.expiryDate,
+        discountType: voucher.discountType,
+        description: voucher.description,
     });
+    useEffect(() => {
+        if (isModalEditOpen && voucher.voucherCode) {
+            setData({
+                discount: voucher?.discount,
+                quantity: voucher?.quantity,
+                maximumOrderValue: voucher?.maximumOrderValue,
+                expiryDate: voucher.expiryDate,
+                discountType: voucher.discountType,
+                description: voucher.description,
+            });
+        }
+    }, [isModalEditOpen]);
 
     const handleSubmit = async () => {
         if (data.discountType === 'Percentage') {
@@ -62,17 +75,17 @@ export default function EditVoucherModal({ isModalEditOpen, setIsModalEditOpen }
                     };
 
                     try {
-                        await dispatch(addVoucher(dataAdd));
+                        await dispatch(editVoucher({ id: voucher.id, data: dataAdd }));
                         setIsModalEditOpen(false);
                         setData({
                             discount: 0,
                             quantity: 0,
                             maximumOrderValue: 0,
                             expiryDate: '',
-                            discountType: 'Percentage',
+                            discountType: '',
                             description: '',
                         });
-                        toast.success('Thêm mã khuyến mãi thành công');
+                        toast.success('Cập nhật mã khuyến mãi thành công');
                     } catch (error) {
                         toast.error(error as string);
                     }
@@ -98,17 +111,17 @@ export default function EditVoucherModal({ isModalEditOpen, setIsModalEditOpen }
                         description: data.description,
                     };
                     try {
-                        await dispatch(addVoucher(dataAdd));
+                        await dispatch(editVoucher({ id: voucher.id, data: dataAdd }));
                         setIsModalEditOpen(false);
                         setData({
                             discount: 0,
                             quantity: 0,
                             maximumOrderValue: 0,
                             expiryDate: '',
-                            discountType: 'Percentage',
+                            discountType: '',
                             description: '',
                         });
-                        toast.success('Thêm mã khuyến mãi thành công');
+                        toast.success('Cập nhật mã khuyến mãi thành công');
                     } catch (error) {
                         toast.error(error as string);
                     }
@@ -133,7 +146,7 @@ export default function EditVoucherModal({ isModalEditOpen, setIsModalEditOpen }
                             quantity: 0,
                             maximumOrderValue: 0,
                             expiryDate: '',
-                            discountType: 'Percentage',
+                            discountType: '',
                             description: '',
                         });
                     }}
@@ -146,7 +159,7 @@ export default function EditVoucherModal({ isModalEditOpen, setIsModalEditOpen }
                                 <div className="relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
                                     <div className="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600">
                                         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                                            Thêm mã giảm giá
+                                            Chỉnh sửa mã giảm giá
                                         </h3>
                                         <button
                                             type="button"
@@ -158,7 +171,7 @@ export default function EditVoucherModal({ isModalEditOpen, setIsModalEditOpen }
                                                     quantity: 0,
                                                     maximumOrderValue: 0,
                                                     expiryDate: '',
-                                                    discountType: 'Percentage',
+                                                    discountType: '',
                                                     description: '',
                                                 });
                                             }}
@@ -198,10 +211,18 @@ export default function EditVoucherModal({ isModalEditOpen, setIsModalEditOpen }
                                                     }}
                                                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                                                 >
-                                                    <option selected={true} value="Percentage">
+                                                    <option
+                                                        selected={data.discountType === 'Percentage'}
+                                                        value="Percentage"
+                                                    >
                                                         Phần trăm
                                                     </option>
-                                                    <option value="Fixed">Cố định</option>
+                                                    <option
+                                                        selected={data.discountType.trim() === 'Fixed'}
+                                                        value="Fixed"
+                                                    >
+                                                        Cố định
+                                                    </option>
                                                 </select>
                                             </div>
                                             <div className="sm:col-span-3">
@@ -218,6 +239,7 @@ export default function EditVoucherModal({ isModalEditOpen, setIsModalEditOpen }
                                                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                                                     placeholder="Nhập ngày hết hạn"
                                                     required={true}
+                                                    value={data.expiryDate.split('T')[0]}
                                                     onChange={(e) => setData({ ...data, expiryDate: e.target.value })}
                                                 />
                                             </div>
@@ -242,6 +264,7 @@ export default function EditVoucherModal({ isModalEditOpen, setIsModalEditOpen }
                                                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                                                     placeholder="Nhập mức giảm giá"
                                                     required={true}
+                                                    value={data.discount}
                                                     onChange={(e) =>
                                                         setData({ ...data, discount: parseInt(e.target.value) })
                                                     }
@@ -262,6 +285,7 @@ export default function EditVoucherModal({ isModalEditOpen, setIsModalEditOpen }
                                                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                                                         placeholder="Nhập mức giảm giá tối đa"
                                                         required={true}
+                                                        value={data.maximumOrderValue}
                                                         onChange={(e) =>
                                                             setData({
                                                                 ...data,
@@ -291,6 +315,7 @@ export default function EditVoucherModal({ isModalEditOpen, setIsModalEditOpen }
                                                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                                                     placeholder="Nhập số lượng"
                                                     required={true}
+                                                    value={data.quantity}
                                                     onChange={(e) =>
                                                         setData({ ...data, quantity: parseInt(e.target.value) })
                                                     }
@@ -310,6 +335,7 @@ export default function EditVoucherModal({ isModalEditOpen, setIsModalEditOpen }
                                                     className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                                                     placeholder="Viết mô tả khuyến mãi tại đây"
                                                     required={true}
+                                                    value={data.description}
                                                     onChange={(e) => setData({ ...data, description: e.target.value })}
                                                 ></textarea>
                                             </div>
@@ -319,7 +345,7 @@ export default function EditVoucherModal({ isModalEditOpen, setIsModalEditOpen }
                                                 onClick={handleSubmit}
                                                 className="text-white inline-flex items-center bg-blackGreen  hover:bg-blackGreenHover focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 mt-3 mr-3"
                                             >
-                                                {isLoading ? <Loading></Loading> : 'Thêm'}
+                                                {isLoading ? <Loading></Loading> : 'Lưu'}
                                             </button>
 
                                             <button
@@ -330,7 +356,7 @@ export default function EditVoucherModal({ isModalEditOpen, setIsModalEditOpen }
                                                         quantity: 0,
                                                         maximumOrderValue: 0,
                                                         expiryDate: '',
-                                                        discountType: 'Percentage',
+                                                        discountType: '',
                                                         description: '',
                                                     });
                                                 }}

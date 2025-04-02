@@ -18,16 +18,34 @@ export type Voucher = {
 type VoucherType = {
     isLoading: boolean;
     isLoadingAdd: boolean;
+    isLoadingEdit: boolean;
+    isLoadingDelete: boolean;
+    isLoadingActive: boolean;
     isError: boolean;
     listVoucher: Voucher[];
-    selectedVoucher: Voucher | null;
+    selectedVoucher: Voucher;
 };
 const initialState: VoucherType = {
     isLoading: false,
     isLoadingAdd: false,
+    isLoadingEdit: false,
+    isLoadingDelete: false,
+    isLoadingActive: false,
     isError: false,
     listVoucher: [],
-    selectedVoucher: null,
+    selectedVoucher: {
+        id: '',
+        voucherCode: '',
+        discount: 0,
+        description: '',
+        status: '',
+        discountType: '',
+        quantity: 0,
+        maximumOrderValue: 0,
+        expiryDate: '',
+        createDate: '',
+        modifyDate: '',
+    },
 };
 
 export const getAllVoucher = createAsyncThunk('voucher/getAllVoucher', async (_, { rejectWithValue }) => {
@@ -58,6 +76,53 @@ export const addVoucher = createAsyncThunk('voucher/addVoucher', async (data: an
         return rejectWithValue(error.response?.data?.message || 'Something went wrong');
     }
 });
+export const editVoucher = createAsyncThunk(
+    'voucher/editVoucher',
+    async ({ id, data }: { id: string; data: any }, { dispatch, rejectWithValue }) => {
+        try {
+            const response = await myAxios.put(`/voucher${id}`, data);
+            await dispatch(getAllVoucher());
+            return response.data;
+        } catch (error: any) {
+            console.log(error);
+            return rejectWithValue(error.response?.data?.message || 'Something went wrong');
+        }
+    },
+);
+export const deleteVoucher = createAsyncThunk(
+    'voucher/deleteVoucher',
+    async (id: string, { dispatch, rejectWithValue }) => {
+        try {
+            const response = await myAxios.put(`/voucher/update-status-voucher/${id}`, JSON.stringify('Inactive'), {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            await dispatch(getAllVoucher());
+            return response.data;
+        } catch (error: any) {
+            console.log(error);
+            return rejectWithValue(error.response?.data?.message || 'Something went wrong');
+        }
+    },
+);
+export const activeVoucher = createAsyncThunk(
+    'voucher/activeVoucher',
+    async (id: string, { dispatch, rejectWithValue }) => {
+        try {
+            const response = await myAxios.put(`/voucher/update-status-voucher/${id}`, JSON.stringify('Active'), {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            await dispatch(getAllVoucher());
+            return response.data;
+        } catch (error: any) {
+            console.log(error);
+            return rejectWithValue(error.response?.data?.message || 'Something went wrong');
+        }
+    },
+);
 
 const voucherSlice = createSlice({
     name: 'voucher',
@@ -108,6 +173,45 @@ const voucherSlice = createSlice({
             })
             .addCase(addVoucher.rejected, (state, action) => {
                 state.isLoadingAdd = false;
+                state.isError = true;
+            });
+        builder
+            .addCase(editVoucher.pending, (state) => {
+                state.isLoadingEdit = true;
+                state.isError = false;
+            })
+            .addCase(editVoucher.fulfilled, (state, action) => {
+                state.isLoadingEdit = false;
+                state.isError = false;
+            })
+            .addCase(editVoucher.rejected, (state, action) => {
+                state.isLoadingEdit = false;
+                state.isError = true;
+            });
+        builder
+            .addCase(deleteVoucher.pending, (state) => {
+                state.isLoadingDelete = true;
+                state.isError = false;
+            })
+            .addCase(deleteVoucher.fulfilled, (state, action) => {
+                state.isLoadingDelete = false;
+                state.isError = false;
+            })
+            .addCase(deleteVoucher.rejected, (state, action) => {
+                state.isLoadingDelete = false;
+                state.isError = true;
+            });
+        builder
+            .addCase(activeVoucher.pending, (state) => {
+                state.isLoadingActive = true;
+                state.isError = false;
+            })
+            .addCase(activeVoucher.fulfilled, (state, action) => {
+                state.isLoadingActive = false;
+                state.isError = false;
+            })
+            .addCase(activeVoucher.rejected, (state, action) => {
+                state.isLoadingActive = false;
                 state.isError = true;
             });
     },

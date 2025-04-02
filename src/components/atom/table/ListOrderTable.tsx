@@ -78,6 +78,7 @@ export default function ListOrderTable() {
             field: 'paymentStatus',
             headerName: 'Trạng thái thanh toán',
             width: 200,
+            sortable: true,
             headerClassName: 'super-app-theme--header',
             renderCell: (params) => (
                 <Badge
