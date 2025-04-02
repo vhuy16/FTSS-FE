@@ -40,10 +40,11 @@ const BrandsListWrapper = styled.div`
 
 const Brands = () => {
   const dispatch = useAppDispatch();
-  const listSetup = useAppSelector((state) => state.setupPackage.setupPackages);
+  const listSetup = useAppSelector((state) => state.setupPackage.setupPackagesShop?.setupPackages);
   useEffect(() => {
-    dispatch(getSetupPackagesShop());
+    dispatch(getSetupPackagesShop({ page: 1, size: 100 }));
   }, []);
+  console.log("list", listSetup);
   const navigate = useNavigate();
   return (
     <Section>
@@ -56,7 +57,7 @@ const Brands = () => {
             </p>
           </StyledSectionTitle>
           <BrandsListWrapper>
-            {listSetup.length > 0 ? <CatalogSetup setups={listSetup.slice(0, 4)} /> : <Loading></Loading>}
+            {listSetup?.length > 0 ? <CatalogSetup setups={listSetup.slice(0, 4)} /> : <Loading></Loading>}
           </BrandsListWrapper>
         </BrandsContent>
       </Container>
