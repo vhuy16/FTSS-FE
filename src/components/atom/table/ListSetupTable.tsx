@@ -72,7 +72,7 @@ export default function ListSetupTable() {
         {
             field: 'products',
             headerName: 'Thành phần',
-            width: 200,
+            width: 300,
             headerClassName: 'super-app-theme--header',
             renderCell: (params) => (
                 <div className="flex items-center -space-x-2 h-full">
