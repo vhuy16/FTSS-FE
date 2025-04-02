@@ -1,5 +1,5 @@
-import { createGlobalStyle } from 'styled-components';
-import { breakpoints, defaultTheme } from '../themes/default';
+import { createGlobalStyle } from "styled-components";
+import { breakpoints, defaultTheme } from "../themes/default";
 
 export const GlobalStyles = createGlobalStyle`
     * {
@@ -173,7 +173,9 @@ export const GlobalStyles = createGlobalStyle`
     .text-silver {
         color: ${defaultTheme.color_silver};
     }
-
+    .text-green {
+        color: ${defaultTheme.color_green_v1};
+    }
     .text-start {
         text-align: left;
     }

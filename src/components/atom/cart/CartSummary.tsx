@@ -1,90 +1,85 @@
-import styled from 'styled-components';
-import { BaseButtonGreen } from '@styles/button';
-import { breakpoints, defaultTheme } from '@styles/themes/default';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAppSelector } from '@redux/hook';
-import { CartItem } from '@redux/slices/cartSlice';
-import { currencyFormat } from '@ultils/helper';
-import { toast } from 'react-toastify';
+import styled from "styled-components";
+import { BaseButtonGreen } from "@styles/button";
+import { breakpoints, defaultTheme } from "@styles/themes/default";
+import { Link, useNavigate } from "react-router-dom";
+import { useAppSelector } from "@redux/hook";
+import { CartItem } from "@redux/slices/cartSlice";
+import { currencyFormat } from "@ultils/helper";
+import { toast } from "react-toastify";
 
 const CartSummaryWrapper = styled.div`
-    background-color: ${defaultTheme.color_flash_white};
-    padding: 16px;
+  background-color: ${defaultTheme.color_flash_white};
+  padding: 16px;
 
-    .checkout-btn {
-        min-width: 100%;
+  .checkout-btn {
+    min-width: 100%;
+  }
+
+  .summary-list {
+    padding: 20px;
+
+    @media (max-width: ${breakpoints.xs}) {
+      padding-top: 0;
+      padding-right: 0;
+      padding-left: 0;
     }
 
-    .summary-list {
-        padding: 20px;
+    .summary-item {
+      margin: 6px 0;
 
-        @media (max-width: ${breakpoints.xs}) {
-            padding-top: 0;
-            padding-right: 0;
-            padding-left: 0;
-        }
-
-        .summary-item {
-            margin: 6px 0;
-
-            &:last-child {
-                margin-top: 20px;
-                border-top: 1px dashed ${defaultTheme.color_sea_green};
-                padding-top: 10px;
-            }
-        }
+      &:last-child {
+        margin-top: 20px;
+        border-top: 1px dashed ${defaultTheme.color_sea_green};
+        padding-top: 10px;
+      }
     }
+  }
 `;
 type CartSummaryProps = {
-    totalPrice: number;
+  totalPrice: number;
 };
 // interface CartCheckOutType extends CartItem {
 //     subTotal: number;
 // }
 const CartSummary = ({ totalPrice }: CartSummaryProps) => {
-    // const listCart: CartItem[] = useAppSelector((state) => state.cart.items);
-    // const listCartCheckOut: CartCheckOutType[] = listCart.map((cart): CartCheckOutType => {
-    //     return { ...cart, subTotal: cart.quantity * cart.item.price };
-    // });
-    const navigate = useNavigate();
-    return (
-        <CartSummaryWrapper>
-            <ul className="summary-list">
-                <li className="summary-item flex justify-between">
-                    <span className="font-medium text-outerspace">Tổng phụ</span>
-                    <span className="font-medium text-outerspace">{currencyFormat(totalPrice)}</span>
-                </li>
-                <li className="summary-item flex justify-between">
-                    <span className="font-medium text-outerspace">Giảm giá</span>
-                    <span className="font-medium text-outerspace">{currencyFormat(0)}</span>
-                </li>
-                <li className="summary-item flex justify-between">
-                    <span className="font-medium text-outerspace">Tổng</span>
-                    <span className="summary-item-value font-bold text-outerspace">{currencyFormat(totalPrice)}</span>
-                </li>
-            </ul>
+  // const listCart: CartItem[] = useAppSelector((state) => state.cart.items);
+  // const listCartCheckOut: CartCheckOutType[] = listCart.map((cart): CartCheckOutType => {
+  //     return { ...cart, subTotal: cart.quantity * cart.item.price };
+  // });
+  const navigate = useNavigate();
+  return (
+    <CartSummaryWrapper>
+      <ul className="summary-list">
+        <li className="summary-item flex justify-between">
+          <span className="font-medium text-outerspace">Chi tiết thanh toán</span>
+        </li>
+        <li className="summary-item flex justify-between">
+          <span className="font-medium text-outerspace">Tổng</span>
+          <span className="summary-item-value font-bold text-outerspace">{currencyFormat(totalPrice)}</span>
+        </li>
+      </ul>
 
-            <BaseButtonGreen
-                type="submit"
-                className="checkout-btn"
-                onClick={() => {
-                    const token = localStorage.getItem('access_token');
-                    if (totalPrice === 0) {
-                        toast.warning('Vui lòng chọn sản phẩm để thanh toán');
-                    } else {
-                        if (token) {
-                            navigate('/checkout');
-                        } else {
-                            toast.warning('Xin mời đăng nhập trước để thanh toán');
-                            navigate('/login');
-                        }
-                    }
-                }}
-            >
-                Tiến hành thanh toán
-            </BaseButtonGreen>
-        </CartSummaryWrapper>
-    );
+      <BaseButtonGreen
+        type="submit"
+        className="checkout-btn"
+        onClick={() => {
+          const token = localStorage.getItem("access_token");
+          if (totalPrice === 0) {
+            toast.warning("Vui lòng chọn sản phẩm để thanh toán");
+          } else {
+            if (token) {
+              navigate("/checkout");
+            } else {
+              toast.warning("Xin mời đăng nhập trước để thanh toán");
+              navigate("/login");
+            }
+          }
+        }}
+      >
+        Tiến hành thanh toán
+      </BaseButtonGreen>
+    </CartSummaryWrapper>
+  );
 };
 
 export default CartSummary;
