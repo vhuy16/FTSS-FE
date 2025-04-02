@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import SimpleModal, { ModalContent, ModalHeader } from "./Modal";
 import { FaRegCheckCircle, FaTicketAlt, FaTimes } from "react-icons/fa";
-import { getAllVouchers, Voucher } from "@redux/slices/voucherSlice";
+import { getAllVoucher, Voucher } from "@redux/slices/voucherSlice";
 import { useAppDispatch, useAppSelector } from "@redux/hook";
 import { currencyFormat, formatDate } from "@ultils/helper";
 import LoadingPage from "../Loading/LoadingPage";
@@ -14,10 +14,10 @@ interface VoucherModalProps {
 
 export const VoucherModal = ({ isOpen, onClose, onSelectVoucher }: VoucherModalProps) => {
   const dispatch = useAppDispatch();
-  const listVouchers = useAppSelector((state) => state.voucher.vouchers);
+  const listVouchers = useAppSelector((state) => state.voucher.listVoucher);
   const isLoadingVouchers = useAppSelector((state) => state.voucher.isLoading);
   useEffect(() => {
-    dispatch(getAllVouchers());
+    dispatch(getAllVoucher());
   }, [dispatch]);
   const [selectedVoucher, setSelectedVoucher] = useState<Voucher | null>(null);
   if (!isOpen) return null;

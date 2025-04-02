@@ -76,6 +76,14 @@ export default function AddProductModal({ isModalAddOpen, setIsModalAddOpen }: M
             try {
                 await dispatch(addProducts(formData));
                 setIsModalAddOpen(false);
+                setData({
+                    productName: '',
+                    description: '',
+                    price: 0,
+                    quantity: 0,
+                    subCategoryId: '',
+                    images: [],
+                });
                 toast.success('Thêm sản phẩm thành công');
             } catch (error) {
                 toast.error(error as string);
@@ -109,6 +117,14 @@ export default function AddProductModal({ isModalAddOpen, setIsModalAddOpen }: M
                                             className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
                                             onClick={() => {
                                                 setIsModalAddOpen(false);
+                                                setData({
+                                                    productName: '',
+                                                    description: '',
+                                                    price: 0,
+                                                    quantity: 0,
+                                                    subCategoryId: '',
+                                                    images: [],
+                                                });
                                             }}
                                         >
                                             <svg
@@ -300,7 +316,17 @@ export default function AddProductModal({ isModalAddOpen, setIsModalAddOpen }: M
                                             </button>
 
                                             <button
-                                                onClick={() => setIsModalAddOpen(false)}
+                                                onClick={() => {
+                                                    setIsModalAddOpen(false);
+                                                    setData({
+                                                        productName: '',
+                                                        description: '',
+                                                        price: 0,
+                                                        quantity: 0,
+                                                        subCategoryId: '',
+                                                        images: [],
+                                                    });
+                                                }}
                                                 className="text-red-600 inline-flex items-center mt-3 font-bold text-sm underline"
                                             >
                                                 <svg

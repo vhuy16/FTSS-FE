@@ -74,6 +74,11 @@ const navItems: NavItem[] = [
             { name: 'Danh sách danh mục phụ', path: '/listSubCategory' },
         ],
     },
+    {
+        icon: <PageIcon />,
+        name: 'Danh sách mã khuyến mãi',
+        path: '/listVoucher',
+    },
 ];
 
 const othersItems: NavItem[] = [
@@ -319,7 +324,7 @@ const ManagerSidebar: React.FC = () => {
                                     !isExpanded && !isHovered ? 'lg:justify-center' : 'justify-start'
                                 }`}
                             >
-                                {isExpanded || isHovered || isMobileOpen ? 'Menu' : <HorizontaLDots />}
+                                {/* {isExpanded || isHovered || isMobileOpen ? 'Menu' : <HorizontaLDots />} */}
                             </h2>
                             {renderMenuItems(navItems, 'main')}
                         </div>

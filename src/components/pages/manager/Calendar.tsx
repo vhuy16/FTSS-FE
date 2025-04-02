@@ -23,6 +23,8 @@ type Mission = {
     technicianId: string;
     technicianName: string;
     bookingId: string | null;
+    bookingCode: string | null;
+    orderCode: string | null;
 };
 
 interface CalendarEvent extends Mission {
@@ -42,6 +44,7 @@ const Calendar: React.FC = () => {
     const [eventEndDate, setEventEndDate] = useState('');
     const [eventLevel, setEventLevel] = useState('');
     const [orderId, setOrderId] = useState('');
+    const [orderCode, setOrderCode] = useState('');
     const [missionId, setMissionId] = useState('');
     const [techName, setTechName] = useState('');
     const [bookingCode, setBookingCode] = useState('');
@@ -82,8 +85,10 @@ const Calendar: React.FC = () => {
                     des: mission.missionDescription,
                     tech: mission.technicianId,
                     bookingId: mission.bookingId,
+                    bookingCode: mission.bookingCode,
                     techName: mission.technicianName,
                     orderId: mission.orderId,
+                    orderCode: mission.orderCode,
                     missionId: mission.id,
                 },
             };
@@ -98,6 +103,9 @@ const Calendar: React.FC = () => {
         setEventStartDate(event.start ? format(event.start, 'yyyy-MM-dd') : '');
         setEventLevel(event.extendedProps.calendar);
         setTechName(event.extendedProps.techName);
+        setOrderId(event.extendedProps.orderId);
+        setOrderCode(event.extendedProps.orderCode);
+        setBookingCode(event.extendedProps.bookingCode);
         setOrderId(event.extendedProps.orderId);
         setMissionId(event.extendedProps.missionId);
         setData({
@@ -286,7 +294,7 @@ dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 d
                                 <input
                                     id="event-title"
                                     type="text"
-                                    value={data.bookingId ? data.bookingId : orderId}
+                                    value={data.bookingId ? bookingCode : orderCode}
                                     placeholder="Viết tiêu đề của công việc tại đây"
                                     className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                                 />

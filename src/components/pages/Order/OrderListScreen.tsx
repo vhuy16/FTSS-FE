@@ -60,9 +60,9 @@ const OrderListScreen = () => {
   const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedCategory(event.target.value as "PRODUCT" | "FISH_TANK");
   };
-  useEffect(() => {
-    dispatch(getUserProfile());
-  }, [dispatch]);
+  // useEffect(() => {
+  //   dispatch(getUserProfile());
+  // }, [dispatch]);
   useEffect(() => {
     dispatch(getAllOrdersByUsers(activeTab));
   }, [dispatch, activeTab]);
@@ -120,7 +120,6 @@ const OrderListScreen = () => {
                     </button>
                   ))}
                 </div>
-
                 <div className="order-tabs-contents">
                   {isLoading ? (
                     <LoadingPage />

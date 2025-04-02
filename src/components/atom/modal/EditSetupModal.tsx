@@ -144,7 +144,6 @@ export default function EditSetupModal({ isModalEditOpen, setIsModalEditOpen }: 
                     toast.success('Cập nhật mẫu thiết kế bể cá thành công');
                 }
             } catch (error) {
-                setIsModalEditOpen(false);
                 toast.error(error as string);
             }
         } else {

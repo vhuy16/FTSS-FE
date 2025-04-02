@@ -45,24 +45,22 @@ export default function BookingDetail() {
                                         <p className="text-lg md:text-2xl dark:text-white font-semibold leading-6 xl:leading-5 text-gray-800 mb-4">
                                             Dịch vụ
                                         </p>
-                                        {bookingDetail.status !== 'FREE' &&
-                                            bookingDetail.services.map((service) => (
-                                                <div className="mt-4 md:mt-6 flex flex-col md:flex-row justify-start items-start md:items-center md:space-x-6 xl:space-x-8 w-full">
-                                                    <div className="border-b border-gray-200 md:flex-row flex-col flex justify-between items-start w-full pb-8 space-y-4 md:space-y-0">
-                                                        <div className="w-full flex flex-col justify-start items-start space-y-8">
-                                                            <h3 className="text-xl dark:text-white font-semibold leading-6 text-gray-800">
-                                                                {service.serviceName}
-                                                            </h3>
-                                                        </div>
-                                                        <div className="flex justify-between space-x-8 items-start w-full">
-                                                            <p className="text-base dark:text-white xl:text-lg font-semibold leading-6 text-gray-800">
-                                                                {currencyFormat(service.price)}
-                                                            </p>
-                                                        </div>
+                                        {bookingDetail.services.map((service) => (
+                                            <div className="mt-4 md:mt-6 flex flex-col md:flex-row justify-start items-start md:items-center md:space-x-6 xl:space-x-8 w-full">
+                                                <div className="border-b border-gray-200 md:flex-row flex-col flex justify-between items-start w-full pb-8 space-y-4 md:space-y-0">
+                                                    <div className="w-full flex flex-col justify-start items-start space-y-8">
+                                                        <h3 className="text-xl dark:text-white font-semibold leading-6 text-gray-800">
+                                                            {service.serviceName}
+                                                        </h3>
+                                                    </div>
+                                                    <div className="flex justify-between space-x-8 items-start w-full">
+                                                        <p className="text-base dark:text-white xl:text-lg font-semibold leading-6 text-gray-800">
+                                                            {currencyFormat(service.price)}
+                                                        </p>
                                                     </div>
                                                 </div>
-                                            ))}
-                                        {bookingDetail.status == 'FREE' && 'Có tất cả dịch vụ trong gói bảo trì'}
+                                            </div>
+                                        ))}
                                     </div>
                                     <div className="flex justify-center flex-col md:flex-row flex-col items-stretch w-full space-y-4 md:space-y-0 md:space-x-6 xl:space-x-8">
                                         <div className="flex flex-col px-4 py-6 md:p-6 xl:p-8 w-full bg-gray-50 dark:bg-gray-800 space-y-6">

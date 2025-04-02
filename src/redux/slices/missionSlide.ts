@@ -13,6 +13,8 @@ export type Mission = {
     technicianName: string;
     bookingId: string | null;
     orderId: string | null;
+    bookingCode: string | null;
+    orderCode: string | null;
 };
 export type Technician = {
     techId: string;
@@ -124,7 +126,7 @@ export const getAllService = createAsyncThunk('mission/getAllService', async () 
 });
 export const getBookingById = createAsyncThunk('mission/getBookingById', async (id: string) => {
     try {
-        const response = await myAxios.get(`/booking${id}`);
+        const response = await myAxios.get(`/booking/${id}`);
         return response.data.data;
     } catch (error: any) {
         console.log(error);

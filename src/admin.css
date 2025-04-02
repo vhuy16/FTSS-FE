@@ -194,8 +194,8 @@
 #chartTwo .apexcharts-datalabels-group {
     @apply !-translate-y-24;
 }
-#chartTwo .apexcharts-datalabels-group .apexcharts-text {
-    @apply !fill-gray-800 !font-semibold dark:!fill-white/90;
+#chartTwo .apexcharts-text {
+    @apply !fill-white !font-semibold dark:!fill-white/90;
 }
 
 #chartSixteen .apexcharts-legend {
