@@ -189,7 +189,27 @@ const OrderItemList: React.FC<OrderItemListProps> = ({ orders }) => {
           {/* Hiển thị thông tin đơn hàng */}
           <div className="order-item-details">
             <div className="flex justify-between items-center pb-5">
-              <h3 className="text-gray-800 order-item-title font-bold">Mã đặt hàng: #{order.oderCode}</h3>
+              <div>
+                <span
+                  className={`px-3 py-1 rounded-md text-xl font-medium 
+                                                    ${
+                                                      order?.payment?.paymentStatus === "Processing"
+                                                        ? "bg-yellow-100 text-yellow-600"
+                                                        : order?.payment?.paymentStatus === "Completed"
+                                                        ? "bg-green-100 text-green-600"
+                                                        : "bg-red-100 text-red-600"
+                                                    }
+                                        `}
+                >
+                  {order?.payment?.paymentStatus === "Processing"
+                    ? "Đang chờ thanh toán"
+                    : order?.payment?.paymentStatus === "Completed"
+                    ? "Đã thanh toán"
+                    : "Đã hủy"}
+                </span>
+                <h3 className="text-gray-800 order-item-title font-bold mt-3">Mã đặt hàng: #{order.oderCode}</h3>
+              </div>
+
               <BaseBtnGreen onClick={() => navigate(`/order-detail/${order.id}`)}>Xem chi tiết</BaseBtnGreen>
             </div>
             <HorizontalLineTAb></HorizontalLineTAb>
