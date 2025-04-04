@@ -16,7 +16,7 @@ type RevenueData = {
     revenue: number;
 };
 type ProductSalesData = {
-    day: string; // Ngày theo định dạng "DD/MM/YYYY"
+    category: string;
     productQuantity: number;
 };
 
@@ -29,15 +29,18 @@ export const getDashboard = createAsyncThunk('dashboard/getDashboard', async (_,
         return rejectWithValue(error.response?.data?.message || 'Lấy doanh thu thất bại');
     }
 });
-export const getDataChartTwo = createAsyncThunk('dashboard/getDataChartTwo', async (_, { rejectWithValue }) => {
-    try {
-        const response = await myAxios.get('/weekly-sales');
-        return response.data;
-    } catch (error: any) {
-        console.log(error);
-        return rejectWithValue(error.response?.data?.message || 'Lấy doanh thu thất bại');
-    }
-});
+export const getDataChartTwo = createAsyncThunk(
+    'dashboard/getDataChartTwo',
+    async ({ startDay, endDay }: { startDay: string; endDay: string }, { rejectWithValue }) => {
+        try {
+            const response = await myAxios.get(`/category-sales?startDay=${startDay}&endDay=${endDay}`);
+            return response.data;
+        } catch (error: any) {
+            console.log(error);
+            return rejectWithValue(error.response?.data?.message || 'Lấy doanh thu thất bại');
+        }
+    },
+);
 export const getDataChartOne = createAsyncThunk(
     'dashboard/getDataChartOne',
     async ({ startDay, endDay }: { startDay: string; endDay: string }, { rejectWithValue }) => {

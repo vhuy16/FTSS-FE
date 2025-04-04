@@ -24,7 +24,12 @@ const DashboardSeller: React.FC = () => {
                 endDay: formattedToday,
             }),
         );
-        dispatch(getDataChartTwo());
+        dispatch(
+            getDataChartTwo({
+                startDay: formattedPastDate,
+                endDay: formattedToday,
+            }),
+        );
     }, []);
     return (
         <>

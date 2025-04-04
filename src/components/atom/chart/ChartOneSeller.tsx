@@ -136,16 +136,15 @@ const ChartOneSeller: React.FC = () => {
         },
     ];
 
-    const [startDay, setStartDay] = React.useState<Dayjs | null>(
-        dayjs(dayjs(dayChartOne[0], 'DD/MM/YYYY').format('YYYY/MM/DD')),
-    );
-    const [endDay, setEndDay] = React.useState<Dayjs | null>(
-        dayjs(dayjs(dayChartOne[dayChartOne.length - 1], 'DD/MM/YYYY').format('YYYY/MM/DD')),
-    );
-    useEffect(() => {
-        setStartDay(dayjs(dayjs(dayChartOne[0], 'DD/MM/YYYY').format('YYYY/MM/DD')));
-        setEndDay(dayjs(dayjs(dayChartOne[dayChartOne.length - 1], 'DD/MM/YYYY').format('YYYY/MM/DD')));
-    }, []);
+    const today = dayjs(); // Dùng dayjs() trực tiếp, không cần new Date()
+    const pastDate = today.subtract(6, 'day'); // Lùi 6 ngày
+
+    const [startDay, setStartDay] = React.useState<Dayjs | null>(pastDate);
+    const [endDay, setEndDay] = React.useState<Dayjs | null>(today);
+    // useEffect(() => {
+    //     setStartDay(dayjs(dayjs(dayChartOne[0], 'DD/MM/YYYY').format('YYYY/MM/DD')));
+    //     setEndDay(dayjs(dayjs(dayChartOne[dayChartOne.length - 1], 'DD/MM/YYYY').format('YYYY/MM/DD')));
+    // }, []);
     const data = dataChartOne.map((order) => {
         const [day, month, year] = order.day.split('/'); // Tách ngày, tháng, năm
         const formattedDate = `${month}/${day}/${year}`; // Chuyển thành MM/DD/YYYY

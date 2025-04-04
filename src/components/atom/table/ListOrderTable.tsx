@@ -84,20 +84,20 @@ export default function ListOrderTable() {
                 <Badge
                     size="sm"
                     color={
-                        params.row.payment.paymentStatus === 'Processing'
+                        params.row.payment?.paymentStatus === 'Processing'
                             ? 'warning'
-                            : params.row.payment.paymentStatus === 'Completed'
+                            : params.row.payment?.paymentStatus === 'Completed'
                             ? 'success'
-                            : params.row.payment.paymentStatus === 'Cancelled'
+                            : params.row.payment?.paymentStatus === 'Cancelled'
                             ? 'error'
                             : 'warning'
                     }
                 >
-                    {params.row.payment.paymentStatus === 'Processing'
+                    {params.row.payment?.paymentStatus === 'Processing'
                         ? 'Đang chờ thanh toán'
-                        : params.row.payment.paymentStatus === 'Completed'
+                        : params.row.payment?.paymentStatus === 'Completed'
                         ? 'Đã thanh toán'
-                        : params.row.payment.paymentStatus === 'Cancelled'
+                        : params.row.payment?.paymentStatus === 'Cancelled'
                         ? 'Đã hủy'
                         : 'Đang hoàn trả'}
                 </Badge>
@@ -115,7 +115,7 @@ export default function ListOrderTable() {
             headerName: 'Phương thức thanh toán',
             width: 220,
             headerClassName: 'super-app-theme--header',
-            renderCell: (params) => params.row.payment.paymentMethod,
+            renderCell: (params) => params.row.payment?.paymentMethod,
         },
         {
             field: 'status',
