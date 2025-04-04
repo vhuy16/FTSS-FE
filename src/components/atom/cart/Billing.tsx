@@ -134,6 +134,7 @@ const Billing = () => {
     const [showVoucherModal, setShowVoucherModal] = useState(false);
     const [selectedVoucher, setSelectedVoucher] = useState<Voucher | null>(null);
     const [selectedPayment, setSelectedPayment] = useState('VnPay');
+    const navigate = useNavigate();
     const handleSelectVoucher = (voucher: Voucher) => {
         setSelectedVoucher(voucher);
         closeModal();
@@ -279,8 +280,11 @@ const Billing = () => {
                 if (res !== '') {
                     await toast.success('Vui lòng chờ để thanh toán');
                     setTimeout(() => {
-                        // window.location.href = res;
+                        window.location.href = res;
                     }, 1000);
+                } else {
+                    await toast.success('Đặt hàng thành công');
+                    navigate('/order');
                 }
             } catch (error) {
                 console.log(error);
