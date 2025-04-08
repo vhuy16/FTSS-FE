@@ -19,6 +19,7 @@ import { BannerBox } from "../Setup/SetupStyles";
 import banner1 from "@images/aquarium-banner.jpg";
 import LoadingPage from "@components/atom/Loading/LoadingPage";
 import PaginationSetup from "@components/atom/pagination/PaginationSetup";
+import SetupFilterPrice from "./SetupFilterPrice";
 
 // Define breadcrumb type
 type BreadcrumbItem = {
@@ -118,15 +119,19 @@ const SetupShop: React.FC = () => {
   const params = new URLSearchParams(queryString);
   const page = params.get("page") ?? "1";
   const size = params.get("size") ?? "6";
+  const minPrice = params.get("minPrice");
+  const maxPrice = params.get("maxPrice");
 
   useEffect(() => {
     dispatch(
       getSetupPackagesShop({
         page: parseInt(page as string),
         size: parseInt(size as string),
+        minPrice: parseInt(minPrice as string),
+        maxPrice: parseInt(maxPrice as string),
       })
     );
-  }, [page, size]);
+  }, [page, size, minPrice, maxPrice]);
 
   const filteredSetupShop = listSetupShop?.filter((item) => item.isDelete == false);
 
@@ -136,7 +141,7 @@ const SetupShop: React.FC = () => {
         <Breadcrumb items={breadcrumbItems} />
         <ProductsContent className="grid items-start">
           <ProductsContentLeft>
-            <BannerBox>{/* <img src={banner1} alt="Banner hồ cá" /> */}</BannerBox>
+            <SetupFilterPrice />
           </ProductsContentLeft>
           <ProductsContentRight>
             <div className="products-right-top flex items-center justify-between">
