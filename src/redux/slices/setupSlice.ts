@@ -69,10 +69,17 @@ export const getSetupPackages = createAsyncThunk("setup/getSetupPackages", async
 
 export const getSetupPackagesShop = createAsyncThunk(
   "setup/getSetupPackagesShop",
-  async ({ page, size }: { page?: number; size?: number }, { rejectWithValue }) => {
+  async (
+    { page, size, minPrice, maxPrice }: { page?: number; size?: number; minPrice?: number; maxPrice?: number },
+    { rejectWithValue }
+  ) => {
     try {
       const baseUrl = "/setuppackage/all-shop";
-      const url = page && size ? `${baseUrl}?page=${page}&size=${size}` : baseUrl;
+      let url = `${baseUrl}?page=${page}&size=${size}`;
+
+      if ((minPrice as number) >= 0 && (maxPrice as number) >= 0) {
+        url += `&minPrice=${minPrice}&maxPrice=${maxPrice}`;
+      }
 
       const response = await myAxios.get(url);
       return response.data.data;

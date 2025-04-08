@@ -13,6 +13,7 @@ import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "@redux/hook";
 import { updateOrder } from "@redux/slices/orderSlice";
 import { toast } from "react-toastify";
+import { RefundBankModal } from "@components/atom/modal/RefundBankModal";
 
 interface OrderItemListProps {
   orders: Order[]; // Changed to an array of Order
@@ -181,7 +182,10 @@ const OrderItemList: React.FC<OrderItemListProps> = ({ orders }) => {
       console.error("Lỗi khi hủy đơn hàng:", error);
     }
   };
-  console.log("or", orders);
+  // refund
+  const openModal = () => setShowRefundModal(true);
+  const closeModal = () => setShowRefundModal(false);
+  const [showRefundModal, setShowRefundModal] = useState(false);
   return (
     <OrderItemListWrapper>
       {orders?.map((order) => (
@@ -190,6 +194,8 @@ const OrderItemList: React.FC<OrderItemListProps> = ({ orders }) => {
           <div className="order-item-details">
             <div className="flex justify-between items-center pb-5">
               <div>
+                <h3 className="text-gray-800 order-item-title font-bold">Mã đặt hàng: #{order.oderCode}</h3>
+                <span className="text-gray-800 font-bold mr-2">Trạng thái thanh toán: </span>
                 <span
                   className={`px-3 py-1 rounded-md text-xl font-medium 
                                                     ${
@@ -207,7 +213,6 @@ const OrderItemList: React.FC<OrderItemListProps> = ({ orders }) => {
                     ? "Đã thanh toán"
                     : "Đã hủy"}
                 </span>
-                <h3 className="text-gray-800 order-item-title font-bold mt-3">Mã đặt hàng: #{order.oderCode}</h3>
               </div>
 
               <BaseBtnGreen onClick={() => navigate(`/order-detail/${order.id}`)}>Xem chi tiết</BaseBtnGreen>
@@ -226,10 +231,11 @@ const OrderItemList: React.FC<OrderItemListProps> = ({ orders }) => {
             </div>
             {/* Các nút thao tác */}
             <div className="order-btn">
-              {order.status === "CANCELLED" && (
+              {order.status === "CANCELLED" && order?.payment?.paymentStatus === "Completed" && (
                 <>
-                  <button className="btn-primary">Mua lại</button>
-                  <button className="btn-secondary">Liên hệ shop</button>
+                  <button className="btn-secondary" onClick={openModal}>
+                    Yêu Cầu Hoàn Tiền
+                  </button>
                 </>
               )}
               {order.status === "PROCESSING" && (
@@ -243,7 +249,6 @@ const OrderItemList: React.FC<OrderItemListProps> = ({ orders }) => {
                   >
                     Hủy đơn
                   </button>
-                  <button className="btn-secondary">Yêu Cầu Trả Hàng/Hoàn Tiền</button>
                 </>
               )}
               {order.status === "COMPLETED" && (
@@ -283,6 +288,7 @@ const OrderItemList: React.FC<OrderItemListProps> = ({ orders }) => {
           </div>
         </ModalContent>
       </SimpleModal>
+      <RefundBankModal isOpen={showRefundModal} onClose={closeModal} />
     </OrderItemListWrapper>
   );
 };

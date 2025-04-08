@@ -219,16 +219,6 @@ const OrderDetailMessageWrapper = styled.div`
   align-items: flex-start;
 
   /* Tạo mũi tên chỉ xuống */
-  &::after {
-    content: "";
-    position: absolute;
-    top: -14px;
-    left: 20%;
-    border-bottom: 14px solid ${defaultTheme.color_green_v1};
-    border-top: 14px solid transparent;
-    border-left: 14px solid transparent;
-    border-right: 14px solid transparent;
-  }
 
   /* Responsive chỉnh khoảng cách trên */
   @media (max-width: ${breakpoints.sm}) {
@@ -278,18 +268,6 @@ const OrderDetailMessageWrapperv2 = styled.div`
   flex-direction: column;
   gap: 15px; /* Tạo khoảng cách giữa các phần tử */
   align-items: flex-start;
-
-  /* Tạo mũi tên chỉ xuống */
-  &::after {
-    content: "";
-    position: absolute;
-    top: -14px;
-    left: 20%;
-    border-bottom: 14px solid ${defaultTheme.color_green_v1};
-    border-top: 14px solid transparent;
-    border-left: 14px solid transparent;
-    border-right: 14px solid transparent;
-  }
 
   /* Responsive chỉnh khoảng cách trên */
   @media (max-width: ${breakpoints.sm}) {
@@ -609,7 +587,7 @@ const OrderDetailScreen = () => {
                         <p className="font-semibold">
                           Hãy kiểm tra cẩn thận tất cả các sản phẩm trong đơn hàng trước khi bấm "Đã nhận được hàng".
                         </p>
-                        <p className="text-gray-600">{formatDate(order?.createDate)}.</p>
+                        <p className="text-gray-600">{formatDate(order?.modifyDate)}.</p>
                       </div>
 
                       <div className="order-buttons">
@@ -621,7 +599,7 @@ const OrderDetailScreen = () => {
                     <OrderDetailMessageWrapperv2>
                       <div className="order-message-content">
                         <p className="font-semibold">Đơn hàng của bạn sẽ được chuẩn bị và chuyển đi</p>
-                        <p className="text-gray-600">{formatDate(order?.createDate)}.</p>
+                        <p className="text-gray-600">{formatDate(order?.modifyDate)}.</p>
                       </div>
 
                       <div className="order-buttons">

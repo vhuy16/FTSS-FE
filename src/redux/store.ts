@@ -21,7 +21,9 @@ import listServiceReducer from "./slices/listServiceSlice";
 import bookingServiceReducer from "./slices/bookingSlice";
 import missionReducer from "./slices/missionSlide";
 import voucherReducer from "./slices/voucherSlice";
-
+import BankReducer from "./slices/bankSlice";
+import issueCategoryReducer from "./slices/issueCategorySlice";
+import issueReducer from "./slices/issueSlice";
 export const store = configureStore({
   reducer: {
     address: addressReducer,
@@ -46,6 +48,9 @@ export const store = configureStore({
     bookingService: bookingServiceReducer,
     mission: missionReducer,
     voucher: voucherReducer,
+    bank: BankReducer,
+    issueCategory: issueCategoryReducer,
+    issue: issueReducer,
   },
 });
 

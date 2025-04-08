@@ -12,6 +12,7 @@ export interface BookingData {
   userName: string;
   fullName: string;
   orderId: string;
+  missionStatus: string;
 }
 
 interface UnavailableDate {
@@ -21,6 +22,7 @@ export interface BookingList {
   id: string;
   scheduleDate: string;
   status: string;
+  missionStatus: string;
   address: string;
   phoneNumber: string;
   totalPrice: number;
@@ -70,6 +72,7 @@ export const createBookingService = createAsyncThunk(
     }
   }
 );
+
 export const getAllUnavailableDates = createAsyncThunk("booking/getAllUnavailableDates", async () => {
   try {
     const response = await myAxios.get(`/booking/date-unavailable`);
@@ -102,6 +105,23 @@ export const getDetailBookingofUsers = createAsyncThunk(
   }
 );
 
+export const updateBookingSchedule = createAsyncThunk(
+  "booking/updateBookingSchedule",
+  async ({ formData, id }: { formData: FormData; id: string }, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await myAxios.put(`/booking/update-booking/${id}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      await dispatch(getDetailBookingofUsers(id));
+      return response.data;
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || "Something went wrong";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
 const initialState: BookingState = {
   loading: false,
   error: null,
