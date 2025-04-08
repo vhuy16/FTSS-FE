@@ -49,6 +49,7 @@ export default function EditVoucherModal({ isModalEditOpen, setIsModalEditOpen }
             });
         }
     }, [isModalEditOpen]);
+    console.log('data', data);
 
     const handleSubmit = async () => {
         if (data.discountType === 'Percentage') {
@@ -75,7 +76,7 @@ export default function EditVoucherModal({ isModalEditOpen, setIsModalEditOpen }
                     };
 
                     try {
-                        await dispatch(editVoucher({ id: voucher.id, data: dataAdd }));
+                        const res = await dispatch(editVoucher({ id: voucher.id, data: dataAdd })).unwrap();
                         setIsModalEditOpen(false);
                         setData({
                             discount: 0,
@@ -105,13 +106,13 @@ export default function EditVoucherModal({ isModalEditOpen, setIsModalEditOpen }
                     const dataAdd = {
                         discount: data.discount,
                         quantity: data.quantity,
-                        maximumOrderValue: 0,
+                        maximumOrderValue: data.maximumOrderValue,
                         expiryDate: data.expiryDate,
                         discountType: data.discountType,
                         description: data.description,
                     };
                     try {
-                        await dispatch(editVoucher({ id: voucher.id, data: dataAdd }));
+                        const res = await dispatch(editVoucher({ id: voucher.id, data: dataAdd })).unwrap();
                         setIsModalEditOpen(false);
                         setData({
                             discount: 0,

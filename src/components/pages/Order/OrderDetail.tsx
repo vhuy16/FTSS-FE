@@ -428,6 +428,9 @@ const breadcrumbItems = [
 const OrderDetailScreen = () => {
   const { orderId } = useParams<{ orderId: string }>();
   const [order, setOrder] = useState<Order | null>(null);
+  const total = order?.orderDetails.reduce((total: number, item: OrderDetail) => {
+    return total + item.price * item.quantity;
+  }, 0);
   const dispatch = useAppDispatch();
   useEffect(() => {
     if (!orderId) return;
@@ -481,14 +484,12 @@ const OrderDetailScreen = () => {
 
       const res = await dispatch(getOrderById(orderId ?? ""));
       setOrder(res.payload as Order);
-
       setIsModalOpenDelete(false);
     } catch (error) {
       toast.error("Hủy đơn hàng thất bại!");
       console.error("Lỗi khi hủy đơn hàng:", error);
     }
   };
-  console.log("orderDetail", order);
 
   return (
     <OrderDetailScreenWrapper className="page-py-spacing">
@@ -511,8 +512,12 @@ const OrderDetailScreen = () => {
                   <div className="order-d-top flex justify-between items-start">
                     <div className="order-d-top-l">
                       <h4 className="text-3xl order-d-no">Mã đặt hàng: #{order?.oderCode}</h4>
-                      <p className="text-lg font-medium text-gray">{formatDate(order?.createDate)}</p>
+                      <p className="text-lg font-medium text-gray">Ngày đặt: {formatDate(order?.createDate)}</p>
                       <p className="text-lg font-medium text-gray">Địa chỉ: {order?.address}</p>
+                      <p className="text-lg font-medium text-gray">
+                        Phương thức thanh toán:{" "}
+                        {order?.payment?.paymentMethod === "COD" ? "Thanh toán khi nhận hàng" : "Thanh toán online"}
+                      </p>
                     </div>
                     <div className="order-d-top-r text-xxl text-gray font-semibold">
                       <h4
@@ -629,7 +634,7 @@ const OrderDetailScreen = () => {
 
                           {/* Giá sản phẩm */}
                           <div className="order-d-item-price">
-                            <p className="text-red-500 font-bold">{currencyFormat(item.price)}</p>
+                            <p className="text-gray-500 ">{currencyFormat(item.price)}</p>
                           </div>
                         </div>
                         {/* Thông tin tổng đơn hàng */}
@@ -639,6 +644,16 @@ const OrderDetailScreen = () => {
                       <table className="w-full border-separate border-spacing-y-2">
                         <tbody>
                           <tr>
+                            <td className="text-right text-gray-500">Tổng phụ</td>
+                            <td className="text-right">{currencyFormat(total ?? 0)}</td>
+                          </tr>
+                          <tr>
+                            <td className="text-right text-gray-500">Giảm giá</td>
+                            <td className="text-right">
+                              -{currencyFormat((total ?? 0) + (order?.shipCost ?? 0) - (order?.totalPrice ?? 0))}
+                            </td>
+                          </tr>
+                          <tr>
                             <td className="text-right text-gray-500">Phí vận chuyển</td>
                             <td className="text-right">{currencyFormat(order?.shipCost ?? 0)}</td>
                           </tr>
@@ -647,10 +662,6 @@ const OrderDetailScreen = () => {
                             <td className="text-right text-4xl font-bold text-red-500">
                               {currencyFormat(order?.totalPrice ?? 0)}
                             </td>
-                          </tr>
-                          <tr>
-                            <td className="text-right text-gray-500">Phương thức Thanh toán</td>
-                            <td className="text-right text-xl">{order?.payment?.paymentMethod}</td>
                           </tr>
                         </tbody>
                       </table>

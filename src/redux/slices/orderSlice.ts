@@ -22,7 +22,7 @@ type Payment = {
     paymentStatus: string | null;
 };
 
-type OrderDetail = {
+export type OrderDetail = {
     productName: string;
     price: number;
     quantity: number;
@@ -30,7 +30,12 @@ type OrderDetail = {
     categoryName: string;
     subCategoryName: string;
 };
-
+type Voucher = {
+    voucherCode: string;
+    discountType: string;
+    discount: number;
+    maximumOrderValue: number;
+};
 export type Order = {
     id: string;
     totalPrice: number;
@@ -49,6 +54,7 @@ export type Order = {
     setupPackage: SetupPackage | null;
     isAssigned: boolean;
     isEligible: boolean;
+    voucher: Voucher | null;
 };
 type initialStateProduct = {
     url: string;

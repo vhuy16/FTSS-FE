@@ -7,10 +7,22 @@ import Loading from '@components/atom/Loading/Loading';
 import { currencyFormat } from '@ultils/helper';
 
 export default function OrderDetail() {
+    type DetailOrder = {
+        productName: string;
+        price: number;
+        quantity: number;
+        linkImage: string;
+        categoryName: string;
+        subCategoryName: string;
+    };
     const { id } = useParams();
     const dispatch = useAppDispatch();
     const orderDetail = useAppSelector((state) => state.order.order);
     const isLoading = useAppSelector((state) => state.order.isLoading);
+    const total = orderDetail?.orderDetails.reduce((total: number, item: DetailOrder) => {
+        return total + item.price * item.quantity;
+    }, 0);
+
     useEffect(() => {
         dispatch(getOrderById(id as string));
     }, [id]);
@@ -104,7 +116,7 @@ export default function OrderDetail() {
                                                         Tổng phụ
                                                     </p>
                                                     <p className="text-base dark:text-gray-300 leading-4 text-gray-600">
-                                                        {currencyFormat(orderDetail.totalPrice - orderDetail.shipCost)}
+                                                        {currencyFormat(total ?? 0)}
                                                     </p>
                                                 </div>
                                                 <div className="flex justify-between items-center w-full">
@@ -112,7 +124,12 @@ export default function OrderDetail() {
                                                         Giảm giá{' '}
                                                     </p>
                                                     <p className="text-base dark:text-gray-300 leading-4 text-gray-600">
-                                                        -₫0 (0%)
+                                                        -
+                                                        {currencyFormat(
+                                                            (total ?? 0) +
+                                                                orderDetail.shipCost -
+                                                                orderDetail.totalPrice,
+                                                        )}
                                                     </p>
                                                 </div>
                                                 <div className="flex justify-between items-center w-full">
