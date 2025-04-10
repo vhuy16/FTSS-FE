@@ -1,6 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import myAxios from "@setup/axiosConfig";
-import { Product } from "./productSlice";
 
 export type Issue = {
   id: string;
@@ -11,8 +10,16 @@ export type Issue = {
   issueCategoryName: string;
   createDate: string;
   modifiedDate: string;
+  isDelete: boolean;
   solutions: Solution[];
 };
+type Product = {
+  productId: string;
+  productName: string;
+  productDescription: string;
+  productImageUrl: string;
+};
+
 export type Solution = {
   id: string;
   solutionName: string;
@@ -31,13 +38,41 @@ type IssueData = {
   productCount: number;
 };
 
-type initialStateProduct = {
+type initialStateIssue = {
   data: IssueData | null;
-  issueDetail: Issue | null;
+  selectedIssue: Issue;
+  listIssue: Issue[];
   isLoading: boolean;
+  isLoadingAdd: boolean;
+  isLoadingDelete: boolean;
+  isLoadingEdit: boolean;
+  isLoadingActive: boolean;
   isError: boolean;
+  issueDetail: Issue | null;
 };
-
+const initialState: initialStateIssue = {
+  data: null,
+  selectedIssue: {
+    id: "",
+    title: "",
+    description: "",
+    issueCategoryId: "",
+    issueImage: "",
+    issueCategoryName: "",
+    createDate: "",
+    modifiedDate: "",
+    isDelete: false,
+    solutions: [],
+  },
+  listIssue: [],
+  isLoading: false,
+  isLoadingAdd: false,
+  isLoadingEdit: false,
+  isLoadingDelete: false,
+  isLoadingActive: false,
+  isError: false,
+  issueDetail: null,
+};
 export const getAllIssue = createAsyncThunk(
   "issue/getAll",
   async (
@@ -63,7 +98,6 @@ export const getAllIssue = createAsyncThunk(
       if (issueTitle) {
         url += `&issueTitle=${issueTitle}`;
       }
-
       const response = await myAxios.get(url);
       return response.data.data;
     } catch (error: any) {
@@ -72,6 +106,15 @@ export const getAllIssue = createAsyncThunk(
     }
   }
 );
+export const getIssue = createAsyncThunk("issue/getIssue", async (_, { rejectWithValue }) => {
+  try {
+    const response = await myAxios.get("/issue?page=1&size=100");
+    return response.data.data.items;
+  } catch (error: any) {
+    console.log(error);
+    return rejectWithValue(error.response?.data?.message || "Something went wrong");
+  }
+});
 export const getDetailIssue = createAsyncThunk("issue/getDetailIssue", async (id: string, { rejectWithValue }) => {
   try {
     const response = await myAxios.get(`/issue/${id}`);
@@ -81,18 +124,70 @@ export const getDetailIssue = createAsyncThunk("issue/getDetailIssue", async (id
     return rejectWithValue(error.response?.data?.message || "Lấy sản phẩm chi tiết thất bại");
   }
 });
-
-const initialState: initialStateProduct = {
-  data: null,
-  issueDetail: null,
-  isLoading: false,
-  isError: false,
-};
+export const addIssue = createAsyncThunk(
+  "issue/addIssue",
+  async (formData: FormData, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await myAxios.post(`/issue`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      await dispatch(getIssue());
+      return response.data;
+    } catch (error: any) {
+      console.log(error);
+      return rejectWithValue(error.response?.data?.message || "Thêm vấn đề thất bại");
+    }
+  }
+);
+export const editIssue = createAsyncThunk(
+  "issue/editIssue",
+  async ({ id, formData }: { id: string; formData: FormData }, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await myAxios.put(`/issue/${id}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      await dispatch(getIssue());
+      return response.data;
+    } catch (error: any) {
+      console.log(error);
+      return rejectWithValue(error.response?.data?.message || "Thêm vấn đề thất bại");
+    }
+  }
+);
+export const deleteIssue = createAsyncThunk("issue/deleteIssue", async (id: string, { rejectWithValue, dispatch }) => {
+  try {
+    const response = await myAxios.delete(`/issue/${id}`);
+    await dispatch(getIssue());
+    return response.data;
+  } catch (error: any) {
+    console.log(error);
+    return rejectWithValue(error.response?.data?.message || "Something went wrong");
+  }
+});
+export const activeIssue = createAsyncThunk("issue/activeIssue", async (id: string, { rejectWithValue, dispatch }) => {
+  try {
+    const response = await myAxios.put(`/issue/${id}/enable`);
+    await dispatch(getIssue());
+    return response.data;
+  } catch (error: any) {
+    console.log(error);
+    return rejectWithValue(error.response?.data?.message || "Something went wrong");
+  }
+});
 
 const IssueSlice = createSlice({
   name: "issue",
   initialState,
-  reducers: {},
+  reducers: {
+    selectIssue: (state, action: PayloadAction<Issue>) => {
+      const issue = action.payload;
+      state.selectedIssue = issue;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(getAllIssue.pending, (state) => {
@@ -106,6 +201,72 @@ const IssueSlice = createSlice({
       })
       .addCase(getAllIssue.rejected, (state, action) => {
         state.isLoading = false;
+        state.isError = true;
+      });
+    builder
+      .addCase(getIssue.pending, (state) => {
+        state.isLoading = true;
+        state.isError = false;
+      })
+      .addCase(getIssue.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isError = false;
+        state.listIssue = action.payload;
+      })
+      .addCase(getIssue.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+      });
+    builder
+      .addCase(addIssue.pending, (state) => {
+        state.isLoadingAdd = true;
+        state.isError = false;
+      })
+      .addCase(addIssue.fulfilled, (state, action) => {
+        state.isLoadingAdd = false;
+        state.isError = false;
+      })
+      .addCase(addIssue.rejected, (state, action) => {
+        state.isLoadingAdd = false;
+        state.isError = true;
+      });
+    builder
+      .addCase(editIssue.pending, (state) => {
+        state.isLoadingEdit = true;
+        state.isError = false;
+      })
+      .addCase(editIssue.fulfilled, (state, action) => {
+        state.isLoadingEdit = false;
+        state.isError = false;
+      })
+      .addCase(editIssue.rejected, (state, action) => {
+        state.isLoadingEdit = false;
+        state.isError = true;
+      });
+    builder
+      .addCase(deleteIssue.pending, (state) => {
+        state.isLoadingDelete = true;
+        state.isError = false;
+      })
+      .addCase(deleteIssue.fulfilled, (state, action) => {
+        state.isLoadingDelete = false;
+        state.isError = false;
+      })
+      .addCase(deleteIssue.rejected, (state, action) => {
+        state.isLoadingDelete = false;
+        state.isError = true;
+      });
+    builder
+      .addCase(activeIssue.pending, (state) => {
+        state.isLoadingActive = true;
+        state.isError = false;
+      })
+      .addCase(activeIssue.fulfilled, (state, action) => {
+        state.isLoadingActive = false;
+        state.isError = false;
+      })
+      .addCase(activeIssue.rejected, (state, action) => {
+        state.isLoadingActive = false;
         state.isError = true;
       });
     builder
@@ -124,4 +285,5 @@ const IssueSlice = createSlice({
       });
   },
 });
+export const { selectIssue } = IssueSlice.actions;
 export default IssueSlice.reducer;

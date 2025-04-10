@@ -30,7 +30,9 @@ function AppContent() {
         location.pathname.startsWith('/addMissionOrder') ||
         location.pathname.startsWith('/listService') ||
         location.pathname.startsWith('/listOrder-delivery') ||
-        location.pathname.startsWith('/listVoucher');
+        location.pathname.startsWith('/listVoucher') ||
+        location.pathname.startsWith('/listIssueCategory') ||
+        location.pathname.startsWith('/listIssue');
     return (
         <div className="App">
             {!isAdminRoute && <GlobalStyles />}

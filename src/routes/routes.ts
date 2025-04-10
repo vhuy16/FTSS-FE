@@ -43,12 +43,13 @@ import ListService from "@components/pages/manager/ListService";
 import BookingDetail from "@components/pages/manager/BookingDetail";
 import ListOrderDelivery from "@components/pages/manager/ListOrderDelivery";
 import AddMissionOrder from "@components/pages/manager/AddMissionOrder";
-import BookingHistory from "@components/pages/Booking/BookingHistory";
 import BookingHistoryDetail from "@components/pages/Booking/BookingHistoryDetail";
 import IssueBlog from "@components/pages/Issue/IssueBlog";
 import ListVoucher from "@components/pages/manager/ListVoucher";
-import BookingHistoryListSCreen from "@components/pages/Booking/BookingHistoryListSCreen";
+import ListIssueCategory from "@components/pages/manager/ListIssueCategory";
+import ListIssue from "@components/pages/manager/ListIssue";
 import IssueBlogDetail from "@components/pages/Issue/IssueBlogDetail";
+import BookingHistoryListSCreen from "@components/pages/Booking/BookingHistoryListSCreen";
 
 export type RouteType = {
   path: string;
@@ -213,6 +214,17 @@ if (role === "Admin") {
       component: ListVoucher,
       layout: ManagerLayout,
     },
+    {
+      path: "/listIssueCategory",
+      component: ListIssueCategory,
+      layout: ManagerLayout,
+    },
+    {
+      path: "/listIssue",
+      component: ListIssue,
+      layout: ManagerLayout,
+    },
+
     {
       path: "/listOrder-delivery",
       component: ListOrderDelivery,

@@ -247,7 +247,6 @@ export default function UpdateBookingModal({ isModalUpdateOpen, onClose, booking
     setSelectedDate(null);
     onClose();
   };
-
   return (
     <>
       {/* Modal */}
