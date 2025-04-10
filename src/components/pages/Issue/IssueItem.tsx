@@ -17,7 +17,10 @@ const IssueItem: React.FC<IssueItemProps> = ({ issue }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   return (
-    <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 ease-in-out">
+    <div
+      className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 ease-in-out"
+      onClick={() => navigate(`/issue-post/${issue.id}`)}
+    >
       <div className="relative overflow-hidden">
         <img
           src={issue.issueImage}

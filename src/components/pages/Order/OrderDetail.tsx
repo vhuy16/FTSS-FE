@@ -3,6 +3,7 @@ import Title from "@common/Title";
 import Loading from "@components/atom/Loading/Loading";
 import LoadingPage from "@components/atom/Loading/LoadingPage";
 import SimpleModal, { ModalContent, ModalHeader } from "@components/atom/modal/Modal";
+import { RefundBankModal } from "@components/atom/modal/RefundBankModal";
 import UserMenu from "@components/atom/user/UserMenu";
 import { AssignmentTurnedIn, Cancel, CheckCircle, FeedOutlined, LocalShipping, StarBorder } from "@mui/icons-material";
 import { useAppDispatch, useAppSelector } from "@redux/hook";
@@ -206,7 +207,7 @@ const OrderDetailStatusWrapperv2 = styled.div`
 `;
 
 const OrderDetailMessageWrapper = styled.div`
-  background-color: ${defaultTheme.color_green_v1};
+  background-color: ${defaultTheme.color_lighwhite};
   max-width: 100%;
   margin: 0 auto;
   min-height: 68px;
@@ -431,6 +432,7 @@ const OrderDetailScreen = () => {
   const total = order?.orderDetails.reduce((total: number, item: OrderDetail) => {
     return total + item.price * item.quantity;
   }, 0);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const dispatch = useAppDispatch();
   useEffect(() => {
     if (!orderId) return;
@@ -481,15 +483,21 @@ const OrderDetailScreen = () => {
     try {
       await dispatch(updateOrder({ id: orderId ?? "", status: "CANCELLED" }));
       toast.success("Đơn hàng đã được hủy!");
-
+      setIsModalOpenDelete(false);
       const res = await dispatch(getOrderById(orderId ?? ""));
       setOrder(res.payload as Order);
-      setIsModalOpenDelete(false);
     } catch (error) {
       toast.error("Hủy đơn hàng thất bại!");
       console.error("Lỗi khi hủy đơn hàng:", error);
     }
   };
+  // refund
+  const openModal = (order: Order) => {
+    setSelectedOrder(order);
+    setShowRefundModal(true);
+  };
+  const closeModal = () => setShowRefundModal(false);
+  const [showRefundModal, setShowRefundModal] = useState(false);
 
   return (
     <OrderDetailScreenWrapper className="page-py-spacing">
@@ -569,35 +577,18 @@ const OrderDetailScreen = () => {
                       </div>
                     </OrderDetailStatusWrapper>
                   ) : (
-                    <OrderDetailStatusWrapperv2>
-                      <div className="refund-status-container">
-                        <div className="refund-status-bar">
-                          <div className="status-step">
-                            <div className="status-dot"></div>
-                            <div className="status-line"></div>
-                            <span className="status-label">Gửi yêu cầu</span>
-                          </div>
-
-                          <div className="status-step">
-                            <div className="status-dot"></div>
-                            <span className="status-label">Được chấp nhận</span>
-                          </div>
-                        </div>
-                      </div>
-                    </OrderDetailStatusWrapperv2>
+                    <div className="mt-4"></div>
                   )}
                   {order?.status === "COMPLETED" ? (
                     <OrderDetailMessageWrapper>
                       <div className="order-message-content">
-                        <p className="font-semibold">
-                          Hãy kiểm tra cẩn thận tất cả các sản phẩm trong đơn hàng trước khi bấm "Đã nhận được hàng".
-                        </p>
+                        <p className="font-semibold">Hãy kiểm tra cẩn thận tất cả các sản phẩm trong đơn hàng ".</p>
                         <p className="text-gray-600">{formatDate(order?.modifyDate)}.</p>
                       </div>
 
                       <div className="order-buttons">
                         <BaseBtnGreen className="confirm-button">Đã Nhận Hàng</BaseBtnGreen>
-                        <BaseButtonWhite className="request-button">Yêu Cầu Trả Hàng/Hoàn Tiền</BaseButtonWhite>
+                        <BaseButtonWhite className="request-button">Yêu Cầu Hoàn Tiền</BaseButtonWhite>
                       </div>
                     </OrderDetailMessageWrapper>
                   ) : ["PROCESSING"].includes(order?.status || "") ? (
@@ -608,14 +599,25 @@ const OrderDetailScreen = () => {
                       </div>
 
                       <div className="order-buttons">
-                        <BaseButtonWhite className="request-button">Liên hệ người bán</BaseButtonWhite>
                         <BaseButtonWhite className="request-button" onClick={openModalDelete}>
                           Hủy đơn hàng
                         </BaseButtonWhite>
                       </div>
                     </OrderDetailMessageWrapperv2>
                   ) : null}
-
+                  {/* hoan tientien */}
+                  {order?.status === "CANCELLED" && order?.payment?.paymentStatus === "Completed" && (
+                    <OrderDetailMessageWrapper>
+                      <div className="order-message-content">
+                        <p className="font-semibold">"Vui lòng nhấn yêu cầu hoàn tiền để gửi thông tin hoàn tiền".</p>
+                      </div>
+                      <div className="order-buttons">
+                        <BaseButtonWhite className="request-button" onClick={() => openModal(order)}>
+                          Yêu Cầu Hoàn Tiền
+                        </BaseButtonWhite>
+                      </div>
+                    </OrderDetailMessageWrapper>
+                  )}
                   {/*  list sp */}
                   <OrderDetailListWrapper className="order-d-list">
                     {order?.orderDetails?.map((item, index) => (
@@ -685,12 +687,16 @@ const OrderDetailScreen = () => {
             >
               Không
             </button>
-            <button onClick={handleCancelOrder} className="w-1/2 py-2 bg-red-600 text-white font-semibold rounded-lg">
+            <button
+              onClick={handleCancelOrder}
+              className="w-1/2 py-2 bg-red-600 text-white font-semibold rounded-lg flex justify-center items-center"
+            >
               {isLoadingUpdate ? <Loading /> : "Xác nhận "}
             </button>
           </div>
         </ModalContent>
       </SimpleModal>
+      <RefundBankModal isOpen={showRefundModal} onClose={closeModal} order={selectedOrder} />
     </OrderDetailScreenWrapper>
   );
 };

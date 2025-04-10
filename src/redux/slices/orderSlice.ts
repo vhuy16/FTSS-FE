@@ -1,6 +1,8 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import myAxios from '@setup/axiosConfig';
 import { SetupPackage } from './setupSlice';
+import { getAllOrdersByUsers } from './orderListSlice';
+import { getAllBookingofUsers, getDetailBookingofUsers } from './bookingSlice';
 
 type DataCheckOut = {
     cartItem: string[];
@@ -63,6 +65,7 @@ type initialStateProduct = {
     order: Order | null;
     isLoading: boolean;
     isLoadingUpdate: boolean;
+    isLoadingRefund: boolean;
     isLoadingRefunded: boolean;
     isLoadingGetAllOrder: boolean;
     isError: boolean;
@@ -107,6 +110,49 @@ export const updateOrder = createAsyncThunk(
         }
     },
 );
+export const refundOrder = createAsyncThunk(
+    'order/refundOrder',
+    async (
+        {
+            paymentId,
+            bankNumber,
+            bankName,
+            bankHolder,
+            orderId,
+            bookingId,
+        }: {
+            paymentId: string;
+            bankNumber: string;
+            bankName: string;
+            bankHolder: string;
+            orderId?: string;
+            bookingId?: string;
+        },
+        { rejectWithValue, dispatch },
+    ) => {
+        try {
+            const response = await myAxios.put(
+                `payment/update-bank-infor?paymentId=${paymentId}&bankNumber=${bankNumber}&bankName=${bankName}&bankHolder=${bankHolder}`,
+            );
+            const promises = [dispatch(getAllOrdersByUsers()), dispatch(getAllBookingofUsers())];
+
+            if (orderId) {
+                promises.push(dispatch(getOrderById(orderId)));
+            }
+
+            if (bookingId) {
+                promises.push(dispatch(getDetailBookingofUsers(bookingId)));
+            }
+
+            await Promise.all(promises);
+
+            return response.data;
+        } catch (error: any) {
+            console.log(error);
+            return rejectWithValue(error.response?.data?.message || 'Cập nhật đơn hàng thất bại');
+        }
+    },
+);
 export const refundedOrder = createAsyncThunk(
     'order/refundedOrder',
     async (id: string, { dispatch, rejectWithValue }) => {
@@ -124,16 +170,16 @@ export const refundedOrder = createAsyncThunk(
         }
     },
 );
-
 const initialState: initialStateProduct = {
     url: '',
     listOrder: [],
     order: null,
     isLoading: false,
     isLoadingUpdate: false,
+    isLoadingRefund: false,
+    isLoadingRefunded: false,
     isLoadingGetAllOrder: false,
     isError: false,
-    isLoadingRefunded: false,
 };
 
 const orderSlice = createSlice({
@@ -194,6 +240,19 @@ const orderSlice = createSlice({
             })
             .addCase(updateOrder.rejected, (state, action) => {
                 state.isLoadingUpdate = false;
+                state.isError = true;
+            });
+        builder
+            .addCase(refundOrder.pending, (state) => {
+                state.isLoadingRefund = true;
+                state.isError = false;
+            })
+            .addCase(refundOrder.fulfilled, (state, action) => {
+                state.isLoadingRefund = false;
+                state.isError = false;
+            })
+            .addCase(refundOrder.rejected, (state, action) => {
+                state.isLoadingRefund = false;
                 state.isError = true;
             });
         builder

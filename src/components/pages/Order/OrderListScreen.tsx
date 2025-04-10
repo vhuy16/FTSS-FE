@@ -12,7 +12,7 @@ import { getAllOrdersByUsers } from "@redux/slices/orderListSlice";
 import { getUserProfile } from "@redux/slices/userSlice";
 import LoadingPage from "@components/atom/Loading/LoadingPage";
 
-type OrderStatus = "PROCESSING" | "PENDING_DELIVERY" | "PROCESSED" | "COMPLETED" | "CANCELLED" | "RETURNED";
+type OrderStatus = "ALL" | "PROCESSING" | "PENDING_DELIVERY" | "PROCESSED" | "COMPLETED" | "CANCELLED" | "RETURNED";
 
 const OrderListScreenWrapper = styled.div`
   background-color: #f6f6f6;
@@ -53,9 +53,12 @@ const OrderListScreen = () => {
   const ordersWithSetup = orderData.filter((or) => or.setupPackage !== null);
   const ordersWithProduct = orderData.filter((or) => or.setupPackage == null);
   const isLoading = useAppSelector((state) => state.orderList.loading);
-  const [activeTab, setActiveTab] = useState<OrderStatus>("PROCESSING");
+  const [activeTab, setActiveTab] = useState<OrderStatus>("ALL");
   const [selectedCategory, setSelectedCategory] = useState<"PRODUCT" | "FISH_TANK">("PRODUCT");
   const isLoadingProfile = useAppSelector((state) => state.userProfile.isLoading);
+
+  //search
+  const [searchValue, setSearchValue] = useState("");
 
   const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedCategory(event.target.value as "PRODUCT" | "FISH_TANK");
@@ -64,14 +67,33 @@ const OrderListScreen = () => {
     dispatch(getUserProfile());
   }, []);
   useEffect(() => {
-    dispatch(getAllOrdersByUsers(activeTab));
+    if (activeTab === "ALL") {
+      dispatch(getAllOrdersByUsers()); // không truyền status
+    } else {
+      dispatch(getAllOrdersByUsers(activeTab));
+    }
   }, [dispatch, activeTab]);
+  useEffect(() => {
+    if (activeTab === "ALL" && searchValue.trim() === "") {
+      dispatch(getAllOrdersByUsers());
+    }
+  }, [searchValue, activeTab, dispatch]);
 
   const handleTabClick = (tab: OrderStatus) => {
     if (tab !== activeTab) {
       setActiveTab(tab);
     }
   };
+  const filteredOrders = (() => {
+    const baseOrders = selectedCategory === "PRODUCT" ? ordersWithProduct : ordersWithSetup;
+
+    if (activeTab === "ALL") {
+      return baseOrders.filter((order) => order.oderCode.toLowerCase().includes(searchValue.toLowerCase()));
+    }
+
+    return baseOrders;
+  })();
+
   return (
     <OrderListScreenWrapper className="page-py-spacing">
       {isLoading && isLoadingProfile ? (
@@ -95,6 +117,7 @@ const OrderListScreen = () => {
                 <div className="order-tabs-heads p-8">
                   {(
                     [
+                      "ALL",
                       "PROCESSING",
                       "PROCESSED",
                       "PENDING_DELIVERY",
@@ -106,31 +129,38 @@ const OrderListScreen = () => {
                     <button
                       key={key}
                       type="button"
-                      className={`order-tabs-head mr-7 text-xl italic ${
+                      className={`order-tabs-head mr-3 text-xl italic ${
                         activeTab === key ? "order-tabs-head-active" : ""
                       }`}
                       onClick={() => handleTabClick(key as OrderStatus)}
                     >
+                      {key === "ALL" && "Tất cả"}
                       {key === "PROCESSING" && "Đang xử lý"}
                       {key === "PROCESSED" && "Đã xử lý"}
                       {key === "PENDING_DELIVERY" && "Chờ giao hàng"}
                       {key === "COMPLETED" && "Đã giao hàng"}
                       {key === "CANCELLED" && "Đã hủy"}
-                      {key === "RETURNED" && "Trả hàng/Hoàn tiền"}
+                      {key === "RETURNED" && "Hoàn tiền"}
                     </button>
                   ))}
                 </div>
+                {/* Thanh search chỉ hiện khi là tab ALL */}
+                {activeTab === "ALL" && (
+                  <div className="px-8">
+                    <input
+                      type="text"
+                      placeholder="Tìm theo mã đơn hàng"
+                      className="dark:bg-dark-900 h-11 w-1/2 rounded-lg border border-gray-200 bg-transparent py-2.5 pl-12 pr-14 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-800 dark:bg-gray-900 dark:bg-white/[0.03] dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 xl:w-[430px]"
+                      value={searchValue}
+                      onChange={(e) => setSearchValue(e.target.value)}
+                    />
+                  </div>
+                )}
                 <div className="order-tabs-contents">
                   {isLoading ? (
                     <LoadingPage />
-                  ) : selectedCategory === "PRODUCT" ? (
-                    ordersWithProduct.length > 0 ? (
-                      <OrderItemList orders={ordersWithProduct} />
-                    ) : (
-                      <p className="text-center text-gray-500">Không có đơn hàng nào.</p>
-                    )
-                  ) : ordersWithSetup.length > 0 ? (
-                    <OrderItemList orders={ordersWithSetup} />
+                  ) : filteredOrders.length > 0 ? (
+                    <OrderItemList orders={filteredOrders} />
                   ) : (
                     <p className="text-center text-gray-500">Không có đơn hàng nào.</p>
                   )}
