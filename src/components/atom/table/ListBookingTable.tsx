@@ -91,41 +91,82 @@ export default function ListBookingTable() {
             renderCell: (params) => params.row.scheduleDate.split('T')[0],
         },
         {
-            field: 'status',
-            headerName: 'Trạng thái',
-            width: 170,
+            field: 'payment',
+            headerName: 'Trạng thái thanh toán',
+            width: 200,
             headerClassName: 'super-app-theme--header',
             renderCell: (params) => (
                 <Badge
                     size="sm"
                     color={
-                        params.row.status === 'FREE'
-                            ? 'light'
-                            : params.row.status === 'NOTPAID'
+                        params.row.payment?.paymentStatus === 'Processing'
                             ? 'warning'
-                            : params.row.status === 'PAID'
+                            : params.row.payment?.paymentStatus === 'Completed'
                             ? 'success'
-                            : 'warning'
+                            : params.row.payment?.paymentStatus === 'Cancelled'
+                            ? 'error'
+                            : params.row.payment?.paymentStatus === 'Refunding'
+                            ? 'light'
+                            : params.row.payment?.paymentStatus === 'Refunded'
+                            ? 'dark'
+                            : 'primary'
                     }
                 >
-                    {params.row.status === 'FREE'
-                        ? 'Có gói bảo trì'
-                        : params.row.status === 'NOTPAID'
-                        ? 'Chưa thanh toán'
-                        : params.row.status === 'PAID'
+                    {params.row.payment?.paymentStatus === 'Processing'
+                        ? 'Đang chờ thanh toán'
+                        : params.row.payment?.paymentStatus === 'Completed'
                         ? 'Đã thanh toán'
-                        : 'warning'}
+                        : params.row.payment?.paymentStatus === 'Cancelled'
+                        ? 'Đã hủy'
+                        : params.row.payment?.paymentStatus === 'Refunding'
+                        ? 'Đang hoàn tiền'
+                        : params.row.payment?.paymentStatus === 'Refunded'
+                        ? 'Đã hoàn tiền'
+                        : 'primary'}
                 </Badge>
             ),
         },
         {
-            field: 'isAssigned',
-            headerName: 'Trạng thái phân công',
-            width: 250,
+            field: 'status',
+            headerName: 'Trạng thái bảo trì',
+            width: 200,
             headerClassName: 'super-app-theme--header',
             renderCell: (params) => (
-                <Badge size="sm" color={params.row.isAssigned === true ? 'success' : 'warning'}>
-                    {params.row.isAssigned === true ? 'Đã phân công ' : 'Chưa phân công'}
+                <Badge
+                    size="sm"
+                    color={
+                        params.row.status === 'CANCELLED'
+                            ? 'error'
+                            : params.row.status === 'NOTASSIGN'
+                            ? 'light'
+                            : params.row.status === 'ASSIGNED'
+                            ? 'dark'
+                            : params.row.status === 'DONE'
+                            ? 'success'
+                            : params.row.status === 'MISSED'
+                            ? 'primary'
+                            : params.row.status === 'PROCESSING'
+                            ? 'warning'
+                            : params.row.status === 'NOTSTARTED'
+                            ? 'info'
+                            : 'error'
+                    }
+                >
+                    {params.row.status === 'CANCELLED'
+                        ? 'Đã hủy'
+                        : params.row.status === 'NOTASSIGN'
+                        ? 'Chưa phân công'
+                        : params.row.status === 'ASSIGNED'
+                        ? 'Đã phân công'
+                        : params.row.status === 'DONE'
+                        ? 'Hoàn tất'
+                        : params.row.status === 'MISSED'
+                        ? 'Không thực hiện được'
+                        : params.row.status === 'PROCESSING'
+                        ? 'Đang tiến hành'
+                        : params.row.status === 'NOTSTARTED'
+                        ? 'Chưa tiến hành'
+                        : 'error'}
                 </Badge>
             ),
         },

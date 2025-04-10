@@ -6,7 +6,7 @@ import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import { ListItemIcon, ListItemText, Typography } from '@mui/material';
 import RemoveRedEyeOutlinedIcon from '@mui/icons-material/RemoveRedEyeOutlined';
 import AddIcon from '@mui/icons-material/Add';
-import { Order } from '@redux/slices/orderListSlice';
+import { Order } from '@redux/slices/orderSlice';
 import { useNavigate } from 'react-router-dom';
 import ConfirmEditStatusOrder from '../popup_modal/ConfirmEditStatusOrder';
 

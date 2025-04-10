@@ -90,7 +90,11 @@ export default function ListOrderTable() {
                             ? 'success'
                             : params.row.payment?.paymentStatus === 'Cancelled'
                             ? 'error'
-                            : 'warning'
+                            : params.row.payment?.paymentStatus === 'Refunding'
+                            ? 'light'
+                            : params.row.payment?.paymentStatus === 'Refunded'
+                            ? 'dark'
+                            : 'primary'
                     }
                 >
                     {params.row.payment?.paymentStatus === 'Processing'
@@ -99,7 +103,11 @@ export default function ListOrderTable() {
                         ? 'Đã thanh toán'
                         : params.row.payment?.paymentStatus === 'Cancelled'
                         ? 'Đã hủy'
-                        : 'Đang hoàn trả'}
+                        : params.row.payment?.paymentStatus === 'Refunding'
+                        ? 'Đang hoàn tiền'
+                        : params.row.payment?.paymentStatus === 'Refunded'
+                        ? 'Đã hoàn tiền'
+                        : 'primary'}
                 </Badge>
             ),
         },

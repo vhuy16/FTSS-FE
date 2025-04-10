@@ -12,10 +12,13 @@ import ConfirmDelete from '../popup_modal/ConfirmDelete';
 import 'flowbite';
 import ConfirmEditRole from '../popup_modal/ConfirmEditRole';
 import { UserProfile } from '@redux/slices/userSlice';
-import { Order } from '@redux/slices/orderListSlice';
+
 import { useNavigate } from 'react-router-dom';
 import Badge from '@components/ui/badge/Badge';
 import ConfirmEditStatusOrder from '../popup_modal/ConfirmEditStatusOrder';
+import DoneIcon from '@mui/icons-material/Done';
+import ConfirmRefundedOrder from '../popup_modal/ConfirmRefundedOrder';
+import { Order } from '@redux/slices/orderSlice';
 
 const ITEM_HEIGHT = 48;
 type OrderPopupProps = {
@@ -24,6 +27,7 @@ type OrderPopupProps = {
 export default function OrderPopup({ order }: OrderPopupProps) {
     const [anchorEl1, setAnchorEl1] = React.useState<null | HTMLElement>(null);
     const [isModalOpenEditStatus, setIsModalOpenEditStatus] = React.useState(false);
+    const [isModalOpenActivate, setIsModalOpenActivate] = React.useState(false);
     const [status, setStatus] = React.useState('');
     const navigate = useNavigate();
     const open1 = Boolean(anchorEl1);
@@ -84,6 +88,19 @@ export default function OrderPopup({ order }: OrderPopupProps) {
                     </ListItemIcon>
                     <ListItemText>Xem chi tiết</ListItemText>
                 </MenuItem>
+                {order.payment?.paymentStatus === 'Refunding' && (
+                    <MenuItem
+                        onClick={() => {
+                            handleClose();
+                            setIsModalOpenActivate(true);
+                        }}
+                    >
+                        <ListItemIcon>
+                            <DoneIcon fontSize="small" className="text-gray-400" />
+                        </ListItemIcon>
+                        <ListItemText>Xác nhận đã hoàn tiền</ListItemText>
+                    </MenuItem>
+                )}
 
                 <div>
                     {order.status !== 'CANCELLED' && order.status !== 'RETURNED' && order.status !== 'COMPLETED' && (
@@ -196,6 +213,11 @@ export default function OrderPopup({ order }: OrderPopupProps) {
                 status={status}
                 isModalOpenEditStatus={isModalOpenEditStatus}
                 setIsModalOpenEditStatus={setIsModalOpenEditStatus}
+            />
+            <ConfirmRefundedOrder
+                isModalOpenActivate={isModalOpenActivate}
+                setIsModalOpenActivate={setIsModalOpenActivate}
+                order={order}
             />
         </div>
     );

@@ -30,18 +30,23 @@ export default function BookingDetail() {
                                 </h1>
                                 <p className="text-base text-gray-600 font-medium leading-6">
                                     Trạng thái:{' '}
-                                    {bookingDetail.missionStatus === 'Done'
-                                        ? 'Hoàn tất'
-                                        : bookingDetail.missionStatus === 'Cancel'
+                                    {bookingDetail.status === 'CANCELLED'
                                         ? 'Đã hủy'
-                                        : bookingDetail.missionStatus === 'Processing'
+                                        : bookingDetail.status === 'NOTASSIGN'
+                                        ? 'Chưa phân công'
+                                        : bookingDetail.status === 'ASSIGNED'
+                                        ? 'Đã phân công'
+                                        : bookingDetail.status === 'DONE'
+                                        ? 'Hoàn tất'
+                                        : bookingDetail.status === 'MISSED'
+                                        ? 'Không thực hiện được'
+                                        : bookingDetail.status === 'PROCESSING'
                                         ? 'Đang tiến hành'
-                                        : 'Chưa bắt đầu'}
+                                        : bookingDetail.status === 'NOTSTARTED'
+                                        ? 'Chưa tiến hành'
+                                        : 'error'}
                                 </p>
-                                <p className="text-base text-gray-600 font-medium leading-6">
-                                    Trạng thái phân công:{' '}
-                                    {bookingDetail.isAssigned === true ? 'Đã được phân công' : 'Chưa phân công'}
-                                </p>
+
                                 <p className="text-base dark:text-gray-300 font-medium leading-6 text-gray-600">
                                     Ngày bảo trì: {bookingDetail.scheduleDate.split('T')[0]}
                                 </p>
@@ -115,7 +120,9 @@ export default function BookingDetail() {
                                                             Phương thức thanh toán
                                                         </p>
                                                         <p className="text-base dark:text-gray-300 leading-4 text-gray-600">
-                                                            VnPay
+                                                            {bookingDetail.payment.paymentMethod === 'FREE'
+                                                                ? 'Sử dụng gói bảo trì'
+                                                                : bookingDetail.payment.paymentMethod}
                                                         </p>
                                                     </div>
                                                     <div className="flex justify-between items-center w-full">
@@ -123,15 +130,17 @@ export default function BookingDetail() {
                                                             Trạng thái
                                                         </p>
                                                         <p className="text-base dark:text-gray-300 leading-4 text-gray-600">
-                                                            {bookingDetail.status == 'NOTPAID'
-                                                                ? 'Chưa thanh toán'
-                                                                : bookingDetail.status == 'PAID'
+                                                            {bookingDetail.payment?.paymentStatus === 'Processing'
+                                                                ? 'Đang chờ thanh toán'
+                                                                : bookingDetail.payment?.paymentStatus === 'Completed'
                                                                 ? 'Đã thanh toán'
-                                                                : bookingDetail.status == 'FREE'
-                                                                ? 'Có gói bảo trì'
-                                                                : bookingDetail.status == 'REFUNDING'
+                                                                : bookingDetail.payment?.paymentStatus === 'Cancelled'
+                                                                ? 'Đã hủy'
+                                                                : bookingDetail.payment?.paymentStatus === 'Refunding'
                                                                 ? 'Đang hoàn tiền'
-                                                                : 'Đã hoàn tiền'}
+                                                                : bookingDetail.payment?.paymentStatus === 'Refunded'
+                                                                ? 'Đã hoàn tiền'
+                                                                : 'primary'}
                                                         </p>
                                                     </div>
                                                     <div className="flex justify-between items-center w-full"></div>
@@ -185,6 +194,25 @@ export default function BookingDetail() {
                                                 </div>
                                             </div>
                                         </div>
+                                        {bookingDetail.payment?.paymentStatus === 'Refunding' && (
+                                            <div>
+                                                <div className="rounded-t border-b dark:border-gray-600 sm:col-span-6"></div>
+                                                <div className="flex justify-between xl:h-full items-stretch w-full flex-col mt-6 md:mt-0">
+                                                    <div className="flex justify-center md:justify-start xl:flex-col flex-col md:space-x-6 lg:space-x-8 xl:space-x-0 space-y-4 xl:space-y-12 md:space-y-0 md:flex-row items-center md:items-start">
+                                                        <div className="flex justify-center md:justify-start items-center md:items-start flex-col space-y-4 xl:mt-8">
+                                                            <div className="text-base dark:text-white font-semibold leading-4 text-center md:text-left text-gray-800">
+                                                                Thông tin chuyển khoản
+                                                            </div>
+                                                            <div className="w-48 lg:w-full dark:text-gray-300 xl:w-48 text-center md:text-left text-sm leading-5 text-gray-600">
+                                                                <div>Tên: {bookingDetail.payment?.bankHolder}</div>
+                                                                <div>Ngân hàng: {bookingDetail.payment?.bankName}</div>
+                                                                <div>STK: {bookingDetail.payment?.bankNumber}</div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>
