@@ -57,6 +57,7 @@ type MissionType = {
     isLoadingGetAllBooking: boolean;
     isLoadingGetAllService: boolean;
     isLoadingCancelBooking: boolean;
+    isLoadingRefundedBooking: boolean;
     isLoadingUpdate: boolean;
     isLoadingAssignBooking: boolean;
     listMission: Mission[];
@@ -72,6 +73,7 @@ const initialState: MissionType = {
     isLoadingGetAllBooking: false,
     isLoadingGetAllService: false,
     isLoadingCancelBooking: false,
+    isLoadingRefundedBooking: false,
     isLoadingUpdate: false,
     isLoadingAssignBooking: false,
     listMission: [],
@@ -174,7 +176,23 @@ export const cancelBooking = createAsyncThunk(
         }
     },
 );
-
+export const refundedBooking = createAsyncThunk(
+    'booking/refundedBooking',
+    async (id: string, { dispatch, rejectWithValue }) => {
+        try {
+            const response = await myAxios.put(`/update-status/${id}`, JSON.stringify('Refunded'), {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            await dispatch(getAllBooking());
+            return response.data;
+        } catch (error: any) {
+            console.log(error);
+            return rejectWithValue(error.response?.data?.message || 'Something went wrong');
+        }
+    },
+);
 const missionSlice = createSlice({
     name: 'mission',
     initialState,
@@ -300,6 +318,19 @@ const missionSlice = createSlice({
             })
             .addCase(cancelBooking.rejected, (state, action) => {
                 state.isLoadingCancelBooking = false;
+                state.isError = true;
+            });
+        builder
+            .addCase(refundedBooking.pending, (state) => {
+                state.isLoadingRefundedBooking = true;
+                state.isError = false;
+            })
+            .addCase(refundedBooking.fulfilled, (state, action) => {
+                state.isLoadingRefundedBooking = false;
+                state.isError = false;
+            })
+            .addCase(refundedBooking.rejected, (state, action) => {
+                state.isLoadingRefundedBooking = false;
                 state.isError = true;
             });
     },
