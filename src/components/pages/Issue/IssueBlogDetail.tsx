@@ -27,7 +27,7 @@ const IssueBlogDetail = () => {
         <LoadingPage />
       ) : (
         <article className="min-h-screen bg-gray-50">
-          <div className="relative h-[80vh] w-full overflow-hidden">
+          <div className="relative h-[60vh] w-full overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-60"></div>
             <img
               src={issueDetail?.issueImage}
@@ -35,14 +35,14 @@ const IssueBlogDetail = () => {
               className="w-full h-full object-cover"
               onLoad={handleImageLoad}
             />
-            <div className="absolute bottom-0 left-0 right-0 p-8 md:p-16">
-              <div className="max-w-4xl mx-auto">
-                <h1 className="text-3xl md:text-5xl font-bold text-white mb-6 transition-all duration-300">
+            <div className="absolute bottom-0 left-0 right-0 p-8 md:p-20">
+              <div className="max-w-4xl mx-auto mb-10">
+                <h1 className="text-5xl md:text-8xl font-bold text-white mb-6 transition-all duration-300">
                   {issueDetail?.title}
                 </h1>
                 <div className="flex items-center space-x-6 text-gray-200">
                   <div className="flex items-center">
-                    <FaUser className="mr-2" />
+                    Loại
                     <span>{issueDetail?.issueCategoryName}</span>
                   </div>
                   <div className="flex items-center">
@@ -56,12 +56,12 @@ const IssueBlogDetail = () => {
           <main className="max-w-6xl mx-auto px-3 py-12">
             {issueDetail?.solutions.map((solution, index) => (
               <div key={solution.id} className="mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3 hover:text-indigo-600 transition-all">
+                <h2 className="text-2xl md:text-5xl font-bold text-gray-900 mb-3 hover:text-indigo-600 transition-all">
                   {solution.solutionName}
                 </h2>
                 {/* Render HTML từ backend */}
                 <div
-                  className="text-gray-700 mb-2 prose max-w-none"
+                  className="text-gray-800 mb-2 prose max-w-none"
                   dangerouslySetInnerHTML={{ __html: solution.description }}
                 />
               </div>
