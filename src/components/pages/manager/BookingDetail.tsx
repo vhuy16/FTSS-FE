@@ -30,6 +30,16 @@ export default function BookingDetail() {
                                 </h1>
                                 <p className="text-base text-gray-600 font-medium leading-6">
                                     Trạng thái:{' '}
+                                    {bookingDetail.missionStatus === 'Done'
+                                        ? 'Hoàn tất'
+                                        : bookingDetail.missionStatus === 'Cancel'
+                                        ? 'Đã hủy'
+                                        : bookingDetail.missionStatus === 'Processing'
+                                        ? 'Đang tiến hành'
+                                        : 'Chưa bắt đầu'}
+                                </p>
+                                <p className="text-base text-gray-600 font-medium leading-6">
+                                    Trạng thái phân công:{' '}
                                     {bookingDetail.isAssigned === true ? 'Đã được phân công' : 'Chưa phân công'}
                                 </p>
                                 <p className="text-base dark:text-gray-300 font-medium leading-6 text-gray-600">
@@ -117,7 +127,11 @@ export default function BookingDetail() {
                                                                 ? 'Chưa thanh toán'
                                                                 : bookingDetail.status == 'PAID'
                                                                 ? 'Đã thanh toán'
-                                                                : 'Có gói bảo trì'}
+                                                                : bookingDetail.status == 'FREE'
+                                                                ? 'Có gói bảo trì'
+                                                                : bookingDetail.status == 'REFUNDING'
+                                                                ? 'Đang hoàn tiền'
+                                                                : 'Đã hoàn tiền'}
                                                         </p>
                                                     </div>
                                                     <div className="flex justify-between items-center w-full"></div>
