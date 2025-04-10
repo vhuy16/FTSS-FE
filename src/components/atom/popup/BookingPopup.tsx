@@ -11,6 +11,8 @@ import { Booking } from '@redux/slices/missionSlide';
 import RemoveRedEyeOutlinedIcon from '@mui/icons-material/RemoveRedEyeOutlined';
 import BlockIcon from '@mui/icons-material/Block';
 import ConfirmCancelBooking from '../popup_modal/ConfirmCancelBooking';
+import DoneIcon from '@mui/icons-material/Done';
+import ConfirmRefundedBooking from '../popup_modal/ConfirmRefundedBooking';
 
 const ITEM_HEIGHT = 48;
 type bookingPopupProps = {
@@ -28,6 +30,7 @@ export default function BookingPopup({ booking }: bookingPopupProps) {
     };
     const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
     const [isModalOpenDelete, setIsModalOpenDelete] = React.useState(false);
+    const [isModalOpenActivate, setIsModalOpenActivate] = React.useState(false);
     return (
         <div>
             <IconButton
@@ -69,43 +72,59 @@ export default function BookingPopup({ booking }: bookingPopupProps) {
                         </ListItemIcon>
                         <ListItemText>Xem chi tiết</ListItemText>
                     </MenuItem>
-                    {booking.isAssigned === false && (
-                        <div>
-                            {(booking.status === 'PAID' || booking.status === 'FREE') && (
-                                <MenuItem
-                                    onClick={() => {
-                                        navigate(
-                                            `/addMissionBooking?bookingId=${booking.id}&scheduleDate=${
-                                                booking.scheduleDate.split('T')[0]
-                                            }`,
-                                        );
-                                        handleClose();
-                                    }}
-                                >
-                                    <ListItemIcon>
-                                        <AddIcon fontSize="small" className="text-yellow-600" />
-                                    </ListItemIcon>
-                                    <ListItemText>Thêm nhiệm vụ</ListItemText>
-                                </MenuItem>
-                            )}
-                            <MenuItem
-                                onClick={() => {
-                                    handleClose();
-                                    setIsModalOpenDelete(true);
-                                }}
-                            >
-                                <ListItemIcon>
-                                    <BlockIcon fontSize="small" className="text-red-600" />
-                                </ListItemIcon>
-                                <ListItemText>Hủy</ListItemText>
-                            </MenuItem>
-                        </div>
+                    {booking.status === 'NOTASSIGN' && (
+                        <MenuItem
+                            onClick={() => {
+                                handleClose();
+                                setIsModalOpenDelete(true);
+                            }}
+                        >
+                            <ListItemIcon>
+                                <BlockIcon fontSize="small" className="text-red-600" />
+                            </ListItemIcon>
+                            <ListItemText>Hủy</ListItemText>
+                        </MenuItem>
+                    )}
+                    {booking.status === 'NOTASSIGN' && booking.payment?.paymentStatus === 'Completed' && (
+                        <MenuItem
+                            onClick={() => {
+                                navigate(
+                                    `/addMissionBooking?bookingId=${booking.id}&scheduleDate=${
+                                        booking.scheduleDate.split('T')[0]
+                                    }`,
+                                );
+                                handleClose();
+                            }}
+                        >
+                            <ListItemIcon>
+                                <AddIcon fontSize="small" className="text-yellow-600" />
+                            </ListItemIcon>
+                            <ListItemText>Thêm nhiệm vụ</ListItemText>
+                        </MenuItem>
+                    )}
+                    {booking.payment?.paymentStatus === 'Refunding' && (
+                        <MenuItem
+                            onClick={() => {
+                                handleClose();
+                                setIsModalOpenActivate(true);
+                            }}
+                        >
+                            <ListItemIcon>
+                                <DoneIcon fontSize="small" className="text-gray-400" />
+                            </ListItemIcon>
+                            <ListItemText>Xác nhận đã hoàn tiền</ListItemText>
+                        </MenuItem>
                     )}
                 </div>
             </Menu>
             <ConfirmCancelBooking
                 isModalOpenDelete={isModalOpenDelete}
                 setIsModalOpenDelete={setIsModalOpenDelete}
+                booking={booking}
+            />
+            <ConfirmRefundedBooking
+                isModalOpenActivate={isModalOpenActivate}
+                setIsModalOpenActivate={setIsModalOpenActivate}
                 booking={booking}
             />
         </div>
