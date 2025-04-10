@@ -21,12 +21,21 @@ export type Technician = {
     techName: string;
     fullName: string;
 };
+type Payment = {
+    paymentId: string;
+    paymentMethod: string;
+    paymentStatus: string;
+    bankNumber: string | null | 'Unknown';
+    bankName: string | null | 'Unknown';
+    bankHolder: string | null | 'Unknown';
+};
+
 export type Booking = {
     id: string;
     scheduleDate: string;
     status: string;
     address: string;
-    phoneNumber: string | null;
+    phoneNumber: string;
     totalPrice: number;
     userId: string;
     userName: string;
@@ -35,7 +44,7 @@ export type Booking = {
     isAssigned: boolean;
     services: Service[];
     bookingCode: string;
-    missionStatus: string | null;
+    payment: Payment;
 };
 export type Service = {
     id: string;

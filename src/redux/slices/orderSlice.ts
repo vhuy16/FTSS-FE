@@ -20,9 +20,12 @@ type UserResponse = {
     phoneNumber: string;
 };
 type Payment = {
-    paymentMethod: string | null;
-    paymentStatus: string | null;
-    paymentId: string | null;
+    paymentId: string;
+    paymentMethod: string;
+    paymentStatus: string;
+    bankNumber: string | null | 'Unknown';
+    bankName: string | null | 'Unknown';
+    bankHolder: string | null | 'Unknown';
 };
 
 export type OrderDetail = {
@@ -157,7 +160,7 @@ export const refundedOrder = createAsyncThunk(
     'order/refundedOrder',
     async (id: string, { dispatch, rejectWithValue }) => {
         try {
-            const response = await myAxios.put(`api/payments/update-status/${id}`, JSON.stringify('Refunded'), {
+            const response = await myAxios.put(`/update-status/${id}`, JSON.stringify('Refunded'), {
                 headers: {
                     'Content-Type': 'application/json',
                 },
