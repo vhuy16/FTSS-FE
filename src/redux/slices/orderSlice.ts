@@ -20,6 +20,7 @@ type UserResponse = {
 type Payment = {
     paymentMethod: string | null;
     paymentStatus: string | null;
+    paymentId: string | null;
 };
 
 export type OrderDetail = {
@@ -62,6 +63,7 @@ type initialStateProduct = {
     order: Order | null;
     isLoading: boolean;
     isLoadingUpdate: boolean;
+    isLoadingRefunded: boolean;
     isLoadingGetAllOrder: boolean;
     isError: boolean;
 };
@@ -105,6 +107,23 @@ export const updateOrder = createAsyncThunk(
         }
     },
 );
+export const refundedOrder = createAsyncThunk(
+    'order/refundedOrder',
+    async (id: string, { dispatch, rejectWithValue }) => {
+        try {
+            const response = await myAxios.put(`api/payments/update-status/${id}`, JSON.stringify('Refunded'), {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            await dispatch(getAllOrder());
+            return response.data;
+        } catch (error: any) {
+            console.log(error);
+            return rejectWithValue(error.response?.data?.message || 'Something went wrong');
+        }
+    },
+);
 
 const initialState: initialStateProduct = {
     url: '',
@@ -114,6 +133,7 @@ const initialState: initialStateProduct = {
     isLoadingUpdate: false,
     isLoadingGetAllOrder: false,
     isError: false,
+    isLoadingRefunded: false,
 };
 
 const orderSlice = createSlice({
@@ -174,6 +194,19 @@ const orderSlice = createSlice({
             })
             .addCase(updateOrder.rejected, (state, action) => {
                 state.isLoadingUpdate = false;
+                state.isError = true;
+            });
+        builder
+            .addCase(refundedOrder.pending, (state) => {
+                state.isLoadingRefunded = true;
+                state.isError = false;
+            })
+            .addCase(refundedOrder.fulfilled, (state, action) => {
+                state.isLoadingRefunded = false;
+                state.isError = false;
+            })
+            .addCase(refundedOrder.rejected, (state, action) => {
+                state.isLoadingRefunded = false;
                 state.isError = true;
             });
     },

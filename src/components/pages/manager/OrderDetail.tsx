@@ -173,7 +173,13 @@ export default function OrderDetail() {
                                                                 ? 'Đang chờ thanh toán'
                                                                 : orderDetail.payment.paymentStatus == 'Completed'
                                                                 ? 'Đã thanh toán'
-                                                                : 'Đã hủy'}
+                                                                : orderDetail.payment?.paymentStatus === 'Cancelled'
+                                                                ? 'Đã hủy'
+                                                                : orderDetail.payment?.paymentStatus === 'Refunding'
+                                                                ? 'Đang hoàn tiền'
+                                                                : orderDetail.payment?.paymentStatus === 'Refunded'
+                                                                ? 'Đã hoàn tiền'
+                                                                : 'primary'}
                                                         </p>
                                                     </div>
                                                     <div className="flex justify-between items-center w-full"></div>
