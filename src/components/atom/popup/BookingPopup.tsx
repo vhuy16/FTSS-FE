@@ -9,6 +9,8 @@ import 'flowbite';
 import { useNavigate } from 'react-router-dom';
 import { Booking } from '@redux/slices/missionSlide';
 import RemoveRedEyeOutlinedIcon from '@mui/icons-material/RemoveRedEyeOutlined';
+import BlockIcon from '@mui/icons-material/Block';
+import ConfirmCancelBooking from '../popup_modal/ConfirmCancelBooking';
 
 const ITEM_HEIGHT = 48;
 type bookingPopupProps = {
@@ -25,7 +27,7 @@ export default function BookingPopup({ booking }: bookingPopupProps) {
         setAnchorEl1(null);
     };
     const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
-
+    const [isModalOpenDelete, setIsModalOpenDelete] = React.useState(false);
     return (
         <div>
             <IconButton
@@ -68,24 +70,44 @@ export default function BookingPopup({ booking }: bookingPopupProps) {
                         <ListItemText>Xem chi tiết</ListItemText>
                     </MenuItem>
                     {booking.isAssigned === false && (
-                        <MenuItem
-                            onClick={() => {
-                                navigate(
-                                    `/addMissionBooking?bookingId=${booking.id}&scheduleDate=${
-                                        booking.scheduleDate.split('T')[0]
-                                    }`,
-                                );
-                                handleClose();
-                            }}
-                        >
-                            <ListItemIcon>
-                                <AddIcon fontSize="small" className="text-yellow-600" />
-                            </ListItemIcon>
-                            <ListItemText>Thêm nhiệm vụ</ListItemText>
-                        </MenuItem>
+                        <div>
+                            {(booking.status === 'PAID' || booking.status === 'FREE') && (
+                                <MenuItem
+                                    onClick={() => {
+                                        navigate(
+                                            `/addMissionBooking?bookingId=${booking.id}&scheduleDate=${
+                                                booking.scheduleDate.split('T')[0]
+                                            }`,
+                                        );
+                                        handleClose();
+                                    }}
+                                >
+                                    <ListItemIcon>
+                                        <AddIcon fontSize="small" className="text-yellow-600" />
+                                    </ListItemIcon>
+                                    <ListItemText>Thêm nhiệm vụ</ListItemText>
+                                </MenuItem>
+                            )}
+                            <MenuItem
+                                onClick={() => {
+                                    handleClose();
+                                    setIsModalOpenDelete(true);
+                                }}
+                            >
+                                <ListItemIcon>
+                                    <BlockIcon fontSize="small" className="text-red-600" />
+                                </ListItemIcon>
+                                <ListItemText>Hủy</ListItemText>
+                            </MenuItem>
+                        </div>
                     )}
                 </div>
             </Menu>
+            <ConfirmCancelBooking
+                isModalOpenDelete={isModalOpenDelete}
+                setIsModalOpenDelete={setIsModalOpenDelete}
+                booking={booking}
+            />
         </div>
     );
 }

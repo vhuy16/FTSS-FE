@@ -35,6 +35,7 @@ export type Booking = {
     isAssigned: boolean;
     services: Service[];
     bookingCode: string;
+    missionStatus: string | null;
 };
 export type Service = {
     id: string;
@@ -42,12 +43,13 @@ export type Service = {
     price: number;
 };
 type MissionType = {
-    isLoading: boolean | null;
-    isLoadingGetAllMission: boolean | null;
-    isLoadingGetAllBooking: boolean | null;
-    isLoadingGetAllService: boolean | null;
-    isLoadingUpdate: boolean | null;
-    isLoadingAssignBooking: boolean | null;
+    isLoading: boolean;
+    isLoadingGetAllMission: boolean;
+    isLoadingGetAllBooking: boolean;
+    isLoadingGetAllService: boolean;
+    isLoadingCancelBooking: boolean;
+    isLoadingUpdate: boolean;
+    isLoadingAssignBooking: boolean;
     listMission: Mission[];
     listBooking: Booking[];
     booking: Booking | null;
@@ -60,6 +62,7 @@ const initialState: MissionType = {
     isLoadingGetAllMission: false,
     isLoadingGetAllBooking: false,
     isLoadingGetAllService: false,
+    isLoadingCancelBooking: false,
     isLoadingUpdate: false,
     isLoadingAssignBooking: false,
     listMission: [],
@@ -141,6 +144,19 @@ export const updateMission = createAsyncThunk(
                     'Content-Type': 'multipart/form-data',
                 },
             });
+            await dispatch(getAllMission());
+            return response.data;
+        } catch (error: any) {
+            const errorMessage = error.response?.data?.message || 'Something went wrong';
+            return rejectWithValue(errorMessage);
+        }
+    },
+);
+export const cancelBooking = createAsyncThunk(
+    'mission/cancelBooking',
+    async (id: string, { dispatch, rejectWithValue }) => {
+        try {
+            const response = await myAxios.put(`/booking/cancel-booking/${id}`);
             await dispatch(getAllMission());
             return response.data;
         } catch (error: any) {
@@ -262,6 +278,19 @@ const missionSlice = createSlice({
             })
             .addCase(updateMission.rejected, (state, action) => {
                 state.isLoadingUpdate = false;
+                state.isError = true;
+            });
+        builder
+            .addCase(cancelBooking.pending, (state) => {
+                state.isLoadingCancelBooking = true;
+                state.isError = false;
+            })
+            .addCase(cancelBooking.fulfilled, (state, action) => {
+                state.isLoadingCancelBooking = false;
+                state.isError = false;
+            })
+            .addCase(cancelBooking.rejected, (state, action) => {
+                state.isLoadingCancelBooking = false;
                 state.isError = true;
             });
     },

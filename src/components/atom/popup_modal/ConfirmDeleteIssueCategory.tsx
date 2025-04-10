@@ -1,17 +1,14 @@
 import { useState } from 'react';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
-import { getAllUser, updateRoleUser, UserProfile } from '@redux/slices/userSlice';
 import { useAppDispatch, useAppSelector } from '@redux/hook';
 import Loading from '../Loading/Loading';
+import { deleteIssueCategory, IssueCategory } from '@redux/slices/issueCategorySlice';
 import { toast } from 'react-toastify';
-import { Order } from '@redux/slices/orderListSlice';
-import { updateOrder } from '@redux/slices/orderSlice';
-type ConfirmDeleteProps = {
-    isModalOpenEditStatus: boolean;
-    setIsModalOpenEditStatus: (isOpen: boolean) => void;
-    order: Order;
-    status: string;
+type ConfirmDeleteIssueCategoryProps = {
+    isModalOpenDelete: boolean;
+    setIsModalOpenDelete: (isOpen: boolean) => void;
+    issueCategory: IssueCategory;
 };
 const style = {
     position: 'absolute',
@@ -20,31 +17,21 @@ const style = {
     transform: 'translate(-50%, -50%)',
     width: 400,
 };
-export default function ConfirmEditStatusOrder({
-    order,
-    status,
-    isModalOpenEditStatus,
-    setIsModalOpenEditStatus,
-}: ConfirmDeleteProps) {
+export default function ConfirmDeleteIssueCategory({
+    isModalOpenDelete,
+    setIsModalOpenDelete,
+    issueCategory,
+}: ConfirmDeleteIssueCategoryProps) {
     const dispatch = useAppDispatch();
-    const isLoading = useAppSelector((state) => state.order.isLoadingUpdate);
-    const handleEdit = async () => {
-        try {
-            await dispatch(updateOrder({ id: order.id, status: status })).unwrap();
-            setIsModalOpenEditStatus(false);
-            toast.success('Cập nhật trạng thái đơn hàng thành công');
-        } catch (error) {
-            toast.error(error as string);
-        }
-    };
+    const isLoading = useAppSelector((state) => state.issueCategory.isLoadingDelete);
     return (
         <>
             {/* Modal */}
             <div>
                 <Modal
-                    open={isModalOpenEditStatus}
+                    open={isModalOpenDelete}
                     onClose={() => {
-                        setIsModalOpenEditStatus(false);
+                        setIsModalOpenDelete(false);
                     }}
                     aria-labelledby="modal-modal-title"
                     aria-describedby="modal-modal-description"
@@ -56,7 +43,7 @@ export default function ConfirmEditStatusOrder({
                                     type="button"
                                     className="absolute top-3 end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
                                     onClick={() => {
-                                        setIsModalOpenEditStatus(false);
+                                        setIsModalOpenDelete(false);
                                     }}
                                 >
                                     <svg
@@ -93,12 +80,19 @@ export default function ConfirmEditStatusOrder({
                                         />
                                     </svg>
                                     <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
-                                        Bạn có muốn cập nhật trạng thái đơn hàng?
+                                        Bạn có muốn ngừng hoạt động danh mục vấn đề này?
                                     </h3>
                                     <button
                                         type="button"
-                                        className="text-white bg-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-yellow-400 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center"
-                                        onClick={handleEdit}
+                                        className="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center"
+                                        onClick={async () => {
+                                            try {
+                                                await dispatch(deleteIssueCategory(issueCategory.id)).unwrap();
+                                                setIsModalOpenDelete(false);
+                                            } catch (error) {
+                                                toast.error(error as string);
+                                            }
+                                        }}
                                     >
                                         {isLoading ? <Loading></Loading> : 'Xác nhận'}
                                     </button>
@@ -106,7 +100,7 @@ export default function ConfirmEditStatusOrder({
                                         type="button"
                                         className="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
                                         onClick={() => {
-                                            setIsModalOpenEditStatus(false);
+                                            setIsModalOpenDelete(false);
                                         }}
                                     >
                                         Hủy

@@ -17,6 +17,7 @@ import {
     PlugInIcon,
     TableIcon,
     UserCircleIcon,
+    InfoIcon,
 } from '@icons/admin_icon';
 import { Link } from 'react-router-dom';
 
@@ -67,17 +68,26 @@ const navItems: NavItem[] = [
         path: '/listSetup',
     },
     {
-        name: 'Danh mục',
+        name: 'Danh mục sản phẩm',
         icon: <GridIcon />,
         subItems: [
             { name: 'Danh sách danh mục', path: '/listCategory' },
             { name: 'Danh sách danh mục phụ', path: '/listSubCategory' },
         ],
     },
+
     {
         icon: <PageIcon />,
         name: 'Danh sách mã khuyến mãi',
         path: '/listVoucher',
+    },
+    {
+        name: 'Vấn đề',
+        icon: <InfoIcon />,
+        subItems: [
+            { name: 'Danh sách danh mục vấn đề', path: '/listIssueCategory' },
+            { name: 'Danh sách vấn đề', path: '/listIssue' },
+        ],
     },
 ];
 
