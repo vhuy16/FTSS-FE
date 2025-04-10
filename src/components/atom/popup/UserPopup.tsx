@@ -119,7 +119,7 @@ export default function UserPopup({ user }: UserPopupProps) {
                                 setIsModalOpenEditRole(true);
                             }}
                         >
-                            Customer
+                            Khách hàng
                         </MenuItem>
                         <MenuItem
                             onClick={() => {
@@ -128,7 +128,7 @@ export default function UserPopup({ user }: UserPopupProps) {
                                 setIsModalOpenEditRole(true);
                             }}
                         >
-                            Manager
+                            Quản lý
                         </MenuItem>
                         <MenuItem
                             onClick={() => {
@@ -137,7 +137,7 @@ export default function UserPopup({ user }: UserPopupProps) {
                                 setIsModalOpenEditRole(true);
                             }}
                         >
-                            Technician
+                            Nhân viên kĩ thuật
                         </MenuItem>
                     </Popover>
                 </div>
