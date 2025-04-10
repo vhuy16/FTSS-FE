@@ -50,7 +50,7 @@ const initialState: OrderState = {
 // Thunk để lấy dữ liệu orders từ API get order by Buyyer
 export const getAllOrdersByUsers = createAsyncThunk("orders/getAllOrdersByUsers", async (status?: string) => {
   const statusQuery = status ? `&status=${status}` : ""; // Nếu có status thì thêm vào query
-  const response = await myAxios.get(`/order/get-all-order?page=1&size=100&isAscending=false${statusQuery}`);
+  const response = await myAxios.get(`/order/get-all-order?page=1&size=1000&isAscending=false${statusQuery}`);
   return response.data.data.orders;
 });
 

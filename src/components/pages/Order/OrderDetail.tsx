@@ -9,6 +9,7 @@ import { AssignmentTurnedIn, Cancel, CheckCircle, FeedOutlined, LocalShipping, S
 import { useAppDispatch, useAppSelector } from "@redux/hook";
 import { getAllOrdersByUsers, Order, OrderDetail } from "@redux/slices/orderListSlice";
 import { getOrderById, updateOrder } from "@redux/slices/orderSlice";
+import { getUserProfile } from "@redux/slices/userSlice";
 import {
   BaseBtnGreen,
   BaseButtonGreen,
@@ -22,6 +23,7 @@ import { breakpoints, defaultTheme } from "@styles/themes/default";
 import { UserContent, UserDashboardWrapper } from "@styles/user";
 import { currencyFormat } from "@ultils/helper";
 import { useEffect, useState } from "react";
+import { FaCheck, FaClock, FaTimes } from "react-icons/fa";
 import { Link, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import styled from "styled-components";
@@ -428,25 +430,32 @@ const breadcrumbItems = [
 
 const OrderDetailScreen = () => {
   const { orderId } = useParams<{ orderId: string }>();
-  const [order, setOrder] = useState<Order | null>(null);
+  const isLoading = useAppSelector((state) => state.order.isLoading);
+  const isLoadingUpdate = useAppSelector((state) => state.order.isLoadingUpdate);
+  const isLoadingProfile = useAppSelector((state) => state.userProfile.isLoading);
+  const order = useAppSelector((state) => state.order.order);
+  // const [order, setOrder] = useState<Order | null>(null);
   const total = order?.orderDetails.reduce((total: number, item: OrderDetail) => {
     return total + item.price * item.quantity;
   }, 0);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const dispatch = useAppDispatch();
+  // useEffect(() => {
+  //   if (!orderId) return;
+
+  //   (async () => {
+  //     try {
+  //       const res = await dispatch(getOrderById(orderId));
+  //       setOrder(res.payload as Order);
+  //     } catch (error) {
+  //       console.error("Lỗi khi lấy đơn hàng:", error);
+  //     }
+  //   })();
+  // }, [dispatch, orderId]);
   useEffect(() => {
-    if (!orderId) return;
-
-    (async () => {
-      try {
-        const res = await dispatch(getOrderById(orderId));
-        setOrder(res.payload as Order);
-      } catch (error) {
-        console.error("Lỗi khi lấy đơn hàng:", error);
-      }
-    })();
+    window.scrollTo(0, 0);
+    dispatch(getOrderById(orderId as string));
   }, [dispatch, orderId]);
-
   const formatDate = (dateString?: string | null) => {
     if (!dateString) return "Không xác định"; // Giá trị mặc định nếu không có ngày hợp lệ
 
@@ -476,16 +485,18 @@ const OrderDetailScreen = () => {
   const closeModalDelete = () => {
     setIsModalOpenDelete(false);
   };
-  const isLoading = useAppSelector((state) => state.order.isLoading);
-  const isLoadingUpdate = useAppSelector((state) => state.order.isLoadingUpdate);
+
+  useEffect(() => {
+    dispatch(getUserProfile());
+  }, []);
 
   const handleCancelOrder = async () => {
     try {
       await dispatch(updateOrder({ id: orderId ?? "", status: "CANCELLED" }));
       toast.success("Đơn hàng đã được hủy!");
       setIsModalOpenDelete(false);
-      const res = await dispatch(getOrderById(orderId ?? ""));
-      setOrder(res.payload as Order);
+      await dispatch(getOrderById(orderId ?? ""));
+      // setOrder(res.payload as Order);
     } catch (error) {
       toast.error("Hủy đơn hàng thất bại!");
       console.error("Lỗi khi hủy đơn hàng:", error);
@@ -498,10 +509,49 @@ const OrderDetailScreen = () => {
   };
   const closeModal = () => setShowRefundModal(false);
   const [showRefundModal, setShowRefundModal] = useState(false);
-
+  const PaymentStatus = ({ status }: { status: string }) => (
+    <div
+      className={`flex items-center gap-1 ${
+        status === "Completed" || status === "Refunded"
+          ? "text-green-600"
+          : status === "Processing" || status === "Refunding"
+          ? "text-gray-500"
+          : status === "Cancelled"
+          ? "text-red-600"
+          : "text-gray-600"
+      }`}
+    >
+      {status === "Completed" || status === "Refunded" ? (
+        <FaCheck />
+      ) : status === "Cancelled" ? (
+        <FaTimes />
+      ) : status === "Processing" || status === "Refunding" ? (
+        <FaClock />
+      ) : null}
+      <span className="font-medium">
+        {status === "Completed"
+          ? "Đã thanh toán"
+          : status === "Cancelled"
+          ? "Đã huỷ"
+          : status === "Processing"
+          ? "Đang chờ thanh toán"
+          : status === "Refunded"
+          ? "Đã hoàn tiền"
+          : status === "Refunding"
+          ? "Đang hoàn tiền"
+          : "Không xác định"}
+      </span>
+    </div>
+  );
+  //confirm nhan hang
+  const [isConfirmed, setIsConfirmed] = useState(false);
+  const handleConfirm = () => {
+    toast.success("Cảm ơn bạn đã xác nhận với chúng tôi!");
+    setIsConfirmed(true);
+  };
   return (
     <OrderDetailScreenWrapper className="page-py-spacing">
-      {isLoading ? (
+      {isLoading && isLoadingProfile ? (
         <LoadingPage />
       ) : (
         <Container>
@@ -519,12 +569,43 @@ const OrderDetailScreen = () => {
                 <div className="order-d-wrapper">
                   <div className="order-d-top flex justify-between items-start">
                     <div className="order-d-top-l">
-                      <h4 className="text-3xl order-d-no">Mã đặt hàng: #{order?.oderCode}</h4>
-                      <p className="text-lg font-medium text-gray">Ngày đặt: {formatDate(order?.createDate)}</p>
-                      <p className="text-lg font-medium text-gray">Địa chỉ: {order?.address}</p>
+                      <h4 className="text-3xl order-d-no">
+                        <div className="flex items-center">
+                          <span className="text-gray-800 font-bold mr-2">Mã đặt hàng:</span>
+                          <span className="px-3 py-1 rounded-md text-xl font-medium ">{order?.oderCode}</span>
+                        </div>
+                      </h4>
                       <p className="text-lg font-medium text-gray">
-                        Phương thức thanh toán:{" "}
-                        {order?.payment?.paymentMethod === "COD" ? "Thanh toán khi nhận hàng" : "Thanh toán online"}
+                        <div className="flex items-center">
+                          <span className="text-gray-800 font-bold mr-2">Ngày đặt:</span>
+                          <span className="px-3 py-1 rounded-md text-xl font-medium ">
+                            {formatDate(order?.createDate)}
+                          </span>
+                        </div>
+                      </p>
+                      <p className="text-lg font-medium text-gray">
+                        <div className="flex items-center">
+                          <span className="text-gray-800 font-bold mr-2">Địa chỉ:</span>
+                          <span className="px-3 py-1 rounded-md text-xl font-medium ">{order?.address}</span>
+                        </div>
+                      </p>
+                      <p className="text-lg font-medium text-gray">
+                        <div className="flex items-center">
+                          <span className="text-gray-800 font-bold mr-2">Trạng thái thanh toán</span>
+                          <span className="px-3 py-1 rounded-md text-xl font-medium ">
+                            <PaymentStatus status={order?.payment?.paymentStatus ?? "UNKNOWN"} />
+                          </span>
+                        </div>
+                      </p>
+                      <p className="text-lg font-medium text-gray">
+                        <div className="flex items-center">
+                          <span className="text-gray-800 font-bold mr-2">Phương thức thanh toán:</span>
+                          <span className="px-3 py-1 rounded-md text-xl font-medium ">
+                            {order?.payment?.paymentMethod === "COD"
+                              ? "Thanh toán khi nhận hàng"
+                              : order?.payment?.paymentMethod}
+                          </span>
+                        </div>
                       </p>
                     </div>
                     <div className="order-d-top-r text-xxl text-gray font-semibold">
@@ -582,13 +663,16 @@ const OrderDetailScreen = () => {
                   {order?.status === "COMPLETED" ? (
                     <OrderDetailMessageWrapper>
                       <div className="order-message-content">
-                        <p className="font-semibold">Hãy kiểm tra cẩn thận tất cả các sản phẩm trong đơn hàng ".</p>
+                        <p className="font-semibold">"Hãy kiểm tra cẩn thận tất cả các sản phẩm trong đơn hàng "</p>
+                        <p className="font-semibold">"Đơn hàng của bạn đã được giao"</p>
                         <p className="text-gray-600">{formatDate(order?.modifyDate)}.</p>
                       </div>
-
                       <div className="order-buttons">
-                        <BaseBtnGreen className="confirm-button">Đã Nhận Hàng</BaseBtnGreen>
-                        <BaseButtonWhite className="request-button">Yêu Cầu Hoàn Tiền</BaseButtonWhite>
+                        {!isConfirmed && (
+                          <BaseBtnGreen className="confirm-button" onClick={handleConfirm}>
+                            Đã Nhận Hàng
+                          </BaseBtnGreen>
+                        )}
                       </div>
                     </OrderDetailMessageWrapper>
                   ) : ["PROCESSING"].includes(order?.status || "") ? (
@@ -612,7 +696,10 @@ const OrderDetailScreen = () => {
                         <p className="font-semibold">"Vui lòng nhấn yêu cầu hoàn tiền để gửi thông tin hoàn tiền".</p>
                       </div>
                       <div className="order-buttons">
-                        <BaseButtonWhite className="request-button" onClick={() => openModal(order)}>
+                        <BaseButtonWhite
+                          className="request-button"
+                          onClick={() => openModal(order as unknown as Order)}
+                        >
                           Yêu Cầu Hoàn Tiền
                         </BaseButtonWhite>
                       </div>
