@@ -47,6 +47,8 @@ import BookingHistory from "@components/pages/Booking/BookingHistory";
 import BookingHistoryDetail from "@components/pages/Booking/BookingHistoryDetail";
 import IssueBlog from "@components/pages/Issue/IssueBlog";
 import ListVoucher from "@components/pages/manager/ListVoucher";
+import BookingHistoryListSCreen from "@components/pages/Booking/BookingHistoryListSCreen";
+import IssueBlogDetail from "@components/pages/Issue/IssueBlogDetail";
 
 export type RouteType = {
   path: string;
@@ -351,7 +353,7 @@ if (role === "Admin") {
     },
     {
       path: "/booking-history",
-      component: BookingHistory,
+      component: BookingHistoryListSCreen,
       layout: MainLayout,
     },
     {
@@ -362,6 +364,11 @@ if (role === "Admin") {
     {
       path: "/issue-post",
       component: IssueBlog,
+      layout: MainLayout,
+    },
+    {
+      path: "/issue-post/:id",
+      component: IssueBlogDetail,
       layout: MainLayout,
     },
   ];

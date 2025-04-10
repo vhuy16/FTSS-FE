@@ -20,7 +20,7 @@ const initialState: BankType = {
   isError: false,
   listBank: [],
 };
-export const getAllBank = createAsyncThunk("booking/getAllBookingofUsers", async () => {
+export const getAllBank = createAsyncThunk("booking/getAllBank", async () => {
   try {
     const response = await axios.get(`https://api.vietqr.io/v2/banks`);
     return response.data.data;

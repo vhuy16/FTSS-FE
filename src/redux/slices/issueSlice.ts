@@ -11,7 +11,7 @@ export type Issue = {
   issueCategoryName: string;
   createDate: string;
   modifiedDate: string;
-  solutions: [];
+  solutions: Solution[];
 };
 export type Solution = {
   id: string;
@@ -33,6 +33,7 @@ type IssueData = {
 
 type initialStateProduct = {
   data: IssueData | null;
+  issueDetail: Issue | null;
   isLoading: boolean;
   isError: boolean;
 };
@@ -45,7 +46,8 @@ export const getAllIssue = createAsyncThunk(
       size,
       issueCategoryId,
       isAscending,
-    }: { page?: number; size?: number; issueCategoryId?: string; isAscending?: boolean },
+      issueTitle,
+    }: { page?: number; size?: number; issueCategoryId?: string; isAscending?: boolean; issueTitle?: string },
     { rejectWithValue }
   ) => {
     try {
@@ -58,6 +60,9 @@ export const getAllIssue = createAsyncThunk(
       if (isAscending !== undefined) {
         url += `&isAscending=${isAscending}`;
       }
+      if (issueTitle) {
+        url += `&issueTitle=${issueTitle}`;
+      }
 
       const response = await myAxios.get(url);
       return response.data.data;
@@ -67,9 +72,19 @@ export const getAllIssue = createAsyncThunk(
     }
   }
 );
+export const getDetailIssue = createAsyncThunk("issue/getDetailIssue", async (id: string, { rejectWithValue }) => {
+  try {
+    const response = await myAxios.get(`/issue/${id}`);
+    return response.data.data;
+  } catch (error: any) {
+    console.log(error);
+    return rejectWithValue(error.response?.data?.message || "Lấy sản phẩm chi tiết thất bại");
+  }
+});
 
 const initialState: initialStateProduct = {
   data: null,
+  issueDetail: null,
   isLoading: false,
   isError: false,
 };
@@ -90,6 +105,20 @@ const IssueSlice = createSlice({
         state.data = action.payload;
       })
       .addCase(getAllIssue.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+      });
+    builder
+      .addCase(getDetailIssue.pending, (state) => {
+        state.isLoading = true;
+        state.isError = false;
+      })
+      .addCase(getDetailIssue.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isError = false;
+        state.issueDetail = action.payload;
+      })
+      .addCase(getDetailIssue.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
       });

@@ -4,16 +4,24 @@ import { useAppDispatch, useAppSelector } from "@redux/hook";
 import { BaseBtnGreen } from "@styles/button";
 import { FiX } from "react-icons/fi";
 import { getAllBank } from "@redux/slices/bankSlice";
+import { Order } from "@redux/slices/orderListSlice";
+import { refundOrder } from "@redux/slices/orderSlice";
+import { toast } from "react-toastify";
+import { BookingList } from "@redux/slices/bookingSlice";
+import Loading from "../Loading/Loading";
 
 interface RefundModalProps {
   isOpen: boolean;
   onClose: () => void;
+  order?: Order | null;
+  //Nhận order từ OrderItemList
+  booking?: BookingList | null;
 }
 
-export const RefundBankModal = ({ isOpen, onClose }: RefundModalProps) => {
+export const RefundBankModal = ({ isOpen, onClose, order, booking }: RefundModalProps) => {
   const dispatch = useAppDispatch();
   const listBanks = useAppSelector((state) => state.bank.listBank);
-  const isLoading = useAppSelector((state) => state.bank.isLoading);
+  const isLoadingRefund = useAppSelector((state) => state.order.isLoadingRefund);
   const [searchTerm, setSearchTerm] = useState("");
   const [data, setData] = useState<{
     BankHolderName: string;
@@ -26,7 +34,53 @@ export const RefundBankModal = ({ isOpen, onClose }: RefundModalProps) => {
   });
   useEffect(() => {
     dispatch(getAllBank());
-  }, []);
+  }, [dispatch]);
+  const handleRefund = async () => {
+    const { BankHolderName, BankName, BankNumber } = data;
+
+    if (!BankHolderName || !BankName || !BankNumber) {
+      toast.error("Vui lòng nhập đầy đủ thông tin ngân hàng.");
+      return;
+    }
+    const selectedDAta = order ?? booking;
+    const paymentId = selectedDAta?.payment?.paymentId;
+    const orderId = order?.id;
+    const bookingId = booking?.id;
+
+    if (!paymentId) {
+      toast.error("Không tìm thấy mã thanh toán.");
+      return;
+    }
+    try {
+      const resultAction = await dispatch(
+        refundOrder({
+          paymentId,
+          bankName: BankName,
+          bankNumber: BankNumber,
+          bankHolder: BankHolderName,
+          orderId,
+          bookingId,
+        })
+      );
+
+      if (refundOrder.fulfilled.match(resultAction)) {
+        toast.success("Yêu cầu hoàn tiền thành công!");
+        setData({
+          BankHolderName: "",
+          BankName: "",
+          BankNumber: "",
+        });
+        onClose(); // đóng modal
+      } else {
+        const errorMessage = resultAction.payload || "Có lỗi xảy ra khi cập nhật thông tin ngân hàng.";
+        alert(errorMessage);
+      }
+    } catch (err) {
+      console.error("Refund failed", err);
+      alert("Đã xảy ra lỗi không mong muốn.");
+    }
+  };
+
   return (
     <SimpleModal isOpen={isOpen} onClose={onClose}>
       <div className=" p-6 bg-white" role="dialog" aria-modal="true">
@@ -123,15 +177,15 @@ export const RefundBankModal = ({ isOpen, onClose }: RefundModalProps) => {
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-400"
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400"
             >
               Hủy
             </button>
             <button
-              disabled={isLoading}
-              className={`px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50`}
+              onClick={handleRefund}
+              className={`px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 flex justify-center items-center`}
             >
-              Gửi
+              {isLoadingRefund ? <Loading /> : "Gửi "}
             </button>
           </div>
         </div>

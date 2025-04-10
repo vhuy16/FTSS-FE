@@ -45,7 +45,6 @@ function Home() {
 
             <HorizontalLine />
             <Brands />
-            <Feedback />
           </Container>
         </>
       )}
