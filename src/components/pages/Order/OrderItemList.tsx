@@ -14,6 +14,7 @@ import { useAppDispatch, useAppSelector } from "@redux/hook";
 import { updateOrder } from "@redux/slices/orderSlice";
 import { toast } from "react-toastify";
 import { RefundBankModal } from "@components/atom/modal/RefundBankModal";
+import { FaBoxOpen, FaCheck, FaClock, FaRegMoneyBillAlt, FaTimes, FaTruck } from "react-icons/fa";
 
 interface OrderItemListProps {
   orders: Order[]; // Changed to an array of Order
@@ -162,6 +163,7 @@ const OrderItemList: React.FC<OrderItemListProps> = ({ orders }) => {
   const [isModalOpenDelete, setIsModalOpenDelete] = useState(false);
   const isLoadingUpdate = useAppSelector((state) => state.order.isLoadingUpdate);
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const dispatch = useAppDispatch();
   const openModalDelete = () => {
     setIsModalOpenDelete(true);
@@ -183,38 +185,125 @@ const OrderItemList: React.FC<OrderItemListProps> = ({ orders }) => {
     }
   };
   // refund
-  const openModal = () => setShowRefundModal(true);
+  const openModal = (order: Order) => {
+    setSelectedOrder(order);
+    setShowRefundModal(true);
+  };
   const closeModal = () => setShowRefundModal(false);
   const [showRefundModal, setShowRefundModal] = useState(false);
+
+  const StatusTag = ({ status }: { status: string | null }) => {
+    const statusConfig: {
+      [key: string]: {
+        bg: string;
+        text: string;
+        icon: JSX.Element;
+        label: string;
+      };
+    } = {
+      COMPLETED: {
+        bg: "bg-green-100",
+        text: "text-green-800",
+        icon: <FaBoxOpen className="inline-block mr-1" />,
+        label: "Đã giao hàng",
+      },
+      PROCESSING: {
+        bg: "bg-gray-100",
+        text: "text-gray-800",
+        icon: <FaClock className="inline-block mr-1" />,
+        label: "Đang xử lý",
+      },
+      PROCESSED: {
+        bg: "bg-green-100",
+        text: "text-green-800",
+        icon: <FaCheck className="inline-block mr-1" />,
+        label: "Đã xử lý",
+      },
+      CANCELLED: {
+        bg: "bg-red-100",
+        text: "text-red-800",
+        icon: <FaTimes className="inline-block mr-1" />,
+        label: "Đã hủy",
+      },
+      RETURNED: {
+        bg: "bg-green-100",
+        text: "text-green-800",
+        icon: <FaRegMoneyBillAlt className="inline-block mr-1" />,
+        label: "Hoàn tiền",
+      },
+      PENDING_DELIVERY: {
+        bg: "bg-green-100",
+        text: "text-green-800",
+        icon: <FaTruck className="inline-block mr-1" />,
+        label: "Chờ giao hàng",
+      },
+    };
+
+    const config = statusConfig[status ?? "null"];
+
+    if (!config) return null;
+
+    return (
+      <span
+        className={`${config.bg} ${config.text} px-3 py-1 rounded-full text-sm font-medium flex items-center w-fit`}
+      >
+        {config.icon}
+        {config.label}
+      </span>
+    );
+  };
+  const PaymentStatus = ({ status }: { status: string }) => (
+    <div
+      className={`flex items-center gap-1 ${
+        status === "Completed" || status === "Refunded"
+          ? "text-green-600"
+          : status === "Processing" || status === "Refunding"
+          ? "text-gray-500"
+          : status === "Cancelled"
+          ? "text-red-600"
+          : "text-gray-600"
+      }`}
+    >
+      {status === "Completed" || status === "Refunded" ? (
+        <FaCheck />
+      ) : status === "Cancelled" ? (
+        <FaTimes />
+      ) : status === "Processing" || status === "Refunding" ? (
+        <FaClock />
+      ) : null}
+      <span className="font-medium">
+        {status === "Completed"
+          ? "Đã thanh toán"
+          : status === "Cancelled"
+          ? "Đã huỷ"
+          : status === "Processing"
+          ? "Đang chờ thanh toán"
+          : status === "Refunded"
+          ? "Đã hoàn tiền"
+          : status === "Refunding"
+          ? "Đang hoàn tiền"
+          : "Không xác định"}
+      </span>
+    </div>
+  );
+
   return (
     <OrderItemListWrapper>
       {orders?.map((order) => (
         <div className="order-items" key={order.id}>
           {/* Hiển thị thông tin đơn hàng */}
           <div className="order-item-details">
-            <div className="flex justify-between items-center pb-5">
+            <StatusTag status={order.status} />
+            <div className="flex justify-between items-center pb-5 mt-4">
               <div>
-                <h3 className="text-gray-800 order-item-title font-bold">Mã đặt hàng: #{order.oderCode}</h3>
-                <span className="text-gray-800 font-bold mr-2">Trạng thái thanh toán: </span>
-                <span
-                  className={`px-3 py-1 rounded-md text-xl font-medium 
-                                                    ${
-                                                      order?.payment?.paymentStatus === "Processing"
-                                                        ? "bg-yellow-100 text-yellow-600"
-                                                        : order?.payment?.paymentStatus === "Completed"
-                                                        ? "bg-green-100 text-green-600"
-                                                        : "bg-red-100 text-red-600"
-                                                    }
-                                        `}
-                >
-                  {order?.payment?.paymentStatus === "Processing"
-                    ? "Đang chờ thanh toán"
-                    : order?.payment?.paymentStatus === "Completed"
-                    ? "Đã thanh toán"
-                    : "Đã hủy"}
-                </span>
+                <h3 className="text-gray-800 order-item-title font-bold">Mã đơn hàng: {order.oderCode}</h3>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-800 font-bold mr-2">Trạng thái thanh toán</span>
+                  <span className="px-3 py-1 rounded-md text-xl font-medium ">
+                    <PaymentStatus status={order?.payment?.paymentStatus ?? "UNKNOWN"} />
+                  </span>
+                </div>
               </div>
-
               <BaseBtnGreen onClick={() => navigate(`/order-detail/${order.id}`)}>Xem chi tiết</BaseBtnGreen>
             </div>
             <HorizontalLineTAb></HorizontalLineTAb>
@@ -233,7 +322,7 @@ const OrderItemList: React.FC<OrderItemListProps> = ({ orders }) => {
             <div className="order-btn">
               {order.status === "CANCELLED" && order?.payment?.paymentStatus === "Completed" && (
                 <>
-                  <button className="btn-secondary" onClick={openModal}>
+                  <button className="btn-secondary" onClick={() => openModal(order)}>
                     Yêu Cầu Hoàn Tiền
                   </button>
                 </>
@@ -258,9 +347,8 @@ const OrderItemList: React.FC<OrderItemListProps> = ({ orders }) => {
                       Đặt Lịch
                     </button>
                   ) : (
-                    <button className="btn-primary">Đánh Giá</button>
+                    <></>
                   )}
-                  <button className="btn-secondary">Liên hệ người bán</button>
                 </>
               )}
             </div>
@@ -288,7 +376,7 @@ const OrderItemList: React.FC<OrderItemListProps> = ({ orders }) => {
           </div>
         </ModalContent>
       </SimpleModal>
-      <RefundBankModal isOpen={showRefundModal} onClose={closeModal} />
+      <RefundBankModal isOpen={showRefundModal} onClose={closeModal} order={selectedOrder} />
     </OrderItemListWrapper>
   );
 };

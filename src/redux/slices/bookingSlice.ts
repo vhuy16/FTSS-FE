@@ -22,7 +22,6 @@ export interface BookingList {
   id: string;
   scheduleDate: string;
   status: string;
-  missionStatus: string;
   address: string;
   phoneNumber: string;
   totalPrice: number;
@@ -30,6 +29,11 @@ export interface BookingList {
   isAssigned: boolean;
   services: ServicePackage[];
   bookingCode: string;
+  payment: {
+    paymentId: string | null;
+    paymentStatus: string | null;
+    paymentMethod: string | null;
+  };
 }
 export interface BookingDetail {
   id: string;
@@ -45,6 +49,11 @@ export interface BookingDetail {
   isAssigned: boolean;
   services: ServicePackage[];
   bookingCode: string;
+  payment: {
+    paymentId: string | null;
+    paymentStatus: string | null;
+    paymentMethod: string | null;
+  };
 }
 export interface BookingState {
   loading: boolean;
@@ -53,6 +62,8 @@ export interface BookingState {
   bookingList: BookingList[];
   bookingDetail: BookingDetail | null | undefined;
   unavailableDates: UnavailableDate[];
+  isLoadingCancel: boolean;
+  isLoadingUpdate: boolean;
 }
 
 export const createBookingService = createAsyncThunk(
@@ -83,15 +94,17 @@ export const getAllUnavailableDates = createAsyncThunk("booking/getAllUnavailabl
   }
 });
 
-export const getAllBookingofUsers = createAsyncThunk("booking/getAllBookingofUsers", async () => {
+export const getAllBookingofUsers = createAsyncThunk("booking/getAllBookingofUsers", async (missionstatus?: string) => {
   try {
-    const response = await myAxios.get(`/booking/list-booking-user?page=1&size=100&isAscending=true`);
+    const statusQuery = missionstatus ? `&missionstatus=${missionstatus}` : "";
+    const response = await myAxios.get(`/booking/list-booking-user?page=1&size=100&isAscending=false${statusQuery}`);
     return response.data.data;
   } catch (error: any) {
-    console.error("Error fetching user profile:", error);
+    console.error("Error fetching booking data:", error);
     throw error;
   }
 });
+
 export const getDetailBookingofUsers = createAsyncThunk(
   "booking/getDetailBookingofUsers",
   async (id: string, { rejectWithValue }) => {
@@ -122,6 +135,19 @@ export const updateBookingSchedule = createAsyncThunk(
     }
   }
 );
+export const CancelBooking = createAsyncThunk(
+  "booking/CancelBooking",
+  async ({ bookingid }: { bookingid: string }, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await myAxios.put(`/booking/cancel-booking/${bookingid}`);
+      await dispatch(getAllBookingofUsers());
+      return response.data;
+    } catch (error: any) {
+      console.error("Error creating setup package:", error);
+      return rejectWithValue(error.response?.data?.message || "Hủy dịch vụ thất bại");
+    }
+  }
+);
 const initialState: BookingState = {
   loading: false,
   error: null,
@@ -129,6 +155,8 @@ const initialState: BookingState = {
   bookingDetail: null,
   bookingList: [],
   unavailableDates: [],
+  isLoadingCancel: false,
+  isLoadingUpdate: false,
 };
 const bookingSlice = createSlice({
   name: "booking",
@@ -186,6 +214,32 @@ const bookingSlice = createSlice({
       })
       .addCase(getDetailBookingofUsers.rejected, (state, action) => {
         state.loading = false;
+        state.error = action.payload as string;
+      });
+    builder
+      .addCase(CancelBooking.pending, (state) => {
+        state.isLoadingCancel = true;
+        state.error = null;
+      })
+      .addCase(CancelBooking.fulfilled, (state, action) => {
+        state.isLoadingCancel = false;
+        state.error = null;
+      })
+      .addCase(CancelBooking.rejected, (state, action) => {
+        state.isLoadingCancel = false;
+        state.error = action.payload as string;
+      });
+    builder
+      .addCase(updateBookingSchedule.pending, (state) => {
+        state.isLoadingUpdate = true;
+        state.error = null;
+      })
+      .addCase(updateBookingSchedule.fulfilled, (state, action) => {
+        state.isLoadingUpdate = false;
+        state.error = null;
+      })
+      .addCase(updateBookingSchedule.rejected, (state, action) => {
+        state.isLoadingUpdate = false;
         state.error = action.payload as string;
       });
   },

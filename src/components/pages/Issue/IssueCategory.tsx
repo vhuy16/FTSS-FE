@@ -47,10 +47,23 @@ const IssueCategory = () => {
     <div className="bg-white p-6 rounded-lg shadow-md">
       <h3 className="text-lg font-bold mb-4">Phân loại</h3>
       <div className="space-y-4">
+        <button
+          onClick={() => {
+            const currentParams = Object.fromEntries(searchParams.entries());
+            const { issueCategoryId, ...rest } = currentParams;
+            setSearchParams({ ...rest, page: "1" }); // Xoá category và reset page
+          }}
+          className={`block text-gray-700 hover:text-blue-600 hover:underline transition-colors duration-300 ${
+            !selectedCategoryId ? "font-bold text-blue-600" : ""
+          }`}
+        >
+          Tất cả
+        </button>
+
         {categories?.map((category) => (
           <button
             key={category.id}
-            onClick={() => handleCategorySelect(category.id)} // Gọi hàm khi click vào category
+            onClick={() => handleCategorySelect(category.id)}
             className={`block text-gray-700 hover:text-blue-600 hover:underline transition-colors duration-300 ${
               category.id === selectedCategoryId ? "font-bold text-blue-600" : ""
             }`}

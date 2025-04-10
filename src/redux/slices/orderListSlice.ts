@@ -18,6 +18,7 @@ export type Order = {
   };
   orderDetails: OrderDetail[];
   payment: {
+    paymentId: string | null;
     paymentStatus: string | null;
     paymentMethod: string | null;
   };

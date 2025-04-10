@@ -19,7 +19,6 @@ const breadcrumbItems = [
 ];
 
 const IssueBlog = () => {
-  const [searchQuery, setSearchQuery] = useState("");
   const dispatch = useAppDispatch();
   const listIssue = useAppSelector((state) => state.issue.data?.items);
   const isLoading = useAppSelector((state) => state.issue.isLoading);
@@ -30,6 +29,11 @@ const IssueBlog = () => {
   const page = params.get("page") ?? "1";
   const size = params.get("size") ?? "6";
   const [isAscending] = useState(false);
+  const issueCategoryId = params.get("issueCategoryId") ?? undefined;
+  const issueTitle = params.get("issueTitle") ?? undefined;
+  const [inputValue, setInputValue] = useState(issueTitle ?? ""); // chỉ để hiển thị
+  const [searchQuery, setSearchQuery] = useState(issueTitle ?? ""); // để thực sự gọi API
+  const navigate = useNavigate();
 
   useEffect(() => {
     dispatch(
@@ -37,9 +41,11 @@ const IssueBlog = () => {
         page: parseInt(page as string),
         size: parseInt(size as string),
         isAscending,
+        issueCategoryId: searchQuery ? undefined : issueCategoryId || undefined,
+        issueTitle: searchQuery,
       })
     );
-  }, [page, size, isAscending]);
+  }, [page, size, isAscending, issueCategoryId, issueTitle]);
 
   return (
     <main className="page-py-spacing">
@@ -71,17 +77,41 @@ const IssueBlog = () => {
                     <input
                       type="text"
                       placeholder="Search..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
+                      value={inputValue}
+                      onChange={(e) => setInputValue(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          const updatedParams = new URLSearchParams(location.search);
+
+                          // Cập nhật issueTitle
+                          if (inputValue.trim()) {
+                            updatedParams.set("issueTitle", inputValue.trim());
+                            updatedParams.set("page", "1");
+                            updatedParams.delete("issueCategoryId"); // Xoá cate khi search
+                          } else {
+                            updatedParams.delete("issueTitle");
+                            updatedParams.set("page", "1");
+                            updatedParams.delete("issueCategoryId");
+                          }
+
+                          // Cập nhật lên URL
+                          navigate({
+                            pathname: location.pathname,
+                            search: `?${updatedParams.toString()}`,
+                          });
+
+                          // Cập nhật trigger gọi API
+                          setSearchQuery(inputValue.trim());
+                        }
+                      }}
                       className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
+
                     <FiSearch className="absolute left-3 top-3 text-gray-400" />
                   </div>
                 </div>
                 {/* Categories */}
                 <IssueCategory />
-                {/* Recent Posts */}
-                <IssueRecentPost />
               </div>
             </div>
           </div>
