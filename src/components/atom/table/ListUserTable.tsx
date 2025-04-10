@@ -35,7 +35,7 @@ export default function ListUserTable() {
         { field: 'username', headerName: 'Tên đăng nhập', width: 150, headerClassName: 'super-app-theme--header' },
         { field: 'fullName', headerName: 'Họ tên', width: 150, headerClassName: 'super-app-theme--header' },
         { field: 'email', headerName: 'Email', width: 250, headerClassName: 'super-app-theme--header' },
-        { field: 'address', headerName: 'Địa chỉ', width: 300, headerClassName: 'super-app-theme--header' },
+        // { field: 'address', headerName: 'Địa chỉ', width: 300, headerClassName: 'super-app-theme--header' },
         { field: 'phoneNumber', headerName: 'SĐT', width: 150, headerClassName: 'super-app-theme--header' },
         {
             field: 'gender',
@@ -75,12 +75,27 @@ export default function ListUserTable() {
                     </div>
                 ),
         },
-        { field: 'role', headerName: 'Vai trò', width: 150, headerClassName: 'super-app-theme--header' },
+        {
+            field: 'role',
+            headerName: 'Vai trò',
+            width: 150,
+            headerClassName: 'super-app-theme--header',
+            renderCell: (params) =>
+                params.row.role === 'Customer'
+                    ? 'Khách hàng'
+                    : params.row.role === 'Technician'
+                    ? 'Nhân viên kĩ thuật'
+                    : params.row.role === 'Manager'
+                    ? 'Quản lý'
+                    : 'Admin',
+        },
         {
             field: 'actions',
             headerName: '',
             flex: 1,
             width: 50,
+            align: 'right',
+            headerAlign: 'right',
             headerClassName: 'super-app-theme--header',
             renderCell: (params) => <UserPopup user={params.row}></UserPopup>,
         },
