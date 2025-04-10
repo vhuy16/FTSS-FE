@@ -74,7 +74,7 @@ export default function AddProductModal({ isModalAddOpen, setIsModalAddOpen }: M
             }
 
             try {
-                await dispatch(addProducts(formData));
+                await dispatch(addProducts(formData)).unwrap();
                 setIsModalAddOpen(false);
                 setData({
                     productName: '',
