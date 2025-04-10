@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from '@redux/hook';
 import { deleteSetup, SetupPackage } from '@redux/slices/setupSlice';
 import Loading from '../Loading/Loading';
 import { toast } from 'react-toastify';
-import { Booking } from '@redux/slices/missionSlide';
+import { Booking, refundedBooking } from '@redux/slices/missionSlide';
 import { refundedOrder } from '@redux/slices/orderSlice';
 type ConfirmRefundedBooking = {
     isModalOpenActivate: boolean;
@@ -25,7 +25,7 @@ export default function ConfirmRefundedBooking({
     booking,
 }: ConfirmRefundedBooking) {
     const dispatch = useAppDispatch();
-    const isLoading = useAppSelector((state) => state.order.isLoadingRefunded);
+    const isLoading = useAppSelector((state) => state.mission.isLoadingRefundedBooking);
     return (
         <>
             {/* Modal */}
@@ -90,7 +90,7 @@ export default function ConfirmRefundedBooking({
                                         onClick={async () => {
                                             try {
                                                 await dispatch(
-                                                    refundedOrder(booking.payment.paymentId as string),
+                                                    refundedBooking(booking.payment.paymentId as string),
                                                 ).unwrap();
                                                 setIsModalOpenActivate(false);
                                             } catch (error) {

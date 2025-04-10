@@ -194,7 +194,8 @@ export default function BookingDetail() {
                                                 </div>
                                             </div>
                                         </div>
-                                        {bookingDetail.payment?.paymentStatus === 'Refunding' && (
+                                        {(bookingDetail.payment?.paymentStatus === 'Refunding' ||
+                                            bookingDetail.payment?.paymentStatus === 'Refunded') && (
                                             <div>
                                                 <div className="rounded-t border-b dark:border-gray-600 sm:col-span-6"></div>
                                                 <div className="flex justify-between xl:h-full items-stretch w-full flex-col mt-6 md:mt-0">
