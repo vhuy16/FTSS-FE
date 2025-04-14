@@ -48,7 +48,8 @@ export default function BookingDetail() {
                                 </p>
 
                                 <p className="text-base dark:text-gray-300 font-medium leading-6 text-gray-600">
-                                    Ngày bảo trì: {bookingDetail.scheduleDate.split('T')[0]}
+                                    Thời gian bảo trì: {bookingDetail.scheduleDate.split('T')[0]} lúc{' '}
+                                    {bookingDetail.scheduleDate.split('T')[1]}
                                 </p>
                                 <p className="text-base dark:text-gray-300 font-medium leading-6 text-gray-600">
                                     Địa chỉ bảo trì: {bookingDetail.address}
