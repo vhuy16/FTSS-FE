@@ -57,11 +57,13 @@ type MissionType = {
     isLoadingGetAllBooking: boolean;
     isLoadingGetAllService: boolean;
     isLoadingCancelBooking: boolean;
+    isLoadingEditBooking: boolean;
     isLoadingRefundedBooking: boolean;
     isLoadingUpdate: boolean;
     isLoadingAssignBooking: boolean;
     listMission: Mission[];
     listBooking: Booking[];
+    selectedBooking: Booking | null;
     booking: Booking | null;
     listService: Service[];
     listTechnician: Technician[];
@@ -72,6 +74,7 @@ const initialState: MissionType = {
     isLoadingGetAllMission: false,
     isLoadingGetAllBooking: false,
     isLoadingGetAllService: false,
+    isLoadingEditBooking: false,
     isLoadingCancelBooking: false,
     isLoadingRefundedBooking: false,
     isLoadingUpdate: false,
@@ -81,6 +84,7 @@ const initialState: MissionType = {
     listTechnician: [],
     listBooking: [],
     booking: null,
+    selectedBooking: null,
     isError: false,
 };
 
@@ -177,7 +181,7 @@ export const cancelBooking = createAsyncThunk(
     },
 );
 export const refundedBooking = createAsyncThunk(
-    'booking/refundedBooking',
+    'mission/refundedBooking',
     async (id: string, { dispatch, rejectWithValue }) => {
         try {
             const response = await myAxios.put(`/update-status/${id}`, JSON.stringify('Refunded'), {
@@ -193,10 +197,32 @@ export const refundedBooking = createAsyncThunk(
         }
     },
 );
+export const editBooking = createAsyncThunk(
+    'mission/editBooking',
+    async ({ id, formData }: { id: string; formData: FormData }, { dispatch, rejectWithValue }) => {
+        try {
+            const response = await myAxios.put(`/booking/update-booking/${id}`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+            await dispatch(getAllBooking());
+            return response.data;
+        } catch (error: any) {
+            console.log(error);
+            return rejectWithValue(error.response?.data?.message || 'Cập nhật bảo trì thất bại');
+        }
+    },
+);
 const missionSlice = createSlice({
     name: 'mission',
     initialState,
-    reducers: {},
+    reducers: {
+        selectBooking: (state, action: PayloadAction<Booking>) => {
+            const booking = action.payload;
+            state.selectedBooking = booking;
+        },
+    },
     extraReducers: (builder) => {
         builder
             .addCase(getAllMission.pending, (state) => {
@@ -333,7 +359,20 @@ const missionSlice = createSlice({
                 state.isLoadingRefundedBooking = false;
                 state.isError = true;
             });
+        builder
+            .addCase(editBooking.pending, (state) => {
+                state.isLoadingEditBooking = true;
+                state.isError = false;
+            })
+            .addCase(editBooking.fulfilled, (state, action) => {
+                state.isLoadingEditBooking = false;
+                state.isError = false;
+            })
+            .addCase(editBooking.rejected, (state, action) => {
+                state.isLoadingEditBooking = false;
+                state.isError = true;
+            });
     },
 });
-
+export const { selectBooking } = missionSlice.actions;
 export default missionSlice.reducer;
