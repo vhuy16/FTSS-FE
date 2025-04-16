@@ -522,4 +522,13 @@ export const GlobalStyles = createGlobalStyle`
             font-size: 20px!important;
         }
     }
+
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hidden {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
 `;

@@ -50,6 +50,8 @@ import ListIssueCategory from "@components/pages/manager/ListIssueCategory";
 import ListIssue from "@components/pages/manager/ListIssue";
 import IssueBlogDetail from "@components/pages/Issue/IssueBlogDetail";
 import BookingHistoryListSCreen from "@components/pages/Booking/BookingHistoryListSCreen";
+import BookingSetup from "@components/pages/Booking/BookingSetup";
+import SetupBookingDetail from "@components/pages/Booking/SetupBookingDetail";
 
 export type RouteType = {
   path: string;
@@ -354,13 +356,23 @@ if (role === "Admin") {
       layout: MainLayout,
     },
     {
-      path: "/setup-booking/:setupBookingId",
+      path: "/setup-booking/detail/:orderId",
+      component: SetupBookingDetail,
+      layout: MainLayout,
+    },
+    {
+      path: "/setup-booking/service/:setupBookingId",
       component: BookingService,
       layout: MainLayout,
     },
     {
       path: "/setup-booking",
       component: SetupBookingList,
+      layout: MainLayout,
+    },
+    {
+      path: "/booking-setup-schedule/:orderId",
+      component: BookingSetup,
       layout: MainLayout,
     },
     {

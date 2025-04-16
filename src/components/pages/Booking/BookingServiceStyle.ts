@@ -267,7 +267,6 @@ export const InfoWrapper = styled.div`
 `;
 
 export const BookingContainer = styled.div`
-  flex: 2;
   background-color: #fff;
   border: 1px solid #dee2e6;
   border-radius: 0.3rem;
@@ -276,7 +275,6 @@ export const BookingContainer = styled.div`
 `;
 
 export const CalendarContainer = styled.div`
-  flex: 1;
   background-color: #fff;
   .sectionTitle {
     font-size: 1.3rem;

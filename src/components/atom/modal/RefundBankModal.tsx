@@ -80,13 +80,25 @@ export const RefundBankModal = ({ isOpen, onClose, order, booking }: RefundModal
       alert("Đã xảy ra lỗi không mong muốn.");
     }
   };
-
+  const handleClose = () => {
+    setData({
+      BankHolderName: "",
+      BankName: "",
+      BankNumber: "",
+    });
+    setSearchTerm("");
+    onClose();
+  };
   return (
-    <SimpleModal isOpen={isOpen} onClose={onClose}>
+    <SimpleModal isOpen={isOpen} onClose={handleClose}>
       <div className=" p-6 bg-white" role="dialog" aria-modal="true">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-semibold text-gray-800">Thông tin tài khoản ngân hàng</h2>
-          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors" aria-label="Đóng">
+          <button
+            onClick={handleClose}
+            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+            aria-label="Đóng"
+          >
             <FiX className="w-5 h-5" />
           </button>
         </div>
@@ -176,7 +188,7 @@ export const RefundBankModal = ({ isOpen, onClose, order, booking }: RefundModal
           <div className="flex justify-end space-x-3 mt-6">
             <button
               type="button"
-              onClick={onClose}
+              onClick={handleClose}
               className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400"
             >
               Hủy
