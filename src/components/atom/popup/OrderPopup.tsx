@@ -103,12 +103,136 @@ export default function OrderPopup({ order }: OrderPopupProps) {
                 )}
 
                 <div>
-                    {order.status !== 'CANCELLED' && order.status !== 'RETURNED' && order.status !== 'COMPLETED' && (
+                    {order.status !== 'CANCELLED' &&
+                        order.status !== 'RETURNED' &&
+                        order.status !== 'RETURNING' &&
+                        order.status !== 'COMPLETED' && (
+                            <MenuItem onMouseEnter={handlePopoverOpen}>
+                                <ListItemIcon>
+                                    <UpdateOutlinedIcon fontSize="small" className="text-blue-600" />
+                                </ListItemIcon>
+                                <ListItemText>Cập nhật trạng thái</ListItemText>
+
+                                <ListItemIcon className="flex justify-end">
+                                    <KeyboardArrowRightIcon fontSize="small" className="text-black" />
+                                </ListItemIcon>
+                            </MenuItem>
+                        )}
+
+                    {order.status !== 'CANCELLED' &&
+                        order.status !== 'RETURNED' &&
+                        order.status !== 'RETURNING' &&
+                        order.status !== 'COMPLETED' && (
+                            <Popover
+                                id="mouse-over-popover"
+                                open={Boolean(anchorEl && document.body.contains(anchorEl))}
+                                anchorEl={anchorEl}
+                                anchorOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'right', // Xuất hiện bên phải
+                                }}
+                                transformOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'left', // Xuất phát từ bên trái của Popover
+                                }}
+                                onClose={handlePopoverClose}
+                                disableRestoreFocus
+                                PaperProps={{
+                                    sx: { marginLeft: '4px', marginTop: '4px' }, // Cách menu cha 1rem
+                                }}
+                                // Đóng Popover khi rời chuột
+                            >
+                                {order.status === 'PROCESSING' ? (
+                                    <>
+                                        <MenuItem
+                                            onClick={() => {
+                                                setStatus('PROCESSED');
+                                                setIsModalOpenEditStatus(true);
+                                                handleClose();
+                                            }}
+                                        >
+                                            <Badge size="md" color="info">
+                                                Đã xử lý
+                                            </Badge>
+                                        </MenuItem>
+                                        <MenuItem
+                                            onClick={() => {
+                                                setStatus('CANCELLED');
+                                                setIsModalOpenEditStatus(true);
+                                                handleClose();
+                                            }}
+                                        >
+                                            <Badge size="md" color="error">
+                                                Hủy
+                                            </Badge>
+                                        </MenuItem>
+                                    </>
+                                ) : order.status === 'PROCESSED' ? (
+                                    <>
+                                        <MenuItem
+                                            onClick={() => {
+                                                setStatus('PENDING_DELIVERY');
+                                                setIsModalOpenEditStatus(true);
+                                                handleClose();
+                                            }}
+                                        >
+                                            <Badge size="md" color="primary">
+                                                Đang giao
+                                            </Badge>
+                                        </MenuItem>
+                                    </>
+                                ) : order.status === 'PENDING_DELIVERY' ? (
+                                    <>
+                                        <MenuItem
+                                            onClick={() => {
+                                                setStatus('COMPLETED');
+                                                setIsModalOpenEditStatus(true);
+                                                handleClose();
+                                            }}
+                                        >
+                                            <Badge size="md" color="success">
+                                                Hoàn tất
+                                            </Badge>
+                                        </MenuItem>
+                                        <MenuItem
+                                            onClick={() => {
+                                                setStatus('RETURNED');
+                                                setIsModalOpenEditStatus(true);
+                                                handleClose();
+                                            }}
+                                        >
+                                            <Badge size="md" color="dark">
+                                                Đã hoàn trả
+                                            </Badge>
+                                        </MenuItem>
+                                    </>
+                                ) : order.status === 'RETURN_ACCEPTED' ? (
+                                    <>
+                                        <MenuItem
+                                            onClick={() => {
+                                                setStatus('RETURNED');
+                                                setIsModalOpenEditStatus(true);
+                                                handleClose();
+                                            }}
+                                        >
+                                            <Badge size="md" color="dark">
+                                                Đã hoàn trả
+                                            </Badge>
+                                        </MenuItem>
+                                    </>
+                                ) : (
+                                    <></>
+                                )}
+                            </Popover>
+                        )}
+                </div>
+                <div>
+                    {order.status === 'RETURNING' && (
                         <MenuItem onMouseEnter={handlePopoverOpen}>
                             <ListItemIcon>
                                 <UpdateOutlinedIcon fontSize="small" className="text-blue-600" />
                             </ListItemIcon>
-                            <ListItemText>Cập nhật trạng thái</ListItemText>
+                            <ListItemText>Xác nhận hoàn trả</ListItemText>
 
                             <ListItemIcon className="flex justify-end">
                                 <KeyboardArrowRightIcon fontSize="small" className="text-black" />
@@ -116,7 +240,7 @@ export default function OrderPopup({ order }: OrderPopupProps) {
                         </MenuItem>
                     )}
 
-                    {order.status !== 'CANCELLED' && order.status !== 'RETURNED' && order.status !== 'COMPLETED' && (
+                    {order.status === 'RETURNING' && (
                         <Popover
                             id="mouse-over-popover"
                             open={Boolean(anchorEl && document.body.contains(anchorEl))}
@@ -136,73 +260,28 @@ export default function OrderPopup({ order }: OrderPopupProps) {
                             }}
                             // Đóng Popover khi rời chuột
                         >
-                            {order.status === 'PROCESSING' ? (
-                                <>
-                                    <MenuItem
-                                        onClick={() => {
-                                            setStatus('PROCESSED');
-                                            setIsModalOpenEditStatus(true);
-                                            handleClose();
-                                        }}
-                                    >
-                                        <Badge size="md" color="info">
-                                            Đã xử lý
-                                        </Badge>
-                                    </MenuItem>
-                                    <MenuItem
-                                        onClick={() => {
-                                            setStatus('CANCELLED');
-                                            setIsModalOpenEditStatus(true);
-                                            handleClose();
-                                        }}
-                                    >
-                                        <Badge size="md" color="error">
-                                            Hủy
-                                        </Badge>
-                                    </MenuItem>
-                                </>
-                            ) : order.status === 'PROCESSED' ? (
-                                <>
-                                    <MenuItem
-                                        onClick={() => {
-                                            setStatus('PENDING_DELIVERY');
-                                            setIsModalOpenEditStatus(true);
-                                            handleClose();
-                                        }}
-                                    >
-                                        <Badge size="md" color="primary">
-                                            Đang giao
-                                        </Badge>
-                                    </MenuItem>
-                                </>
-                            ) : order.status === 'PENDING_DELIVERY' ? (
-                                <>
-                                    <MenuItem
-                                        onClick={() => {
-                                            setStatus('COMPLETED');
-                                            setIsModalOpenEditStatus(true);
-                                            handleClose();
-                                        }}
-                                    >
-                                        <Badge size="md" color="success">
-                                            Hoàn tất
-                                        </Badge>
-                                    </MenuItem>
-                                    <MenuItem
-                                        onClick={() => {
-                                            setStatus('RETURNED');
-                                            setIsModalOpenEditStatus(true);
-                                            handleClose();
-                                        }}
-                                    >
-                                        <Badge size="md" color="light">
-                                            Hoàn trả
-                                        </Badge>
-                                    </MenuItem>
-                                </>
-                            ) : (
-                                <></>
-                            )}
+                            <MenuItem
+                                onClick={() => {
+                                    setStatus('RETURN_ACCEPTED');
+                                    setIsModalOpenEditStatus(true);
+                                    handleClose();
+                                }}
+                            >
+                                <Badge size="md" color="success">
+                                    Xác nhận
+                                </Badge>
+                            </MenuItem>
+                            <MenuItem
+                                onClick={() => {
+                                    setStatus('COMPLETED');
+                                    setIsModalOpenEditStatus(true);
+                                    handleClose();
+                                }}
+                            >
+                                <Badge size="md" color="error">
+                                    Không xác nhận
+                                </Badge>
+                            </MenuItem>
                         </Popover>
                     )}
                 </div>

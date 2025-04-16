@@ -107,9 +107,7 @@ export default function BookingPopup({ booking, setIsModalEditOpen }: bookingPop
                         <MenuItem
                             onClick={() => {
                                 navigate(
-                                    `/addMissionBooking?bookingId=${booking.id}&scheduleDate=${
-                                        booking.scheduleDate.split('T')[0]
-                                    }`,
+                                    `/addMissionBooking?bookingId=${booking.id}&scheduleDate=${booking.scheduleDate}`,
                                 );
                                 handleClose();
                             }}

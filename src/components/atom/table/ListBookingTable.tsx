@@ -59,7 +59,7 @@ export default function ListBookingTable() {
             width: 150,
             headerClassName: 'super-app-theme--header',
             renderCell: (params) => (
-                <span onClick={(event) => event.stopPropagation()} style={{ cursor: 'pointer', userSelect: 'none' }}>
+                <span onClick={(event) => event.stopPropagation()} style={{ cursor: 'pointer' }}>
                     {params.row.bookingCode}
                 </span>
             ),

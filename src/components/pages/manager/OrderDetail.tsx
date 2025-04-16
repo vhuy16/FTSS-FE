@@ -51,9 +51,13 @@ export default function OrderDetail() {
                                         ? 'Đã hủy'
                                         : orderDetail.status === 'COMPLETED'
                                         ? 'Hoàn tất'
+                                        : orderDetail.status === 'RETURNING'
+                                        ? 'Yêu cầu hoàn trả'
                                         : orderDetail.status === 'RETURNED'
-                                        ? 'Hoàn trả'
-                                        : 'Hoàn tiền'}
+                                        ? 'Đã hoàn trả'
+                                        : orderDetail.status === 'RETURN_ACCEPTED'
+                                        ? 'Đã chấp nhận hoàn trả'
+                                        : 'error'}
                                 </p>
                                 <p className="text-base dark:text-gray-300 font-medium leading-6 text-gray-600">
                                     Ngày đặt: {orderDetail.createDate.split('T')[0]}
@@ -187,6 +191,69 @@ export default function OrderDetail() {
                                             </div>
                                         </div>
                                     </div>
+                                    {orderDetail.returnRequests && orderDetail.returnRequests.length > 0 && (
+                                        <div className="flex flex-col justify-start items-start dark:bg-gray-800 bg-gray-50 px-4 py-4 md:py-6 md:p-6 xl:p-8 w-full">
+                                            <p className="text-lg md:text-xl dark:text-white font-semibold leading-6 xl:leading-5 text-gray-800">
+                                                Chi tiết hoàn trả
+                                            </p>
+                                            <div className="gap-3 py-6 sm:flex sm:items-start">
+                                                <div className="shrink-0 space-y-2 sm:w-48 md:w-72">
+                                                    <div className="space-y-0.5">
+                                                        <p className="text-base dark:text-white font-semibold leading-4 text-gray-800">
+                                                            {orderDetail?.userResponse.name}
+                                                        </p>
+                                                        <p className="text-sm font-normal text-gray-500 dark:text-gray-400">
+                                                            {orderDetail?.returnRequests
+                                                                ? orderDetail?.returnRequests[0].createdAt.split(
+                                                                      'T',
+                                                                  )[0] +
+                                                                  ' lúc ' +
+                                                                  orderDetail?.returnRequests[0].createdAt
+                                                                      .split('T')[1]
+                                                                      .slice(0, 8)
+                                                                : ''}
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                <div className="mt-4 min-w-0 flex-1 space-y-4 sm:mt-0">
+                                                    <p className="text-base font-normal text-gray-500 dark:text-gray-400">
+                                                        {orderDetail?.returnRequests
+                                                            ? orderDetail?.returnRequests[0].reason
+                                                            : ''}
+                                                    </p>
+
+                                                    <div className="flex gap-2">
+                                                        {orderDetail.returnRequests[0].mediaFiles.map((media) => {
+                                                            if (media.mediaType === 'IMAGE') {
+                                                                return (
+                                                                    <img
+                                                                        className="h-32 w-20 rounded-lg object-cover"
+                                                                        src={media.mediaLink}
+                                                                        alt="Ảnh sản phẩm lỗi"
+                                                                    />
+                                                                );
+                                                            } else {
+                                                                return (
+                                                                    <video
+                                                                        key={media.id}
+                                                                        controls
+                                                                        className="h-32 w-20 rounded-lg object-cover"
+                                                                    >
+                                                                        <source
+                                                                            src={media.mediaLink}
+                                                                            type="video/mp4"
+                                                                        />
+                                                                        Trình duyệt của bạn không hỗ trợ phát video.
+                                                                    </video>
+                                                                );
+                                                            }
+                                                        })}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                                 <div className="bg-gray-50 dark:bg-gray-800 w-full xl:w-96 flex justify-between items-center md:items-start px-4 py-6 md:p-6 xl:p-8 flex-col">
                                     <h3 className="text-xl dark:text-white font-semibold leading-5 text-gray-800">
