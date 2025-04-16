@@ -36,6 +36,8 @@ const style = {
     left: '50%',
     transform: 'translate(-50%, -50%)',
     width: 700,
+    maxHeight: '90vh',
+    overflowY: 'auto',
 };
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;

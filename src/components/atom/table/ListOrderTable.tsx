@@ -55,7 +55,7 @@ export default function ListOrderTable() {
             width: 150,
             headerClassName: 'super-app-theme--header',
             renderCell: (params) => (
-                <span onClick={(event) => event.stopPropagation()} style={{ cursor: 'pointer', userSelect: 'none' }}>
+                <span onClick={(event) => event.stopPropagation()} style={{ cursor: 'pointer' }}>
                     {params.row.oderCode}
                 </span>
             ),
@@ -73,6 +73,21 @@ export default function ListOrderTable() {
             width: 120,
             headerClassName: 'super-app-theme--header',
             renderCell: (params) => params.row.createDate.split('T')[0],
+        },
+
+        {
+            field: 'totalPrice',
+            headerName: 'Tổng tiền',
+            width: 120,
+            headerClassName: 'super-app-theme--header',
+            renderCell: (params) => currencyFormat(params.row.totalPrice),
+        },
+        {
+            field: 'paymentMethod',
+            headerName: 'Phương thức thanh toán',
+            width: 220,
+            headerClassName: 'super-app-theme--header',
+            renderCell: (params) => params.row.payment?.paymentMethod,
         },
         {
             field: 'paymentStatus',
@@ -112,20 +127,6 @@ export default function ListOrderTable() {
             ),
         },
         {
-            field: 'totalPrice',
-            headerName: 'Tổng tiền',
-            width: 120,
-            headerClassName: 'super-app-theme--header',
-            renderCell: (params) => currencyFormat(params.row.totalPrice),
-        },
-        {
-            field: 'paymentMethod',
-            headerName: 'Phương thức thanh toán',
-            width: 220,
-            headerClassName: 'super-app-theme--header',
-            renderCell: (params) => params.row.payment?.paymentMethod,
-        },
-        {
             field: 'status',
             headerName: 'Trạng thái đơn hàng',
             width: 200,
@@ -144,9 +145,13 @@ export default function ListOrderTable() {
                             ? 'error'
                             : params.row.status === 'COMPLETED'
                             ? 'success'
-                            : params.row.status === 'RETURNED'
+                            : params.row.status === 'RETURNING'
                             ? 'light'
-                            : 'dark'
+                            : params.row.status === 'RETURNED'
+                            ? 'dark'
+                            : params.row.status === 'RETURN_ACCEPTED'
+                            ? 'info'
+                            : 'error'
                     }
                 >
                     {params.row.status === 'PENDING_DELIVERY'
@@ -159,9 +164,13 @@ export default function ListOrderTable() {
                         ? 'Đã hủy'
                         : params.row.status === 'COMPLETED'
                         ? 'Hoàn tất'
+                        : params.row.status === 'RETURNING'
+                        ? 'Yêu cầu hoàn trả'
                         : params.row.status === 'RETURNED'
-                        ? 'Hoàn trả'
-                        : 'Hoàn tiền'}
+                        ? 'Đã hoàn trả'
+                        : params.row.status === 'RETURN_ACCEPTED'
+                        ? 'Đã chấp nhận hoàn trả'
+                        : 'error'}
                 </Badge>
             ),
         },

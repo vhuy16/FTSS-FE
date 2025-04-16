@@ -7,19 +7,23 @@ import { ListItemIcon, ListItemText, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import 'flowbite';
 import { useNavigate } from 'react-router-dom';
-import { Booking } from '@redux/slices/missionSlide';
+import { Booking, selectBooking } from '@redux/slices/missionSlide';
 import RemoveRedEyeOutlinedIcon from '@mui/icons-material/RemoveRedEyeOutlined';
 import BlockIcon from '@mui/icons-material/Block';
 import ConfirmCancelBooking from '../popup_modal/ConfirmCancelBooking';
 import DoneIcon from '@mui/icons-material/Done';
 import ConfirmRefundedBooking from '../popup_modal/ConfirmRefundedBooking';
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import { useAppDispatch } from '@redux/hook';
 
 const ITEM_HEIGHT = 48;
 type bookingPopupProps = {
     booking: Booking;
+    setIsModalEditOpen: (isOpen: boolean) => void;
 };
-export default function BookingPopup({ booking }: bookingPopupProps) {
+export default function BookingPopup({ booking, setIsModalEditOpen }: bookingPopupProps) {
     const [anchorEl1, setAnchorEl1] = React.useState<null | HTMLElement>(null);
+    const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const open1 = Boolean(anchorEl1);
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -73,25 +77,37 @@ export default function BookingPopup({ booking }: bookingPopupProps) {
                         <ListItemText>Xem chi tiết</ListItemText>
                     </MenuItem>
                     {booking.status === 'NOTASSIGN' && (
-                        <MenuItem
-                            onClick={() => {
-                                handleClose();
-                                setIsModalOpenDelete(true);
-                            }}
-                        >
-                            <ListItemIcon>
-                                <BlockIcon fontSize="small" className="text-red-600" />
-                            </ListItemIcon>
-                            <ListItemText>Hủy</ListItemText>
-                        </MenuItem>
+                        <div>
+                            <MenuItem
+                                onClick={() => {
+                                    handleClose();
+                                    setIsModalOpenDelete(true);
+                                }}
+                            >
+                                <ListItemIcon>
+                                    <BlockIcon fontSize="small" className="text-red-600" />
+                                </ListItemIcon>
+                                <ListItemText>Hủy</ListItemText>
+                            </MenuItem>
+                            <MenuItem
+                                onClick={() => {
+                                    handleClose();
+                                    setIsModalEditOpen(true);
+                                    dispatch(selectBooking(booking));
+                                }}
+                            >
+                                <ListItemIcon>
+                                    <EditOutlinedIcon fontSize="small" className="text-yellow-300" />
+                                </ListItemIcon>
+                                <ListItemText>Chỉnh sửa</ListItemText>
+                            </MenuItem>
+                        </div>
                     )}
                     {booking.status === 'NOTASSIGN' && booking.payment?.paymentStatus === 'Completed' && (
                         <MenuItem
                             onClick={() => {
                                 navigate(
-                                    `/addMissionBooking?bookingId=${booking.id}&scheduleDate=${
-                                        booking.scheduleDate.split('T')[0]
-                                    }`,
+                                    `/addMissionBooking?bookingId=${booking.id}&scheduleDate=${booking.scheduleDate}`,
                                 );
                                 handleClose();
                             }}

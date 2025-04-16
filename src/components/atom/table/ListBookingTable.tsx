@@ -16,6 +16,7 @@ import { CSVLink } from 'react-csv';
 import { Booking, getAllBooking } from '@redux/slices/missionSlide';
 import BookingPopup from '../popup/BookingPopup';
 import LoadingPage from '../Loading/LoadingPage';
+import EditBookingModal from '../modal/EditBookingModal';
 
 const paginationModel = { page: 0, pageSize: 5 };
 const StyledDataGrid = styled(DataGrid)((theme) => ({
@@ -34,6 +35,7 @@ export default function ListBookingTable() {
     const [selectedRow, setSelectedRow] = useState<any[]>([]);
     const [bookings, setBookings] = useState<Booking[]>([]);
     const [searchValue, setSearchValue] = useState('');
+    const [isModalEditOpen, setIsModalEditOpen] = useState(false);
     const dispatch = useAppDispatch();
     useEffect(() => {
         dispatch(getAllBooking());
@@ -57,7 +59,7 @@ export default function ListBookingTable() {
             width: 150,
             headerClassName: 'super-app-theme--header',
             renderCell: (params) => (
-                <span onClick={(event) => event.stopPropagation()} style={{ cursor: 'pointer', userSelect: 'none' }}>
+                <span onClick={(event) => event.stopPropagation()} style={{ cursor: 'pointer' }}>
                     {params.row.bookingCode}
                 </span>
             ),
@@ -85,10 +87,11 @@ export default function ListBookingTable() {
         },
         {
             field: 'scheduleDate',
-            headerName: 'Ngày bảo trì',
-            width: 150,
+            headerName: 'Thời gian bảo trì',
+            width: 200,
             headerClassName: 'super-app-theme--header',
-            renderCell: (params) => params.row.scheduleDate.split('T')[0],
+            renderCell: (params) =>
+                `${params.row.scheduleDate.split('T')[0]} lúc ${params.row.scheduleDate.split('T')[1]}`,
         },
         {
             field: 'payment',
@@ -185,7 +188,7 @@ export default function ListBookingTable() {
                     sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}
                     onClick={(event) => event.stopPropagation()}
                 >
-                    <BookingPopup booking={params.row} />
+                    <BookingPopup booking={params.row} setIsModalEditOpen={setIsModalEditOpen} />
                 </Box>
             ),
         },
@@ -316,6 +319,7 @@ export default function ListBookingTable() {
                     />
                 </Box>
             )}
+            <EditBookingModal isModalEditOpen={isModalEditOpen} setIsModalEditOpen={setIsModalEditOpen} />
         </div>
     );
 }
