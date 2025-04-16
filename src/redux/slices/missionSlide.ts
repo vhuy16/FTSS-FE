@@ -7,6 +7,7 @@ export type Mission = {
     missionDescription: string;
     status: string;
     missionSchedule: string;
+    endMissionSchedule: string | null;
     address: string | null;
     phoneNumber: string | null;
     technicianId: string;

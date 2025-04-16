@@ -79,7 +79,7 @@ const Calendar: React.FC = () => {
                 ...mission,
                 title: mission.missionName,
                 start: mission.missionSchedule,
-                allDay: true,
+                end: mission.endMissionSchedule,
                 extendedProps: {
                     calendar: mission.status,
                     des: mission.missionDescription,
@@ -100,7 +100,15 @@ const Calendar: React.FC = () => {
         const event = clickInfo.event;
         setSelectedEvent(event as unknown as CalendarEvent);
         setEventTitle(event.title);
-        setEventStartDate(event.start ? format(event.start, 'yyyy-MM-dd') : '');
+        const formatDateTimeLocal = (date: Date | null): string => {
+            if (!date) return '';
+            const offset = date.getTimezoneOffset();
+            const localDate = new Date(date.getTime() - offset * 60 * 1000);
+            return localDate.toISOString().slice(0, 16); // 'YYYY-MM-DDTHH:mm'
+        };
+
+        setEventStartDate(formatDateTimeLocal(event.start));
+        setEventEndDate(formatDateTimeLocal(event.end));
         setEventLevel(event.extendedProps.calendar);
         setTechName(event.extendedProps.techName);
         setOrderId(event.extendedProps.orderId);
@@ -123,9 +131,7 @@ const Calendar: React.FC = () => {
         formData.append('MissionName', data.missionName);
         formData.append('MissionDescription', data.missionDescription);
         formData.append('TechnicianId', data.technicianId);
-        formData.append('MissionSchedule', eventStartDate);
-        formData.append('Address', '');
-        formData.append('PhoneNumber', '');
+
         try {
             const res = await dispatch(updateMission({ formData: formData, id: missionId })).unwrap();
             if (res.status == '200') {
@@ -166,7 +172,7 @@ const Calendar: React.FC = () => {
                     headerToolbar={{
                         left: 'prev,next',
                         center: 'title',
-                        right: 'dayGridMonth',
+                        right: 'dayGridMonth,timeGridWeek,timeGridDay',
                     }}
                     events={events}
                     selectable={true}
@@ -185,7 +191,7 @@ const Calendar: React.FC = () => {
                 <div className="flex flex-col px-2 overflow-y-auto custom-scrollbar">
                     <div>
                         <h5 className="mb-2 font-semibold text-gray-800 modal-title text-theme-xl dark:text-white/90 lg:text-2xl">
-                            {selectedEvent ? 'Chỉnh sửa công việc' : 'Thêm công việc'}
+                            {selectedEvent ? 'Chi tiết công việc' : 'Thêm công việc'}
                         </h5>
                     </div>
                     <div className="mt-8">
@@ -267,7 +273,7 @@ dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 d
                                                         value={key}
                                                         id={`modal${key}`}
                                                         checked={eventLevel === key}
-                                                        onChange={() => setEventLevel(key)}
+                                                        // onChange={() => setEventLevel(key)}
                                                     />
                                                     <span className="flex items-center justify-center w-5 h-5 mr-2 border border-gray-300 rounded-full box dark:border-gray-700">
                                                         <span className="w-2 h-2 bg-white rounded-full dark:bg-transparent"></span>
@@ -302,14 +308,27 @@ dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 d
                         </div>
                         <div className="mt-6">
                             <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                                Ngày làm
+                                Ngày bắt đầu
                             </label>
                             <div className="relative">
                                 <input
                                     id="event-start-date"
-                                    type="date"
+                                    type="datetime-local"
                                     value={eventStartDate}
-                                    onChange={(e) => setEventStartDate(e.target.value)}
+                                    // onChange={(e) => setEventStartDate(e.target.value)}
+                                    className="dark:bg-dark-900 h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent bg-none px-4 py-2.5 pl-4 pr-11 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
+                                />
+                            </div>
+                        </div>
+                        <div className="mt-6">
+                            <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                                Ngày kết thúc
+                            </label>
+                            <div className="relative">
+                                <input
+                                    id="event-start-date"
+                                    type="datetime-local"
+                                    value={eventEndDate}
                                     className="dark:bg-dark-900 h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent bg-none px-4 py-2.5 pl-4 pr-11 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
                                 />
                             </div>

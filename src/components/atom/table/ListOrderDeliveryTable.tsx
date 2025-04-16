@@ -62,7 +62,7 @@ export default function ListOrderDeliveryTable() {
             width: 150,
             headerClassName: 'super-app-theme--header',
             renderCell: (params) => (
-                <span onClick={(event) => event.stopPropagation()} style={{ cursor: 'pointer', userSelect: 'none' }}>
+                <span onClick={(event) => event.stopPropagation()} style={{ cursor: 'pointer' }}>
                     {params.row.oderCode}
                 </span>
             ),
@@ -80,6 +80,21 @@ export default function ListOrderDeliveryTable() {
             width: 120,
             headerClassName: 'super-app-theme--header',
             renderCell: (params) => params.row.createDate.split('T')[0],
+        },
+
+        {
+            field: 'totalPrice',
+            headerName: 'Tổng tiền',
+            width: 100,
+            headerClassName: 'super-app-theme--header',
+            renderCell: (params) => currencyFormat(params.row.totalPrice),
+        },
+        {
+            field: 'paymentMethod',
+            headerName: 'Phương thức thanh toán',
+            width: 200,
+            headerClassName: 'super-app-theme--header',
+            renderCell: (params) => params.row.payment.paymentMethod,
         },
         {
             field: 'paymentStatus',
@@ -108,20 +123,6 @@ export default function ListOrderDeliveryTable() {
                         : 'Đang hoàn trả'}
                 </Badge>
             ),
-        },
-        {
-            field: 'totalPrice',
-            headerName: 'Tổng tiền',
-            width: 100,
-            headerClassName: 'super-app-theme--header',
-            renderCell: (params) => currencyFormat(params.row.totalPrice),
-        },
-        {
-            field: 'paymentMethod',
-            headerName: 'Phương thức thanh toán',
-            width: 200,
-            headerClassName: 'super-app-theme--header',
-            renderCell: (params) => params.row.payment.paymentMethod,
         },
         {
             field: 'status',

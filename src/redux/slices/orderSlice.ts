@@ -42,6 +42,19 @@ type Voucher = {
     discount: number;
     maximumOrderValue: number;
 };
+type MediaFile = {
+    id: string;
+    mediaLink: string;
+    mediaType: string;
+};
+
+type ReturnRequest = {
+    id: string;
+    reason: string;
+    status: string;
+    createdAt: string;
+    mediaFiles: MediaFile[];
+};
 export type Order = {
     id: string;
     totalPrice: number;
@@ -61,6 +74,7 @@ export type Order = {
     isAssigned: boolean;
     isEligible: boolean;
     voucher: Voucher | null;
+    returnRequests: ReturnRequest[] | null;
 };
 type initialStateProduct = {
     url: string;
