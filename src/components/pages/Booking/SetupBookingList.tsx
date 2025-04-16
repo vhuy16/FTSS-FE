@@ -16,7 +16,7 @@ import { currencyFormat, formatDate } from "@ultils/helper";
 import { BaseBtnGreen } from "@styles/button";
 import { getOrderById } from "@redux/slices/orderSlice";
 import LoadingPage from "@components/atom/Loading/LoadingPage";
-import { getAllOrdersByUsers } from "@redux/slices/orderListSlice";
+import { getAllOrdersByUsers, resetOrders } from "@redux/slices/orderListSlice";
 
 const WishListScreenWrapper = styled.main`
   .wishlist {
@@ -26,21 +26,22 @@ const WishListScreenWrapper = styled.main`
 
 const breadcrumbItems = [
   { label: "Trang chủ", link: "/" },
-  { label: "Đặt lịch bảo trì", link: "/setup-booking" },
+  { label: "Hồ cá của tôi", link: "/setup-booking" },
 ];
 const SetupBookingList = () => {
   const orderData = useAppSelector((state) => state.orderList.orders) || [];
-  const ordersWithSetup = orderData.filter((or) => or.setupPackage !== null);
   const isLoading = useAppSelector((state) => state.orderList.loading);
   const isLoadingProfile = useAppSelector((state) => state.userProfile.isLoading);
 
   const dispatch = useAppDispatch();
   useEffect(() => {
+    dispatch(resetOrders()); //  Clear dữ liệu cũ
     dispatch(getUserProfile());
     dispatch(getAllOrdersByUsers("COMPLETED"));
-  }, []);
-  console.log("ordersetup", ordersWithSetup);
+  }, [dispatch]);
 
+  const orderSetups = orderData?.filter((or) => or.setupPackage !== null);
+  console.log("ordersetup", orderSetups);
   const navigate = useNavigate();
 
   return (
@@ -54,14 +55,14 @@ const SetupBookingList = () => {
             <UserMenu />
             <UserContent>
               <div className="container mx-auto px-4 py-8 min-h-screen bg-gray-50">
-                <Title titleText={"Đặt lịch bảo trì"} />
-                {ordersWithSetup.length === 0 ? (
+                <Title titleText={"Hồ cá của tôi"} />
+                {orderSetups.length === 0 ? (
                   <div className="text-center py-12 bg-white rounded-lg shadow">
                     <p className="text-gray-600">Bạn chưa có hồ cá nào ! Vui lòng mua hồ cá.</p>
                   </div>
                 ) : (
                   <div className="space-y-6">
-                    {ordersWithSetup.map((setup) => (
+                    {orderSetups.map((setup) => (
                       <div
                         key={setup?.setupPackage?.setupPackageId}
                         className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden"
@@ -77,7 +78,10 @@ const SetupBookingList = () => {
                                 {setup?.isEligible ? "Bạn có 1 lần bảo trì miễn phí" : "Dịch vụ bảo trì tính phí"}
                               </span>
 
-                              <h2 className="text-xl font-semibold text-gray-900 hover:text-blue-600 cursor-pointer mt-4">
+                              <h2
+                                className="text-xl font-semibold text-gray-900 hover:text-blue-600 cursor-pointer mt-4"
+                                onClick={() => navigate(`/setup-booking/detail/${setup?.id}`)}
+                              >
                                 Mã đặt hàng: #{setup?.oderCode}
                               </h2>
                             </div>
@@ -94,7 +98,7 @@ const SetupBookingList = () => {
                                   </div>
                                 </div>
                                 <div className="flex flex-col gap-3">
-                                  <BaseBtnGreen onClick={() => navigate(`/setup-booking/${setup?.id}`)}>
+                                  <BaseBtnGreen onClick={() => navigate(`/setup-booking/service/${setup?.id}`)}>
                                     Đặt dịch vụ
                                   </BaseBtnGreen>
                                 </div>

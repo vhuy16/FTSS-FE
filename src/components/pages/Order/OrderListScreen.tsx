@@ -12,7 +12,7 @@ import { getAllOrdersByUsers } from "@redux/slices/orderListSlice";
 import { getUserProfile } from "@redux/slices/userSlice";
 import LoadingPage from "@components/atom/Loading/LoadingPage";
 
-type OrderStatus = "ALL" | "PROCESSING" | "PENDING_DELIVERY" | "PROCESSED" | "COMPLETED" | "CANCELLED" | "RETURNED";
+type OrderStatus = "ALL" | "PROCESSING" | "PENDING_DELIVERY" | "PROCESSED" | "COMPLETED" | "CANCELLED" | "RETURN";
 
 const OrderListScreenWrapper = styled.div`
   background-color: #f6f6f6;
@@ -68,11 +68,14 @@ const OrderListScreen = () => {
   }, []);
   useEffect(() => {
     if (activeTab === "ALL") {
-      dispatch(getAllOrdersByUsers()); // không truyền status
+      dispatch(getAllOrdersByUsers()); // tải tất cả đơn hàng
+    } else if (activeTab === "RETURN") {
+      dispatch(getAllOrdersByUsers()); // tải tất cả rồi lọc client
     } else {
-      dispatch(getAllOrdersByUsers(activeTab));
+      dispatch(getAllOrdersByUsers(activeTab)); // truyền status đơn
     }
   }, [dispatch, activeTab]);
+
   useEffect(() => {
     if (activeTab === "ALL" && searchValue.trim() === "") {
       dispatch(getAllOrdersByUsers());
@@ -90,8 +93,10 @@ const OrderListScreen = () => {
     if (activeTab === "ALL") {
       return baseOrders.filter((order) => order.oderCode.toLowerCase().includes(searchValue.toLowerCase()));
     }
-
-    return baseOrders;
+    if (activeTab === "RETURN") {
+      return baseOrders.filter((order) => order.status === "RETURNING" || order.status === "RETURNED");
+    }
+    return baseOrders.filter((order) => order.status === activeTab);
   })();
 
   return (
@@ -123,7 +128,7 @@ const OrderListScreen = () => {
                       "PENDING_DELIVERY",
                       "COMPLETED",
                       "CANCELLED",
-                      "RETURNED",
+                      "RETURN",
                     ] as OrderStatus[]
                   ).map((key) => (
                     <button
@@ -140,7 +145,7 @@ const OrderListScreen = () => {
                       {key === "PENDING_DELIVERY" && "Chờ giao hàng"}
                       {key === "COMPLETED" && "Đã giao hàng"}
                       {key === "CANCELLED" && "Đã hủy"}
-                      {key === "RETURNED" && "Hoàn tiền"}
+                      {key === "RETURN" && "Trả hàng"}
                     </button>
                   ))}
                 </div>

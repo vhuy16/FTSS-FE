@@ -34,13 +34,13 @@ export const sideMenuData: SideMenuItem[] = [
   {
     id: "side-menu-6",
     menuLink: "/setup-package-shop",
-    menuText: "Hồ cá",
+    menuText: "Danh sách hồ cá",
     iconName: "water",
   },
   {
     id: "side-menu-7",
     menuLink: "/setup-package",
-    menuText: "Hồ cá của tôi",
+    menuText: "Thiết kế hồ cá của tôi",
     iconName: "tools",
   },
   {

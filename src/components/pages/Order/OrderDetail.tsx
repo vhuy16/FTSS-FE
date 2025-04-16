@@ -23,11 +23,18 @@ import { breakpoints, defaultTheme } from "@styles/themes/default";
 import { UserContent, UserDashboardWrapper } from "@styles/user";
 import { currencyFormat } from "@ultils/helper";
 import { useEffect, useState } from "react";
-import { FaCheck, FaClock, FaTimes } from "react-icons/fa";
+import { FaCheck, FaClock, FaRegMoneyBillAlt, FaTimes } from "react-icons/fa";
 import { Link, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import styled from "styled-components";
-type OrderStatus = "PROCESSING" | "PENDING_DELIVERY" | "PROCESSED" | "COMPLETED";
+type OrderStatus =
+  | "PROCESSING"
+  | "PENDING_DELIVERY"
+  | "PROCESSED"
+  | "COMPLETED"
+  | "CANCELLED"
+  | "RETURNING"
+  | "RETURNED";
 const OrderDetailScreenWrapper = styled.main`
   .btn-and-title-wrapper {
     margin-bottom: 24px;
@@ -62,7 +69,15 @@ const OrderDetailContainer = styled.div`
   padding: 40px;
   box-shadow: 2px 2px 5px 5px rgba(0, 0, 0, 0.03); /* Tạo hiệu ứng tách biệt */
 `;
-const statusSteps: OrderStatus[] = ["PROCESSING", "PROCESSED", "PENDING_DELIVERY", "COMPLETED"];
+const statusSteps: OrderStatus[] = [
+  "PROCESSING",
+  "PROCESSED",
+  "PENDING_DELIVERY",
+  "COMPLETED",
+  "RETURNING",
+  "CANCELLED",
+  "RETURNED",
+];
 const OrderDetailStatusWrapper = styled.div<{ currentIndex: number; totalSteps: number }>`
   margin: 0 40px;
 
@@ -470,6 +485,9 @@ const OrderDetailScreen = () => {
     PENDING_DELIVERY: "Đang giao hàng",
     COMPLETED: "Hoàn thành",
     PROCESSED: "Đã xử lý",
+    CANCELLED: "Đã hủy",
+    RETURNING: "Xử lý yêu cầu trả hàng",
+    RETURNED: "Trả hàng",
   };
 
   const statusIcons: Record<OrderStatus, JSX.Element> = {
@@ -477,6 +495,9 @@ const OrderDetailScreen = () => {
     PROCESSED: <AssignmentTurnedIn className="status-icon" />,
     PENDING_DELIVERY: <LocalShipping className="status-icon" />,
     COMPLETED: <CheckCircle className="status-icon" />,
+    RETURNING: <FeedOutlined className="status-icon" />,
+    RETURNED: <CheckCircle className="status-icon" />,
+    CANCELLED: <LocalShipping className="status-icon" />,
   };
   const [isModalOpenDelete, setIsModalOpenDelete] = useState(false);
   const openModalDelete = () => {
@@ -521,12 +542,14 @@ const OrderDetailScreen = () => {
           : "text-gray-600"
       }`}
     >
-      {status === "Completed" || status === "Refunded" ? (
+      {status === "Completed" ? (
         <FaCheck />
       ) : status === "Cancelled" ? (
         <FaTimes />
       ) : status === "Processing" || status === "Refunding" ? (
         <FaClock />
+      ) : status === "Refunded" ? (
+        <FaRegMoneyBillAlt />
       ) : null}
       <span className="font-medium">
         {status === "Completed"
@@ -572,27 +595,47 @@ const OrderDetailScreen = () => {
                       <h4 className="text-3xl order-d-no">
                         <div className="flex items-center">
                           <span className="text-gray-800 font-bold mr-2">Mã đặt hàng:</span>
-                          <span className="px-3 py-1 rounded-md text-xl font-medium ">{order?.oderCode}</span>
+                          <span className="px-3 py-1 rounded-md text-xl font-medium text-gray-500 ">
+                            {order?.oderCode}
+                          </span>
                         </div>
                       </h4>
                       <p className="text-lg font-medium text-gray">
                         <div className="flex items-center">
                           <span className="text-gray-800 font-bold mr-2">Ngày đặt:</span>
-                          <span className="px-3 py-1 rounded-md text-xl font-medium ">
+                          <span className="px-3 py-1 rounded-md text-xl font-medium text-gray-600 ">
                             {formatDate(order?.createDate)}
                           </span>
                         </div>
                       </p>
                       <p className="text-lg font-medium text-gray">
                         <div className="flex items-center">
+                          <span className="text-gray-800 font-bold mr-2">Người nhận:</span>
+                          <span className="px-3 py-1 rounded-md text-xl font-medium text-gray-600 ">
+                            {order?.buyerName}
+                          </span>
+                        </div>
+                      </p>
+                      <p className="text-lg font-medium text-gray">
+                        <div className="flex items-center">
                           <span className="text-gray-800 font-bold mr-2">Địa chỉ:</span>
-                          <span className="px-3 py-1 rounded-md text-xl font-medium ">{order?.address}</span>
+                          <span className="px-3 py-1 rounded-md text-xl font-medium text-gray-600 ">
+                            {order?.address}
+                          </span>
+                        </div>
+                      </p>
+                      <p className="text-lg font-medium text-gray">
+                        <div className="flex items-center">
+                          <span className="text-gray-800 font-bold mr-2">SĐT:</span>
+                          <span className="px-3 py-1 rounded-md text-xl font-medium text-gray-600 ">
+                            {order?.phoneNumber}
+                          </span>
                         </div>
                       </p>
                       <p className="text-lg font-medium text-gray">
                         <div className="flex items-center">
                           <span className="text-gray-800 font-bold mr-2">Trạng thái thanh toán</span>
-                          <span className="px-3 py-1 rounded-md text-xl font-medium ">
+                          <span className="px-3 py-1 rounded-md text-xl font-medium text-gray-600 ">
                             <PaymentStatus status={order?.payment?.paymentStatus ?? "UNKNOWN"} />
                           </span>
                         </div>
@@ -600,7 +643,7 @@ const OrderDetailScreen = () => {
                       <p className="text-lg font-medium text-gray">
                         <div className="flex items-center">
                           <span className="text-gray-800 font-bold mr-2">Phương thức thanh toán:</span>
-                          <span className="px-3 py-1 rounded-md text-xl font-medium ">
+                          <span className="px-3 py-1 rounded-md text-xl font-medium text-gray-600 ">
                             {order?.payment?.paymentMethod === "COD"
                               ? "Thanh toán khi nhận hàng"
                               : order?.payment?.paymentMethod}
@@ -615,6 +658,8 @@ const OrderDetailScreen = () => {
                             ? "text-red"
                             : order?.status === "RETURNED"
                             ? "text-yellow"
+                            : order?.status === "RETURNING"
+                            ? "text-gray-600"
                             : "text-green"
                         }`}
                       >
@@ -623,7 +668,8 @@ const OrderDetailScreen = () => {
                         {order?.status === "PENDING_DELIVERY" && "Chờ giao hàng"}
                         {order?.status === "COMPLETED" && "Đã giao hàng"}
                         {order?.status === "CANCELLED" && "Đã hủy"}
-                        {order?.status === "RETURNED" && "Trả hàng/Hoàn tiền"}
+                        {order?.status === "RETURNED" && "Trả hàng"}
+                        {order?.status === "RETURNING" && "Xử lý yêu cầu trả hàng"}
                       </h4>
                     </div>
                   </div>

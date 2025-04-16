@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { FaCheck, FaTimes, FaClock, FaStar } from "react-icons/fa";
+import { FaCheck, FaTimes, FaClock, FaStar, FaRegMoneyBillAlt } from "react-icons/fa";
 import styled from "styled-components";
 import { useAppDispatch, useAppSelector } from "@redux/hook";
 import { BookingList, CancelBooking, getAllBookingofUsers } from "@redux/slices/bookingSlice";
@@ -48,34 +48,42 @@ const BookingHistory: React.FC<BookingItemListProps> = ({ bookings }) => {
       console.error("Lỗi khi hủy đơn hàng:", error);
     }
   };
-  const PaymentStatus = ({ status }: { status: string | null }) => {
-    const isSuccess = status === "Completed" || status === "Refunded";
-    const isCancelled = status === "Cancelled";
-    const isPending =
-      status === "Processing" || status === "Refunding" || status == null || (!isSuccess && !isCancelled); // Trường hợp không xác định cũng coi là pending
-
-    return (
-      <div
-        className={`flex items-center gap-1 ${
-          isSuccess ? "text-green-600" : isCancelled ? "text-red-600" : "text-gray-500"
-        }`}
-      >
-        {isSuccess ? <FaCheck /> : isCancelled ? <FaTimes /> : <FaClock />}
-
-        <span className="font-medium">
-          {isSuccess
-            ? status === "Completed"
-              ? "Đã thanh toán"
-              : "Đã hoàn tiền"
-            : isCancelled
-            ? "Đã huỷ"
-            : status === "Refunding"
-            ? "Đang hoàn tiền"
-            : "Đang chờ thanh toán"}
-        </span>
-      </div>
-    );
-  };
+  const PaymentStatus = ({ status }: { status: string }) => (
+    <div
+      className={`flex items-center gap-1 ${
+        status === "Completed" || status === "Refunded"
+          ? "text-green-600"
+          : status === "Processing" || status === "Refunding"
+          ? "text-gray-500"
+          : status === "Cancelled"
+          ? "text-red-600"
+          : "text-gray-600"
+      }`}
+    >
+      {status === "Completed" ? (
+        <FaCheck />
+      ) : status === "Cancelled" ? (
+        <FaTimes />
+      ) : status === "Processing" || status === "Refunding" ? (
+        <FaClock />
+      ) : status === "Refunded" ? (
+        <FaRegMoneyBillAlt />
+      ) : null}
+      <span className="font-medium">
+        {status === "Completed"
+          ? "Đã thanh toán"
+          : status === "Cancelled"
+          ? "Đã huỷ"
+          : status === "Processing"
+          ? "Đang chờ thanh toán"
+          : status === "Refunded"
+          ? "Đã hoàn tiền"
+          : status === "Refunding"
+          ? "Đang hoàn tiền"
+          : "Không xác định"}
+      </span>
+    </div>
+  );
 
   const StatusTag = ({ status }: { status: string | null }) => {
     const statusConfig: {

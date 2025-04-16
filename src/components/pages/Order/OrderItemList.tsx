@@ -15,6 +15,7 @@ import { updateOrder } from "@redux/slices/orderSlice";
 import { toast } from "react-toastify";
 import { RefundBankModal } from "@components/atom/modal/RefundBankModal";
 import { FaBoxOpen, FaCheck, FaClock, FaRegMoneyBillAlt, FaTimes, FaTruck } from "react-icons/fa";
+import { ReturnOrderModal } from "@components/atom/modal/ReturnOrderModal";
 
 interface OrderItemListProps {
   orders: Order[]; // Changed to an array of Order
@@ -191,6 +192,13 @@ const OrderItemList: React.FC<OrderItemListProps> = ({ orders }) => {
   };
   const closeModal = () => setShowRefundModal(false);
   const [showRefundModal, setShowRefundModal] = useState(false);
+  //return order
+  const openModalReturn = (order: Order) => {
+    setSelectedOrder(order);
+    setShowReturnModal(true);
+  };
+  const closeModalReturn = () => setShowReturnModal(false);
+  const [showReturnModal, setShowReturnModal] = useState(false);
 
   const StatusTag = ({ status }: { status: string | null }) => {
     const statusConfig: {
@@ -213,6 +221,12 @@ const OrderItemList: React.FC<OrderItemListProps> = ({ orders }) => {
         icon: <FaClock className="inline-block mr-1" />,
         label: "Đang xử lý",
       },
+      RETURNING: {
+        bg: "bg-gray-100",
+        text: "text-gray-800",
+        icon: <FaClock className="inline-block mr-1" />,
+        label: "Đang yêu cầu trả hàng",
+      },
       PROCESSED: {
         bg: "bg-green-100",
         text: "text-green-800",
@@ -229,7 +243,7 @@ const OrderItemList: React.FC<OrderItemListProps> = ({ orders }) => {
         bg: "bg-green-100",
         text: "text-green-800",
         icon: <FaRegMoneyBillAlt className="inline-block mr-1" />,
-        label: "Hoàn tiền",
+        label: "Trả hàng",
       },
       PENDING_DELIVERY: {
         bg: "bg-green-100",
@@ -264,12 +278,14 @@ const OrderItemList: React.FC<OrderItemListProps> = ({ orders }) => {
           : "text-gray-600"
       }`}
     >
-      {status === "Completed" || status === "Refunded" ? (
+      {status === "Completed" ? (
         <FaCheck />
       ) : status === "Cancelled" ? (
         <FaTimes />
       ) : status === "Processing" || status === "Refunding" ? (
         <FaClock />
+      ) : status === "Refunded" ? (
+        <FaRegMoneyBillAlt />
       ) : null}
       <span className="font-medium">
         {status === "Completed"
@@ -320,7 +336,21 @@ const OrderItemList: React.FC<OrderItemListProps> = ({ orders }) => {
             </div>
             {/* Các nút thao tác */}
             <div className="order-btn">
+              {order.status === "PROCESSING" && order.setupPackage != null && (
+                <>
+                  <button className="btn-secondary" onClick={() => navigate(`/booking-setup-schedule/${order?.id}`)}>
+                    Cập nhật lịch lắp đặt
+                  </button>
+                </>
+              )}
               {order.status === "CANCELLED" && order?.payment?.paymentStatus === "Completed" && (
+                <>
+                  <button className="btn-secondary" onClick={() => openModal(order)}>
+                    Yêu Cầu Hoàn Tiền
+                  </button>
+                </>
+              )}
+              {order.status === "RETURNED" && order?.payment?.paymentStatus === "Completed" && (
                 <>
                   <button className="btn-secondary" onClick={() => openModal(order)}>
                     Yêu Cầu Hoàn Tiền
@@ -344,11 +374,18 @@ const OrderItemList: React.FC<OrderItemListProps> = ({ orders }) => {
                 <>
                   {order.setupPackage ? (
                     <button className="btn-primary" onClick={() => navigate(`/setup-booking/${order.id}`)}>
-                      Đặt Lịch
+                      Đặt Lịch bảo trì
                     </button>
                   ) : (
                     <></>
                   )}
+                </>
+              )}
+              {order.status === "COMPLETED" && order?.payment?.paymentStatus === "Completed" && (
+                <>
+                  <button className="btn-secondary" onClick={() => openModalReturn(order)}>
+                    Yêu cầu hoàn trả
+                  </button>
                 </>
               )}
             </div>
@@ -377,6 +414,7 @@ const OrderItemList: React.FC<OrderItemListProps> = ({ orders }) => {
         </ModalContent>
       </SimpleModal>
       <RefundBankModal isOpen={showRefundModal} onClose={closeModal} order={selectedOrder} />
+      <ReturnOrderModal isOpen={showReturnModal} onClose={closeModalReturn} order={selectedOrder} />
     </OrderItemListWrapper>
   );
 };

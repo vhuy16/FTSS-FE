@@ -103,7 +103,7 @@ const UserMenu = () => {
               <span className="nav-link-icon flex items-center justify-center">
                 <img src="./assets/icons/ac_user.svg" alt="" />
               </span>
-              <span className="text-base font-semibold nav-link-text no-wrap">Hồ cá của tôi</span>
+              <span className="text-base font-semibold nav-link-text no-wrap">Thiết kế của tôi</span>
             </Link>
           </li>
           <li className="nav-menu-item">
@@ -129,7 +129,7 @@ const UserMenu = () => {
               <span className="nav-link-icon flex items-center justify-center">
                 <img src="./assets/icons/ac_user.svg" alt="" />
               </span>
-              <span className="text-base font-semibold nav-link-text no-wrap">Đặt lịch</span>
+              <span className="text-base font-semibold nav-link-text no-wrap">Hồ cá của tôi</span>
             </Link>
           </li>
           <li className="nav-menu-item">
