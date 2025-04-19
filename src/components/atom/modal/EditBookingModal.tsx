@@ -50,7 +50,6 @@ export default function EditBookingModal({ isModalEditOpen, setIsModalEditOpen }
             formData.append('ScheduleDate', data.date);
             formData.append('Address', data.address);
             formData.append('PhoneNumber', data.phone);
-            formData.append('FullName', data.name);
 
             try {
                 const res = await dispatch(editBooking({ id: booking?.id as string, formData: formData })).unwrap();
@@ -110,42 +109,6 @@ export default function EditBookingModal({ isModalEditOpen, setIsModalEditOpen }
                                     </div>
                                     <div>
                                         <div className="grid gap-4 mb-4 sm:grid-cols-6">
-                                            <div className="sm:col-span-3">
-                                                <label
-                                                    htmlFor="brand"
-                                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                                >
-                                                    Tên khách hàng
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    name="text"
-                                                    id="brand"
-                                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                                    placeholder="Nhập tên khách"
-                                                    required={true}
-                                                    value={data.name}
-                                                    onChange={(e) => setData({ ...data, name: e.target.value })}
-                                                />
-                                            </div>
-                                            <div className="sm:col-span-3">
-                                                <label
-                                                    htmlFor="brand"
-                                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                                >
-                                                    Thời gian bảo trì
-                                                </label>
-                                                <input
-                                                    type="datetime-local"
-                                                    name="expiryDate"
-                                                    id="brand"
-                                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                                    placeholder="Nhập thời gian bảo trì"
-                                                    required={true}
-                                                    value={data.date}
-                                                    onChange={(e) => setData({ ...data, date: e.target.value })}
-                                                />
-                                            </div>
                                             <div className="sm:col-span-6">
                                                 <label
                                                     htmlFor="brand"
@@ -180,6 +143,24 @@ export default function EditBookingModal({ isModalEditOpen, setIsModalEditOpen }
                                                     required={true}
                                                     value={data.address}
                                                     onChange={(e) => setData({ ...data, address: e.target.value })}
+                                                />
+                                            </div>
+                                            <div className="sm:col-span-6">
+                                                <label
+                                                    htmlFor="brand"
+                                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                                >
+                                                    Thời gian bảo trì
+                                                </label>
+                                                <input
+                                                    type="datetime-local"
+                                                    name="expiryDate"
+                                                    id="brand"
+                                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                                    placeholder="Nhập thời gian bảo trì"
+                                                    required={true}
+                                                    value={data.date}
+                                                    onChange={(e) => setData({ ...data, date: e.target.value })}
                                                 />
                                             </div>
                                         </div>

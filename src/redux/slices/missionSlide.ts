@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import myAxios from '@setup/axiosConfig';
+import { SetupPackage } from './setupSlice';
 
 export type Mission = {
     id: string;
@@ -46,6 +47,7 @@ export type Booking = {
     services: Service[];
     bookingCode: string;
     payment: Payment;
+    setupPackage: SetupPackage;
 };
 export type Service = {
     id: string;
