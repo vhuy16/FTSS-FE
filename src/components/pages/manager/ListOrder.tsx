@@ -27,7 +27,7 @@ export default function ListOrder() {
     return (
         <>
             <>
-                <PageBreadcrumb pageTitle="Danh sách đơn hàng" />
+                <PageBreadcrumb pageTitle="Danh sách đơn hàng mua lẻ" />
                 <div className="space-y-6">
                     <ListOrderTable />
                 </div>
