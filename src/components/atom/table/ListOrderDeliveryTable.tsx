@@ -18,6 +18,7 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
+import EditOrderModal from '../modal/EditOrderModal';
 
 const paginationModel = { page: 0, pageSize: 5 };
 const StyledDataGrid = styled(DataGrid)((theme) => ({
@@ -37,6 +38,7 @@ export default function ListOrderDeliveryTable() {
     const [searchValue, setSearchValue] = useState('');
     const [status, setStatus] = useState('All');
     const [orders, setOrders] = useState<Order[]>([]);
+    const [isModalEditOpen, setIsModalEditOpen] = useState(false);
     const dispatch = useAppDispatch();
     useEffect(() => {
         dispatch(getAllOrder());
@@ -160,9 +162,17 @@ export default function ListOrderDeliveryTable() {
                             ? 'error'
                             : params.row.status === 'COMPLETED'
                             ? 'success'
-                            : params.row.status === 'RETURNED'
+                            : params.row.status === 'DONE'
+                            ? 'done'
+                            : params.row.status === 'NOTDONE'
+                            ? 'notDone'
+                            : params.row.status === 'RETURNING'
                             ? 'light'
-                            : 'dark'
+                            : params.row.status === 'RETURNED'
+                            ? 'dark'
+                            : params.row.status === 'RETURN_ACCEPTED'
+                            ? 'info'
+                            : 'error'
                     }
                 >
                     {params.row.status === 'PENDING_DELIVERY'
@@ -175,9 +185,17 @@ export default function ListOrderDeliveryTable() {
                         ? 'Đã hủy'
                         : params.row.status === 'COMPLETED'
                         ? 'Hoàn tất'
+                        : params.row.status === 'DONE'
+                        ? 'Xong công việc'
+                        : params.row.status === 'NOTDONE'
+                        ? 'Chưa xong'
+                        : params.row.status === 'RETURNING'
+                        ? 'Yêu cầu hoàn trả'
                         : params.row.status === 'RETURNED'
-                        ? 'Hoàn trả'
-                        : 'Hoàn tiền'}
+                        ? 'Đã hoàn trả'
+                        : params.row.status === 'RETURN_ACCEPTED'
+                        ? 'Đã chấp nhận hoàn trả'
+                        : 'error'}
                 </Badge>
             ),
         },
@@ -206,7 +224,7 @@ export default function ListOrderDeliveryTable() {
                     sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}
                     onClick={(event) => event.stopPropagation()}
                 >
-                    <OrderDeliveryPopup order={params.row} />
+                    <OrderDeliveryPopup order={params.row} setIsModalEditOpen={setIsModalEditOpen} />
                 </Box>
             ),
         },
@@ -265,6 +283,8 @@ export default function ListOrderDeliveryTable() {
                             <MenuItem value={'PROCESSING'}>Đang xử lý</MenuItem>
                             <MenuItem value={'PROCESSED'}>Đã xử lý</MenuItem>
                             <MenuItem value={'PENDING_DELIVERY'}>Đang giao</MenuItem>
+                            <MenuItem value={'DONE'}>Xong công việc</MenuItem>
+                            <MenuItem value={'NOTDONE'}>Chưa xong</MenuItem>
                             <MenuItem value={'COMPLETED'}>Hoàn tất</MenuItem>
                             <MenuItem value={'CANCELLED'}>Đã hủy</MenuItem>
                             <MenuItem value={'RETURNING'}>Yêu cầu hoàn trả</MenuItem>
@@ -360,6 +380,7 @@ export default function ListOrderDeliveryTable() {
                     />
                 </Box>
             )}
+            <EditOrderModal isModalEditOpen={isModalEditOpen} setIsModalEditOpen={setIsModalEditOpen} />
         </div>
     );
 }

@@ -67,9 +67,10 @@ const AddMissionOrder: React.FC = () => {
 
     const calendarsEvents: { [key: string]: string } = {
         Cancel: 'danger',
-        Done: 'success',
         NotStarted: 'primary',
         Processing: 'warning',
+        Done: 'completed',
+        Completed: 'success',
     };
 
     useEffect(() => {
@@ -118,24 +119,28 @@ const AddMissionOrder: React.FC = () => {
     };
 
     const handleAddEvent = async () => {
-        const newEvent = {
-            orderId: orderId,
-            technicianId: data.technicianId,
-            missionName: data.missionName,
-            missionDescription: data.missionDescription,
-        };
-        try {
-            const res = await dispatch(assignBookingOrder(newEvent)).unwrap();
-            if (res.status == '201') {
-                navigate('/calendar');
-                toast.success('Giao nhiệm vụ cho nhân viên thành công');
-                closeModal();
-                resetModalFields();
-            } else {
-                toast.error('Không thể giao công việc');
+        if (orderId && data.missionName && data.technicianId && data.missionDescription) {
+            const newEvent = {
+                orderId: orderId,
+                technicianId: data.technicianId,
+                missionName: data.missionName,
+                missionDescription: data.missionDescription,
+            };
+            try {
+                const res = await dispatch(assignBookingOrder(newEvent)).unwrap();
+                if (res.status == '201') {
+                    navigate('/calendar');
+                    toast.success('Giao nhiệm vụ cho nhân viên thành công');
+                    closeModal();
+                    resetModalFields();
+                } else {
+                    toast.error('Không thể giao công việc');
+                }
+            } catch (error) {
+                toast.error(error as string);
             }
-        } catch (error) {
-            toast.error(error as string);
+        } else {
+            toast.error('Vui lòng nhập đầy đủ thông tin');
         }
     };
     const resetModalFields = () => {
@@ -305,11 +310,15 @@ dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 d
                                                 </span>
                                                 {key === 'Cancel'
                                                     ? 'Đã hủy'
-                                                    : key === 'Done'
-                                                    ? 'Hoàn tất'
                                                     : key === 'NotStarted'
                                                     ? 'Chưa bắt đầu'
-                                                    : 'Đang thực hiện'}
+                                                    : key === 'Processing'
+                                                    ? 'Đang thực hiện'
+                                                    : key === 'Done'
+                                                    ? 'Xong công việc'
+                                                    : key === 'Completed'
+                                                    ? 'Hoàn tất'
+                                                    : 'error'}
                                             </label>
                                         </div>
                                     </div>

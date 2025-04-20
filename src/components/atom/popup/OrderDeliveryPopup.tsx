@@ -6,7 +6,7 @@ import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import { ListItemIcon, ListItemText, Typography } from '@mui/material';
 import RemoveRedEyeOutlinedIcon from '@mui/icons-material/RemoveRedEyeOutlined';
 import AddIcon from '@mui/icons-material/Add';
-import { Order } from '@redux/slices/orderSlice';
+import { Order, selectOrder } from '@redux/slices/orderSlice';
 import { useNavigate } from 'react-router-dom';
 import ConfirmEditStatusOrder from '../popup_modal/ConfirmEditStatusOrder';
 import DoneIcon from '@mui/icons-material/Done';
@@ -15,17 +15,21 @@ import Popover from '@mui/material/Popover';
 import Badge from '@components/ui/badge/Badge';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import ConfirmRefundedOrder from '../popup_modal/ConfirmRefundedOrder';
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import { useAppDispatch } from '@redux/hook';
 
 const ITEM_HEIGHT = 48;
 type OrderPopupProps = {
     order: Order;
+    setIsModalEditOpen: (isOpen: boolean) => void;
 };
-export default function OrderDeliveryPopup({ order }: OrderPopupProps) {
+export default function OrderDeliveryPopup({ order, setIsModalEditOpen }: OrderPopupProps) {
     const [anchorEl1, setAnchorEl1] = React.useState<null | HTMLElement>(null);
     const [isModalOpenEditStatus, setIsModalOpenEditStatus] = React.useState(false);
     const [isModalOpenActivate, setIsModalOpenActivate] = React.useState(false);
     const [status, setStatus] = React.useState('');
     const navigate = useNavigate();
+    const dispatch = useAppDispatch();
     const open1 = Boolean(anchorEl1);
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl1(event.currentTarget);
@@ -84,6 +88,20 @@ export default function OrderDeliveryPopup({ order }: OrderPopupProps) {
                     </ListItemIcon>
                     <ListItemText>Xem chi tiết</ListItemText>
                 </MenuItem>
+                {order.isAssigned === false && (
+                    <MenuItem
+                        onClick={() => {
+                            handleClose();
+                            setIsModalEditOpen(true);
+                            dispatch(selectOrder(order));
+                        }}
+                    >
+                        <ListItemIcon>
+                            <EditOutlinedIcon fontSize="small" className="text-yellow-300" />
+                        </ListItemIcon>
+                        <ListItemText>Chỉnh sửa</ListItemText>
+                    </MenuItem>
+                )}
                 {order.payment?.paymentStatus === 'Refunding' && (
                     <MenuItem
                         onClick={() => {

@@ -6,7 +6,7 @@ import { getAllCategory, getAllSubCategoryByCateName } from '@redux/slices/categ
 import { addProducts } from '@redux/slices/productSlice';
 import { toast } from 'react-toastify';
 import Loading from '../Loading/Loading';
-import { editBooking } from '@redux/slices/missionSlide';
+import { editInstallationDate } from '@redux/slices/orderSlice';
 type ModalEditProps = {
     isModalEditOpen: boolean;
     setIsModalEditOpen: (isOpen: boolean) => void;
@@ -18,49 +18,38 @@ const style = {
     transform: 'translate(-50%, -50%)',
     width: 700,
 };
-export default function EditBookingModal({ isModalEditOpen, setIsModalEditOpen }: ModalEditProps) {
+export default function EditOrderModal({ isModalEditOpen, setIsModalEditOpen }: ModalEditProps) {
     const dispatch = useAppDispatch();
-    const isLoading = useAppSelector((state) => state.mission.isLoadingEditBooking);
-    const booking = useAppSelector((state) => state.mission.selectedBooking);
+    const isLoading = useAppSelector((state) => state.order.isLoadingEditInstallationDate);
+    const order = useAppSelector((state) => state.order.selectedOrder);
     const [data, setData] = useState<{
         date: string;
-        address: string;
-        phone: string;
-        name: string;
     }>({
-        date: booking?.scheduleDate as string,
-        address: booking?.address as string,
-        phone: booking?.phoneNumber as string,
-        name: booking?.fullName as string,
+        date: order?.installationDate as string,
     });
     useEffect(() => {
-        if (isModalEditOpen && booking?.bookingCode) {
+        if (isModalEditOpen && order?.oderCode) {
             setData({
-                date: booking?.scheduleDate,
-                address: booking?.address,
-                phone: booking?.phoneNumber,
-                name: booking?.fullName,
+                date: order?.installationDate as string,
             });
         }
     }, [isModalEditOpen]);
     const handleSubmit = async () => {
-        if (data.address && data.date && data.name && data.phone) {
+        if (data.date) {
             const selectedDate = new Date(data.date);
             const now = new Date();
             if (selectedDate < now || selectedDate == now) {
                 toast.error('Phải chọn thời gian sau thời gian hiện tại!');
             } else {
                 const formData = new FormData();
-
-                formData.append('ScheduleDate', data.date);
-                formData.append('Address', data.address);
-                formData.append('PhoneNumber', data.phone);
-
+                formData.append('InstallationDate', data.date);
                 try {
-                    const res = await dispatch(editBooking({ id: booking?.id as string, formData: formData })).unwrap();
+                    const res = await dispatch(
+                        editInstallationDate({ id: order?.id as string, formData: formData }),
+                    ).unwrap();
                     if (res.status == 201 || res.status == 200) {
                         setIsModalEditOpen(false);
-                        toast.success('Cập nhật bảo trì thành công');
+                        toast.success('Cập nhật thời gian lắp đặt thành công');
                     }
                 } catch (error) {
                     toast.error(error as string);
@@ -88,7 +77,7 @@ export default function EditBookingModal({ isModalEditOpen, setIsModalEditOpen }
                                 <div className="relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
                                     <div className="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600">
                                         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                                            Chỉnh sửa thông tin bảo trì
+                                            Chỉnh sửa thời gian giao hàng và lắp đặt
                                         </h3>
                                         <button
                                             type="button"
@@ -120,50 +109,14 @@ export default function EditBookingModal({ isModalEditOpen, setIsModalEditOpen }
                                                     htmlFor="brand"
                                                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                                                 >
-                                                    SĐT
-                                                </label>
-                                                <input
-                                                    type="number"
-                                                    name="text"
-                                                    id="brand"
-                                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                                    placeholder="Nhập SĐT khách hàng"
-                                                    required={true}
-                                                    value={data.phone}
-                                                    onChange={(e) => setData({ ...data, phone: e.target.value })}
-                                                />
-                                            </div>
-                                            <div className="sm:col-span-6">
-                                                <label
-                                                    htmlFor="brand"
-                                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                                >
-                                                    Địa chỉ bảo trì
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    name="text"
-                                                    id="brand"
-                                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                                    placeholder="Nhập địa chỉ bảo trì"
-                                                    required={true}
-                                                    value={data.address}
-                                                    onChange={(e) => setData({ ...data, address: e.target.value })}
-                                                />
-                                            </div>
-                                            <div className="sm:col-span-6">
-                                                <label
-                                                    htmlFor="brand"
-                                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                                >
-                                                    Thời gian bảo trì
+                                                    Thời gian
                                                 </label>
                                                 <input
                                                     type="datetime-local"
                                                     name="expiryDate"
                                                     id="brand"
                                                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                                    placeholder="Nhập thời gian bảo trì"
+                                                    placeholder="Nhập thời gian lắp đặt"
                                                     required={true}
                                                     value={data.date}
                                                     onChange={(e) => setData({ ...data, date: e.target.value })}
