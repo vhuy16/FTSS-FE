@@ -17,6 +17,10 @@ import { Booking, getAllBooking } from '@redux/slices/missionSlide';
 import BookingPopup from '../popup/BookingPopup';
 import LoadingPage from '../Loading/LoadingPage';
 import EditBookingModal from '../modal/EditBookingModal';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 
 const paginationModel = { page: 0, pageSize: 5 };
 const StyledDataGrid = styled(DataGrid)((theme) => ({
@@ -35,21 +39,28 @@ export default function ListBookingTable() {
     const [selectedRow, setSelectedRow] = useState<any[]>([]);
     const [bookings, setBookings] = useState<Booking[]>([]);
     const [searchValue, setSearchValue] = useState('');
+    const [status, setStatus] = useState('All');
     const [isModalEditOpen, setIsModalEditOpen] = useState(false);
     const dispatch = useAppDispatch();
     useEffect(() => {
         dispatch(getAllBooking());
     }, []);
     useEffect(() => {
-        setBookings(listBooking);
-    }, [listBooking]);
-    useEffect(() => {
-        if (!searchValue) {
+        if (status === 'All' && !searchValue) {
             setBookings(listBooking);
-        } else {
+        } else if (status === 'All' && searchValue) {
             setBookings(listBooking.filter((booking) => booking.bookingCode.toLowerCase().includes(searchValue)));
+        } else if (status !== 'All' && !searchValue) {
+            setBookings(listBooking.filter((booking) => booking.status === status));
+        } else {
+            setBookings(
+                listBooking.filter(
+                    (booking) => booking.bookingCode.toLowerCase().includes(searchValue) && booking.status === status,
+                ),
+            );
         }
-    }, [searchValue]);
+    }, [status, searchValue, listBooking]);
+
     const columns: GridColDef[] = [
         { field: 'stt', headerName: 'STT', width: 50, headerClassName: 'super-app-theme--header' },
 
@@ -145,7 +156,11 @@ export default function ListBookingTable() {
                             : params.row.status === 'ASSIGNED'
                             ? 'dark'
                             : params.row.status === 'DONE'
+                            ? 'done'
+                            : params.row.status === 'COMPLETED'
                             ? 'success'
+                            : params.row.status === 'NOTDONE'
+                            ? 'notDone'
                             : params.row.status === 'MISSED'
                             ? 'primary'
                             : params.row.status === 'PROCESSING'
@@ -161,8 +176,12 @@ export default function ListBookingTable() {
                         ? 'Chưa phân công'
                         : params.row.status === 'ASSIGNED'
                         ? 'Đã phân công'
-                        : params.row.status === 'DONE'
+                        : params.row.status === 'COMPLETED'
                         ? 'Hoàn tất'
+                        : params.row.status === 'DONE'
+                        ? 'Xong công việc'
+                        : params.row.status === 'NOTDONE'
+                        ? 'Chưa xong'
                         : params.row.status === 'MISSED'
                         ? 'Không thực hiện được'
                         : params.row.status === 'PROCESSING'
@@ -208,7 +227,7 @@ export default function ListBookingTable() {
     ) : (
         <div>
             <div className="flex justify-between mb-4">
-                <div className="relative">
+                <div className="relative flex items-center">
                     <span className="absolute -translate-y-1/2 pointer-events-none left-4 top-1/2">
                         <svg
                             className="fill-gray-500 dark:fill-gray-400"
@@ -232,6 +251,27 @@ export default function ListBookingTable() {
                         onChange={(e) => setSearchValue(e.target.value.toLowerCase())}
                         className="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-200 bg-transparent py-2.5 pl-12 pr-14 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-800 dark:bg-gray-900 dark:bg-white/[0.03] dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 xl:w-[430px]"
                     />
+                    <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+                        <InputLabel id="demo-select-small-label">Trạng thái</InputLabel>
+                        <Select
+                            labelId="demo-select-small-label"
+                            id="demo-select-small"
+                            label="Trạng thái"
+                            value={status}
+                            onChange={(e) => setStatus(e.target.value)}
+                        >
+                            <MenuItem value={'All'}>Tất cả</MenuItem>
+                            <MenuItem value={'NOTASSIGN'}>Chưa phân công</MenuItem>
+                            <MenuItem value={'NOTSTARTED'}>Chưa tiến hành</MenuItem>
+                            <MenuItem value={'PROCESSING'}>Đang tiến hành</MenuItem>
+                            <MenuItem value={'ASSIGNED'}>Đã phân công</MenuItem>
+                            <MenuItem value={'DONE'}>Xong công việc</MenuItem>
+                            <MenuItem value={'NOTDONE'}>Chưa xong</MenuItem>
+                            <MenuItem value={'MISSED'}>Không thực hiện được</MenuItem>
+                            <MenuItem value={'COMPLETED'}>Hoàn tất</MenuItem>
+                            <MenuItem value={'CANCELLED'}>Đã hủy</MenuItem>
+                        </Select>
+                    </FormControl>
                 </div>
                 <Button size="ssm" variant="primary" startIcon={<DownloadIcon />}>
                     <CSVLink data={selectedRow} filename="booking">

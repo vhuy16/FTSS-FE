@@ -371,7 +371,7 @@ export default function AddIssueModal({ isModalAddOpen, setIsModalAddOpen }: Mod
                                                     theme="snow"
                                                     value={data.desSolution}
                                                     onChange={(value) => setData({ ...data, desSolution: value })}
-                                                    // style={{ height: '400px', width: '100%' }} // <-- chỉnh tại đây
+                                                    style={{ maxHeight: '10rem', overflowY: 'auto' }} // ~ 4 dòng
                                                 />
                                             </div>
                                         </div>

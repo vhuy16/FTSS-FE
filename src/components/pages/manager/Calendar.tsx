@@ -57,9 +57,9 @@ const Calendar: React.FC = () => {
 
     const calendarsEvents: { [key: string]: string } = {
         Cancel: 'danger',
-        Done: 'completed',
         NotStarted: 'primary',
         Processing: 'warning',
+        Done: 'completed',
         Completed: 'success',
     };
 
@@ -287,10 +287,10 @@ dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 d
                                                 </span>
                                                 {key === 'Cancel'
                                                     ? 'Đã hủy'
-                                                    : key === 'Done'
-                                                    ? 'Xong công việc'
                                                     : key === 'NotStarted'
                                                     ? 'Chưa bắt đầu'
+                                                    : key === 'Done'
+                                                    ? 'Xong công việc'
                                                     : key === 'Completed'
                                                     ? 'Hoàn tất'
                                                     : 'Đang thực hiện'}

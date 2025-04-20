@@ -51,7 +51,16 @@ export default function ListProductTable() {
                         <img src={params.row.images[0]} alt={params.row.productName} />
                     </div>
                     <div>
-                        <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
+                        <span
+                            className="block font-medium text-gray-800 text-theme-sm dark:text-white/90"
+                            style={{
+                                whiteSpace: 'nowrap',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                width: '200px',
+                            }}
+                            title={params.row.productName}
+                        >
                             {params.row.productName}
                         </span>
                         <span className="block text-gray-500 text-theme-xs dark:text-gray-400">

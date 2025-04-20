@@ -36,8 +36,6 @@ const style = {
     left: '50%',
     transform: 'translate(-50%, -50%)',
     width: 700,
-    maxHeight: '90vh',
-    overflowY: 'auto',
 };
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -370,7 +368,7 @@ export default function EditIssueModal({ isModalEditOpen, setIsModalEditOpen }: 
                                                     theme="snow"
                                                     value={data.desSolution}
                                                     onChange={(value) => setData({ ...data, desSolution: value })}
-                                                    // style={{ height: '400px', width: '100%' }} // <-- chỉnh tại đây
+                                                    style={{ maxHeight: '10rem', overflowY: 'auto' }} // ~ 4 dòng
                                                 />
                                             </div>
                                         </div>

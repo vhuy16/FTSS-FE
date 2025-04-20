@@ -45,6 +45,19 @@ export default function ListSubCategoryTable() {
             headerName: 'Tên danh mục phụ',
             width: 200,
             headerClassName: 'super-app-theme--header',
+            renderCell: (params) => (
+                <span
+                    style={{
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        width: '100%',
+                    }}
+                    title={params.row.subCategoryName}
+                >
+                    {params.row.subCategoryName}
+                </span>
+            ),
         },
         { field: 'description', headerName: 'Mô tả', width: 200, headerClassName: 'super-app-theme--header' },
         { field: 'categoryName', headerName: 'Danh mục', width: 250, headerClassName: 'super-app-theme--header' },

@@ -55,7 +55,16 @@ export default function ListIssueTable() {
                         <img src={params.row.issueImage} alt={params.row.title} />
                     </div>
                     <div>
-                        <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
+                        <span
+                            className="block font-medium text-gray-800 text-theme-sm dark:text-white/90"
+                            style={{
+                                whiteSpace: 'nowrap',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                width: '200px',
+                            }}
+                            title={params.row.title}
+                        >
                             {params.row.title}
                         </span>
                         <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
