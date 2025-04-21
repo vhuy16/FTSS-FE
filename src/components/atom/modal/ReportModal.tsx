@@ -13,7 +13,7 @@ interface ReturnOrderModalProps {
   order?: Order | null;
 }
 
-export const ReturnOrderModal = ({ isOpen, onClose, order }: ReturnOrderModalProps) => {
+export const ReportModal = ({ isOpen, onClose, order }: ReturnOrderModalProps) => {
   const dispatch = useAppDispatch();
   const [description, setDescription] = useState("");
   const [files, setFiles] = useState<File[]>([]);
@@ -82,7 +82,7 @@ export const ReturnOrderModal = ({ isOpen, onClose, order }: ReturnOrderModalPro
   return (
     <SimpleModal isOpen={isOpen} onClose={handleClose}>
       <div className="p-8 bg-white rounded-lg">
-        <h2 className="text-xl font-bold text-center">Nhập thông tin hoàn trả</h2>
+        <h2 className="text-xl font-bold text-center">Nhập thông tin khiếu nại</h2>
 
         {/* Upload hình vuông */}
         <div className="mt-4">

@@ -62,7 +62,7 @@ const SetupDetail: React.FC<ProductItemProps> = () => {
   const isLoadingSetup = useAppSelector((state) => state.setupPackage.loading);
   const [subCategories, setSubCategories] = useState<string[]>(["Tất cả"]);
   const [selectedSubcategory, setSelectedSubcategory] = useState<string>("Tất cả");
-
+  const validCategories = listCategory.filter((item) => !item.isObligatory === null);
   const navigate = useNavigate();
   useEffect(() => {
     dispatch(removeCart());
@@ -294,7 +294,7 @@ const SetupDetail: React.FC<ProductItemProps> = () => {
         <ContentWrapper>
           <LeftSide>
             <SetupItemsList>
-              {listCategory?.map((cat: any) => (
+              {validCategories?.map((cat: any) => (
                 <SetupItem key={cat.id}>
                   {selectedProducts.some((p) => p.categoryName === cat.categoryName) ? (
                     <div>

@@ -19,6 +19,7 @@ import { Voucher } from "@redux/slices/voucherSlice";
 import { FaTicketAlt } from "react-icons/fa";
 import { VoucherModal } from "../modal/VoucherModal";
 import FormSchedule from "../FormSchedule/FormSchedule";
+import FormScheduleOrderSetup from "../FormSchedule/FormScheduleOrderSetup";
 
 const BillingOrderWrapper = styled.div`
   gap: 60px;
@@ -164,6 +165,7 @@ const Billing = () => {
     phoneNumber: string;
     recipientName: string;
     setupPackageId: string | null;
+    installationDate: string | null;
   };
   const [formValue, setFormValue] = useState(initFormValue);
   const [formError, setFormError] = useState({
@@ -274,6 +276,7 @@ const Billing = () => {
         paymentMethod: selectedPayment,
         phoneNumber: formValue.phone,
         recipientName: formValue.customer_name,
+        installationDate: setupId ? selectedSchedule : null,
         setupPackageId: setupId ? setupId : null,
       };
 
@@ -510,7 +513,7 @@ const Billing = () => {
             </BaseBtnGreen>
           </div>
           {/* //lich */}
-          {setupId && <FormSchedule setSelectedSchedule={setSelectedSchedule} />}
+          {setupId && <FormScheduleOrderSetup setSelectedSchedule={setSelectedSchedule} />}
           <ShippingPayment setSelectedPayment={setSelectedPayment} selectedPayment={selectedPayment} />
           <BaseButtonGreen className="pay-now-btn" onClick={handlePayNow}>
             {isLoadingOrder ? <Loading></Loading> : <>Thanh toán ngay</>}

@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
+import myAxios from "@setup/axiosConfig";
 
 export type Bank = {
   id: string;
@@ -12,12 +13,14 @@ export type Bank = {
 
 type BankType = {
   isLoading: boolean;
+  isLoadingUpdate: boolean;
   isError: boolean;
   listBank: Bank[];
 };
 const initialState: BankType = {
   isLoading: false,
   isError: false,
+  isLoadingUpdate: false,
   listBank: [],
 };
 export const getAllBank = createAsyncThunk("booking/getAllBank", async () => {
@@ -29,6 +32,31 @@ export const getAllBank = createAsyncThunk("booking/getAllBank", async () => {
     throw error;
   }
 });
+export const updateBankInfo = createAsyncThunk(
+  "user/updateBankInfo",
+  async (
+    { bankNumber, bankName, bankHolder }: { bankNumber: string; bankName: string; bankHolder: string },
+    { rejectWithValue }
+  ) => {
+    try {
+      const formData = new FormData();
+      formData.append("BankNumber", bankNumber);
+      formData.append("BankName", bankName);
+      formData.append("BankHolder", bankHolder);
+
+      const response = await myAxios.put(`/user/update-bank-infor`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      return response.data;
+    } catch (error: any) {
+      console.log(error);
+      return rejectWithValue(error.response?.data?.message || "Cập nhật thông tin ngân hàng thất bại");
+    }
+  }
+);
 
 const BankSlice = createSlice({
   name: "Bank",
@@ -47,6 +75,19 @@ const BankSlice = createSlice({
       })
       .addCase(getAllBank.rejected, (state, action) => {
         state.isLoading = false;
+        state.isError = true;
+      });
+    builder
+      .addCase(updateBankInfo.pending, (state) => {
+        state.isLoadingUpdate = true;
+        state.isError = false;
+      })
+      .addCase(updateBankInfo.fulfilled, (state, action) => {
+        state.isLoadingUpdate = false;
+        state.isError = false;
+      })
+      .addCase(updateBankInfo.rejected, (state, action) => {
+        state.isLoadingUpdate = false;
         state.isError = true;
       });
   },

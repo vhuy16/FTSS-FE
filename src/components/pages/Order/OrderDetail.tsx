@@ -21,7 +21,7 @@ import {
 import { Container } from "@styles/styles";
 import { breakpoints, defaultTheme } from "@styles/themes/default";
 import { UserContent, UserDashboardWrapper } from "@styles/user";
-import { currencyFormat } from "@ultils/helper";
+import { currencyFormat, formatDate } from "@ultils/helper";
 import { useEffect, useState } from "react";
 import { FaCheck, FaClock, FaRegMoneyBillAlt, FaTimes } from "react-icons/fa";
 import { Link, useParams } from "react-router-dom";
@@ -34,7 +34,9 @@ type OrderStatus =
   | "COMPLETED"
   | "CANCELLED"
   | "RETURNING"
-  | "RETURNED";
+  | "RETURNED"
+  | "DONE"
+  | "NOTDONE";
 const OrderDetailScreenWrapper = styled.main`
   .btn-and-title-wrapper {
     margin-bottom: 24px;
@@ -69,15 +71,7 @@ const OrderDetailContainer = styled.div`
   padding: 40px;
   box-shadow: 2px 2px 5px 5px rgba(0, 0, 0, 0.03); /* Tạo hiệu ứng tách biệt */
 `;
-const statusSteps: OrderStatus[] = [
-  "PROCESSING",
-  "PROCESSED",
-  "PENDING_DELIVERY",
-  "COMPLETED",
-  "RETURNING",
-  "CANCELLED",
-  "RETURNED",
-];
+const statusSteps: OrderStatus[] = ["PROCESSING", "PROCESSED", "PENDING_DELIVERY", "DONE", "COMPLETED"];
 const OrderDetailStatusWrapper = styled.div<{ currentIndex: number; totalSteps: number }>`
   margin: 0 40px;
 
@@ -471,14 +465,6 @@ const OrderDetailScreen = () => {
     window.scrollTo(0, 0);
     dispatch(getOrderById(orderId as string));
   }, [dispatch, orderId]);
-  const formatDate = (dateString?: string | null) => {
-    if (!dateString) return "Không xác định"; // Giá trị mặc định nếu không có ngày hợp lệ
-
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) return "Không hợp lệ"; // Kiểm tra nếu ngày không hợp lệ
-
-    return date.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric" });
-  };
 
   const orderStatusMap: Record<OrderStatus, string> = {
     PROCESSING: "Đang xử lý",
@@ -488,6 +474,8 @@ const OrderDetailScreen = () => {
     CANCELLED: "Đã hủy",
     RETURNING: "Xử lý yêu cầu trả hàng",
     RETURNED: "Trả hàng",
+    DONE: "Hoàn thành lắp đặt",
+    NOTDONE: "Chưa hoàn thành lắp đặt",
   };
 
   const statusIcons: Record<OrderStatus, JSX.Element> = {
@@ -498,6 +486,8 @@ const OrderDetailScreen = () => {
     RETURNING: <FeedOutlined className="status-icon" />,
     RETURNED: <CheckCircle className="status-icon" />,
     CANCELLED: <LocalShipping className="status-icon" />,
+    DONE: <CheckCircle className="status-icon" />,
+    NOTDONE: <LocalShipping className="status-icon" />,
   };
   const [isModalOpenDelete, setIsModalOpenDelete] = useState(false);
   const openModalDelete = () => {
@@ -513,14 +503,38 @@ const OrderDetailScreen = () => {
 
   const handleCancelOrder = async () => {
     try {
-      await dispatch(updateOrder({ id: orderId ?? "", status: "CANCELLED" }));
-      toast.success("Đơn hàng đã được hủy!");
-      setIsModalOpenDelete(false);
-      await dispatch(getOrderById(orderId ?? ""));
+      const res = await dispatch(updateOrder({ id: orderId ?? "", status: "CANCELLED" }));
+      const data = res.payload;
+
       // setOrder(res.payload as Order);
+      if (res.meta.requestStatus === "fulfilled" && (data?.status === "200" || data?.status === "201")) {
+        toast.success("Đơn hàng đã được hủy!");
+        setIsModalOpenDelete(false);
+        await dispatch(getOrderById(orderId ?? ""));
+      } else {
+        toast.error(data || "Cập nhật thất bại");
+      }
     } catch (error) {
       toast.error("Hủy đơn hàng thất bại!");
       console.error("Lỗi khi hủy đơn hàng:", error);
+    }
+  };
+  const handleConfirmOrder = async () => {
+    try {
+      const res = await dispatch(updateOrder({ id: orderId ?? "", status: "COMPLETED" }));
+      const data = res.payload;
+
+      // setOrder(res.payload as Order);
+      if (res.meta.requestStatus === "fulfilled" && (data?.status === "200" || data?.status === "201")) {
+        toast.success("Đơn hàng đã được xác nhận hoàn thành!");
+        setIsModalOpenDelete(false);
+        await dispatch(getOrderById(orderId ?? ""));
+      } else {
+        toast.error(data || "Cập nhật thất bại");
+      }
+    } catch (error) {
+      toast.error("Xác nhận đơn hàng thất bại!");
+      console.error("Lỗi khi xác nhận đơn hàng:", error);
     }
   };
   // refund
@@ -566,12 +580,6 @@ const OrderDetailScreen = () => {
       </span>
     </div>
   );
-  //confirm nhan hang
-  const [isConfirmed, setIsConfirmed] = useState(false);
-  const handleConfirm = () => {
-    toast.success("Cảm ơn bạn đã xác nhận với chúng tôi!");
-    setIsConfirmed(true);
-  };
   return (
     <OrderDetailScreenWrapper className="page-py-spacing">
       {isLoading && isLoadingProfile ? (
@@ -604,7 +612,7 @@ const OrderDetailScreen = () => {
                         <div className="flex items-center">
                           <span className="text-gray-800 font-bold mr-2">Ngày đặt:</span>
                           <span className="px-3 py-1 rounded-md text-xl font-medium text-gray-600 ">
-                            {formatDate(order?.createDate)}
+                            {formatDate(order?.createDate || "")}
                           </span>
                         </div>
                       </p>
@@ -666,7 +674,7 @@ const OrderDetailScreen = () => {
                         {order?.status === "PROCESSING" && "Đang xử lý"}
                         {order?.status === "PROCESSED" && "Đã xử lý"}
                         {order?.status === "PENDING_DELIVERY" && "Chờ giao hàng"}
-                        {order?.status === "COMPLETED" && "Đã giao hàng"}
+                        {order?.status === "COMPLETED" && "Hoàn thành"}
                         {order?.status === "CANCELLED" && "Đã hủy"}
                         {order?.status === "RETURNED" && "Trả hàng"}
                         {order?.status === "RETURNING" && "Xử lý yêu cầu trả hàng"}
@@ -674,7 +682,54 @@ const OrderDetailScreen = () => {
                     </div>
                   </div>
                   {/* status orderorder */}
-                  {["PROCESSING", "PENDING_DELIVERY", "PROCESSED", "COMPLETED"].includes(order?.status || "") ? (
+                  {order?.status === "CANCELLED" ? (
+                    <div className="mt-4"></div>
+                  ) : (order?.status === "RETURNING" || order?.status === "RETURNED") && order?.returnRequests?.[0] ? (
+                    <div className="return-detail-wrapper mt-4">
+                      {/* Thông tin hoàn trả */}
+                      <div className="return-info mb-4">
+                        <h3 className="text-2xl font-bold mb-2">Chi tiết hoàn trả</h3>
+                        <div className="flex items-center">
+                          <span className="text-gray-800 font-bold mr-2">Lý do:</span>
+                          <span className="px-3 py-1 rounded-md text-xl font-medium text-gray-600 ">
+                            {order.returnRequests[0].reason || "Không có lý do cụ thể"}
+                          </span>
+                        </div>
+                        <div className="flex items-center">
+                          <span className="text-gray-800 font-bold mr-2">Thời gian yêu cầu:</span>
+                          <span className="px-3 py-1 rounded-md text-xl font-medium text-gray-600 ">
+                            {formatDate(order.returnRequests[0].createdAt || "N/A")}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Hình ảnh / video */}
+                      <div className="return-media">
+                        <h4 className="text-xl font-bold mb-3">Hình ảnh / Video</h4>
+                        <div className="flex gap-4 flex-wrap">
+                          {order.returnRequests[0].mediaFiles?.length > 0 ? (
+                            order.returnRequests[0].mediaFiles.map((file, idx) =>
+                              file.mediaType === "VIDEO" ? (
+                                <video key={idx} controls className="w-48 h-32 rounded shadow">
+                                  <source src={file.mediaLink} type="video/mp4" />
+                                </video>
+                              ) : (
+                                <img
+                                  key={idx}
+                                  src={file.mediaLink}
+                                  alt={`media-${idx}`}
+                                  className="w-48 h-32 object-cover rounded shadow"
+                                />
+                              )
+                            )
+                          ) : (
+                            <p>Không có hình ảnh hoặc video.</p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ) : ["PROCESSING", "PENDING_DELIVERY", "PROCESSED", "COMPLETED"].includes(order?.status || "") &&
+                    order?.setupPackage == null ? (
                     <OrderDetailStatusWrapper
                       currentIndex={statusSteps.indexOf(order?.status as OrderStatus)}
                       totalSteps={statusSteps.length}
@@ -687,16 +742,45 @@ const OrderDetailScreen = () => {
                           const isPending = index > currentIndex;
 
                           return (
-                            <div className="order-status-1">
+                            <div className="order-status-1" key={status}>
                               <div
-                                key={status}
                                 className={`order-status-dot 
-            ${isCurrent ? "status-current" : ""} 
-            ${isDone ? "status-done" : ""} 
-            ${isPending ? "status-pending" : ""}`}
+                ${isCurrent ? "status-current" : ""} 
+                ${isDone ? "status-done" : ""} 
+                ${isPending ? "status-pending" : ""}`}
                               >
                                 {statusIcons[status]}
-                                <span className="status-text">{orderStatusMap[status]}</span> {/* Thêm chữ */}
+                                <span className="status-text">{orderStatusMap[status]}</span>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </OrderDetailStatusWrapper>
+                  ) : ["PROCESSING", "PENDING_DELIVERY", "PROCESSED", "DONE", "COMPLETED"].includes(
+                      order?.status || ""
+                    ) && order?.setupPackage ? (
+                    <OrderDetailStatusWrapper
+                      currentIndex={statusSteps.indexOf(order?.status as OrderStatus)}
+                      totalSteps={statusSteps.length}
+                    >
+                      <div className="order-status">
+                        {statusSteps.map((status, index) => {
+                          const currentIndex = statusSteps.indexOf(order?.status as OrderStatus);
+                          const isDone = index < currentIndex;
+                          const isCurrent = index === currentIndex;
+                          const isPending = index > currentIndex;
+
+                          return (
+                            <div className="order-status-1" key={status}>
+                              <div
+                                className={`order-status-dot 
+                ${isCurrent ? "status-current" : ""} 
+                ${isDone ? "status-done" : ""} 
+                ${isPending ? "status-pending" : ""}`}
+                              >
+                                {statusIcons[status]}
+                                <span className="status-text">{orderStatusMap[status]}</span>
                               </div>
                             </div>
                           );
@@ -706,26 +790,26 @@ const OrderDetailScreen = () => {
                   ) : (
                     <div className="mt-4"></div>
                   )}
-                  {order?.status === "COMPLETED" ? (
+
+                  {order?.status === "DONE" && order?.setupPackage ? (
                     <OrderDetailMessageWrapper>
                       <div className="order-message-content">
                         <p className="font-semibold">"Hãy kiểm tra cẩn thận tất cả các sản phẩm trong đơn hàng "</p>
                         <p className="font-semibold">"Đơn hàng của bạn đã được giao"</p>
-                        <p className="text-gray-600">{formatDate(order?.modifyDate)}.</p>
+                        <p className="text-gray-600">{formatDate(order?.modifyDate || "")}.</p>
                       </div>
                       <div className="order-buttons">
-                        {!isConfirmed && (
-                          <BaseBtnGreen className="confirm-button" onClick={handleConfirm}>
-                            Đã Nhận Hàng
-                          </BaseBtnGreen>
-                        )}
+                        <BaseBtnGreen className="confirm-button" onClick={handleConfirmOrder}>
+                          Đã hoàn thành lắp đặt
+                        </BaseBtnGreen>
+                        <BaseButtonOuterspace className="confirm-button">Báo cáo/Khiếu nại</BaseButtonOuterspace>
                       </div>
                     </OrderDetailMessageWrapper>
-                  ) : ["PROCESSING"].includes(order?.status || "") ? (
+                  ) : ["PROCESSING"].includes(order?.status || "") && order?.setupPackage == null ? (
                     <OrderDetailMessageWrapperv2>
                       <div className="order-message-content">
                         <p className="font-semibold">Đơn hàng của bạn sẽ được chuẩn bị và chuyển đi</p>
-                        <p className="text-gray-600">{formatDate(order?.modifyDate)}.</p>
+                        <p className="text-gray-600">{formatDate(order?.modifyDate || "")}.</p>
                       </div>
 
                       <div className="order-buttons">
@@ -735,6 +819,20 @@ const OrderDetailScreen = () => {
                       </div>
                     </OrderDetailMessageWrapperv2>
                   ) : null}
+
+                  {order?.status === "PROCESSING" && order?.setupPackage && (
+                    <OrderDetailMessageWrapperv2>
+                      <div className="order-message-content">
+                        <p className="font-semibold">Đơn hàng của bạn sẽ được chuẩn bị và lắp đặt </p>
+                        <p className="text-gray-600">{formatDate(order?.installationDate || "")}.</p>
+                      </div>
+                      <div className="order-buttons">
+                        <BaseButtonWhite className="request-button" onClick={openModalDelete}>
+                          Hủy đơn hàng
+                        </BaseButtonWhite>
+                      </div>
+                    </OrderDetailMessageWrapperv2>
+                  )}
                   {/* hoan tientien */}
                   {order?.status === "CANCELLED" && order?.payment?.paymentStatus === "Completed" && (
                     <OrderDetailMessageWrapper>

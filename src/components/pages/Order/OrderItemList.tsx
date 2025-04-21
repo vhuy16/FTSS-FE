@@ -172,14 +172,21 @@ const OrderItemList: React.FC<OrderItemListProps> = ({ orders }) => {
   const closeModalDelete = () => {
     setIsModalOpenDelete(false);
   };
+
   const handleCancelOrder = async () => {
     if (!selectedOrderId) return;
-
     try {
-      await dispatch(updateOrder({ id: selectedOrderId, status: "CANCELLED" }));
-      toast.success("Đơn hàng đã được hủy!");
-      dispatch(getAllOrdersByUsers());
-      setIsModalOpenDelete(false);
+      const res = await dispatch(updateOrder({ id: selectedOrderId, status: "CANCELLED" }));
+      const data = res.payload;
+
+      // setOrder(res.payload as Order);
+      if (res.meta.requestStatus === "fulfilled" && (data?.status === "200" || data?.status === "201")) {
+        toast.success("Đơn hàng đã được hủy!");
+        setIsModalOpenDelete(false);
+        await dispatch(getAllOrdersByUsers());
+      } else {
+        toast.error(data || "Cập nhật thất bại");
+      }
     } catch (error) {
       toast.error("Hủy đơn hàng thất bại!");
       console.error("Lỗi khi hủy đơn hàng:", error);

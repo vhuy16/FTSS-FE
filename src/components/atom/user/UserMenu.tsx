@@ -9,7 +9,7 @@ const NavMenuWrapper = styled.nav`
   margin-top: 32px;
 
   .nav-menu-list {
-    row-gap: 8px;
+    row-gap: 10px;
 
     @media (max-width: ${breakpoints.md}) {
       display: flex;
