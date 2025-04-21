@@ -168,9 +168,6 @@ const BookingInfo: React.FC<BookingInfoProps> = ({
   }, []);
 
   useEffect(() => {
-    dispatch(getUserProfile());
-  }, []);
-  useEffect(() => {
     if (!infoDefault) {
       setFormValues({ ...formValues, customer_name: "", phone: "", Address: "", province: idProvice.name });
     } else {

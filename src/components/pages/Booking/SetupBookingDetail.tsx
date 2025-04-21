@@ -265,7 +265,7 @@ const SetupBookingDetail = () => {
                     <tbody>
                       {servicehistory.map((item, index) => (
                         <tr key={index} className="border-b border-gray-800 last:border-b-0">
-                          <td className="align-top py-2 text-xl text-gray-800">{item.scheduleDate}</td>
+                          <td className="align-top py-2 text-xl text-gray-800">{formatDate(item.scheduleDate)}</td>
                           <td className="py-2 text-xl text-gray-800">
                             <ul className="list-disc list-inside space-y-1">
                               {item.services.map((service, idx) => (

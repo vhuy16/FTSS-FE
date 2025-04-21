@@ -41,7 +41,6 @@ const SetupBookingList = () => {
   }, [dispatch]);
 
   const orderSetups = orderData?.filter((or) => or.setupPackage !== null);
-  console.log("ordersetup", orderSetups);
   const navigate = useNavigate();
 
   return (

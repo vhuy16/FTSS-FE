@@ -12,7 +12,16 @@ import { getAllOrdersByUsers } from "@redux/slices/orderListSlice";
 import { getUserProfile } from "@redux/slices/userSlice";
 import LoadingPage from "@components/atom/Loading/LoadingPage";
 
-type OrderStatus = "ALL" | "PROCESSING" | "PENDING_DELIVERY" | "PROCESSED" | "COMPLETED" | "CANCELLED" | "RETURN";
+type OrderStatus =
+  | "ALL"
+  | "PROCESSING"
+  | "PENDING_DELIVERY"
+  | "PROCESSED"
+  | "COMPLETED"
+  | "CANCELLED"
+  | "RETURN"
+  | "DONE"
+  | "NOTDONE";
 
 const OrderListScreenWrapper = styled.div`
   background-color: #f6f6f6;
@@ -93,9 +102,19 @@ const OrderListScreen = () => {
     if (activeTab === "ALL") {
       return baseOrders.filter((order) => order.oderCode.toLowerCase().includes(searchValue.toLowerCase()));
     }
+
     if (activeTab === "RETURN") {
       return baseOrders.filter((order) => order.status === "RETURNING" || order.status === "RETURNED");
     }
+
+    if (activeTab === "DONE" && selectedCategory === "FISH_TANK") {
+      return baseOrders.filter((order) => order.status === "DONE");
+    }
+
+    if (activeTab === "NOTDONE" && selectedCategory === "FISH_TANK") {
+      return baseOrders.filter((order) => order.status !== "DONE");
+    }
+
     return baseOrders.filter((order) => order.status === activeTab);
   })();
 
@@ -126,6 +145,8 @@ const OrderListScreen = () => {
                       "PROCESSING",
                       "PROCESSED",
                       "PENDING_DELIVERY",
+
+                      ...(selectedCategory === "FISH_TANK" ? ["DONE", "NOTDONE"] : []),
                       "COMPLETED",
                       "CANCELLED",
                       "RETURN",
@@ -143,7 +164,9 @@ const OrderListScreen = () => {
                       {key === "PROCESSING" && "Đang xử lý"}
                       {key === "PROCESSED" && "Đã xử lý"}
                       {key === "PENDING_DELIVERY" && "Chờ giao hàng"}
-                      {key === "COMPLETED" && "Đã giao hàng"}
+                      {key === "DONE" && "Đã lắp đặt"}
+                      {key === "NOTDONE" && "Chưa lắp đặt"}
+                      {key === "COMPLETED" && "Hoàn thành"}
                       {key === "CANCELLED" && "Đã hủy"}
                       {key === "RETURN" && "Trả hàng"}
                     </button>

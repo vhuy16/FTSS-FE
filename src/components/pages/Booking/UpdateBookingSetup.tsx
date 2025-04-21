@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { FaClock, FaWater, FaFish, FaCheck, FaTimes, FaRegMoneyBillAlt } from "react-icons/fa";
+import { FaClock, FaWater, FaFish, FaCheck, FaTimes, FaRegMoneyBillAlt, FaTruck, FaBoxOpen } from "react-icons/fa";
 import { BookingContainer, BookingServiceStyle, CalendarContainer, InfoWrapper } from "./BookingServiceStyle";
 import { Container, HorizontalLine, HorizontalLineTAb } from "@styles/styles";
 import Breadcrumb from "@common/Breadcrumb";
@@ -14,7 +14,7 @@ import { getAllServices, ServicePackage } from "@redux/slices/listServiceSlice";
 import { useAppDispatch, useAppSelector } from "@redux/hook";
 import { currencyFormat, formatDate } from "@ultils/helper";
 import { useNavigate, useParams } from "react-router-dom";
-import { getOrderById } from "@redux/slices/orderSlice";
+import { getOrderById, updateScheduleSetup } from "@redux/slices/orderSlice";
 import { toast } from "react-toastify";
 import { createBookingService, getAllUnavailableDates } from "@redux/slices/bookingSlice";
 import { BaseBtnGreen } from "@styles/button";
@@ -58,24 +58,14 @@ const OrderDetailScreenWrapper = styled.main`
     font-weight: bold;
   }
 `;
-const BookingSetup = () => {
+const UpdateBookingSetup = () => {
   const { orderId } = useParams<{ orderId: string }>();
   const dispatch = useAppDispatch();
   const orderDetail = useAppSelector((state) => state.order.order);
   const isLoadingDetail = useAppSelector((state) => state.order.isLoading);
-  const isLoadingBooking = useAppSelector((state) => state.bookingService.loading);
+  const isLoadingUpdateScheduleSetup = useAppSelector((state) => state.order.isLoadingUpdateScheduleSetup);
   const [selectedSchedule, setSelectedSchedule] = useState<string | null>(null);
 
-  const initFormValue = {
-    Address: "",
-    phone: "",
-    customer_name: "",
-    street: "",
-    district: "",
-    province: "",
-    ward: "",
-  };
-  const [formValue, setFormValue] = useState(initFormValue);
   useEffect(() => {
     window.scrollTo(0, 0);
     dispatch(getOrderById(orderId as string));
@@ -92,8 +82,74 @@ const BookingSetup = () => {
 
   const breadcrumbItems = [
     { label: "Trang chủ", link: "/" },
-    { label: "Đặt lịch lắp đặt", link: `/booking-setup-schedule/${orderId}` },
+    { label: "Cập nhật lịch lắp đặt", link: `/booking-setup-schedule/${orderId}` },
   ];
+  const StatusTag = ({ status }: { status: string | null }) => {
+    const statusConfig: {
+      [key: string]: {
+        bg: string;
+        text: string;
+        icon: JSX.Element;
+        label: string;
+      };
+    } = {
+      COMPLETED: {
+        bg: "bg-green-100",
+        text: "text-green-800",
+        icon: <FaBoxOpen className="inline-block mr-1" />,
+        label: "Đã giao hàng",
+      },
+      PROCESSING: {
+        bg: "bg-gray-100",
+        text: "text-gray-800",
+        icon: <FaClock className="inline-block mr-1" />,
+        label: "Đang xử lý",
+      },
+      RETURNING: {
+        bg: "bg-gray-100",
+        text: "text-gray-800",
+        icon: <FaClock className="inline-block mr-1" />,
+        label: "Đang yêu cầu trả hàng",
+      },
+      PROCESSED: {
+        bg: "bg-green-100",
+        text: "text-green-800",
+        icon: <FaCheck className="inline-block mr-1" />,
+        label: "Đã xử lý",
+      },
+      CANCELLED: {
+        bg: "bg-red-100",
+        text: "text-red-800",
+        icon: <FaTimes className="inline-block mr-1" />,
+        label: "Đã hủy",
+      },
+      RETURNED: {
+        bg: "bg-green-100",
+        text: "text-green-800",
+        icon: <FaRegMoneyBillAlt className="inline-block mr-1" />,
+        label: "Trả hàng",
+      },
+      PENDING_DELIVERY: {
+        bg: "bg-green-100",
+        text: "text-green-800",
+        icon: <FaTruck className="inline-block mr-1" />,
+        label: "Chờ giao hàng",
+      },
+    };
+
+    const config = statusConfig[status ?? "null"];
+
+    if (!config) return null;
+
+    return (
+      <span
+        className={`${config.bg} ${config.text} px-3 py-1 rounded-full text-sm font-medium flex items-center w-fit`}
+      >
+        {config.icon}
+        {config.label}
+      </span>
+    );
+  };
   const PaymentStatus = ({ status }: { status: string }) => (
     <div
       className={`flex items-center gap-1 ${
@@ -131,6 +187,29 @@ const BookingSetup = () => {
     </div>
   );
   console.log("ngay gui di ", selectedSchedule);
+  const handleSave = async () => {
+    if (!selectedSchedule) {
+      toast("Vui lòng nhập đầy đủ thông tin.");
+      return;
+    }
+
+    try {
+      const response = await dispatch(updateScheduleSetup({ id: orderId ?? "", date: selectedSchedule }));
+
+      const data = response.payload;
+
+      if (response.meta.requestStatus === "fulfilled" && (data?.status === "200" || data?.status === "201")) {
+        toast.success("Cập nhật lịch bảo trì thành công");
+        navigate(`/order-detail/${orderId}`);
+      } else {
+        toast.error(data || "Cập nhật thất bại");
+      }
+    } catch (error) {
+      console.error("Lỗi khi cập nhật lịch bảo trì:", error);
+      toast.error("Lưu thất bại, vui lòng thử lại.");
+    }
+  };
+
   return (
     <BookingServiceStyle>
       {isLoadingDetail ? (
@@ -155,6 +234,14 @@ const BookingSetup = () => {
                     <span className="text-gray-800 font-bold mr-2">Ngày đặt:</span>
                     <span className="px-3 py-1 rounded-md text-xl font-medium text-gray-600 ">
                       {formatDate(orderDetail?.createDate || "")}
+                    </span>
+                  </div>
+                </p>
+                <p className="text-lg font-medium text-gray mb-3">
+                  <div className="flex items-center">
+                    <span className="text-gray-800 font-bold mr-2">Trạng thái đơn hàng:</span>
+                    <span className="px-3 py-1 rounded-md text-xl font-medium text-gray-600 ">
+                      <StatusTag status={orderDetail?.status ?? "UNKNOWN"} />
                     </span>
                   </div>
                 </p>
@@ -268,26 +355,11 @@ const BookingSetup = () => {
             </OrderDetailScreenWrapper>
             <HorizontalLine />
             <BaseBtnGreen
-              disabled={
-                !formValue.customer_name ||
-                !formValue.district ||
-                !formValue.phone ||
-                !formValue.ward ||
-                !formValue.province ||
-                !formValue.street
-              }
-              className={`bookButton ${
-                formValue.customer_name &&
-                formValue.district &&
-                formValue.phone &&
-                formValue.street &&
-                formValue.province &&
-                formValue.ward
-                  ? "enabled"
-                  : "disabled"
-              }`}
+              disabled={!selectedSchedule}
+              className={`bookButton ${selectedSchedule ? "enabled" : "disabled"}`}
+              onClick={handleSave}
             >
-              {isLoadingBooking ? <Loading /> : "Đặt lịch "}
+              {isLoadingUpdateScheduleSetup ? <Loading /> : "Đặt lịch "}
             </BaseBtnGreen>
           </div>
         </Container>
@@ -296,4 +368,4 @@ const BookingSetup = () => {
   );
 };
 
-export default BookingSetup;
+export default UpdateBookingSetup;

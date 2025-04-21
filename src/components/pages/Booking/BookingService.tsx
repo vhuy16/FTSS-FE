@@ -31,11 +31,23 @@ const BookingService = () => {
   const isLoadingDetail = useAppSelector((state) => state.order.isLoading);
   const isLoadingBooking = useAppSelector((state) => state.bookingService.loading);
   const [selectedSchedule, setSelectedSchedule] = useState<string | null>(null);
-  const [infoDefault, setInfoDefault] = useState(false);
+  const [infoDefault, setInfoDefault] = useState(true);
 
   const handleInfoDefaultChange = (value: boolean) => {
     setInfoDefault(value);
   };
+  useEffect(() => {
+    if (orderDetail) {
+      setInfoDefault(true); // Bật infoDefault
+      setFormValue((prev) => ({
+        ...prev,
+        Address: orderDetail.address || "", // nếu có Address từ orderDetail
+        phone: orderDetail.phoneNumber || "",
+        customer_name: orderDetail.buyerName || "",
+      }));
+    }
+  }, [orderDetail]);
+
   //thong tin
   const initFormValue = {
     Address: "",

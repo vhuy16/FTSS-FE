@@ -5,13 +5,16 @@ import { UserContent, UserDashboardWrapper } from "@styles/user";
 import UserMenu from "@atom/user/UserMenu";
 import Title from "@common/Title";
 import { FormElement, Input } from "@styles/form";
-import { BaseBtnGreen, BaseLinkGreen } from "@styles/button";
+import { BaseBtnGreen, BaseButton, BaseButtonOuterspace, BaseLinkGreen } from "@styles/button";
 import { Link } from "react-router-dom";
 import { breakpoints, defaultTheme } from "@styles/themes/default";
 import { useAppDispatch, useAppSelector } from "@redux/hook";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getUserProfile } from "@redux/slices/userSlice";
 import LoadingPage from "@components/atom/Loading/LoadingPage";
+import PageBreadcrumb from "@common/PageBreadCrumb";
+import AccountInfoCard from "./AccountInfoCard";
+import { AddBankAccountModal } from "@components/atom/modal/AddBankAccountModal";
 
 const AccountScreenWrapper = styled.main`
   .address-list {
@@ -65,17 +68,17 @@ const Account = () => {
   const user = useAppSelector((state) => state.userProfile.user);
   const isLoadingUser = useAppSelector((state) => state.userProfile.isLoading);
   const dispatch = useAppDispatch();
-
-  const [formData, setFormData] = useState({
-    fullName: user?.fullName || "",
-    email: user?.email || "",
-    phoneNumber: user?.phoneNumber || "",
-  });
   useEffect(() => {
     dispatch(getUserProfile());
   }, []);
-  console.log("user", user);
-
+  // bank
+  const openModal = () => {
+    setshowBankAccountModal(true);
+  };
+  const closeModal = useCallback(() => {
+    setshowBankAccountModal(false);
+  }, []);
+  const [showBankAccountModal, setshowBankAccountModal] = useState(false);
   return (
     <AccountScreenWrapper className="page-py-spacing">
       {isLoadingUser ? (
@@ -86,88 +89,42 @@ const Account = () => {
           <UserDashboardWrapper>
             <UserMenu />
             <UserContent>
-              <Title titleText={"Hồ sơ của tôi"} />
-              <h4 className="title-sm">Thông tin chi tiết</h4>
-              <form>
-                <div className="form-wrapper">
-                  <FormElement className="form-elem">
-                    <label htmlFor="" className="form-label font-semibold text-base">
-                      Tên
-                    </label>
-                    <div className="form-input-wrapper flex items-center">
-                      <Input
-                        type="text"
-                        className="form-elem-control text-outerspace font-semibold"
-                        value={user?.fullName}
-                      />
-                    </div>
-                  </FormElement>
-                  <FormElement className="form-elem">
-                    <label htmlFor="" className="form-label font-semibold text-base">
-                      Email
-                    </label>
-                    <div className="form-input-wrapper flex items-center">
-                      <Input
-                        type="email"
-                        className="form-elem-control text-outerspace font-semibold"
-                        value={user?.email}
-                      />
-                    </div>
-                  </FormElement>
-                  <FormElement className="form-elem">
-                    <label htmlFor="" className="form-label font-semibold text-base">
-                      Số điện thoại
-                    </label>
-                    <div className="form-input-wrapper flex items-center">
-                      <Input
-                        type="text"
-                        className="form-elem-control text-outerspace font-semibold"
-                        value={user?.phoneNumber}
-                      />
-                    </div>
-                  </FormElement>
-                  <FormElement className="form-elem">
-                    <label htmlFor="" className="form-label font-semibold text-base">
-                      Mật Khẩu
-                    </label>
-                    <div className="form-input-wrapper flex items-center">
-                      <Input
-                        type="password"
-                        className="form-elem-control text-outerspace font-semibold border-0"
-                        value="Pass Key"
-                      />
-                    </div>
-                  </FormElement>
-                  <div></div>
-                  <div className="flex justify-end mt-4 mb-4">
-                    <BaseBtnGreen type="submit">Lưu thay đổi</BaseBtnGreen>
-                  </div>
-                </div>
-              </form>
-              <div>
-                <h4 className="title-sm">Địa chỉ</h4>
+              <AccountInfoCard />
+              <div className="flex mt-4 mb-4">
+                <BaseBtnGreen type="submit" onClick={openModal}>
+                  Thêm tài khoản ngân hàng
+                </BaseBtnGreen>
+              </div>
 
+              <div>
+                <h4 className="title-sm">Tài khoản ngân hàng</h4>
                 <div className="address-list grid">
                   <div className="address-item grid">
-                    <p className="text-outerspace text-lg font-semibold address-title">{user?.address}</p>
+                    <div className="flex items-center gap-3">
+                      <p className="text-outerspace text-xl font-semibold address-title">Ngân hàng:</p>
+                      <p className="text-outerspace text-lg">{user?.address}</p>
+                    </div>
 
-                    <ul className="address-tags flex flex-wrap">
+                    <div className="flex items-center gap-3">
+                      <p className="text-outerspace text-xl font-semibold address-title">Số tài khoản:</p>
+                      <p className="text-outerspace text-lg">{user?.address}</p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <p className="text-outerspace text-xl font-semibold address-title">Tên tài khoản:</p>
+                      <p className="text-outerspace text-lg">{user?.address}</p>
+                    </div>
+                    <ul className="address-tags flex flex-wrap mt-3">
                       <li className="text-gray text-base font-medium inline-flex items-center justify-center">
-                        Địa chỉ nhận hàng mặc định
+                        Địa chỉ ngân hàng mặc định
                       </li>
                     </ul>
-                    <div className="address-btns flex">
-                      <Link to="/" className="text-base text-outerspace font-semibold">
-                        Xóa
-                      </Link>
-                      <div className="btn-separator"></div>
-                      <Link to="/" className="text-base text-outerspace font-semibold">
-                        Sửa
-                      </Link>
+                    <div className="address-btns">
+                      <BaseButton className="text-base text-outerspace font-semibold">Chỉnh Sửa</BaseButton>
                     </div>
                   </div>
                 </div>
               </div>
+              <AddBankAccountModal isOpen={showBankAccountModal} onClose={closeModal} />
             </UserContent>
           </UserDashboardWrapper>
         </Container>

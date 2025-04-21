@@ -3,10 +3,10 @@ import { getAllUnavailableDates } from "@redux/slices/bookingSlice";
 import dayjs, { Dayjs } from "dayjs";
 import { useEffect, useState } from "react";
 
-type FormScheduleProps = {
+type FormScheduleOrderSetupProps = {
   setSelectedSchedule: (value: string) => void;
 };
-const FormSchedule = ({ setSelectedSchedule }: FormScheduleProps) => {
+const FormScheduleOrderSetup = ({ setSelectedSchedule }: FormScheduleOrderSetupProps) => {
   const dispatch = useAppDispatch();
   //select date time
   const [selectedDate, setSelectedDate] = useState<Dayjs>(dayjs());
@@ -16,7 +16,7 @@ const FormSchedule = ({ setSelectedSchedule }: FormScheduleProps) => {
   // ngay băts day tu tu ngay hom sau cua hien taitai
   const generateWeekDays = (): Dayjs[] => {
     const days: Dayjs[] = [];
-    for (let i = 0; i < 10; i++) {
+    for (let i = 1; i < 10; i++) {
       days.push(dayjs().add(i, "day"));
     }
     return days;
@@ -98,25 +98,12 @@ const FormSchedule = ({ setSelectedSchedule }: FormScheduleProps) => {
       <div className="max-h-[430px] overflow-y-auto pr-1 scrollbar-hidden">
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mb-8">
           {allTimeSlots.map((time) => {
-            const [hour, minute] = time.split(":").map(Number);
-            const slotTime = selectedDate.hour(hour).minute(minute).second(0);
-
-            const isToday = selectedDate.isSame(dayjs(), "day");
-            const isPastTimeToday = isToday && slotTime.isBefore(dayjs());
-
-            // Không cho đặt trong vòng 3 tiếng tính từ thời điểm hiện tại
-            const isTooSoon = slotTime.isBefore(dayjs().add(2, "hour"));
-            const isDisabled = isPastTimeToday || isTooSoon;
-
             return (
               <button
                 key={time}
-                onClick={() => !isDisabled && handleTimeSelect(time)}
-                disabled={isDisabled}
+                onClick={() => handleTimeSelect(time)}
                 className={`h-[50px] rounded-full px-1 transition-all duration-300 ${
-                  isDisabled
-                    ? "bg-gray-200 text-gray-500 opacity-50 cursor-not-allowed"
-                    : selectedTime === time
+                  selectedTime === time
                     ? "bg-[#6C63FF] text-white"
                     : "bg-white border border-gray-100 text-gray-500 hover:bg-gray-100"
                 }`}
@@ -131,4 +118,4 @@ const FormSchedule = ({ setSelectedSchedule }: FormScheduleProps) => {
     </div>
   );
 };
-export default FormSchedule;
+export default FormScheduleOrderSetup;

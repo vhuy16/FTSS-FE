@@ -75,6 +75,7 @@ export type Order = {
   isEligible: boolean;
   voucher: Voucher | null;
   returnRequests: ReturnRequest[] | null;
+  installationDate: string | null;
 };
 type initialStateProduct = {
   url: string;
@@ -86,6 +87,7 @@ type initialStateProduct = {
   isLoadingRefunded: boolean;
   isLoadingGetAllOrder: boolean;
   isLoadingReturn: boolean;
+  isLoadingUpdateScheduleSetup: boolean;
   isError: boolean;
 };
 export const createOrder = createAsyncThunk("order/create", async (data: DataCheckOut, { rejectWithValue }) => {
@@ -128,6 +130,30 @@ export const updateOrder = createAsyncThunk(
     }
   }
 );
+// cap nhat lich lap dat
+export const updateScheduleSetup = createAsyncThunk(
+  "order/updateScheduleSetup",
+  async ({ id, date }: { id: string; date: string }, { rejectWithValue, dispatch }) => {
+    try {
+      // Tạo FormData để đúng định dạng multipart/form-data
+      const formData = new FormData();
+      formData.append("InstallationDate", date);
+
+      const response = await myAxios.put(`/order/update-time/${id}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      await dispatch(getOrderById(id));
+      return response.data;
+    } catch (error: any) {
+      console.log(error);
+      return rejectWithValue(error.response?.data?.message || "Cập nhật đơn hàng thất bại");
+    }
+  }
+);
+
 export const refundOrder = createAsyncThunk(
   "order/refundOrder",
   async (
@@ -215,6 +241,7 @@ const initialState: initialStateProduct = {
   isLoadingRefunded: false,
   isLoadingGetAllOrder: false,
   isLoadingReturn: false,
+  isLoadingUpdateScheduleSetup: false,
   isError: false,
 };
 
@@ -315,6 +342,19 @@ const orderSlice = createSlice({
       })
       .addCase(returnOrder.rejected, (state, action) => {
         state.isLoadingReturn = false;
+        state.isError = true;
+      });
+    builder
+      .addCase(updateScheduleSetup.pending, (state) => {
+        state.isLoadingUpdateScheduleSetup = true;
+        state.isError = false;
+      })
+      .addCase(updateScheduleSetup.fulfilled, (state, action) => {
+        state.isLoadingUpdateScheduleSetup = false;
+        state.isError = false;
+      })
+      .addCase(updateScheduleSetup.rejected, (state, action) => {
+        state.isLoadingUpdateScheduleSetup = false;
         state.isError = true;
       });
   },
