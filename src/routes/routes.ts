@@ -228,7 +228,7 @@ if (role === "Admin") {
     },
 
     {
-      path: "/listOrder-delivery",
+      path: "/listOrder-setup",
       component: ListOrderDelivery,
       layout: ManagerLayout,
     },

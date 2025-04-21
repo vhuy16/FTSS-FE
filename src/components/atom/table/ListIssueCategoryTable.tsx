@@ -51,6 +51,19 @@ export default function ListIssueCategoryTable() {
             headerName: 'Tên danh mục vấn đề',
             width: 350,
             headerClassName: 'super-app-theme--header',
+            renderCell: (params) => (
+                <span
+                    style={{
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        width: '100%',
+                    }}
+                    title={params.row.issueCategoryName}
+                >
+                    {params.row.issueCategoryName}
+                </span>
+            ),
         },
         {
             field: 'createDate',

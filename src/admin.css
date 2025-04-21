@@ -493,6 +493,9 @@ span.flatpickr-weekday,
 .event-fc-color.fc-bg-success {
     @apply border-success-50 bg-success-50;
 }
+.event-fc-color.fc-bg-completed {
+    @apply border-cyan-50 bg-cyan-50;
+}
 .event-fc-color.fc-bg-danger {
     @apply border-error-50 bg-error-50;
 }
@@ -504,6 +507,9 @@ span.flatpickr-weekday,
 }
 .event-fc-color.fc-bg-success .fc-daygrid-event-dot {
     @apply bg-success-500;
+}
+.event-fc-color.fc-bg-completed .fc-daygrid-event-dot {
+    @apply bg-cyan-500;
 }
 .event-fc-color.fc-bg-danger .fc-daygrid-event-dot {
     @apply bg-error-500;
@@ -611,7 +617,7 @@ span.flatpickr-weekday,
 }
 .fc-v-event {
     background-color: transparent !important;
-    border: none !important;
+    border: solid #dad7d7 0.1px !important;
 }
 .fc-event-time {
     color: black;

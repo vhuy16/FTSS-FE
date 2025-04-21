@@ -44,8 +44,8 @@ const navItems: NavItem[] = [
         name: 'Đơn hàng',
         icon: <ListIcon />,
         subItems: [
-            { name: 'Tất cả đơn hàng', path: '/listOrder' },
-            { name: 'Cần giao và lắp đặt', path: '/listOrder-delivery' },
+            { name: 'Đơn hàng mua lẻ', path: '/listOrder' },
+            { name: 'Đơn hàng mua theo bộ', path: '/listOrder-setup' },
         ],
     },
     {

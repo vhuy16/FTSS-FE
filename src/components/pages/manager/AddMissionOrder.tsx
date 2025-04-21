@@ -46,6 +46,7 @@ const AddMissionOrder: React.FC = () => {
     const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
     const [eventTitle, setEventTitle] = useState('');
     const [eventStartDate, setEventStartDate] = useState('');
+    const [eventEndDate, setEventEndDate] = useState('');
     const [eventLevel, setEventLevel] = useState('');
     const [des, setDes] = useState('');
     const [tech, setTech] = useState('');
@@ -61,13 +62,15 @@ const AddMissionOrder: React.FC = () => {
     const isLoading = useAppSelector((state) => state.mission.isLoadingGetAllMission);
     const [searchParams] = useSearchParams();
     const orderId = searchParams.get('orderId');
+    const scheduleDate = searchParams.get('scheduleDate');
     const navigate = useNavigate();
 
     const calendarsEvents: { [key: string]: string } = {
         Cancel: 'danger',
-        Done: 'success',
         NotStarted: 'primary',
         Processing: 'warning',
+        Done: 'completed',
+        Completed: 'success',
     };
 
     useEffect(() => {
@@ -75,17 +78,17 @@ const AddMissionOrder: React.FC = () => {
     }, []);
     useEffect(() => {
         const data = {
-            scheduleDate: eventStartDate,
+            scheduleDate: scheduleDate,
         };
         dispatch(getAlltechnician(data));
-    }, [eventStartDate]);
+    }, [scheduleDate]);
     useEffect(() => {
         const newListMission = listMission?.map((mission) => {
             return {
                 ...mission,
                 title: mission.missionName,
                 start: mission.missionSchedule,
-                allDay: true,
+                end: mission.endMissionSchedule,
                 extendedProps: {
                     calendar: mission.status,
                     des: mission.missionDescription,
@@ -95,11 +98,7 @@ const AddMissionOrder: React.FC = () => {
         });
         setEvents(newListMission);
     }, [listMission]);
-    const handleDateSelect = (selectInfo: DateSelectArg) => {
-        resetModalFields();
-        setEventStartDate(selectInfo.startStr);
-        openModal();
-    };
+
     const handleEventClick = (clickInfo: EventClickArg) => {
         const event = clickInfo.event;
         setSelectedEvent(event as unknown as CalendarEvent);
@@ -107,30 +106,41 @@ const AddMissionOrder: React.FC = () => {
         setDes(event.extendedProps.des);
         setTech(event.extendedProps.tech);
         setEventLevel(event.extendedProps.calendar);
-        setEventStartDate(event.start ? format(event.start, 'yyyy-MM-dd') : '');
+        const formatDateTimeLocal = (date: Date | null): string => {
+            if (!date) return '';
+            const offset = date.getTimezoneOffset();
+            const localDate = new Date(date.getTime() - offset * 60 * 1000);
+            return localDate.toISOString().slice(0, 16); // 'YYYY-MM-DDTHH:mm'
+        };
+
+        setEventStartDate(formatDateTimeLocal(event.start));
+        setEventEndDate(formatDateTimeLocal(event.end));
         openModal();
     };
 
     const handleAddEvent = async () => {
-        const newEvent = {
-            orderId: orderId,
-            technicianId: data.technicianId,
-            missionName: data.missionName,
-            missionDescription: data.missionDescription,
-            missionSchedule: eventStartDate,
-        };
-        try {
-            const res = await dispatch(assignBookingOrder(newEvent)).unwrap();
-            if (res.status == '201') {
-                navigate('/calendar');
-                toast.success('Giao nhiệm vụ cho nhân viên thành công');
-                closeModal();
-                resetModalFields();
-            } else {
-                toast.error('Không thể giao công việc');
+        if (orderId && data.missionName && data.technicianId && data.missionDescription) {
+            const newEvent = {
+                orderId: orderId,
+                technicianId: data.technicianId,
+                missionName: data.missionName,
+                missionDescription: data.missionDescription,
+            };
+            try {
+                const res = await dispatch(assignBookingOrder(newEvent)).unwrap();
+                if (res.status == '201') {
+                    navigate('/calendar');
+                    toast.success('Giao nhiệm vụ cho nhân viên thành công');
+                    closeModal();
+                    resetModalFields();
+                } else {
+                    toast.error('Không thể giao công việc');
+                }
+            } catch (error) {
+                toast.error(error as string);
             }
-        } catch (error) {
-            toast.error(error as string);
+        } else {
+            toast.error('Vui lòng nhập đầy đủ thông tin');
         }
     };
     const resetModalFields = () => {
@@ -159,11 +169,10 @@ const AddMissionOrder: React.FC = () => {
                     headerToolbar={{
                         left: 'prev,next addEventButton',
                         center: 'title',
-                        right: 'dayGridMonth',
+                        right: 'dayGridMonth,timeGridWeek,timeGridDay',
                     }}
                     events={events}
                     selectable={true}
-                    select={handleDateSelect}
                     eventClick={handleEventClick}
                     eventContent={renderEventContent}
                     customButtons={{
@@ -294,7 +303,6 @@ dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 d
                                                                 : false
                                                         }
                                                         disabled={eventLevel !== key && eventLevel !== ''}
-                                                        onChange={() => setEventLevel(key)}
                                                     />
                                                     <span className="flex items-center justify-center w-5 h-5 mr-2 border border-gray-300 rounded-full box dark:border-gray-700">
                                                         <span className="w-2 h-2 bg-white rounded-full dark:bg-transparent"></span>
@@ -302,11 +310,15 @@ dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 d
                                                 </span>
                                                 {key === 'Cancel'
                                                     ? 'Đã hủy'
-                                                    : key === 'Done'
-                                                    ? 'Hoàn tất'
                                                     : key === 'NotStarted'
                                                     ? 'Chưa bắt đầu'
-                                                    : 'Đang thực hiện'}
+                                                    : key === 'Processing'
+                                                    ? 'Đang thực hiện'
+                                                    : key === 'Done'
+                                                    ? 'Xong công việc'
+                                                    : key === 'Completed'
+                                                    ? 'Hoàn tất'
+                                                    : 'error'}
                                             </label>
                                         </div>
                                     </div>
@@ -316,18 +328,32 @@ dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 d
 
                         <div className="mt-6">
                             <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                                Ngày làm
+                                Ngày bắt đầu
                             </label>
                             <div className="relative">
                                 <input
                                     id="event-start-date"
-                                    type="date"
-                                    value={eventStartDate}
-                                    onChange={(e) => setEventStartDate(e.target.value)}
+                                    type="datetime-local"
+                                    value={!selectedEvent ? (scheduleDate as string) : eventStartDate}
                                     className="dark:bg-dark-900 h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent bg-none px-4 py-2.5 pl-4 pr-11 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
                                 />
                             </div>
                         </div>
+                        {selectedEvent && (
+                            <div className="mt-6">
+                                <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                                    Ngày kết thúc
+                                </label>
+                                <div className="relative">
+                                    <input
+                                        id="event-start-date"
+                                        type="datetime-local"
+                                        value={eventEndDate ? eventEndDate : ''}
+                                        className="dark:bg-dark-900 h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent bg-none px-4 py-2.5 pl-4 pr-11 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
+                                    />
+                                </div>
+                            </div>
+                        )}
                     </div>
                     {!selectedEvent && (
                         <div className="flex items-center gap-3 mt-6 modal-footer sm:justify-center">

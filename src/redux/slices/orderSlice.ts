@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import myAxios from "@setup/axiosConfig";
 import { SetupPackage } from "./setupSlice";
 import { getAllOrdersByUsers } from "./orderListSlice";
@@ -89,6 +89,8 @@ type initialStateProduct = {
   isLoadingReturn: boolean;
   isLoadingUpdateScheduleSetup: boolean;
   isError: boolean;
+  isLoadingEditInstallationDate: boolean;
+  selectedOrder: Order | null;
 };
 export const createOrder = createAsyncThunk("order/create", async (data: DataCheckOut, { rejectWithValue }) => {
   try {
@@ -231,6 +233,23 @@ export const returnOrder = createAsyncThunk(
     }
   }
 );
+export const editInstallationDate = createAsyncThunk(
+  "order/editInstallationDate",
+  async ({ id, formData }: { id: string; formData: FormData }, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await myAxios.put(`/order/update-time/${id}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      await dispatch(getAllOrder());
+      return response.data;
+    } catch (error: any) {
+      console.log(error);
+      return rejectWithValue(error.response?.data?.message || "Đổi thời gian lắp đặt thất bại");
+    }
+  }
+);
 const initialState: initialStateProduct = {
   url: "",
   listOrder: [],
@@ -242,13 +261,20 @@ const initialState: initialStateProduct = {
   isLoadingGetAllOrder: false,
   isLoadingReturn: false,
   isLoadingUpdateScheduleSetup: false,
+  isLoadingEditInstallationDate: false,
   isError: false,
+  selectedOrder: null,
 };
 
 const orderSlice = createSlice({
   name: "order",
   initialState,
-  reducers: {},
+  reducers: {
+    selectOrder: (state, action: PayloadAction<Order>) => {
+      const order = action.payload;
+      state.selectedOrder = order;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(createOrder.pending, (state) => {
@@ -357,6 +383,20 @@ const orderSlice = createSlice({
         state.isLoadingUpdateScheduleSetup = false;
         state.isError = true;
       });
+    builder
+      .addCase(editInstallationDate.pending, (state) => {
+        state.isLoadingEditInstallationDate = true;
+        state.isError = false;
+      })
+      .addCase(editInstallationDate.fulfilled, (state, action) => {
+        state.isLoadingEditInstallationDate = false;
+        state.isError = false;
+      })
+      .addCase(editInstallationDate.rejected, (state, action) => {
+        state.isLoadingEditInstallationDate = false;
+        state.isError = true;
+      });
   },
 });
+export const { selectOrder } = orderSlice.actions;
 export default orderSlice.reducer;

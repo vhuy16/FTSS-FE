@@ -13,6 +13,10 @@ import OrderPopup from '../popup/OrderPopup';
 import { useNavigate } from 'react-router-dom';
 import { CSVLink } from 'react-csv';
 import LoadingPage from '../Loading/LoadingPage';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 
 const paginationModel = { page: 0, pageSize: 5 };
 const StyledDataGrid = styled(DataGrid)((theme) => ({
@@ -31,21 +35,35 @@ export default function ListOrderTable() {
     const [selectedRow, setSelectedRow] = useState<any[]>([]);
     const [searchValue, setSearchValue] = useState('');
     const [orders, setOrders] = useState<Order[]>([]);
+    const [status, setStatus] = useState('All');
     const dispatch = useAppDispatch();
 
     useEffect(() => {
         dispatch(getAllOrder());
     }, []);
+
     useEffect(() => {
-        setOrders(listOrder);
-    }, [listOrder]);
-    useEffect(() => {
-        if (!searchValue) {
-            setOrders(listOrder);
+        if (status === 'All' && !searchValue) {
+            setOrders(listOrder.filter((order) => order.setupPackage == null));
+        } else if (status === 'All' && searchValue) {
+            setOrders(
+                listOrder.filter(
+                    (order) => order.oderCode.toLowerCase().includes(searchValue) && order.setupPackage == null,
+                ),
+            );
+        } else if (status !== 'All' && !searchValue) {
+            setOrders(listOrder.filter((order) => order.status === status && order.setupPackage == null));
         } else {
-            setOrders(listOrder.filter((order) => order.oderCode.toLowerCase().includes(searchValue)));
+            setOrders(
+                listOrder.filter(
+                    (order) =>
+                        order.oderCode.toLowerCase().includes(searchValue) &&
+                        order.status === status &&
+                        order.setupPackage == null,
+                ),
+            );
         }
-    }, [searchValue]);
+    }, [status, searchValue, listOrder]);
     const columns: GridColDef[] = [
         { field: 'stt', headerName: 'STT', width: 50, headerClassName: 'super-app-theme--header' },
 
@@ -145,6 +163,10 @@ export default function ListOrderTable() {
                             ? 'error'
                             : params.row.status === 'COMPLETED'
                             ? 'success'
+                            : params.row.status === 'DONE'
+                            ? 'done'
+                            : params.row.status === 'NOTDONE'
+                            ? 'notDone'
                             : params.row.status === 'RETURNING'
                             ? 'light'
                             : params.row.status === 'RETURNED'
@@ -164,6 +186,10 @@ export default function ListOrderTable() {
                         ? 'Đã hủy'
                         : params.row.status === 'COMPLETED'
                         ? 'Hoàn tất'
+                        : params.row.status === 'DONE'
+                        ? 'Xong công việc'
+                        : params.row.status === 'NOTDONE'
+                        ? 'Chưa xong'
                         : params.row.status === 'RETURNING'
                         ? 'Yêu cầu hoàn trả'
                         : params.row.status === 'RETURNED'
@@ -207,7 +233,7 @@ export default function ListOrderTable() {
     ) : (
         <div>
             <div className="flex justify-between mb-4">
-                <div className="relative">
+                <div className="relative flex items-center">
                     <span className="absolute -translate-y-1/2 pointer-events-none left-4 top-1/2">
                         <svg
                             className="fill-gray-500 dark:fill-gray-400"
@@ -228,9 +254,31 @@ export default function ListOrderTable() {
                     <input
                         type="text"
                         placeholder="Tìm kiếm..."
-                        onChange={(e) => setSearchValue(e.target.value.toLowerCase())}
+                        onChange={(e) => {
+                            setSearchValue(e.target.value.toLowerCase());
+                        }}
                         className="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-200 bg-transparent py-2.5 pl-12 pr-14 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-800 dark:bg-gray-900 dark:bg-white/[0.03] dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 xl:w-[430px]"
                     />
+                    <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+                        <InputLabel id="demo-select-small-label">Trạng thái</InputLabel>
+                        <Select
+                            labelId="demo-select-small-label"
+                            id="demo-select-small"
+                            label="Trạng thái"
+                            value={status}
+                            onChange={(e) => setStatus(e.target.value)}
+                        >
+                            <MenuItem value={'All'}>Tất cả</MenuItem>
+                            <MenuItem value={'PROCESSING'}>Đang xử lý</MenuItem>
+                            <MenuItem value={'PROCESSED'}>Đã xử lý</MenuItem>
+                            <MenuItem value={'PENDING_DELIVERY'}>Đang giao</MenuItem>
+                            <MenuItem value={'COMPLETED'}>Hoàn tất</MenuItem>
+                            <MenuItem value={'CANCELLED'}>Đã hủy</MenuItem>
+                            <MenuItem value={'RETURNING'}>Yêu cầu hoàn trả</MenuItem>
+                            <MenuItem value={'RETURN_ACCEPTED'}>Đã chấp nhận hoàn trả</MenuItem>
+                            <MenuItem value={'RETURNED'}>Đã hoàn trả</MenuItem>
+                        </Select>
+                    </FormControl>
                 </div>
                 <Button size="ssm" variant="primary" startIcon={<DownloadIcon />}>
                     <CSVLink data={selectedRow} filename="order">

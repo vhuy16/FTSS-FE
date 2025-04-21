@@ -44,8 +44,21 @@ export default function ListServiceTable() {
         {
             field: 'serviceName',
             headerName: 'Tên dịch vụ',
-            width: 200,
+            width: 300,
             headerClassName: 'super-app-theme--header',
+            renderCell: (params) => (
+                <span
+                    style={{
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        width: '100%',
+                    }}
+                    title={params.row.serviceName}
+                >
+                    {params.row.serviceName}
+                </span>
+            ),
         },
 
         {

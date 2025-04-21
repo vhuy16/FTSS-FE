@@ -57,9 +57,10 @@ const Calendar: React.FC = () => {
 
     const calendarsEvents: { [key: string]: string } = {
         Cancel: 'danger',
-        Done: 'success',
         NotStarted: 'primary',
         Processing: 'warning',
+        Done: 'completed',
+        Completed: 'success',
     };
 
     useEffect(() => {
@@ -156,7 +157,12 @@ const Calendar: React.FC = () => {
             <div className={`event-fc-color flex fc-event-main ${colorClass} p-1 rounded`}>
                 <div className="fc-daygrid-event-dot flex-shrink-0"></div>
                 <div className="fc-event-time">{eventInfo.timeText}</div>
-                <div className="fc-event-title whitespace-normal break-words">{eventInfo.event.title}</div>
+                <div
+                    className="fc-event-title overflow-hidden break-words whitespace-normal line-clamp-2"
+                    title={eventInfo.event.title}
+                >
+                    {eventInfo.event.title}
+                </div>
             </div>
         );
     };
@@ -281,10 +287,12 @@ dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 d
                                                 </span>
                                                 {key === 'Cancel'
                                                     ? 'Đã hủy'
-                                                    : key === 'Done'
-                                                    ? 'Hoàn tất'
                                                     : key === 'NotStarted'
                                                     ? 'Chưa bắt đầu'
+                                                    : key === 'Done'
+                                                    ? 'Xong công việc'
+                                                    : key === 'Completed'
+                                                    ? 'Hoàn tất'
                                                     : 'Đang thực hiện'}
                                             </label>
                                         </div>

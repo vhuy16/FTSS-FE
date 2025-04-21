@@ -53,8 +53,25 @@ export default function ListCategoryTable() {
                 </div>
             ),
         },
-        { field: 'categoryName', headerName: 'Tên danh mục', width: 150, headerClassName: 'super-app-theme--header' },
-        { field: 'description', headerName: 'Mô tả', width: 150, headerClassName: 'super-app-theme--header' },
+        {
+            field: 'categoryName',
+            headerName: 'Tên danh mục',
+            width: 200,
+            headerClassName: 'super-app-theme--header',
+            renderCell: (params) => (
+                <div
+                    style={{
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        width: '100%',
+                    }}
+                    title={params.value} // Tooltip hiện full text khi hover
+                >
+                    {params.value}
+                </div>
+            ),
+        },
         {
             field: 'subCategories',
             headerName: 'Danh mục phụ',

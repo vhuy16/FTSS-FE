@@ -36,8 +36,12 @@ export default function BookingDetail() {
                                         ? 'Chưa phân công'
                                         : bookingDetail.status === 'ASSIGNED'
                                         ? 'Đã phân công'
-                                        : bookingDetail.status === 'DONE'
+                                        : bookingDetail.status === 'COMPLETED'
                                         ? 'Hoàn tất'
+                                        : bookingDetail.status === 'DONE'
+                                        ? 'Xong công việc'
+                                        : bookingDetail.status === 'NOTDONE'
+                                        ? 'Chưa xong'
                                         : bookingDetail.status === 'MISSED'
                                         ? 'Không thực hiện được'
                                         : bookingDetail.status === 'PROCESSING'
@@ -58,8 +62,46 @@ export default function BookingDetail() {
                             <div className="mt-10 flex flex-col xl:flex-row jusitfy-center items-stretch w-full xl:space-x-8 space-y-4 md:space-y-6 xl:space-y-0">
                                 <div className="flex flex-col justify-start items-start w-full space-y-4 md:space-y-6 xl:space-y-8">
                                     <div className="flex flex-col justify-start items-start dark:bg-gray-800 bg-gray-50 px-4 py-4 md:py-6 md:p-6 xl:p-8 w-full">
-                                        <p className="text-lg md:text-2xl dark:text-white font-semibold leading-6 xl:leading-5 text-gray-800 mb-4">
-                                            Dịch vụ
+                                        <p className="text-lg md:text-xl dark:text-white font-semibold leading-6 xl:leading-5 text-gray-800">
+                                            Chi tiết bể cá cần bảo trì
+                                        </p>
+                                        {bookingDetail.setupPackage.products.map((product) => (
+                                            <div className="mt-4 md:mt-6 flex flex-col md:flex-row justify-start items-start md:items-center md:space-x-6 xl:space-x-8 w-full">
+                                                <div className="pb-4 md:pb-8 w-full md:w-40">
+                                                    <img className="w-full " src={product.images} alt="product" />
+                                                </div>
+                                                <div className="border-b border-gray-200 md:flex-row flex-col flex justify-between items-start w-full pb-8 space-y-4 md:space-y-0">
+                                                    <div className="w-full flex flex-col justify-start items-start space-y-8">
+                                                        <h3 className="text-xl dark:text-white xl:text-2xl font-semibold leading-6 text-gray-800">
+                                                            {product.productName}
+                                                        </h3>
+                                                        <div className="flex justify-start items-start flex-col space-y-2">
+                                                            <p className="text-sm dark:text-white leading-none text-gray-800">
+                                                                <span className="dark:text-gray-400 text-gray-400">
+                                                                    Danh mục:{' '}
+                                                                </span>
+                                                                {product.categoryName}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex justify-between space-x-8 items-start w-full">
+                                                        <p className="text-base dark:text-white xl:text-lg leading-6">
+                                                            {/* {currencyFormat(product.price)} */}
+                                                        </p>
+                                                        <p className="text-base dark:text-white xl:text-lg leading-6 text-gray-800">
+                                                            x {product.quantity}
+                                                        </p>
+                                                        <p className="text-base dark:text-white xl:text-lg font-semibold leading-6 text-gray-800">
+                                                            {/* {currencyFormat(product.price * product.quantity)} */}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className="flex flex-col justify-start items-start dark:bg-gray-800 bg-gray-50 px-4 py-4 md:py-6 md:p-6 xl:p-8 w-full">
+                                        <p className="text-lg md:text-xl dark:text-white font-semibold leading-6 xl:leading-5 text-gray-800 mb-4">
+                                            Dịch vụ đã đặt
                                         </p>
                                         {bookingDetail.services.map((service) => (
                                             <div className="mt-4 md:mt-6 flex flex-col md:flex-row justify-start items-start md:items-center md:space-x-6 xl:space-x-8 w-full">
