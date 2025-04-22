@@ -1,6 +1,5 @@
 import React from 'react';
 import PageBreadcrumb from '@common/PageBreadCrumb';
-import ListIssueCategoryTable from '@components/atom/table/ListIssueCategoryTable';
 import ListIssueTable from '@components/atom/table/ListIssueTable';
 
 export default function ListIssue() {

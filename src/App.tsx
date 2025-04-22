@@ -32,7 +32,8 @@ function AppContent() {
         location.pathname.startsWith('/listOrder-setup') ||
         location.pathname.startsWith('/listVoucher') ||
         location.pathname.startsWith('/listIssueCategory') ||
-        location.pathname.startsWith('/listIssue');
+        location.pathname.startsWith('/listIssue') ||
+        location.pathname.startsWith('/chat');
     return (
         <div className="App">
             {!isAdminRoute && <GlobalStyles />}
