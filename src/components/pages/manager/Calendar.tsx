@@ -132,7 +132,7 @@ const Calendar: React.FC = () => {
         formData.append('MissionName', data.missionName);
         formData.append('MissionDescription', data.missionDescription);
         formData.append('TechnicianId', data.technicianId);
-
+        formData.append('Status', eventLevel);
         try {
             const res = await dispatch(updateMission({ formData: formData, id: missionId })).unwrap();
             if (res.status == '200') {
@@ -279,7 +279,7 @@ dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 d
                                                         value={key}
                                                         id={`modal${key}`}
                                                         checked={eventLevel === key}
-                                                        // onChange={() => setEventLevel(key)}
+                                                        onChange={() => setEventLevel(key)}
                                                     />
                                                     <span className="flex items-center justify-center w-5 h-5 mr-2 border border-gray-300 rounded-full box dark:border-gray-700">
                                                         <span className="w-2 h-2 bg-white rounded-full dark:bg-transparent"></span>

@@ -526,7 +526,9 @@ span.flatpickr-weekday,
 .fc .fc-timegrid-axis-cushion {
     @apply text-sm font-medium text-gray-500 dark:text-gray-400;
 }
-
+.fc-daygrid-block-event .fc-event-time {
+    font-weight: 400;
+}
 .input-date-icon::-webkit-inner-spin-button,
 .input-date-icon::-webkit-calendar-picker-indicator {
     opacity: 0;
