@@ -15,6 +15,7 @@ import LoadingPage from "@components/atom/Loading/LoadingPage";
 import PageBreadcrumb from "@common/PageBreadCrumb";
 import AccountInfoCard from "./AccountInfoCard";
 import { AddBankAccountModal } from "@components/atom/modal/AddBankAccountModal";
+import { UpdateBankAccountModal } from "@components/atom/modal/UpdateBankAccountModal";
 
 const AccountScreenWrapper = styled.main`
   .address-list {
@@ -79,6 +80,15 @@ const Account = () => {
     setshowBankAccountModal(false);
   }, []);
   const [showBankAccountModal, setshowBankAccountModal] = useState(false);
+  //update bank
+  // bank
+  const openUpdateModal = () => {
+    setshowUpdateBankAccountModal(true);
+  };
+  const closeUpdateModal = useCallback(() => {
+    setshowUpdateBankAccountModal(false);
+  }, []);
+  const [showUpdateBankAccountModal, setshowUpdateBankAccountModal] = useState(false);
   return (
     <AccountScreenWrapper className="page-py-spacing">
       {isLoadingUser ? (
@@ -90,41 +100,50 @@ const Account = () => {
             <UserMenu />
             <UserContent>
               <AccountInfoCard />
-              <div className="flex mt-4 mb-4">
-                <BaseBtnGreen type="submit" onClick={openModal}>
-                  Thêm tài khoản ngân hàng
-                </BaseBtnGreen>
-              </div>
-
-              <div>
-                <h4 className="title-sm">Tài khoản ngân hàng</h4>
-                <div className="address-list grid">
-                  <div className="address-item grid">
-                    <div className="flex items-center gap-3">
-                      <p className="text-outerspace text-xl font-semibold address-title">Ngân hàng:</p>
-                      <p className="text-outerspace text-lg">{user?.address}</p>
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                      <p className="text-outerspace text-xl font-semibold address-title">Số tài khoản:</p>
-                      <p className="text-outerspace text-lg">{user?.address}</p>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <p className="text-outerspace text-xl font-semibold address-title">Tên tài khoản:</p>
-                      <p className="text-outerspace text-lg">{user?.address}</p>
-                    </div>
-                    <ul className="address-tags flex flex-wrap mt-3">
-                      <li className="text-gray text-base font-medium inline-flex items-center justify-center">
-                        Địa chỉ ngân hàng mặc định
-                      </li>
-                    </ul>
-                    <div className="address-btns">
-                      <BaseButton className="text-base text-outerspace font-semibold">Chỉnh Sửa</BaseButton>
+              {user?.bankName && user?.bankHolder && user?.bankNumber === null ? (
+                <div className="flex mt-4 mb-4">
+                  <BaseBtnGreen type="submit" onClick={openModal}>
+                    Thêm tài khoản ngân hàng
+                  </BaseBtnGreen>
+                </div>
+              ) : (
+                <></>
+              )}
+              {user?.bankName && user?.bankHolder && user?.bankNumber ? (
+                <div>
+                  <h4 className="title-sm">Tài khoản ngân hàng</h4>
+                  <div className="address-list grid">
+                    <div className="address-item grid">
+                      <div className="flex items-center gap-3">
+                        <p className="text-outerspace text-xl font-semibold address-title">Ngân hàng:</p>
+                        <p className="text-outerspace text-lg">{user?.bankName}</p>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <p className="text-outerspace text-xl font-semibold address-title">Số tài khoản:</p>
+                        <p className="text-outerspace text-lg">{user?.bankNumber}</p>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <p className="text-outerspace text-xl font-semibold address-title">Tên tài khoản:</p>
+                        <p className="text-outerspace text-lg">{user?.bankHolder}</p>
+                      </div>
+                      <ul className="address-tags flex flex-wrap mt-3">
+                        <li className="text-gray text-base font-medium inline-flex items-center justify-center">
+                          Địa chỉ ngân hàng mặc định
+                        </li>
+                      </ul>
+                      <div className="address-btns">
+                        <BaseButton className="text-base text-outerspace font-semibold" onClick={openUpdateModal}>
+                          Chỉnh Sửa
+                        </BaseButton>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              ) : (
+                <></>
+              )}
               <AddBankAccountModal isOpen={showBankAccountModal} onClose={closeModal} />
+              <UpdateBankAccountModal isOpen={showUpdateBankAccountModal} onClose={closeUpdateModal} />
             </UserContent>
           </UserDashboardWrapper>
         </Container>

@@ -7,7 +7,7 @@ import { useAppDispatch, useAppSelector } from "@redux/hook";
 import { currencyFormat, formatDate } from "@ultils/helper";
 import { useParams } from "react-router-dom";
 import { getOrderById } from "@redux/slices/orderSlice";
-import { BookingDetail, getDetailBookingofUsers } from "@redux/slices/bookingSlice";
+import { BookingDetail, Confirm, getDetailBookingofUsers } from "@redux/slices/bookingSlice";
 import LoadingPage from "@components/atom/Loading/LoadingPage";
 import { BookingServiceStyle } from "./BookingServiceStyle";
 import { breakpoints, defaultTheme } from "@styles/themes/default";
@@ -15,6 +15,7 @@ import styled from "styled-components";
 import { BaseButtonGreen, BaseButtonWhite } from "@styles/button";
 import { RefundBankModal } from "@components/atom/modal/RefundBankModal";
 import UpdateBookingModal from "@components/atom/modal/UpdateBookingModal";
+import { ConfirmModal } from "@components/atom/modal/ConfirmModal";
 const BookingDetailMessageWrapper = styled.div`
   background-color: ${defaultTheme.color_lighwhite};
   max-width: 100%;
@@ -106,7 +107,13 @@ const BookingHistoryDetail = () => {
         bg: "bg-green-100",
         text: "text-green-800",
         icon: <FaCheck className="inline-block mr-1" />,
-        label: "Hoàn thành",
+        label: "Hoàn thành bảo trì",
+      },
+      COMPLETED: {
+        bg: "bg-green-100",
+        text: "text-green-800",
+        icon: <FaCheck className="inline-block mr-1" />,
+        label: "Đã bảo trì",
       },
       NOTASSIGN: {
         bg: "bg-gray-100",
@@ -138,6 +145,12 @@ const BookingHistoryDetail = () => {
         icon: <FaTimes className="inline-block mr-1" />,
         label: "Đã hủy",
       },
+      NOTDONE: {
+        bg: "bg-red-100",
+        text: "text-red-800",
+        icon: <FaTimes className="inline-block mr-1" />,
+        label: "Chưa bảo trì",
+      },
     };
 
     const config = statusConfig[status ?? "null"];
@@ -153,7 +166,7 @@ const BookingHistoryDetail = () => {
       </span>
     );
   };
-  // refund
+  // refund and update
   const openModal = (book: BookingDetail) => {
     setSelectedBooking(book);
     setShowRefundModal(true);
@@ -172,6 +185,16 @@ const BookingHistoryDetail = () => {
   }, []);
   const [showRefundModal, setShowRefundModal] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
+  // confirm
+  const openModalConfirm = (book: BookingDetail) => {
+    setSelectedBooking(book);
+    setShowConfirmModal(true);
+  };
+  const closeModalConfirm = useCallback(() => {
+    setShowConfirmModal(false);
+    setSelectedBooking(null);
+  }, []);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   return (
     <BookingServiceStyle>
       {isLoadingDetail && isLoadingBooking ? (
@@ -195,7 +218,7 @@ const BookingHistoryDetail = () => {
                   </p>
                 </div>
                 <p className="description">
-                  <span className="text-title">Ngày đặt: </span>{" "}
+                  <span className="text-title">Ngày bảo trì: </span>{" "}
                   {bookingDetail?.scheduleDate ? formatDate(bookingDetail.scheduleDate) : "Chưa có ngày"}
                 </p>
               </div>
@@ -220,6 +243,21 @@ const BookingHistoryDetail = () => {
                 <div className="order-buttons">
                   <BaseButtonWhite className="request-button" onClick={() => openModal(bookingDetail)}>
                     Yêu Cầu Hoàn Tiền
+                  </BaseButtonWhite>
+                </div>
+              </BookingDetailMessageWrapper>
+            )}
+            {bookingDetail?.status === "DONE" && (
+              <BookingDetailMessageWrapper>
+                <div className="order-message-content">
+                  <p className="font-semibold">
+                    "Vui lòng kiểm tra đơn bảo trì cho bể cá của bạn và nhấn hoàn thành!!".
+                  </p>
+                </div>
+                <div className="order-buttons">
+                  <BaseButtonGreen onClick={() => openModalConfirm(bookingDetail)}>Hoàn thành</BaseButtonGreen>
+                  <BaseButtonWhite className="request-button" onClick={() => openModal(bookingDetail)}>
+                    Báo cáo/Khiếu nại
                   </BaseButtonWhite>
                 </div>
               </BookingDetailMessageWrapper>
@@ -320,6 +358,7 @@ const BookingHistoryDetail = () => {
             </div>
           </div>
           <RefundBankModal isOpen={showRefundModal} onClose={closeModal} booking={selectedBooking} />
+          <ConfirmModal isOpen={showConfirmModal} onClose={closeModalConfirm} booking={selectedBooking} />
           <UpdateBookingModal
             isModalUpdateOpen={showUpdateModal}
             onClose={closeModalUpdate}

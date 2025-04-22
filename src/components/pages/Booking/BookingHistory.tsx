@@ -98,7 +98,13 @@ const BookingHistory: React.FC<BookingItemListProps> = ({ bookings }) => {
         bg: "bg-green-100",
         text: "text-green-800",
         icon: <FaCheck className="inline-block mr-1" />,
-        label: "Hoàn thành",
+        label: "Hoàn thành bảo trì",
+      },
+      COMPLETED: {
+        bg: "bg-green-100",
+        text: "text-green-800",
+        icon: <FaCheck className="inline-block mr-1" />,
+        label: "Đã bảo trì",
       },
       NOTASSIGN: {
         bg: "bg-gray-100",
@@ -129,6 +135,12 @@ const BookingHistory: React.FC<BookingItemListProps> = ({ bookings }) => {
         text: "text-red-800",
         icon: <FaTimes className="inline-block mr-1" />,
         label: "Đã hủy",
+      },
+      NOTDONE: {
+        bg: "bg-red-100",
+        text: "text-red-800",
+        icon: <FaTimes className="inline-block mr-1" />,
+        label: "Chưa bảo trì",
       },
     };
 

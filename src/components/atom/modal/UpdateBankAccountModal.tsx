@@ -4,10 +4,7 @@ import { useAppDispatch, useAppSelector } from "@redux/hook";
 import { BaseBtnGreen } from "@styles/button";
 import { FiX } from "react-icons/fi";
 import { getAllBank, updateBankInfo } from "@redux/slices/bankSlice";
-import { Order } from "@redux/slices/orderListSlice";
-import { refundOrder } from "@redux/slices/orderSlice";
 import { toast } from "react-toastify";
-import { BookingList } from "@redux/slices/bookingSlice";
 import Loading from "../Loading/Loading";
 
 interface UpdateBankAccountModal {
@@ -18,7 +15,8 @@ interface UpdateBankAccountModal {
 export const UpdateBankAccountModal = ({ isOpen, onClose }: UpdateBankAccountModal) => {
   const dispatch = useAppDispatch();
   const listBanks = useAppSelector((state) => state.bank.listBank);
-  const isLoadingRefund = useAppSelector((state) => state.order.isLoadingRefund);
+  const user = useAppSelector((state) => state.userProfile.user);
+  const isLoadingUpdate = useAppSelector((state) => state.bank.isLoadingUpdate);
   const [searchTerm, setSearchTerm] = useState("");
   const [data, setData] = useState<{
     BankHolderName: string;
@@ -29,18 +27,26 @@ export const UpdateBankAccountModal = ({ isOpen, onClose }: UpdateBankAccountMod
     BankName: "",
     BankNumber: "",
   });
+
   useEffect(() => {
     dispatch(getAllBank());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (user) {
+      setData({
+        BankHolderName: user.bankHolder || "",
+        BankName: user.bankName || "",
+        BankNumber: user.bankNumber || "",
+      });
+      setSearchTerm(user.bankName || "");
+    }
+  }, [user]);
+
   const handleClose = () => {
-    setData({
-      BankHolderName: "",
-      BankName: "",
-      BankNumber: "",
-    });
-    setSearchTerm("");
     onClose();
   };
+
   const handleSave = async () => {
     const { BankHolderName, BankName, BankNumber } = data;
 
@@ -59,6 +65,7 @@ export const UpdateBankAccountModal = ({ isOpen, onClose }: UpdateBankAccountMod
       const data = response.payload;
       if (response.meta.requestStatus === "fulfilled" && (data?.status === "200" || data?.status === "201")) {
         toast.success("Cập nhật tài khoản ngân hàng thành công");
+        handleClose();
       } else {
         toast.error(data || "Cập nhật thất bại");
       }
@@ -70,7 +77,7 @@ export const UpdateBankAccountModal = ({ isOpen, onClose }: UpdateBankAccountMod
 
   return (
     <SimpleModal isOpen={isOpen} onClose={handleClose}>
-      <div className=" p-6 bg-white" role="dialog" aria-modal="true">
+      <div className="p-6 bg-white" role="dialog" aria-modal="true">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-semibold text-gray-800">Thông tin tài khoản ngân hàng</h2>
           <button
@@ -91,13 +98,6 @@ export const UpdateBankAccountModal = ({ isOpen, onClose }: UpdateBankAccountMod
               onChange={(e) => {
                 const value = e.target.value;
                 setSearchTerm(value);
-                if (value === "") {
-                  setData({
-                    BankHolderName: "",
-                    BankName: "",
-                    BankNumber: "",
-                  });
-                }
               }}
               value={searchTerm}
             />
@@ -113,13 +113,14 @@ export const UpdateBankAccountModal = ({ isOpen, onClose }: UpdateBankAccountMod
                   <div
                     key={bank.id}
                     onClick={() => {
-                      setData({ ...data, BankName: bank.name });
+                      const fullName = `${bank.name} (${bank.shortName})`;
+                      setData({ ...data, BankName: fullName });
                       setSearchTerm(bank.name);
                     }}
                     className={`p-2 border rounded-lg cursor-pointer 
-                    flex justify-center items-center
-                    hover:bg-gray-100
-        ${data.BankName === bank.name ? "bg-blue-200 border-blue-500" : ""}`}
+                      flex justify-center items-center
+                      hover:bg-gray-100
+                      ${data.BankName.includes(bank.name) ? "bg-blue-200 border-blue-500" : ""}`}
                   >
                     {bank.logo ? (
                       <img src={bank.logo} alt={bank.shortName} className="h-12 object-contain mx-auto" />
@@ -130,6 +131,7 @@ export const UpdateBankAccountModal = ({ isOpen, onClose }: UpdateBankAccountMod
                 ))}
             </div>
           </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Số tài khoản</label>
             <input
@@ -138,7 +140,7 @@ export const UpdateBankAccountModal = ({ isOpen, onClose }: UpdateBankAccountMod
               value={data.BankNumber}
               onChange={(e) => setData({ ...data, BankNumber: e.target.value })}
               placeholder="Nhập số tài khoản"
-              className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 `}
+              className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500`}
               maxLength={15}
             />
           </div>
@@ -150,17 +152,15 @@ export const UpdateBankAccountModal = ({ isOpen, onClose }: UpdateBankAccountMod
               name="accountName"
               value={data.BankHolderName}
               onChange={(e) => {
-                // Chuyển thành chữ IN HOA và xóa dấu tiếng Việt
                 const rawValue = e.target.value;
                 const processedValue = rawValue
                   .toUpperCase()
                   .normalize("NFD")
                   .replace(/[\u0300-\u036f]/g, "");
-
                 setData({ ...data, BankHolderName: processedValue });
               }}
               placeholder="Nhập tên tài khoản"
-              className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 `}
+              className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500`}
             />
           </div>
 
@@ -176,7 +176,7 @@ export const UpdateBankAccountModal = ({ isOpen, onClose }: UpdateBankAccountMod
               className={`px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 flex justify-center items-center`}
               onClick={handleSave}
             >
-              {isLoadingRefund ? <Loading /> : "Xác nhận"}
+              {isLoadingUpdate ? <Loading /> : "Xác nhận"}
             </button>
           </div>
         </div>
