@@ -12,7 +12,16 @@ import LoadingPage from "@components/atom/Loading/LoadingPage";
 import BookingHistory from "./BookingHistory";
 import { getAllBookingofUsers } from "@redux/slices/bookingSlice";
 
-type BookingStatus = "ALL" | "NOTASSIGN" | "DONE" | "PROCESSING" | "CANCELLED" | "ASSIGNED" | "MISSED";
+type BookingStatus =
+  | "ALL"
+  | "NOTASSIGN"
+  | "DONE"
+  | "PROCESSING"
+  | "CANCELLED"
+  | "ASSIGNED"
+  | "MISSED"
+  | "NOTDONE"
+  | "COMPLETED";
 
 const OrderListScreenWrapper = styled.div`
   background-color: #f6f6f6;
@@ -109,12 +118,22 @@ const BookingHistoryListSCreen = () => {
               <div className="order-tabs mb-12">
                 <div className="order-tabs-heads p-8">
                   {(
-                    ["ALL", "NOTASSIGN", "ASSIGNED", "PROCESSING", "DONE", "CANCELLED", "MISSED"] as BookingStatus[]
+                    [
+                      "ALL",
+                      "NOTASSIGN",
+                      "ASSIGNED",
+                      "PROCESSING",
+                      "DONE",
+                      "COMPLETED",
+                      "NOTDONE",
+                      "CANCELLED",
+                      "MISSED",
+                    ] as BookingStatus[]
                   ).map((key) => (
                     <button
                       key={key}
                       type="button"
-                      className={`order-tabs-head mr-7 text-xl italic ${
+                      className={`order-tabs-head mr-5 text-xl italic ${
                         activeTab === key ? "order-tabs-head-active" : ""
                       }`}
                       onClick={() => handleTabClick(key as BookingStatus)}
@@ -123,7 +142,9 @@ const BookingHistoryListSCreen = () => {
                       {key === "NOTASSIGN" && "Chưa bắt đầu"}
                       {key === "ASSIGNED" && "Đã phân công"}
                       {key === "PROCESSING" && "Đang tiến hành"}
-                      {key === "DONE" && "Hoàn thành"}
+                      {key === "DONE" && "Hoàn thành bảo trì"}
+                      {key === "COMPLETED" && "Đã bảo trì"}
+                      {key === "NOTDONE" && "Chưa bảo trì"}
                       {key === "CANCELLED" && "Đã hủy"}
                     </button>
                   ))}

@@ -2,6 +2,7 @@ import Breadcrumb from "@common/Breadcrum";
 import Title from "@common/Title";
 import Loading from "@components/atom/Loading/Loading";
 import LoadingPage from "@components/atom/Loading/LoadingPage";
+import { ConfirmModal } from "@components/atom/modal/ConfirmModal";
 import SimpleModal, { ModalContent, ModalHeader } from "@components/atom/modal/Modal";
 import { RefundBankModal } from "@components/atom/modal/RefundBankModal";
 import UserMenu from "@components/atom/user/UserMenu";
@@ -22,7 +23,7 @@ import { Container } from "@styles/styles";
 import { breakpoints, defaultTheme } from "@styles/themes/default";
 import { UserContent, UserDashboardWrapper } from "@styles/user";
 import { currencyFormat, formatDate } from "@ultils/helper";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { FaCheck, FaClock, FaRegMoneyBillAlt, FaTimes } from "react-icons/fa";
 import { Link, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -519,24 +520,6 @@ const OrderDetailScreen = () => {
       console.error("Lỗi khi hủy đơn hàng:", error);
     }
   };
-  const handleConfirmOrder = async () => {
-    try {
-      const res = await dispatch(updateOrder({ id: orderId ?? "", status: "COMPLETED" }));
-      const data = res.payload;
-
-      // setOrder(res.payload as Order);
-      if (res.meta.requestStatus === "fulfilled" && (data?.status === "200" || data?.status === "201")) {
-        toast.success("Đơn hàng đã được xác nhận hoàn thành!");
-        setIsModalOpenDelete(false);
-        await dispatch(getOrderById(orderId ?? ""));
-      } else {
-        toast.error(data || "Cập nhật thất bại");
-      }
-    } catch (error) {
-      toast.error("Xác nhận đơn hàng thất bại!");
-      console.error("Lỗi khi xác nhận đơn hàng:", error);
-    }
-  };
   // refund
   const openModal = (order: Order) => {
     setSelectedOrder(order);
@@ -544,6 +527,16 @@ const OrderDetailScreen = () => {
   };
   const closeModal = () => setShowRefundModal(false);
   const [showRefundModal, setShowRefundModal] = useState(false);
+  // confirm
+  const openModalConfirm = (order: Order) => {
+    setSelectedOrder(order);
+    setShowConfirmModal(true);
+  };
+  const closeModalConfirm = useCallback(() => {
+    setShowConfirmModal(false);
+    setSelectedOrder(null);
+  }, []);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const PaymentStatus = ({ status }: { status: string }) => (
     <div
       className={`flex items-center gap-1 ${
@@ -610,9 +603,17 @@ const OrderDetailScreen = () => {
                       </h4>
                       <p className="text-lg font-medium text-gray">
                         <div className="flex items-center">
-                          <span className="text-gray-800 font-bold mr-2">Ngày đặt:</span>
+                          <span className="text-gray-800 font-bold mr-2">Ngày tạo:</span>
                           <span className="px-3 py-1 rounded-md text-xl font-medium text-gray-600 ">
                             {formatDate(order?.createDate || "")}
+                          </span>
+                        </div>
+                      </p>
+                      <p className="text-lg font-medium text-gray">
+                        <div className="flex items-center">
+                          <span className="text-gray-800 font-bold mr-2">Ngày lắp đặt:</span>
+                          <span className="px-3 py-1 rounded-md text-xl font-medium text-gray-600 ">
+                            {formatDate(order?.installationDate || "")}
                           </span>
                         </div>
                       </p>
@@ -799,7 +800,10 @@ const OrderDetailScreen = () => {
                         <p className="text-gray-600">{formatDate(order?.modifyDate || "")}.</p>
                       </div>
                       <div className="order-buttons">
-                        <BaseBtnGreen className="confirm-button" onClick={handleConfirmOrder}>
+                        <BaseBtnGreen
+                          className="confirm-button"
+                          onClick={() => openModalConfirm(order as unknown as Order)}
+                        >
                           Đã hoàn thành lắp đặt
                         </BaseBtnGreen>
                         <BaseButtonOuterspace className="confirm-button">Báo cáo/Khiếu nại</BaseButtonOuterspace>
@@ -927,6 +931,7 @@ const OrderDetailScreen = () => {
           </div>
         </ModalContent>
       </SimpleModal>
+      <ConfirmModal isOpen={showConfirmModal} onClose={closeModalConfirm} order={selectedOrder} />
       <RefundBankModal isOpen={showRefundModal} onClose={closeModal} order={selectedOrder} />
     </OrderDetailScreenWrapper>
   );

@@ -13,6 +13,9 @@ export type UserProfile = {
   isDeleted: boolean;
   cityId: string | null;
   districtId: string | null;
+  bankName: string;
+  bankNumber: string;
+  bankHolder: string;
 };
 
 type ProfileType = {

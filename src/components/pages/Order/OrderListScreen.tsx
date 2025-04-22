@@ -59,8 +59,8 @@ const breadcrumbItems = [
 const OrderListScreen = () => {
   const dispatch = useAppDispatch();
   const orderData = useAppSelector((state) => state.orderList.orders) || [];
-  const ordersWithSetup = orderData.filter((or) => or.setupPackage !== null);
-  const ordersWithProduct = orderData.filter((or) => or.setupPackage == null);
+  const ordersWithSetup = orderData.filter((or) => typeof or.setupPackage !== "undefined" && or.setupPackage !== null);
+  const ordersWithProduct = orderData.filter((or) => typeof or.setupPackage === "undefined");
   const isLoading = useAppSelector((state) => state.orderList.loading);
   const [activeTab, setActiveTab] = useState<OrderStatus>("ALL");
   const [selectedCategory, setSelectedCategory] = useState<"PRODUCT" | "FISH_TANK">("PRODUCT");
@@ -117,7 +117,8 @@ const OrderListScreen = () => {
 
     return baseOrders.filter((order) => order.status === activeTab);
   })();
-
+  console.log("filter", filteredOrders);
+  console.log("setup", orderData);
   return (
     <OrderListScreenWrapper className="page-py-spacing">
       {isLoading && isLoadingProfile ? (
@@ -145,7 +146,6 @@ const OrderListScreen = () => {
                       "PROCESSING",
                       "PROCESSED",
                       "PENDING_DELIVERY",
-
                       ...(selectedCategory === "FISH_TANK" ? ["DONE", "NOTDONE"] : []),
                       "COMPLETED",
                       "CANCELLED",

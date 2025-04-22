@@ -57,7 +57,7 @@ const BuildSetup: React.FC<ProductItemProps> = () => {
   const isLoadingSetup = useAppSelector((state) => state.setupPackage.loading);
   const [subCategories, setSubCategories] = useState<string[]>(["Tất cả"]);
   const [selectedSubcategory, setSelectedSubcategory] = useState<string>("Tất cả");
-  const validCategories = listCategory.filter((item) => !item.isObligatory === null);
+  const validCategories = listCategory.filter((item) => item.isSolution === false);
 
   const navigate = useNavigate();
 

@@ -1,6 +1,8 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import myAxios from "@setup/axiosConfig";
 import { ServicePackage } from "./listServiceSlice";
+import { getAllOrdersByUsers } from "./orderListSlice";
+import { getOrderById } from "./orderSlice";
 export interface BookingData {
   id: string;
   scheduleDate: string;
@@ -64,6 +66,7 @@ export interface BookingState {
   unavailableDates: UnavailableDate[];
   isLoadingCancel: boolean;
   isLoadingUpdate: boolean;
+  isLoadingConfirm: boolean;
 }
 
 export const createBookingService = createAsyncThunk(
@@ -148,6 +151,48 @@ export const CancelBooking = createAsyncThunk(
     }
   }
 );
+export const Confirm = createAsyncThunk(
+  "booking/Confirm",
+  async (
+    {
+      orderid,
+      bookingid,
+    }: {
+      orderid?: string;
+      bookingid?: string;
+    },
+    { rejectWithValue, dispatch }
+  ) => {
+    try {
+      if (!orderid && !bookingid) {
+        return rejectWithValue("Cần cung cấp ít nhất orderid hoặc bookingid");
+      }
+
+      const params = new URLSearchParams();
+      if (orderid) params.append("orderid", orderid);
+      if (bookingid) params.append("bookingid", bookingid);
+
+      const response = await myAxios.put(`/booking/user-confirm?${params.toString()}`);
+
+      const promises = [dispatch(getAllOrdersByUsers()), dispatch(getAllBookingofUsers())];
+
+      if (orderid) {
+        promises.push(dispatch(getOrderById(orderid)));
+      }
+
+      if (bookingid) {
+        promises.push(dispatch(getDetailBookingofUsers(bookingid)));
+      }
+
+      await Promise.all(promises);
+      return response.data;
+    } catch (error: any) {
+      console.error("Error confirming booking/order:", error);
+      return rejectWithValue(error.response?.data?.message || "Xác nhận thất bại");
+    }
+  }
+);
+
 const initialState: BookingState = {
   loading: false,
   error: null,
@@ -157,6 +202,7 @@ const initialState: BookingState = {
   unavailableDates: [],
   isLoadingCancel: false,
   isLoadingUpdate: false,
+  isLoadingConfirm: false,
 };
 const bookingSlice = createSlice({
   name: "booking",
@@ -240,6 +286,19 @@ const bookingSlice = createSlice({
       })
       .addCase(updateBookingSchedule.rejected, (state, action) => {
         state.isLoadingUpdate = false;
+        state.error = action.payload as string;
+      });
+    builder
+      .addCase(Confirm.pending, (state) => {
+        state.isLoadingConfirm = true;
+        state.error = null;
+      })
+      .addCase(Confirm.fulfilled, (state, action) => {
+        state.isLoadingConfirm = false;
+        state.error = null;
+      })
+      .addCase(Confirm.rejected, (state, action) => {
+        state.isLoadingConfirm = false;
         state.error = action.payload as string;
       });
   },

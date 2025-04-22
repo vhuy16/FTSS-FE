@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 import myAxios from "@setup/axiosConfig";
+import { getUserProfile } from "./userSlice";
 
 export type Bank = {
   id: string;
@@ -36,7 +37,7 @@ export const updateBankInfo = createAsyncThunk(
   "user/updateBankInfo",
   async (
     { bankNumber, bankName, bankHolder }: { bankNumber: string; bankName: string; bankHolder: string },
-    { rejectWithValue }
+    { rejectWithValue, dispatch }
   ) => {
     try {
       const formData = new FormData();
@@ -49,7 +50,7 @@ export const updateBankInfo = createAsyncThunk(
           "Content-Type": "multipart/form-data",
         },
       });
-
+      await dispatch(getUserProfile());
       return response.data;
     } catch (error: any) {
       console.log(error);

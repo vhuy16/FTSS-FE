@@ -357,13 +357,6 @@ const OrderItemList: React.FC<OrderItemListProps> = ({ orders }) => {
                   </button>
                 </>
               )}
-              {order.status === "RETURNED" && order?.payment?.paymentStatus === "Completed" && (
-                <>
-                  <button className="btn-secondary" onClick={() => openModal(order)}>
-                    Yêu Cầu Hoàn Tiền
-                  </button>
-                </>
-              )}
               {order.status === "PROCESSING" && (
                 <>
                   <button

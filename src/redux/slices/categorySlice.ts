@@ -19,6 +19,7 @@ type categoryType = {
   subCategories: SubCategory[] | null;
   isFishTank: boolean;
   isObligatory: boolean;
+  isSolution: boolean;
 };
 
 export const getAllCategory = createAsyncThunk("category/getAllCategory", async () => {
