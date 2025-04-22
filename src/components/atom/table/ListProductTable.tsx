@@ -70,7 +70,27 @@ export default function ListProductTable() {
                 </div>
             ),
         },
-        { field: 'categoryName', headerName: 'Danh mục', width: 150, headerClassName: 'super-app-theme--header' },
+        {
+            field: 'categoryName',
+            headerName: 'Danh mục',
+            width: 200,
+            headerClassName: 'super-app-theme--header',
+            renderCell: (params) => (
+                <span
+                    style={{
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        display: 'inline-block', // hoặc block
+                        width: '100%',
+                        maxWidth: '100%', // quan trọng để ngăn overflow
+                    }}
+                    title={params.row.categoryName}
+                >
+                    {params.row.categoryName}
+                </span>
+            ),
+        },
         {
             field: 'price',
             headerName: 'Giá',

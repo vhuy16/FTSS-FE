@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import { useAppDispatch, useAppSelector } from '@redux/hook';
-import { addCategory, getAllCategory, getAllSubCategoryByCateName } from '@redux/slices/categorySlice';
+import { addCategory, editCategory, getAllCategory, getAllSubCategoryByCateName } from '@redux/slices/categorySlice';
 import { addProducts, getAllCategoryWithProduct } from '@redux/slices/productSlice';
 import { toast } from 'react-toastify';
 import Loading from '../Loading/Loading';
@@ -15,9 +15,9 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import Checkbox from '@mui/material/Checkbox';
 import 'flowbite';
 import { createSetupPackage } from '@redux/slices/setupSlice';
-type ModalAddProps = {
-    isModalAddOpen: boolean;
-    setIsModalAddOpen: (isOpen: boolean) => void;
+type ModalEditProps = {
+    isModalEditOpen: boolean;
+    setIsModalEditOpen: (isOpen: boolean) => void;
 };
 const style = {
     position: 'absolute',
@@ -36,9 +36,10 @@ const MenuProps = {
         },
     },
 };
-export default function AddCategoryModal({ isModalAddOpen, setIsModalAddOpen }: ModalAddProps) {
+export default function EditCategoryModal({ isModalEditOpen, setIsModalEditOpen }: ModalEditProps) {
     const dispatch = useAppDispatch();
-    const isLoadingAdd = useAppSelector((state) => state.category.isLoadingAdd);
+    const isLoading = useAppSelector((state) => state.category.isLoadingEditCategory);
+    const category = useAppSelector((state) => state.category.selectedCategory);
     const [data, setData] = useState<{
         CategoryName: string;
         Description: string;
@@ -47,16 +48,16 @@ export default function AddCategoryModal({ isModalAddOpen, setIsModalAddOpen }: 
         IsObligatory: Boolean;
         IsSolution: Boolean;
     }>({
-        CategoryName: '',
-        Description: '',
+        CategoryName: category?.categoryName as string,
+        Description: category?.description as string,
         ImageFile: null,
-        IsFishTank: false,
-        IsObligatory: false,
-        IsSolution: true,
+        IsFishTank: category?.isFishTank ?? false,
+        IsObligatory: category?.isObligatory ?? false,
+        IsSolution: category?.isSolution ?? true,
     });
 
     useEffect(() => {
-        if (!isModalAddOpen) {
+        if (!isModalEditOpen) {
             setData({
                 CategoryName: '',
                 Description: '',
@@ -66,24 +67,33 @@ export default function AddCategoryModal({ isModalAddOpen, setIsModalAddOpen }: 
                 IsSolution: true,
             });
         }
-    }, [isModalAddOpen]);
-
+        if (isModalEditOpen && category?.id) {
+            setData({
+                CategoryName: category?.categoryName,
+                Description: category?.description,
+                ImageFile: null,
+                IsFishTank: category?.isFishTank,
+                IsObligatory: category?.isObligatory,
+                IsSolution: category?.isSolution,
+            });
+        }
+    }, [isModalEditOpen]);
     const handleSubmit = async () => {
-        if (data.CategoryName && data.Description && data.ImageFile) {
+        if (data.CategoryName && data.Description) {
             const formData = new FormData();
             formData.append('CategoryName', data.CategoryName);
             formData.append('Description', data.Description);
-            formData.append('ImageFile', data.ImageFile);
+            formData.append('ImageFile', data.ImageFile ?? '');
             formData.append('IsFishTank', JSON.stringify(data.IsFishTank));
             formData.append('IsObligatory', JSON.stringify(data.IsObligatory));
             formData.append('IsSolution', JSON.stringify(data.IsSolution));
             try {
-                const res = await dispatch(addCategory(formData)).unwrap();
+                const res = await dispatch(editCategory({ id: category?.id as string, formData: formData })).unwrap();
                 if (res.status == 201 || res.status == 200) {
-                    setIsModalAddOpen(false);
-                    toast.success('Thêm danh mục thành công');
+                    setIsModalEditOpen(false);
+                    toast.success('Cập nhật danh mục thành công');
                 } else if (res.status == 400) {
-                    setIsModalAddOpen(false);
+                    setIsModalEditOpen(false);
                     toast.error('Tên danh mục đã tồn tại');
                 }
             } catch (error) {
@@ -98,9 +108,9 @@ export default function AddCategoryModal({ isModalAddOpen, setIsModalAddOpen }: 
             {/* Modal */}
             <div>
                 <Modal
-                    open={isModalAddOpen}
+                    open={isModalEditOpen}
                     onClose={() => {
-                        setIsModalAddOpen(false);
+                        setIsModalEditOpen(false);
                     }}
                     aria-labelledby="modal-modal-title"
                     aria-describedby="modal-modal-description"
@@ -111,13 +121,13 @@ export default function AddCategoryModal({ isModalAddOpen, setIsModalAddOpen }: 
                                 <div className="relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
                                     <div className="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600">
                                         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                                            Thêm danh mục
+                                            Cập nhật danh mục
                                         </h3>
                                         <button
                                             type="button"
                                             className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
                                             onClick={() => {
-                                                setIsModalAddOpen(false);
+                                                setIsModalEditOpen(false);
                                             }}
                                         >
                                             <svg
@@ -347,11 +357,11 @@ export default function AddCategoryModal({ isModalAddOpen, setIsModalAddOpen }: 
                                                 onClick={handleSubmit}
                                                 className="text-white inline-flex items-center bg-blackGreen  hover:bg-blackGreenHover focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 mt-3 mr-3"
                                             >
-                                                {isLoadingAdd ? <Loading></Loading> : 'Thêm'}
+                                                {isLoading ? <Loading></Loading> : 'Lưu'}
                                             </button>
 
                                             <button
-                                                onClick={() => setIsModalAddOpen(false)}
+                                                onClick={() => setIsModalEditOpen(false)}
                                                 className="text-red-600 inline-flex items-center mt-3 font-bold text-sm underline"
                                             >
                                                 <svg

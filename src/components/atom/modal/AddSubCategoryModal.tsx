@@ -70,7 +70,7 @@ export default function AddSubCategoryModal({ isModalAddOpen, setIsModalAddOpen 
             };
             try {
                 const res = await dispatch(addSubCategory(req)).unwrap();
-                if (res.status == 201) {
+                if (res.status == 201 || res.status == 200) {
                     setIsModalAddOpen(false);
                     toast.success('Thêm danh mục phụ thành công');
                 } else if (res.status == 400) {
@@ -78,8 +78,7 @@ export default function AddSubCategoryModal({ isModalAddOpen, setIsModalAddOpen 
                     toast.error('Tên danh mục phụ đã tồn tại');
                 }
             } catch (error) {
-                setIsModalAddOpen(false);
-                toast.error('Tên danh mục phụ đã tồn tại');
+                toast.error(error as string);
             }
         } else {
             toast.error('Vui lòng nhập đủ thông tin');
