@@ -26,7 +26,7 @@ export default function EditProductModal({ isModalEditOpen, setIsModalEditOpen }
     const listSubCate = useAppSelector((state) => state.category.subCates);
     const isLoading = useAppSelector((state) => state.product.isLoadingEdit);
     const [checked, setChecked] = useState(false);
-    const [cateName, setCateName] = useState('');
+    const [cateName, setCateName] = useState(product.categoryName);
     const [subCate, setSubCate] = useState({ name: '', id: '' });
     const [data, setData] = useState<{
         productName: string;
@@ -38,12 +38,12 @@ export default function EditProductModal({ isModalEditOpen, setIsModalEditOpen }
         subCategoryId: string;
         images: File[];
     }>({
-        productName: '',
-        description: '',
-        cateName: '',
-        subCateName: '',
-        price: 0,
-        quantity: 0,
+        productName: product.productName,
+        description: product.description,
+        cateName: product.categoryName,
+        subCateName: product.subCategoryName,
+        price: product.price,
+        quantity: product.quantity,
         subCategoryId: '',
         images: [],
     });
@@ -54,66 +54,85 @@ export default function EditProductModal({ isModalEditOpen, setIsModalEditOpen }
         }
     }, [isModalEditOpen]);
     useEffect(() => {
-        if (isModalEditOpen) {
+        if (isModalEditOpen && checked) {
             dispatch(getAllSubCategoryByCateName(cateName));
         }
-    }, [cateName]);
+    }, [cateName, checked]);
+    useEffect(() => {
+        if (isModalEditOpen && product.id) {
+            setData({
+                productName: product.productName,
+                description: product.description,
+                cateName: product.categoryName,
+                subCateName: product.subCategoryName,
+                price: product.price,
+                quantity: product.quantity,
+                subCategoryId: '',
+                images: [],
+            });
+            setCateName(product.categoryName);
+        }
+    }, [isModalEditOpen]);
     const handleSubmit = async () => {
-        const formData = new FormData();
-        formData.append('ProductName', data.productName);
-        formData.append('Description', data.description);
-        formData.append('Status', '');
-        if (data.price == 0) {
-            formData.append('Price', '');
-        } else {
-            formData.append('Price', data.price.toString());
-        }
-        if (data.quantity == 0) {
-            formData.append('Quantity', '');
-        } else {
-            formData.append('Quantity', data.quantity.toString());
-        }
-
-        if (data.subCategoryId == '1') {
-            formData.append('SubCategoryId', '');
-        } else {
-            formData.append('SubCategoryId', data.subCategoryId);
-        }
-        formData.append('Size', '3x4x5');
-
-        if (data.images.length == 0) {
-            formData.append('ImageLink', '');
-        } else {
-            for (let i = 0; i < data.images.length; i++) {
-                formData.append('ImageLink', data.images[i]);
-            }
-        }
-        try {
-            const res = await dispatch(
-                editProducts({
-                    formData: formData,
-                    id: product.id,
-                }),
-            ).unwrap();
-            if (res?.status == '200') {
-                setIsModalEditOpen(false);
-                setChecked(false);
-                setData({
-                    productName: '',
-                    description: '',
-                    cateName: '',
-                    subCateName: '',
-                    price: 0,
-                    quantity: 0,
-                    subCategoryId: '',
-                    images: [],
-                });
-                toast.success('Cập nhật sản phẩm thành công');
+        if (data.productName && data.price && data.quantity && data.description) {
+            const formData = new FormData();
+            formData.append('ProductName', data.productName);
+            formData.append('Description', data.description);
+            formData.append('Status', '');
+            if (data.price == 0) {
+                formData.append('Price', '');
             } else {
-                toast.error('Cập nhật sản phẩm thất bại');
+                formData.append('Price', data.price.toString());
             }
-        } catch (error) {
-            toast.error(error as string);
+            if (data.quantity == 0) {
+                formData.append('Quantity', '');
+            } else {
+                formData.append('Quantity', data.quantity.toString());
+            }
+
+            if (data.subCategoryId == '1') {
+                formData.append('SubCategoryId', '');
+            } else {
+                formData.append('SubCategoryId', data.subCategoryId);
+            }
+            formData.append('Size', '3x4x5');
+
+            if (data.images.length == 0) {
+                formData.append('ImageLink', '');
+            } else {
+                for (let i = 0; i < data.images.length; i++) {
+                    formData.append('ImageLink', data.images[i]);
+                }
+            }
+            try {
+                const res = await dispatch(
+                    editProducts({
+                        formData: formData,
+                        id: product.id,
+                    }),
+                ).unwrap();
+                if (res?.status == '200') {
+                    setIsModalEditOpen(false);
+                    setChecked(false);
+                    setData({
+                        productName: '',
+                        description: '',
+                        cateName: '',
+                        subCateName: '',
+                        price: 0,
+                        quantity: 0,
+                        subCategoryId: '',
+                        images: [],
+                    });
+                    toast.success('Cập nhật sản phẩm thành công');
+                } else {
+                    toast.error('Cập nhật sản phẩm thất bại');
+                }
+            } catch (error) {
+                toast.error(error as string);
+            }
+        } else {
+            toast.error('Vui lòng điền đầy đủ thông tin');
         }
     };
 
@@ -201,7 +220,8 @@ export default function EditProductModal({ isModalEditOpen, setIsModalEditOpen }
                                                     name="name"
                                                     id="name"
                                                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                                    placeholder={product.productName}
+                                                    placeholder="Nhập tên sản phẩm"
+                                                    value={data.productName}
                                                     required={true}
                                                     onChange={(e) => setData({ ...data, productName: e.target.value })}
                                                 />
@@ -218,7 +238,8 @@ export default function EditProductModal({ isModalEditOpen, setIsModalEditOpen }
                                                     name="price"
                                                     id="brand"
                                                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                                    placeholder={JSON.stringify(product.price)}
+                                                    placeholder="Nhập giá tiền"
+                                                    value={JSON.stringify(data.price)}
                                                     required={true}
                                                     onChange={(e) =>
                                                         setData({ ...data, price: parseInt(e.target.value) })
@@ -237,7 +258,8 @@ export default function EditProductModal({ isModalEditOpen, setIsModalEditOpen }
                                                     name="quantity"
                                                     id="brand"
                                                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                                    placeholder={JSON.stringify(product.quantity)}
+                                                    placeholder="Nhập số lượng"
+                                                    value={JSON.stringify(data.quantity)}
                                                     required={true}
                                                     onChange={(e) =>
                                                         setData({ ...data, quantity: parseInt(e.target.value) })
@@ -269,10 +291,15 @@ export default function EditProductModal({ isModalEditOpen, setIsModalEditOpen }
                                                         }}
                                                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                                                     >
-                                                        <option selected={true}>Chọn danh mục</option>
                                                         {listCate ? (
                                                             listCate.map((cate) => (
-                                                                <option key={cate.id} value={cate.categoryName}>
+                                                                <option
+                                                                    key={cate.id}
+                                                                    value={cate.categoryName}
+                                                                    selected={
+                                                                        cate.categoryName === product.categoryName
+                                                                    }
+                                                                >
                                                                     {cate.categoryName}
                                                                 </option>
                                                             ))
@@ -292,7 +319,7 @@ export default function EditProductModal({ isModalEditOpen, setIsModalEditOpen }
                                                     </label>
                                                     <select
                                                         id="category"
-                                                        value={JSON.stringify(subCate)}
+                                                        // value={JSON.stringify(subCate)}
                                                         onChange={(e) => {
                                                             setSubCate(JSON.parse(e.target.value));
                                                             setData({
@@ -302,15 +329,6 @@ export default function EditProductModal({ isModalEditOpen, setIsModalEditOpen }
                                                         }}
                                                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                                                     >
-                                                        <option
-                                                            selected={true}
-                                                            value={JSON.stringify({
-                                                                name: 'Chọn danh mục phụ',
-                                                                id: '1',
-                                                            })}
-                                                        >
-                                                            Chọn danh mục phụ
-                                                        </option>
                                                         {listSubCate ? (
                                                             listSubCate.map((cate) => (
                                                                 <option
@@ -319,6 +337,9 @@ export default function EditProductModal({ isModalEditOpen, setIsModalEditOpen }
                                                                         name: cate.categoryName,
                                                                         id: cate.id,
                                                                     })}
+                                                                    selected={
+                                                                        cate.subCategoryName === product.subCategoryName
+                                                                    }
                                                                 >
                                                                     {cate.subCategoryName}
                                                                 </option>
@@ -341,7 +362,8 @@ export default function EditProductModal({ isModalEditOpen, setIsModalEditOpen }
                                                     id="description"
                                                     rows={4}
                                                     className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                                    placeholder={product.description}
+                                                    placeholder="Nhập mô tả"
+                                                    value={data.description}
                                                     required={true}
                                                     onChange={(e) => setData({ ...data, description: e.target.value })}
                                                 ></textarea>

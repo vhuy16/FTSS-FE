@@ -2,7 +2,13 @@ import { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import { useAppDispatch, useAppSelector } from '@redux/hook';
-import { addCategory, addSubCategory, getAllCategory, getAllSubCategoryByCateName } from '@redux/slices/categorySlice';
+import {
+    addCategory,
+    addSubCategory,
+    editSubCategory,
+    getAllCategory,
+    getAllSubCategoryByCateName,
+} from '@redux/slices/categorySlice';
 import { addProducts, getAllCategoryWithProduct } from '@redux/slices/productSlice';
 import { toast } from 'react-toastify';
 import Loading from '../Loading/Loading';
@@ -14,8 +20,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import Checkbox from '@mui/material/Checkbox';
 import 'flowbite';
-import { createSetupPackage } from '@redux/slices/setupSlice';
-type ModalAddProps = {
+type ModalEditProps = {
     isModalEditOpen: boolean;
     setIsModalEditOpen: (isOpen: boolean) => void;
 };
@@ -36,18 +41,19 @@ const MenuProps = {
         },
     },
 };
-export default function EditSubCategoryModal({ isModalEditOpen, setIsModalEditOpen }: ModalAddProps) {
+export default function EditSubCategoryModal({ isModalEditOpen, setIsModalEditOpen }: ModalEditProps) {
     const dispatch = useAppDispatch();
-    const isLoadingAdd = useAppSelector((state) => state.category.isLoadingAddSubCate);
+    const isLoading = useAppSelector((state) => state.category.isLoadingEditSubCategory);
     const listCate = useAppSelector((state) => state.category.categories);
+    const subCategory = useAppSelector((state) => state.category.selectedSubCategory);
     const [data, setData] = useState<{
         subCategoryName: string;
         description: string;
         categoryId: string;
     }>({
-        subCategoryName: '',
-        description: '',
-        categoryId: '',
+        subCategoryName: subCategory?.subCategoryName as string,
+        description: subCategory?.description as string,
+        categoryId: subCategory?.categoryId as string,
     });
 
     useEffect(() => {
@@ -59,6 +65,11 @@ export default function EditSubCategoryModal({ isModalEditOpen, setIsModalEditOp
             });
         } else {
             dispatch(getAllCategory());
+            setData({
+                subCategoryName: subCategory?.subCategoryName as string,
+                description: subCategory?.description as string,
+                categoryId: subCategory?.categoryId as string,
+            });
         }
     }, [isModalEditOpen]);
 
@@ -70,8 +81,8 @@ export default function EditSubCategoryModal({ isModalEditOpen, setIsModalEditOp
                 description: data.description,
             };
             try {
-                const res = await dispatch(addSubCategory(req)).unwrap();
-                if (res.status == 201) {
+                const res = await dispatch(editSubCategory({ id: subCategory?.id as string, data: req })).unwrap();
+                if (res.status == 201 || res.status == 200) {
                     setIsModalEditOpen(false);
                     toast.success('Thêm danh mục phụ thành công');
                 } else if (res.status == 400) {
@@ -79,8 +90,7 @@ export default function EditSubCategoryModal({ isModalEditOpen, setIsModalEditOp
                     toast.error('Tên danh mục phụ đã tồn tại');
                 }
             } catch (error) {
-                setIsModalEditOpen(false);
-                toast.error('Tên danh mục phụ đã tồn tại');
+                toast.error(error as string);
             }
         } else {
             toast.error('Vui lòng nhập đủ thông tin');
@@ -104,7 +114,7 @@ export default function EditSubCategoryModal({ isModalEditOpen, setIsModalEditOp
                                 <div className="relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
                                     <div className="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600">
                                         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                                            Chỉnh sửa danh mục phụ
+                                            Cập nhật danh mục phụ
                                         </h3>
                                         <button
                                             type="button"
@@ -165,7 +175,6 @@ export default function EditSubCategoryModal({ isModalEditOpen, setIsModalEditOp
                                                     }}
                                                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                                                 >
-                                                    <option selected={true}>Chọn danh mục</option>
                                                     {listCate ? (
                                                         listCate.map((cate) => (
                                                             <option
@@ -173,6 +182,7 @@ export default function EditSubCategoryModal({ isModalEditOpen, setIsModalEditOp
                                                                     name: cate.categoryName,
                                                                     id: cate.id,
                                                                 })}
+                                                                selected={cate.id === data.categoryId}
                                                             >
                                                                 {cate.categoryName}
                                                             </option>
@@ -195,6 +205,7 @@ export default function EditSubCategoryModal({ isModalEditOpen, setIsModalEditOp
                                                     className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                                                     placeholder="Viết mô tả sản phẩm tại đây"
                                                     required={true}
+                                                    value={data.description}
                                                     onChange={(e) => setData({ ...data, description: e.target.value })}
                                                 ></textarea>
                                             </div>
@@ -204,7 +215,7 @@ export default function EditSubCategoryModal({ isModalEditOpen, setIsModalEditOp
                                                 onClick={handleSubmit}
                                                 className="text-white inline-flex items-center bg-blackGreen  hover:bg-blackGreenHover focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 mt-3 mr-3"
                                             >
-                                                {isLoadingAdd ? <Loading></Loading> : 'Lưu'}
+                                                {isLoading ? <Loading></Loading> : 'Lưu'}
                                             </button>
 
                                             <button

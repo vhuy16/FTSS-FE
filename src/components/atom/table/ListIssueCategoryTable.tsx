@@ -57,7 +57,9 @@ export default function ListIssueCategoryTable() {
                         whiteSpace: 'nowrap',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
+                        display: 'inline-block', // hoặc block
                         width: '100%',
+                        maxWidth: '100%', // quan trọng để ngăn overflow
                     }}
                     title={params.row.issueCategoryName}
                 >
