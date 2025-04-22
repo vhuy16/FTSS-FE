@@ -26,6 +26,7 @@ import issueCategoryReducer from "./slices/issueCategorySlice";
 import issueReducer from "./slices/issueSlice";
 import historyServiceReducer from "./slices/historyServiceSetupSlice";
 import chatUserReducer from "./slices/chatUserSlice";
+import chatReducer from "./slices/chatSlice";
 export const store = configureStore({
   reducer: {
     address: addressReducer,
@@ -55,6 +56,7 @@ export const store = configureStore({
     issue: issueReducer,
     historyService: historyServiceReducer,
     chatUser: chatUserReducer,
+    chat: chatReducer,
   },
 });
 

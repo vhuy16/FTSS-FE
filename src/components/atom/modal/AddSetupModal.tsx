@@ -121,10 +121,10 @@ export default function AddSetupModal({ isModalAddOpen, setIsModalAddOpen }: Mod
                     toast.error(error as string);
                 }
             } else {
-                toast.error('Tên mẫu thiếu kế phải là chữ in hoa và ít hơn 10 kí tự');
+                toast.error('Tên mẫu thiếu kế phải ít hơn 10 kí tự');
             }
         } else {
-            toast.error('Vui lòng nhập đủ thông tin! Bể, Lọc, Đèn là 3 thành phần bắt buộc khi tạo bể cá');
+            toast.error('Vui lòng nhập đủ thông tin!');
         }
     };
     return (
@@ -244,7 +244,7 @@ export default function AddSetupModal({ isModalAddOpen, setIsModalAddOpen }: Mod
                                                                     onChange={(event) => {
                                                                         handleChange(event, cate.categoryName);
                                                                     }}
-                                                                    input={<OutlinedInput label="Tag" />}
+                                                                    input={<OutlinedInput label={cate.categoryName} />}
                                                                     renderValue={() => {
                                                                         const listProductByCate = listProduct.filter(
                                                                             (product) =>
@@ -327,28 +327,6 @@ export default function AddSetupModal({ isModalAddOpen, setIsModalAddOpen }: Mod
                                                                                             }
                                                                                         >
                                                                                             <div className="relative flex items-center max-w-[5rem]">
-                                                                                                <button
-                                                                                                    type="button"
-                                                                                                    id="decrement-button"
-                                                                                                    className="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 
-            hover:bg-gray-200 border border-gray-300 rounded-s-lg p-1 h-6 focus:ring-gray-100 
-            dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
-                                                                                                >
-                                                                                                    <svg
-                                                                                                        className="w-1.5 h-1.5 text-gray-900 dark:text-white"
-                                                                                                        xmlns="http://www.w3.org/2000/svg"
-                                                                                                        fill="none"
-                                                                                                        viewBox="0 0 18 2"
-                                                                                                    >
-                                                                                                        <path
-                                                                                                            stroke="currentColor"
-                                                                                                            stroke-linecap="round"
-                                                                                                            stroke-linejoin="round"
-                                                                                                            stroke-width="2"
-                                                                                                            d="M1 1h16"
-                                                                                                        />
-                                                                                                    </svg>
-                                                                                                </button>
                                                                                                 <input
                                                                                                     type="text"
                                                                                                     id="quantity-input"
@@ -406,28 +384,6 @@ export default function AddSetupModal({ isModalAddOpen, setIsModalAddOpen }: Mod
                                                                                                         );
                                                                                                     }}
                                                                                                 />
-                                                                                                <button
-                                                                                                    type="button"
-                                                                                                    id="increment-button"
-                                                                                                    className="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 
-            hover:bg-gray-200 border border-gray-300 rounded-e-lg p-1 h-6 focus:ring-gray-100 
-            dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
-                                                                                                >
-                                                                                                    <svg
-                                                                                                        className="w-1.5 h-1.5 text-gray-900 dark:text-white"
-                                                                                                        xmlns="http://www.w3.org/2000/svg"
-                                                                                                        fill="none"
-                                                                                                        viewBox="0 0 18 18"
-                                                                                                    >
-                                                                                                        <path
-                                                                                                            stroke="currentColor"
-                                                                                                            stroke-linecap="round"
-                                                                                                            stroke-linejoin="round"
-                                                                                                            stroke-width="2"
-                                                                                                            d="M9 1v16M1 9h16"
-                                                                                                        />
-                                                                                                    </svg>
-                                                                                                </button>
                                                                                             </div>
                                                                                         </div>
                                                                                     )}

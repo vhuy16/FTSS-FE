@@ -194,6 +194,65 @@ export default function OrderDeliveryPopup({ order, setIsModalEditOpen }: OrderP
                         </Popover>
                     )}
                 </div>
+                <div>
+                    {order.status === 'RETURNING' && (
+                        <MenuItem onMouseEnter={handlePopoverOpen}>
+                            <ListItemIcon>
+                                <UpdateOutlinedIcon fontSize="small" className="text-blue-600" />
+                            </ListItemIcon>
+                            <ListItemText>Xác nhận hoàn trả</ListItemText>
+
+                            <ListItemIcon className="flex justify-end">
+                                <KeyboardArrowRightIcon fontSize="small" className="text-black" />
+                            </ListItemIcon>
+                        </MenuItem>
+                    )}
+
+                    {order.status === 'RETURNING' && (
+                        <Popover
+                            id="mouse-over-popover"
+                            open={Boolean(anchorEl && document.body.contains(anchorEl))}
+                            anchorEl={anchorEl}
+                            anchorOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right', // Xuất hiện bên phải
+                            }}
+                            transformOrigin={{
+                                vertical: 'top',
+                                horizontal: 'left', // Xuất phát từ bên trái của Popover
+                            }}
+                            onClose={handlePopoverClose}
+                            disableRestoreFocus
+                            PaperProps={{
+                                sx: { marginLeft: '4px', marginTop: '4px' }, // Cách menu cha 1rem
+                            }}
+                            // Đóng Popover khi rời chuột
+                        >
+                            <MenuItem
+                                onClick={() => {
+                                    setStatus('RETURN_ACCEPTED');
+                                    setIsModalOpenEditStatus(true);
+                                    handleClose();
+                                }}
+                            >
+                                <Badge size="md" color="success">
+                                    Xác nhận
+                                </Badge>
+                            </MenuItem>
+                            <MenuItem
+                                onClick={() => {
+                                    setStatus('COMPLETED');
+                                    setIsModalOpenEditStatus(true);
+                                    handleClose();
+                                }}
+                            >
+                                <Badge size="md" color="error">
+                                    Không xác nhận
+                                </Badge>
+                            </MenuItem>
+                        </Popover>
+                    )}
+                </div>
                 {order.installationDate && order.status === 'PROCESSED' && (
                     <MenuItem
                         onClick={() => {
@@ -208,65 +267,7 @@ export default function OrderDeliveryPopup({ order, setIsModalEditOpen }: OrderP
                     </MenuItem>
                 )}
             </Menu>
-            <div>
-                {order.status === 'RETURNING' && (
-                    <MenuItem onMouseEnter={handlePopoverOpen}>
-                        <ListItemIcon>
-                            <UpdateOutlinedIcon fontSize="small" className="text-blue-600" />
-                        </ListItemIcon>
-                        <ListItemText>Xác nhận hoàn trả</ListItemText>
 
-                        <ListItemIcon className="flex justify-end">
-                            <KeyboardArrowRightIcon fontSize="small" className="text-black" />
-                        </ListItemIcon>
-                    </MenuItem>
-                )}
-
-                {order.status === 'RETURNING' && (
-                    <Popover
-                        id="mouse-over-popover"
-                        open={Boolean(anchorEl && document.body.contains(anchorEl))}
-                        anchorEl={anchorEl}
-                        anchorOrigin={{
-                            vertical: 'top',
-                            horizontal: 'right', // Xuất hiện bên phải
-                        }}
-                        transformOrigin={{
-                            vertical: 'top',
-                            horizontal: 'left', // Xuất phát từ bên trái của Popover
-                        }}
-                        onClose={handlePopoverClose}
-                        disableRestoreFocus
-                        PaperProps={{
-                            sx: { marginLeft: '4px', marginTop: '4px' }, // Cách menu cha 1rem
-                        }}
-                        // Đóng Popover khi rời chuột
-                    >
-                        <MenuItem
-                            onClick={() => {
-                                setStatus('RETURN_ACCEPTED');
-                                setIsModalOpenEditStatus(true);
-                                handleClose();
-                            }}
-                        >
-                            <Badge size="md" color="success">
-                                Xác nhận
-                            </Badge>
-                        </MenuItem>
-                        <MenuItem
-                            onClick={() => {
-                                setStatus('COMPLETED');
-                                setIsModalOpenEditStatus(true);
-                                handleClose();
-                            }}
-                        >
-                            <Badge size="md" color="error">
-                                Không xác nhận
-                            </Badge>
-                        </MenuItem>
-                    </Popover>
-                )}
-            </div>
             <ConfirmEditStatusOrder
                 order={order}
                 status={status}

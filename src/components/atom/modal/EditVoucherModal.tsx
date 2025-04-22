@@ -49,8 +49,6 @@ export default function EditVoucherModal({ isModalEditOpen, setIsModalEditOpen }
             });
         }
     }, [isModalEditOpen]);
-    console.log('data', data);
-
     const handleSubmit = async () => {
         if (data.discountType === 'Percentage') {
             if (

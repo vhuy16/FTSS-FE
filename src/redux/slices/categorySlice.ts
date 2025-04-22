@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import myAxios from "@setup/axiosConfig";
 export type SubCategory = {
   id: string;
@@ -9,7 +9,7 @@ export type SubCategory = {
   modifyDate: string;
   categoryName: string;
 };
-type categoryType = {
+export type categoryType = {
   categoryName: string;
   id: string;
   description: string;
@@ -71,6 +71,39 @@ export const addSubCategory = createAsyncThunk(
     }
   }
 );
+export const editSubCategory = createAsyncThunk(
+  "category/editSubCategory",
+  async (
+    { id, data }: { id: string; data: { subCategoryName: string; categoryId: string; description: string } },
+    { dispatch, rejectWithValue }
+  ) => {
+    try {
+      const response = await myAxios.put(`/subcategory/${id}`, data);
+      await dispatch(getAllSubCategory());
+      return response.data;
+    } catch (error: any) {
+      console.log(error);
+      return rejectWithValue(error.response?.data?.message || "Chỉnh sửa danh mục phụ thất bại");
+    }
+  }
+);
+export const editCategory = createAsyncThunk(
+  "category/editcategory",
+  async ({ id, formData }: { id: string; formData: FormData }, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await myAxios.put(`/category/${id}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      await dispatch(getAllCategory());
+      return response.data;
+    } catch (error: any) {
+      console.log(error);
+      return rejectWithValue(error.response?.data?.message || "Chỉnh sửa danh mục thất bại");
+    }
+  }
+);
 
 type CategoryState = {
   isLoading: boolean;
@@ -78,10 +111,14 @@ type CategoryState = {
   isLoadingAddSubCate: boolean;
   isLoadingGetAllCategory: boolean;
   isLoadingGetAllSubCategory: boolean;
+  isLoadingEditCategory: boolean;
+  isLoadingEditSubCategory: boolean;
   categories: categoryType[];
   subCates: SubCategory[];
   subCategory: SubCategory[];
   isError: boolean;
+  selectedCategory: categoryType | null;
+  selectedSubCategory: SubCategory | null;
 };
 
 const initialState: CategoryState = {
@@ -90,16 +127,29 @@ const initialState: CategoryState = {
   isLoadingAddSubCate: false,
   isLoadingGetAllCategory: false,
   isLoadingGetAllSubCategory: false,
+  isLoadingEditCategory: false,
+  isLoadingEditSubCategory: false,
   categories: [],
   subCates: [],
   subCategory: [],
   isError: false,
+  selectedCategory: null,
+  selectedSubCategory: null,
 };
 
 const ListCategorySlice = createSlice({
   name: "listCategory",
   initialState,
-  reducers: {},
+  reducers: {
+    selectCategory: (state, action: PayloadAction<categoryType>) => {
+      const category = action.payload;
+      state.selectedCategory = category;
+    },
+    selectSubCategory: (state, action: PayloadAction<SubCategory>) => {
+      const subCategory = action.payload;
+      state.selectedSubCategory = subCategory;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(getAllCategory.pending, (state) => {
@@ -169,7 +219,33 @@ const ListCategorySlice = createSlice({
         state.isLoadingAddSubCate = false;
         state.isError = true;
       });
+    builder
+      .addCase(editCategory.pending, (state) => {
+        state.isLoadingEditCategory = true;
+        state.isError = false;
+      })
+      .addCase(editCategory.fulfilled, (state, action) => {
+        state.isLoadingEditCategory = false;
+        state.isError = false;
+      })
+      .addCase(editCategory.rejected, (state, action) => {
+        state.isLoadingEditCategory = false;
+        state.isError = true;
+      });
+    builder
+      .addCase(editSubCategory.pending, (state) => {
+        state.isLoadingEditSubCategory = true;
+        state.isError = false;
+      })
+      .addCase(editSubCategory.fulfilled, (state, action) => {
+        state.isLoadingEditSubCategory = false;
+        state.isError = false;
+      })
+      .addCase(editSubCategory.rejected, (state, action) => {
+        state.isLoadingEditSubCategory = false;
+        state.isError = true;
+      });
   },
 });
-
+export const { selectCategory, selectSubCategory } = ListCategorySlice.actions;
 export default ListCategorySlice.reducer;

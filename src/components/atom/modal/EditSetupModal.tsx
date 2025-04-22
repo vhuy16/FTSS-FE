@@ -40,6 +40,22 @@ const MenuProps = {
 export default function EditSetupModal({ isModalEditOpen, setIsModalEditOpen }: ModalAddProps) {
     const dispatch = useAppDispatch();
     const setup = useAppSelector((state) => state.setupPackage.selectedSetup);
+    const [listProduct, setListProduct] = useState<string[]>([]);
+    const [checked, setChecked] = useState(false);
+    const isLoadingEdit = useAppSelector((state) => state.setupPackage.isLoadingEdit);
+    const isLoadingCate = useAppSelector((state) => state.product.isLoadingGetCateWithProduct);
+    const listCateWithProduct = useAppSelector((state) => state.product.listCateAndProduct);
+    const [data, setData] = useState<{
+        SetupName: string;
+        Description: string;
+        ProductItemsJson: string;
+        ImageFile: File | null;
+    }>({
+        SetupName: setup?.setupName as string,
+        Description: setup?.description as string,
+        ProductItemsJson: '',
+        ImageFile: null,
+    });
     useEffect(() => {
         if (setup) {
             const products = setup.products.map((p) =>
@@ -53,23 +69,25 @@ export default function EditSetupModal({ isModalEditOpen, setIsModalEditOpen }: 
             setListProduct(products);
         }
     }, [setup]);
-    const [listProduct, setListProduct] = useState<string[]>([]);
-    const [checked, setChecked] = useState(false);
-    const isLoadingEdit = useAppSelector((state) => state.setupPackage.isLoadingEdit);
-    const isLoadingCate = useAppSelector((state) => state.product.isLoadingGetCateWithProduct);
-    const listCateWithProduct = useAppSelector((state) => state.product.listCateAndProduct);
-
-    const [data, setData] = useState<{
-        SetupName: string;
-        Description: string;
-        ProductItemsJson: string;
-        ImageFile: File | null;
-    }>({
-        SetupName: '',
-        Description: '',
-        ProductItemsJson: '',
-        ImageFile: null,
-    });
+    useEffect(() => {
+        if (isModalEditOpen && setup?.setupPackageId) {
+            dispatch(getAllCategoryWithProduct());
+            setData({
+                SetupName: setup?.setupName as string,
+                Description: setup?.description as string,
+                ProductItemsJson: '',
+                ImageFile: null,
+            });
+        } else {
+            setListProduct([]);
+            setData({
+                SetupName: '',
+                Description: '',
+                ProductItemsJson: '',
+                ImageFile: null,
+            });
+        }
+    }, [isModalEditOpen]);
     const handleChange = (event: SelectChangeEvent<string[]>, cateName: string) => {
         const {
             target: { value },
@@ -89,65 +107,55 @@ export default function EditSetupModal({ isModalEditOpen, setIsModalEditOpen }: 
             );
         }
     };
-    useEffect(() => {
-        if (isModalEditOpen) {
-            dispatch(getAllCategoryWithProduct());
-        } else {
-            setListProduct([]);
-            setData({
-                SetupName: '',
-                Description: '',
-                ProductItemsJson: '',
-                ImageFile: null,
-            });
-        }
-    }, [isModalEditOpen]);
-
     const handleSubmit = async () => {
-        const ProductJson = JSON.stringify(
-            listProduct.map((p) => {
-                const parsed = JSON.parse(p); // Chỉ parse một lần
-                return {
-                    ProductId: parsed.ProductId,
-                    Quantity: Number(parsed.Quantity), // Đảm bảo Quantity là số
-                };
-            }),
-        );
-        if (JSON.parse(ProductJson).length == 0 || JSON.parse(ProductJson).length >= 3) {
-            const formData = new FormData();
-            formData.append('SetupName', data.SetupName);
-            formData.append('Description', data.Description);
-            if (JSON.parse(ProductJson).length == 0) {
-                formData.append('ProductItemsJson', '');
-            } else {
-                formData.append('ProductItemsJson', ProductJson);
-            }
-            if (data.ImageFile) {
-                formData.append('ImageFile', data.ImageFile);
-            } else {
-                formData.append('ImageFile', '');
-            }
-
-            try {
-                const res = await dispatch(
-                    editSetup({ formData: formData, id: setup?.setupPackageId as string }),
-                ).unwrap();
-                if (res?.status == 200) {
-                    setIsModalEditOpen(false);
-                    setChecked(false);
-                    setData({
-                        SetupName: '',
-                        Description: '',
-                        ProductItemsJson: '',
-                        ImageFile: null,
-                    });
-                    toast.success('Cập nhật mẫu thiết kế bể cá thành công');
+        if (data.Description && data.SetupName) {
+            const ProductJson = JSON.stringify(
+                listProduct.map((p) => {
+                    const parsed = JSON.parse(p); // Chỉ parse một lần
+                    return {
+                        ProductId: parsed.ProductId,
+                        Quantity: Number(parsed.Quantity), // Đảm bảo Quantity là số
+                    };
+                }),
+            );
+            if (JSON.parse(ProductJson).length == 0 || JSON.parse(ProductJson).length >= 3) {
+                const formData = new FormData();
+                formData.append('SetupName', data.SetupName);
+                formData.append('Description', data.Description);
+                if (JSON.parse(ProductJson).length == 0) {
+                    formData.append('ProductItemsJson', '');
+                } else {
+                    formData.append('ProductItemsJson', ProductJson);
                 }
-            } catch (error) {
-                toast.error(error as string);
+                if (data.ImageFile) {
+                    formData.append('ImageFile', data.ImageFile);
+                } else {
+                    formData.append('ImageFile', '');
+                }
+
+                try {
+                    const res = await dispatch(
+                        editSetup({ formData: formData, id: setup?.setupPackageId as string }),
+                    ).unwrap();
+                    if (res?.status == 200) {
+                        setIsModalEditOpen(false);
+                        setChecked(false);
+                        setData({
+                            SetupName: '',
+                            Description: '',
+                            ProductItemsJson: '',
+                            ImageFile: null,
+                        });
+                        toast.success('Cập nhật mẫu thiết kế bể cá thành công');
+                    }
+                } catch (error) {
+                    toast.error(error as string);
+                }
+            } else {
+                toast.error('Thiếu các thành phần bắt buộc của bể cá');
             }
         } else {
-            toast.error('Bể, Lọc, Đèn là 3 thành phần bắt buộc khi cập nhật bể cá');
+            toast.error('Vui lòng điền đầy đủ thông tin');
         }
     };
     const handleChangeCheckBox = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -241,7 +249,7 @@ export default function EditSetupModal({ isModalEditOpen, setIsModalEditOpen }: 
                                                     name="name"
                                                     id="name"
                                                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                                    placeholder={setup?.setupName}
+                                                    placeholder="Nhập tên thiết kế"
                                                     required={true}
                                                     value={data.SetupName}
                                                     onChange={(e) =>
@@ -287,7 +295,11 @@ export default function EditSetupModal({ isModalEditOpen, setIsModalEditOpen }: 
                                                                                       cate.categoryName,
                                                                                   );
                                                                               }}
-                                                                              input={<OutlinedInput label="Tag" />}
+                                                                              input={
+                                                                                  <OutlinedInput
+                                                                                      label={cate.categoryName}
+                                                                                  />
+                                                                              }
                                                                               renderValue={() => {
                                                                                   const listProductByCate =
                                                                                       listProduct.filter((product) =>
@@ -392,28 +404,6 @@ export default function EditSetupModal({ isModalEditOpen, setIsModalEditOpen }: 
                                                                                                       }
                                                                                                   >
                                                                                                       <div className="relative flex items-center max-w-[5rem]">
-                                                                                                          <button
-                                                                                                              type="button"
-                                                                                                              id="decrement-button"
-                                                                                                              className="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 
-        hover:bg-gray-200 border border-gray-300 rounded-s-lg p-1 h-6 focus:ring-gray-100 
-        dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
-                                                                                                          >
-                                                                                                              <svg
-                                                                                                                  className="w-1.5 h-1.5 text-gray-900 dark:text-white"
-                                                                                                                  xmlns="http://www.w3.org/2000/svg"
-                                                                                                                  fill="none"
-                                                                                                                  viewBox="0 0 18 2"
-                                                                                                              >
-                                                                                                                  <path
-                                                                                                                      stroke="currentColor"
-                                                                                                                      stroke-linecap="round"
-                                                                                                                      stroke-linejoin="round"
-                                                                                                                      stroke-width="2"
-                                                                                                                      d="M1 1h16"
-                                                                                                                  />
-                                                                                                              </svg>
-                                                                                                          </button>
                                                                                                           <input
                                                                                                               type="text"
                                                                                                               id="quantity-input"
@@ -476,28 +466,6 @@ export default function EditSetupModal({ isModalEditOpen, setIsModalEditOpen }: 
                                                                                                                   );
                                                                                                               }}
                                                                                                           />
-                                                                                                          <button
-                                                                                                              type="button"
-                                                                                                              id="increment-button"
-                                                                                                              className="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 
-        hover:bg-gray-200 border border-gray-300 rounded-e-lg p-1 h-6 focus:ring-gray-100 
-        dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
-                                                                                                          >
-                                                                                                              <svg
-                                                                                                                  className="w-1.5 h-1.5 text-gray-900 dark:text-white"
-                                                                                                                  xmlns="http://www.w3.org/2000/svg"
-                                                                                                                  fill="none"
-                                                                                                                  viewBox="0 0 18 18"
-                                                                                                              >
-                                                                                                                  <path
-                                                                                                                      stroke="currentColor"
-                                                                                                                      stroke-linecap="round"
-                                                                                                                      stroke-linejoin="round"
-                                                                                                                      stroke-width="2"
-                                                                                                                      d="M9 1v16M1 9h16"
-                                                                                                                  />
-                                                                                                              </svg>
-                                                                                                          </button>
                                                                                                       </div>
                                                                                                   </div>
                                                                                               )}
@@ -521,7 +489,8 @@ export default function EditSetupModal({ isModalEditOpen, setIsModalEditOpen }: 
                                                     id="description"
                                                     rows={4}
                                                     className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                                    placeholder={setup?.description}
+                                                    placeholder="Nhập mô tả"
+                                                    value={data.Description}
                                                     required={true}
                                                     onChange={(e) => setData({ ...data, Description: e.target.value })}
                                                 ></textarea>

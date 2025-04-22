@@ -17,6 +17,8 @@ import AddProductModal from '../modal/AddProductModal';
 import { getAllCategory, SubCategory } from '@redux/slices/categorySlice';
 import AddCategoryModal from '../modal/AddCategoryModal';
 import LoadingPage from '../Loading/LoadingPage';
+import CategoryPopup from '../popup/CategoryPopup';
+import EditCategoryModal from '../modal/EditCategoryModal';
 
 const paginationModel = { page: 0, pageSize: 5 };
 const StyledDataGrid = styled(DataGrid)((theme) => ({
@@ -33,6 +35,7 @@ export default function ListCategoryTable() {
     const listCategory = useAppSelector((state) => state.category.categories);
     const isLoading = useAppSelector((state) => state.category.isLoadingGetAllCategory);
     const [isModalAddOpen, setIsModalAddOpen] = useState(false);
+    const [isModalEditOpen, setIsModalEditOpen] = useState(false);
     const dispatch = useAppDispatch();
     useEffect(() => {
         dispatch(getAllCategory());
@@ -64,7 +67,9 @@ export default function ListCategoryTable() {
                         whiteSpace: 'nowrap',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
+                        display: 'inline-block', // hoặc block
                         width: '100%',
+                        maxWidth: '100%', // quan trọng để ngăn overflow
                     }}
                     title={params.value} // Tooltip hiện full text khi hover
                 >
@@ -75,24 +80,35 @@ export default function ListCategoryTable() {
         {
             field: 'subCategories',
             headerName: 'Danh mục phụ',
-            width: 250,
+            width: 550,
             headerClassName: 'super-app-theme--header',
             renderCell: (params) => (
-                <span>{params.row.subCategories.map((sub: SubCategory) => sub.subCategoryName).join(', ')}</span>
+                <span
+                    style={{
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        display: 'inline-block', // hoặc block
+                        width: '100%',
+                        maxWidth: '100%', // quan trọng để ngăn overflow
+                    }}
+                    title={params.row.subCategories.map((sub: SubCategory) => sub.subCategoryName).join(', ')}
+                >
+                    {params.row.subCategories.map((sub: SubCategory) => sub.subCategoryName).join(', ')}
+                </span>
             ),
         },
         {
             field: 'actions',
             headerName: '',
             flex: 1,
-            width: 200,
             headerClassName: 'super-app-theme--header',
             align: 'right',
             headerAlign: 'right',
             sortable: false,
             renderCell: (params) => (
                 <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
-                    {/* <ProductPopup product={params.row} /> */}
+                    <CategoryPopup category={params.row} setIsModalEditOpen={setIsModalEditOpen} />
                 </Box>
             ),
         },
@@ -200,6 +216,7 @@ export default function ListCategoryTable() {
                 </Box>
             )}
             <AddCategoryModal isModalAddOpen={isModalAddOpen} setIsModalAddOpen={setIsModalAddOpen}></AddCategoryModal>
+            <EditCategoryModal isModalEditOpen={isModalEditOpen} setIsModalEditOpen={setIsModalEditOpen} />
         </div>
     );
 }

@@ -17,6 +17,8 @@ import AddProductModal from '../modal/AddProductModal';
 import { getAllCategory, getAllSubCategory, SubCategory } from '@redux/slices/categorySlice';
 import AddSubCategoryModal from '../modal/AddSubCategoryModal';
 import LoadingPage from '../Loading/LoadingPage';
+import SubCategoryPopup from '../popup/SubCategoryPopup';
+import EditSubCategoryModal from '../modal/EditSubCategoryModal';
 
 const paginationModel = { page: 0, pageSize: 5 };
 const StyledDataGrid = styled(DataGrid)((theme) => ({
@@ -33,6 +35,7 @@ export default function ListSubCategoryTable() {
     const listSubCategory = useAppSelector((state) => state.category.subCategory);
     const isLoading = useAppSelector((state) => state.category.isLoadingGetAllSubCategory);
     const [isModalAddOpen, setIsModalAddOpen] = useState(false);
+    const [isModalEditOpen, setIsModalEditOpen] = useState(false);
     const dispatch = useAppDispatch();
     useEffect(() => {
         dispatch(getAllSubCategory());
@@ -51,7 +54,9 @@ export default function ListSubCategoryTable() {
                         whiteSpace: 'nowrap',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
+                        display: 'inline-block', // hoặc block
                         width: '100%',
+                        maxWidth: '100%', // quan trọng để ngăn overflow
                     }}
                     title={params.row.subCategoryName}
                 >
@@ -60,7 +65,7 @@ export default function ListSubCategoryTable() {
             ),
         },
         { field: 'description', headerName: 'Mô tả', width: 200, headerClassName: 'super-app-theme--header' },
-        { field: 'categoryName', headerName: 'Danh mục', width: 250, headerClassName: 'super-app-theme--header' },
+        { field: 'categoryName', headerName: 'Danh mục', width: 450, headerClassName: 'super-app-theme--header' },
 
         {
             field: 'actions',
@@ -73,7 +78,7 @@ export default function ListSubCategoryTable() {
             sortable: false,
             renderCell: (params) => (
                 <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
-                    {/* <ProductPopup product={params.row} /> */}
+                    <SubCategoryPopup subCategory={params.row} setIsModalEditOpen={setIsModalEditOpen} />
                 </Box>
             ),
         },
@@ -184,6 +189,7 @@ export default function ListSubCategoryTable() {
                 isModalAddOpen={isModalAddOpen}
                 setIsModalAddOpen={setIsModalAddOpen}
             ></AddSubCategoryModal>
+            <EditSubCategoryModal isModalEditOpen={isModalEditOpen} setIsModalEditOpen={setIsModalEditOpen} />
         </div>
     );
 }
