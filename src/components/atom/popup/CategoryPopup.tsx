@@ -5,17 +5,13 @@ import MenuItem from '@mui/material/MenuItem';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import BlockOutlinedIcon from '@mui/icons-material/BlockOutlined';
 import { ListItemIcon, ListItemText, Typography } from '@mui/material';
-import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
-import RemoveRedEyeOutlinedIcon from '@mui/icons-material/RemoveRedEyeOutlined';
-import UpdateOutlinedIcon from '@mui/icons-material/UpdateOutlined';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
-import Popover from '@mui/material/Popover';
-import ConfirmDelete from '../popup_modal/ConfirmDelete';
 import 'flowbite';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
-
 import { useAppDispatch } from '@redux/hook';
 import { categoryType, selectCategory } from '@redux/slices/categorySlice';
+import ConfirmActivateCategory from '../popup_modal/ConfirmActivateCategory';
+import ConfirmDeleteCategory from '../popup_modal/ConfirmDeleteCategory';
 
 const ITEM_HEIGHT = 48;
 type CategoryPopupProps = {
@@ -77,7 +73,7 @@ export default function CategoryPopup({ category, setIsModalEditOpen }: Category
                     </ListItemIcon>
                     <ListItemText>Chỉnh sửa</ListItemText>
                 </MenuItem>
-                {/* {category && category.status === 'Unavailable' ? (
+                {category && category.isDelete === true ? (
                     <MenuItem
                         onClick={() => {
                             handleClose();
@@ -99,11 +95,11 @@ export default function CategoryPopup({ category, setIsModalEditOpen }: Category
                         <ListItemIcon>
                             <BlockOutlinedIcon fontSize="small" className="text-red-600" />
                         </ListItemIcon>
-                        <ListItemText>Ngừng bán</ListItemText>
+                        <ListItemText>Ngưng hoạt động</ListItemText>
                     </MenuItem>
-                )} */}
+                )}
             </Menu>
-            {/* <ConfirmDeleteCategory
+            <ConfirmDeleteCategory
                 isModalOpenDelete={isModalOpenDelete}
                 setIsModalOpenDelete={setIsModalOpenDelete}
                 category={category}
@@ -112,7 +108,7 @@ export default function CategoryPopup({ category, setIsModalEditOpen }: Category
                 isModalOpenActivate={isModalOpenActivate}
                 setIsModalOpenActivate={setIsModalOpenActivate}
                 category={category}
-            /> */}
+            />
         </div>
     );
 }
