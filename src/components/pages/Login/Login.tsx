@@ -132,7 +132,12 @@ const Login = () => {
                 <span className="separator-line"></span>
               </div>
 
-              <div>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault(); // Ngăn reload trang
+                  handleLogin();
+                }}
+              >
                 <FormElement>
                   {messageLogin && messageLogin != "Login successful." && (
                     <span className="form-elem-error text-end font-medium">*{messageLogin}</span>
@@ -166,7 +171,7 @@ const Login = () => {
                 <BaseButtonGreen className="form-submit-btn" onClick={handleLogin}>
                   {isLoadingLogin ? <Loading /> : <>Đăng nhập</>}
                 </BaseButtonGreen>
-              </div>
+              </form>
               <p className="flex flex-wrap account-rel-text">
                 Chưa có tài khoản?
                 <Link to="/register" className="font-medium">
