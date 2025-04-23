@@ -1,6 +1,6 @@
 import { supabase } from "lib/supabaseClient"; // file này chứa instance đã khởi tạo Supabase client
 import { AppDispatch } from "@redux/store";
-import { getRoomDetail } from "@redux/slices/chatSlice";
+import { getAllRooms, getRoomDetail } from "@redux/slices/chatSlice";
 
 export const subscribeToRoomMessages = (roomId: string, dispatch: AppDispatch) => {
   // Tạo channel với tên rõ ràng để debug
@@ -24,4 +24,22 @@ export const subscribeToRoomMessages = (roomId: string, dispatch: AppDispatch) =
     });
 
   return channel; // để unsubscribe khi component unmount
+};
+export const subscribeToRoomChanges = (dispatch: AppDispatch) => {
+  const channel = supabase
+    .channel("room-listener")
+    .on(
+      "postgres_changes",
+      {
+        event: "INSERT", // chỉ cần lắng nghe khi có tin nhắn mới
+        schema: "public",
+        table: "rooms",
+      },
+      (payload) => {
+        dispatch(getAllRooms());
+      }
+    )
+    .subscribe();
+
+  return channel;
 };

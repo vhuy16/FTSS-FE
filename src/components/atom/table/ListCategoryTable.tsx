@@ -80,7 +80,7 @@ export default function ListCategoryTable() {
         {
             field: 'subCategories',
             headerName: 'Danh mục phụ',
-            width: 550,
+            width: 400,
             headerClassName: 'super-app-theme--header',
             renderCell: (params) => (
                 <span
@@ -96,6 +96,17 @@ export default function ListCategoryTable() {
                 >
                     {params.row.subCategories.map((sub: SubCategory) => sub.subCategoryName).join(', ')}
                 </span>
+            ),
+        },
+        {
+            field: 'isDelete',
+            headerName: 'Trạng thái',
+            width: 120,
+            headerClassName: 'super-app-theme--header',
+            renderCell: (params) => (
+                <Badge size="sm" color={params.row.isDelete === false ? 'success' : 'error'}>
+                    {params.row.isDelete === false ? 'Đang hoạt động' : 'Ngừng hoạt động'}
+                </Badge>
             ),
         },
         {

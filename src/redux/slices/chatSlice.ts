@@ -6,11 +6,12 @@ type Room = {
   managerId: string;
   managerName: string;
   createdAt: string;
+  customerName: string;
+  latestMessageTime: string;
 };
-type MediaType = "image" | "video";
 type Media = {
   url: string;
-  type: MediaType;
+  type: string;
 };
 type Chat = {
   id: number;
@@ -19,44 +20,51 @@ type Chat = {
   username: string;
   role: string;
   text: string;
-  timestamp: string;
   media: Media[];
+  timestamp: string;
 };
 type initialStateIssue = {
   isLoading: boolean;
-  isLoadingsendMessages: boolean;
-  isLoadingCreateRoom: boolean;
+  isLoadingRooms: boolean;
   isError: boolean;
+  isLoadingAdd: boolean;
   rooms: Room[];
   selectedRoom: Room;
-  createRoom: Room;
   chat: Chat[];
+  isLoadingsendMessages: boolean;
+  isLoadingCreateRoom: boolean;
 };
 const initialState: initialStateIssue = {
   isLoading: false,
+  isLoadingRooms: false,
   isError: false,
-  rooms: [],
+  isLoadingAdd: false,
   isLoadingsendMessages: false,
   isLoadingCreateRoom: false,
+  rooms: [],
   selectedRoom: {
     id: "",
     customerId: "",
     managerId: "",
     managerName: "",
     createdAt: "",
+    customerName: "",
+    latestMessageTime: "",
   },
   chat: [],
-  createRoom: {
-    id: "",
-    customerId: "",
-    managerId: "",
-    managerName: "",
-    createdAt: "",
-  },
 };
 export const getAllRoom = createAsyncThunk("chat/getAllRoom", async (__dirname, { rejectWithValue }) => {
   try {
-    const response = await myAxios.get("https://ftss.id.vn/api/Chat/rooms");
+    const response = await myAxios.get("/Chat/rooms");
+    return response.data;
+  } catch (error: any) {
+    console.log(error);
+    return rejectWithValue(error.response?.data?.message || "Lấy phòng thất bại");
+  }
+});
+export const getAllRooms = createAsyncThunk("chat/getAllRooms", async (__dirname, { rejectWithValue }) => {
+  try {
+    const response = await myAxios.get("/Chat/rooms");
     return response.data;
   } catch (error: any) {
     console.log(error);
@@ -72,6 +80,30 @@ export const getRoomDetail = createAsyncThunk("chat/getRoomDetail", async (id: s
     return rejectWithValue(error.response?.data?.message || "Lấy tin nhắn thất bại");
   }
 });
+export const createChat = createAsyncThunk("chat/createChat", async (formData: FormData, { dispatch }) => {
+  try {
+    const response = await myAxios.post(`/Chat/messages`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  } catch (error: any) {
+    console.log(error);
+  }
+});
+export const CreateChatRoom = createAsyncThunk(
+  "chat/CreateChatRoom",
+  async ({ managerId }: { managerId: string }, { rejectWithValue }) => {
+    try {
+      const response = await myAxios.post(`/Chat/rooms`, { managerId });
+      return response.data;
+    } catch (error: any) {
+      console.error("Error creating setup package:", error);
+      return rejectWithValue(error.response?.data?.message || "Hủy dịch vụ thất bại");
+    }
+  }
+);
 export const CreateChatofUser = createAsyncThunk(
   "chat/CreateChatofUser",
   async ({ text, roomId, files }: { text?: string; roomId: string; files?: File[] }, { dispatch, rejectWithValue }) => {
@@ -104,18 +136,7 @@ export const CreateChatofUser = createAsyncThunk(
     }
   }
 );
-export const CreateChatRoom = createAsyncThunk(
-  "chat/CreateChatRoom",
-  async ({ managerId }: { managerId: string }, { rejectWithValue }) => {
-    try {
-      const response = await myAxios.post(`/Chat/rooms`, { managerId });
-      return response.data;
-    } catch (error: any) {
-      console.error("Error creating setup package:", error);
-      return rejectWithValue(error.response?.data?.message || "Hủy dịch vụ thất bại");
-    }
-  }
-);
+
 const ChatSlice = createSlice({
   name: "chat",
   initialState,
@@ -128,15 +149,29 @@ const ChatSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(getAllRoom.pending, (state) => {
-        state.isLoading = true;
+        state.isLoadingRooms = true;
         state.isError = false;
       })
       .addCase(getAllRoom.fulfilled, (state, action) => {
-        state.isLoading = false;
+        state.isLoadingRooms = false;
         state.isError = false;
         state.rooms = action.payload;
       })
       .addCase(getAllRoom.rejected, (state, action) => {
+        state.isLoadingRooms = false;
+        state.isError = true;
+      });
+    builder
+      .addCase(getAllRooms.pending, (state) => {
+        state.isLoading = true;
+        state.isError = false;
+      })
+      .addCase(getAllRooms.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isError = false;
+        state.rooms = action.payload;
+      })
+      .addCase(getAllRooms.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
       });
@@ -152,6 +187,19 @@ const ChatSlice = createSlice({
       })
       .addCase(getRoomDetail.rejected, (state, action) => {
         state.isLoading = false;
+        state.isError = true;
+      });
+    builder
+      .addCase(createChat.pending, (state) => {
+        state.isLoadingAdd = true;
+        state.isError = false;
+      })
+      .addCase(createChat.fulfilled, (state, action) => {
+        state.isLoadingAdd = false;
+        state.isError = false;
+      })
+      .addCase(createChat.rejected, (state, action) => {
+        state.isLoadingAdd = false;
         state.isError = true;
       });
     builder
@@ -175,7 +223,6 @@ const ChatSlice = createSlice({
       .addCase(CreateChatRoom.fulfilled, (state, action) => {
         state.isLoadingCreateRoom = false;
         state.isError = false;
-        state.createRoom = action.payload;
       })
       .addCase(CreateChatRoom.rejected, (state, action) => {
         state.isLoadingCreateRoom = false;

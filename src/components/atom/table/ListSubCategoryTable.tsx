@@ -66,6 +66,17 @@ export default function ListSubCategoryTable() {
         },
         { field: 'description', headerName: 'Mô tả', width: 200, headerClassName: 'super-app-theme--header' },
         { field: 'categoryName', headerName: 'Danh mục', width: 450, headerClassName: 'super-app-theme--header' },
+        {
+            field: 'isDelete',
+            headerName: 'Trạng thái',
+            width: 120,
+            headerClassName: 'super-app-theme--header',
+            renderCell: (params) => (
+                <Badge size="sm" color={params.row.isDelete === false ? 'success' : 'error'}>
+                    {params.row.isDelete === false ? 'Đang hoạt động' : 'Ngừng hoạt động'}
+                </Badge>
+            ),
+        },
 
         {
             field: 'actions',

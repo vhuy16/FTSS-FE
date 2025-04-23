@@ -90,7 +90,6 @@ const ChatboxWidget = () => {
     setPendingMessages((prev) => [...prev, optimisticMsg]);
     setInputMessage("");
     setMediaFiles([]);
-
     // Gửi tin nhắn vào Supabase
     dispatch(CreateChatofUser({ text: optimisticMsg.text, roomId, files: optimisticMsg.files }))
       .unwrap()
