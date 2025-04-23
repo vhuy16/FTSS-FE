@@ -5,10 +5,15 @@ import { FiSend } from "react-icons/fi";
 import { RiCloseLine, RiCustomerService2Fill } from "react-icons/ri";
 import { subscribeToRoomMessages } from "realtime/supabaseListeners";
 import { CreateChatofUser, CreateChatRoom, getRoomDetail } from "@redux/slices/chatSlice";
-
-const ChatboxWidget = () => {
+import { Order } from "@redux/slices/orderListSlice";
+interface ChatboxWidgetProps {
+  order?: Order | null;
+  isOpen: boolean;
+  onClose: () => void;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}
+const ChatboxWidget = ({ isOpen, onClose, order, setIsOpen }: ChatboxWidgetProps) => {
   const dispatch = useAppDispatch();
-  const [isOpen, setIsOpen] = useState(false);
   const chatMessages = useAppSelector((state) => state.chat.chat);
   const [inputMessage, setInputMessage] = useState("");
   const [hasNotification, setHasNotification] = useState(true);
@@ -63,7 +68,20 @@ const ChatboxWidget = () => {
       };
     }
   }, [roomId]);
+  // tu dong mo chat box khi co order
+  useEffect(() => {
+    if (order) {
+      setIsOpen(true);
+      setHasNotification(false);
+    }
+  }, [order]);
 
+  useEffect(() => {
+    if (order && isOpen) {
+      const orderInfo = ` Báo cáo đơn hàng #${order.oderCode}`;
+      setInputMessage(orderInfo);
+    }
+  }, [order, isOpen]);
   // Cuộn đến cuối khi mở chatbox hoặc có tin nhắn mới
   useEffect(() => {
     if (isOpen) {
@@ -74,7 +92,7 @@ const ChatboxWidget = () => {
   }, [isOpen, chatMessages]); // Tự động cuộn xuống khi có tin nhắn mới
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
   };
 
   const handleSendMessage = () => {
@@ -139,9 +157,7 @@ const ChatboxWidget = () => {
                   <div className="flex flex-col max-w-[80%] space-y-2">
                     <div
                       className={`p-4 rounded-2xl ${
-                        msg.userId === userId
-                          ? "bg-[#10ac97] text-white self-end"
-                          : "bg-gray-100 text-gray-800 self-start"
+                        msg.userId === userId ? "bg-[#10ac97] text-white self-end" : "bg-white text-gray-800 self-start"
                       }`}
                     >
                       {msg.text}

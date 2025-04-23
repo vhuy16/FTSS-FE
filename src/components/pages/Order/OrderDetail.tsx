@@ -1,5 +1,6 @@
 import Breadcrumb from "@common/Breadcrum";
 import Title from "@common/Title";
+import ChatboxWidget from "@components/atom/ChatWidget/ChatWidget";
 import Loading from "@components/atom/Loading/Loading";
 import LoadingPage from "@components/atom/Loading/LoadingPage";
 import { ConfirmModal } from "@components/atom/modal/ConfirmModal";
@@ -537,6 +538,14 @@ const OrderDetailScreen = () => {
     setSelectedOrder(null);
   }, []);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  //chat
+  const openChatboxWithOrder = (order: Order) => {
+    setShowChatModal(true); // Mở chatbox
+    setSelectedOrder(order); // Truyền Order vào chatbox
+    // setHasNotification(false); // Tắt notification khi mở chat
+  };
+  const closeModalChat = () => setShowChatModal(false);
+  const [showChatModal, setShowChatModal] = useState(false);
   const PaymentStatus = ({ status }: { status: string }) => (
     <div
       className={`flex items-center gap-1 ${
@@ -806,7 +815,12 @@ const OrderDetailScreen = () => {
                         >
                           Đã hoàn thành lắp đặt
                         </BaseBtnGreen>
-                        <BaseButtonOuterspace className="confirm-button">Báo cáo/Khiếu nại</BaseButtonOuterspace>
+                        <BaseButtonOuterspace
+                          className="confirm-button"
+                          onClick={() => openChatboxWithOrder(order as unknown as Order)}
+                        >
+                          Báo cáo/Khiếu nại
+                        </BaseButtonOuterspace>
                       </div>
                     </OrderDetailMessageWrapper>
                   ) : ["PROCESSING"].includes(order?.status || "") && order?.setupPackage == null ? (
@@ -933,6 +947,12 @@ const OrderDetailScreen = () => {
       </SimpleModal>
       <ConfirmModal isOpen={showConfirmModal} onClose={closeModalConfirm} order={selectedOrder} />
       <RefundBankModal isOpen={showRefundModal} onClose={closeModal} order={selectedOrder} />
+      <ChatboxWidget
+        isOpen={showChatModal}
+        onClose={closeModalChat}
+        order={selectedOrder}
+        setIsOpen={setShowChatModal}
+      />
     </OrderDetailScreenWrapper>
   );
 };

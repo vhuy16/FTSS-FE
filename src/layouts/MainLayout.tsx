@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import Footer from "./Footer";
 import Header from "@atom/header/Header";
 import { PageWrapper } from "../styles/styles";
@@ -10,6 +10,11 @@ export type MainLayoutProps = {
 };
 
 const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
+  const openModal = () => {
+    setShowChatModal(true);
+  };
+  const closeModal = () => setShowChatModal(false);
+  const [showChatModal, setShowChatModal] = useState(false);
   return (
     <>
       <PageWrapper>
@@ -24,7 +29,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
         </div>
         <Footer />
       </PageWrapper>
-      <ChatboxWidget />
+      <ChatboxWidget isOpen={showChatModal} onClose={closeModal} setIsOpen={setShowChatModal} />
     </>
   );
 };
