@@ -100,14 +100,12 @@ const Account = () => {
             <UserMenu />
             <UserContent>
               <AccountInfoCard />
-              {user?.bankName && user?.bankHolder && user?.bankNumber === null ? (
+              {!user?.bankName && !user?.bankHolder && !user?.bankNumber && (
                 <div className="flex mt-4 mb-4">
                   <BaseBtnGreen type="submit" onClick={openModal}>
                     Thêm tài khoản ngân hàng
                   </BaseBtnGreen>
                 </div>
-              ) : (
-                <></>
               )}
               {user?.bankName && user?.bankHolder && user?.bankNumber ? (
                 <div>
