@@ -3,7 +3,7 @@ import { BsThreeDotsVertical, BsEmojiSmile, BsPaperclip, BsMic, BsSend } from 'r
 import { IoCallOutline, IoVideocamOutline } from 'react-icons/io5';
 import PageBreadcrumb from '@common/PageBreadCrumb';
 import { useAppDispatch, useAppSelector } from '@redux/hook';
-import { createChat, getAllRoom, getRoomDetail, selectRoom } from '@redux/slices/chatSlice';
+import { createChat, getAllRoom, getRoomDetail, Room, selectRoom } from '@redux/slices/chatSlice';
 import LoadingPage from '@components/atom/Loading/LoadingPage';
 import Avatar from '@components/atom/header/Avatar';
 import { subscribeToRoomChanges, subscribeToRoomMessages } from 'realtime/supabaseListeners';
@@ -21,9 +21,10 @@ const Chat = () => {
     const isLoading = useAppSelector((state) => state.chat.isLoadingRooms);
     const isLoadingAdd = useAppSelector((state) => state.chat.isLoadingAdd);
     const endOfMessagesRef = useRef<HTMLDivElement>(null);
+    const [value, setValue] = useState('');
+    const [listRooms, setListRooms] = useState<Room[]>([]);
     useEffect(() => {
         dispatch(getAllRoom());
-
         const channel = subscribeToRoomChanges(dispatch);
         return () => {
             channel && channel.unsubscribe();
@@ -31,7 +32,15 @@ const Chat = () => {
     }, []);
     useEffect(() => {
         dispatch(selectRoom(rooms[0]));
+        setListRooms(rooms);
     }, [rooms]);
+    useEffect(() => {
+        if (value === '') {
+            setListRooms(rooms);
+        } else {
+            setListRooms(rooms.filter((room) => room.customerName.includes(value)));
+        }
+    }, [value]);
     useEffect(() => {
         if (selectedRoom) {
             dispatch(getRoomDetail(selectedRoom.id));
@@ -121,17 +130,18 @@ const Chat = () => {
                 <div className="space-y-6" style={{ height: '80vh' }}>
                     <div className="flex h-full bg-[#F9FAFB] p-6 font-sans">
                         {/* Sidebar */}
-                        <div className="hidden md:flex flex-col w-80 bg-white rounded-xl shadow-sm mr-6">
+                        <div className="hidden md:flex flex-col w-80 bg-white rounded-xl shadow-sm mr-6 rounded-2xl border border-gray-200">
                             <div className="p-6 border-b border-gray-200">
                                 <input
                                     type="text"
                                     placeholder="Tìm kiếm..."
                                     className="w-full resize-none rounded-2xl border border-gray-200 px-4 py-2 pr-10 focus:outline-none focus:border-blue-500 max-h-32"
+                                    onChange={(e) => setValue(e.target.value)}
                                 />
                             </div>
                             <div className="flex-1 overflow-y-auto">
                                 <div className="flex flex-col gap-y-3 p-3">
-                                    {rooms.map((room) => (
+                                    {listRooms.map((room) => (
                                         <div
                                             key={room.id}
                                             className={`flex cursor-pointer items-center gap-3 rounded-lg p-3 hover:bg-gray-100 dark:hover:bg-white/[0.03] ${
@@ -140,7 +150,7 @@ const Chat = () => {
                                             onClick={() => dispatch(selectRoom(room))}
                                         >
                                             <div className="relative">
-                                                <div className="relative h-10 w-full max-w-[40px] rounded-full">
+                                                <div className="relative h-12 w-12 max-w-[48px] rounded-full">
                                                     <Avatar name={room?.customerName as string}></Avatar>
                                                 </div>
                                             </div>
@@ -163,12 +173,12 @@ const Chat = () => {
                         </div>
 
                         {/* Chat Area */}
-                        <div className="flex-1 flex flex-col bg-white rounded-xl shadow-sm overflow-hidden">
+                        <div className="flex-1 flex flex-col bg-white shadow-sm overflow-hidden rounded-2xl border border-gray-200">
                             {/* Chat Header */}
                             <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
                                 <div className="flex items-center">
                                     <div className="relative">
-                                        <div className="relative h-12 w-full max-w-[48px] rounded-full">
+                                        <div className="relative h-12 w-12 max-w-[48px] rounded-full">
                                             <Avatar name={chat && chat.length > 0 ? chat[0].username : ''} />
                                         </div>
                                     </div>
@@ -179,8 +189,6 @@ const Chat = () => {
                                     </div>
                                 </div>
                                 <div className="flex items-center">
-                                    <IoCallOutline className="w-5 h-5 text-gray-500 hover:text-[#4F46E5] ml-4 cursor-pointer" />
-                                    <IoVideocamOutline className="w-5 h-5 text-gray-500 hover:text-[#4F46E5] ml-4 cursor-pointer" />
                                     <BsThreeDotsVertical className="w-5 h-5 text-gray-500 hover:text-[#4F46E5] ml-4 cursor-pointer" />
                                 </div>
                             </div>
@@ -197,7 +205,7 @@ const Chat = () => {
                                                 }`}
                                             >
                                                 {message.role === 'Customer' && (
-                                                    <div className="relative h-10 w-full max-w-[48px] rounded-full">
+                                                    <div className="relative h-10 w-10 max-w-[48px] rounded-full">
                                                         <Avatar name={message.username ?? ''}></Avatar>
                                                     </div>
                                                 )}

@@ -14,7 +14,7 @@ import OrderPopup from '../popup/OrderPopup';
 import { getAllProductForAdmin, Product } from '@redux/slices/productSlice';
 import ProductPopup from '../popup/ProductPopup';
 import AddProductModal from '../modal/AddProductModal';
-import { getSetupPackagesShop } from '@redux/slices/setupSlice';
+import { getSetupPackagesShop, SetupPackage } from '@redux/slices/setupSlice';
 import AddSetupModal from '../modal/AddSetupModal';
 import SetupPopup from '../popup/SetupPopup';
 import EditSetupModal from '../modal/EditSetupModal';
@@ -36,10 +36,19 @@ export default function ListSetupTable() {
     const isLoading = useAppSelector((state) => state.setupPackage.isloadingGetAllPackageShop);
     const [isModalAddOpen, setIsModalAddOpen] = useState(false);
     const [isModalEditOpen, setIsModalEditOpen] = useState(false);
+    const [setups, setSetups] = useState<SetupPackage[]>([]);
+    const [value, setValue] = useState('');
     const dispatch = useAppDispatch();
     useEffect(() => {
         dispatch(getSetupPackagesShop({ page: 1, size: 100 }));
     }, []);
+    useEffect(() => {
+        if (value === '') {
+            setSetups(listSetup);
+        } else {
+            setSetups(listSetup.filter((setup) => setup.setupName.toLowerCase().includes(value)));
+        }
+    }, [value, listSetup]);
     const columns: GridColDef[] = [
         { field: 'stt', headerName: 'STT', width: 50, headerClassName: 'super-app-theme--header' },
         { field: 'id', headerName: 'Mã thiết kế', width: 350, headerClassName: 'super-app-theme--header' },
@@ -121,7 +130,7 @@ export default function ListSetupTable() {
             ),
         },
     ];
-    const rows = listSetup?.map((setup, index) => {
+    const rows = setups?.map((setup, index) => {
         return { ...setup, stt: index + 1, id: setup.setupPackageId };
     });
     return isLoading && listSetup.length === 0 ? (
@@ -151,6 +160,9 @@ export default function ListSetupTable() {
                         type="text"
                         placeholder="Tìm kiếm..."
                         className="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-200 bg-transparent py-2.5 pl-12 pr-14 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-800 dark:bg-gray-900 dark:bg-white/[0.03] dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 xl:w-[430px]"
+                        onChange={(e) => {
+                            setValue(e.target.value.toLowerCase());
+                        }}
                     />
                 </div>
                 <Button

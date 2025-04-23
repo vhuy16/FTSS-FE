@@ -36,15 +36,12 @@ export default function ListVoucherTable() {
         dispatch(getAllVoucher());
     }, []);
     useEffect(() => {
-        setVouchers(listVoucher);
-    }, [listVoucher]);
-    useEffect(() => {
         if (!searchValue) {
             setVouchers(listVoucher);
         } else {
             setVouchers(listVoucher.filter((voucher) => voucher.voucherCode.toLowerCase().includes(searchValue)));
         }
-    }, [searchValue]);
+    }, [searchValue, listVoucher]);
     const columns: GridColDef[] = [
         { field: 'stt', headerName: 'STT', width: 50, headerClassName: 'super-app-theme--header' },
         {
