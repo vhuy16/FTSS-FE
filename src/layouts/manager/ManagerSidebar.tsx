@@ -18,6 +18,7 @@ import {
     TableIcon,
     UserCircleIcon,
     InfoIcon,
+    ChatIcon,
 } from '@icons/admin_icon';
 import { Link } from 'react-router-dom';
 
@@ -80,6 +81,11 @@ const navItems: NavItem[] = [
         icon: <PageIcon />,
         name: 'Danh sách mã khuyến mãi',
         path: '/listVoucher',
+    },
+    {
+        name: 'Hỗ trợ',
+        icon: <ChatIcon />,
+        path: '/chat',
     },
     {
         name: 'Vấn đề',

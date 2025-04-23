@@ -6,6 +6,12 @@ type Room = {
     managerId: string;
     managerName: string;
     createdAt: string;
+    customerName: string;
+    latestMessageTime: string;
+};
+type Media = {
+    url: string;
+    type: string;
 };
 type Chat = {
     id: number;
@@ -14,18 +20,23 @@ type Chat = {
     username: string;
     role: string;
     text: string;
+    media: Media[];
     timestamp: string;
 };
 type initialStateIssue = {
     isLoading: boolean;
+    isLoadingRooms: boolean;
     isError: boolean;
+    isLoadingAdd: boolean;
     rooms: Room[];
     selectedRoom: Room;
     chat: Chat[];
 };
 const initialState: initialStateIssue = {
     isLoading: false,
+    isLoadingRooms: false,
     isError: false,
+    isLoadingAdd: false,
     rooms: [],
     selectedRoom: {
         id: '',
@@ -33,12 +44,23 @@ const initialState: initialStateIssue = {
         managerId: '',
         managerName: '',
         createdAt: '',
+        customerName: '',
+        latestMessageTime: '',
     },
     chat: [],
 };
 export const getAllRoom = createAsyncThunk('chat/getAllRoom', async (__dirname, { rejectWithValue }) => {
     try {
-        const response = await myAxios.get('https://ftss.id.vn/api/Chat/rooms');
+        const response = await myAxios.get('/Chat/rooms');
+        return response.data;
+    } catch (error: any) {
+        console.log(error);
+        return rejectWithValue(error.response?.data?.message || 'Lấy phòng thất bại');
+    }
+});
+export const getAllRooms = createAsyncThunk('chat/getAllRooms', async (__dirname, { rejectWithValue }) => {
+    try {
+        const response = await myAxios.get('/Chat/rooms');
         return response.data;
     } catch (error: any) {
         console.log(error);
@@ -47,14 +69,25 @@ export const getAllRoom = createAsyncThunk('chat/getAllRoom', async (__dirname, 
 });
 export const getRoomDetail = createAsyncThunk('chat/getRoomDetail', async (id: string, { rejectWithValue }) => {
     try {
-        const response = await myAxios.get(`https://ftss.id.vn/api/Chat/messages?roomId=${id}&page=1&size=1000`);
-        return response.data;
+        const response = await myAxios.get(`/Chat/messages?roomId=${id}&page=1&size=1000`);
+        return response.data.messages;
     } catch (error: any) {
         console.log(error);
         return rejectWithValue(error.response?.data?.message || 'Lấy tin nhắn thất bại');
     }
 });
-
+export const createChat = createAsyncThunk('chat/createChat', async (formData: FormData, { dispatch }) => {
+    try {
+        const response = await myAxios.post(`/Chat/messages`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        return response.data;
+    } catch (error: any) {
+        console.log(error);
+    }
+});
 const ChatSlice = createSlice({
     name: 'chat',
     initialState,
@@ -67,15 +100,29 @@ const ChatSlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(getAllRoom.pending, (state) => {
-                state.isLoading = true;
+                state.isLoadingRooms = true;
                 state.isError = false;
             })
             .addCase(getAllRoom.fulfilled, (state, action) => {
-                state.isLoading = false;
+                state.isLoadingRooms = false;
                 state.isError = false;
                 state.rooms = action.payload;
             })
             .addCase(getAllRoom.rejected, (state, action) => {
+                state.isLoadingRooms = false;
+                state.isError = true;
+            });
+        builder
+            .addCase(getAllRooms.pending, (state) => {
+                state.isLoading = true;
+                state.isError = false;
+            })
+            .addCase(getAllRooms.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isError = false;
+                state.rooms = action.payload;
+            })
+            .addCase(getAllRooms.rejected, (state, action) => {
                 state.isLoading = false;
                 state.isError = true;
             });
@@ -91,6 +138,19 @@ const ChatSlice = createSlice({
             })
             .addCase(getRoomDetail.rejected, (state, action) => {
                 state.isLoading = false;
+                state.isError = true;
+            });
+        builder
+            .addCase(createChat.pending, (state) => {
+                state.isLoadingAdd = true;
+                state.isError = false;
+            })
+            .addCase(createChat.fulfilled, (state, action) => {
+                state.isLoadingAdd = false;
+                state.isError = false;
+            })
+            .addCase(createChat.rejected, (state, action) => {
+                state.isLoadingAdd = false;
                 state.isError = true;
             });
     },

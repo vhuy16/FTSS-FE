@@ -16,6 +16,8 @@ import LockOpenIcon from '@mui/icons-material/LockOpen';
 
 import { useAppDispatch } from '@redux/hook';
 import { selectSubCategory, SubCategory } from '@redux/slices/categorySlice';
+import ConfirmDeleteSubCategory from '../popup_modal/ConfirmDeleteSubCategory';
+import ConfirmActivateSubCategory from '../popup_modal/ConfirmActivateSubCategory';
 
 const ITEM_HEIGHT = 48;
 type subCategoryPopupProps = {
@@ -77,7 +79,7 @@ export default function SubCategoryPopup({ subCategory, setIsModalEditOpen }: su
                     </ListItemIcon>
                     <ListItemText>Chỉnh sửa</ListItemText>
                 </MenuItem>
-                {/* {subCategory && subCategory.status === 'Unavailable' ? (
+                {subCategory && subCategory.isDelete === true ? (
                     <MenuItem
                         onClick={() => {
                             handleClose();
@@ -99,20 +101,20 @@ export default function SubCategoryPopup({ subCategory, setIsModalEditOpen }: su
                         <ListItemIcon>
                             <BlockOutlinedIcon fontSize="small" className="text-red-600" />
                         </ListItemIcon>
-                        <ListItemText>Ngừng bán</ListItemText>
+                        <ListItemText>Ngưng hoạt động</ListItemText>
                     </MenuItem>
-                )} */}
+                )}
             </Menu>
-            {/* <ConfirmDeletesubCategory
+            <ConfirmDeleteSubCategory
                 isModalOpenDelete={isModalOpenDelete}
                 setIsModalOpenDelete={setIsModalOpenDelete}
                 subCategory={subCategory}
             />
-            <ConfirmActivatesubCategory
+            <ConfirmActivateSubCategory
                 isModalOpenActivate={isModalOpenActivate}
                 setIsModalOpenActivate={setIsModalOpenActivate}
                 subCategory={subCategory}
-            /> */}
+            />
         </div>
     );
 }
