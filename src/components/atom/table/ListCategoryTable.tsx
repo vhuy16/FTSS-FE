@@ -14,7 +14,7 @@ import OrderPopup from '../popup/OrderPopup';
 import { getAllProductForAdmin, getProductByNameForAdmin } from '@redux/slices/productSlice';
 import ProductPopup from '../popup/ProductPopup';
 import AddProductModal from '../modal/AddProductModal';
-import { getAllCategory, SubCategory } from '@redux/slices/categorySlice';
+import { categoryType, getAllCategory, SubCategory } from '@redux/slices/categorySlice';
 import AddCategoryModal from '../modal/AddCategoryModal';
 import LoadingPage from '../Loading/LoadingPage';
 import CategoryPopup from '../popup/CategoryPopup';
@@ -36,10 +36,19 @@ export default function ListCategoryTable() {
     const isLoading = useAppSelector((state) => state.category.isLoadingGetAllCategory);
     const [isModalAddOpen, setIsModalAddOpen] = useState(false);
     const [isModalEditOpen, setIsModalEditOpen] = useState(false);
+    const [categories, setCategories] = useState<categoryType[]>([]);
+    const [value, setValue] = useState('');
     const dispatch = useAppDispatch();
     useEffect(() => {
         dispatch(getAllCategory());
     }, []);
+    useEffect(() => {
+        if (value === '') {
+            setCategories(listCategory);
+        } else {
+            setCategories(listCategory.filter((category) => category.categoryName.toLowerCase().includes(value)));
+        }
+    }, [value, listCategory]);
     const columns: GridColDef[] = [
         { field: 'stt', headerName: 'STT', width: 50, headerClassName: 'super-app-theme--header' },
         { field: 'id', headerName: 'Mã danh mục', width: 350, headerClassName: 'super-app-theme--header' },
@@ -124,7 +133,7 @@ export default function ListCategoryTable() {
             ),
         },
     ];
-    const rows = listCategory?.map((category, index) => {
+    const rows = categories?.map((category, index) => {
         return { ...category, stt: index + 1 };
     });
     return isLoading && listCategory.length === 0 ? (
@@ -154,6 +163,9 @@ export default function ListCategoryTable() {
                         type="text"
                         placeholder="Tìm kiếm..."
                         className="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-200 bg-transparent py-2.5 pl-12 pr-14 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-800 dark:bg-gray-900 dark:bg-white/[0.03] dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 xl:w-[430px]"
+                        onChange={(e) => {
+                            setValue(e.target.value.toLowerCase());
+                        }}
                     />
                 </div>
                 <Button

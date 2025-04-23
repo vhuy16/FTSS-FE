@@ -11,7 +11,7 @@ import { getAllOrder } from '@redux/slices/orderSlice';
 import { currencyFormat } from '@ultils/helper';
 import Badge from '@components/ui/badge/Badge';
 import OrderPopup from '../popup/OrderPopup';
-import { getAllProductForAdmin, getProductByNameForAdmin } from '@redux/slices/productSlice';
+import { getAllProductForAdmin, getProductByNameForAdmin, Product } from '@redux/slices/productSlice';
 import ProductPopup from '../popup/ProductPopup';
 import AddProductModal from '../modal/AddProductModal';
 import EditProductModal from '../modal/EditProductModal';
@@ -33,10 +33,20 @@ export default function ListProductTable() {
     const isLoading = useAppSelector((state) => state.product.isLoadingGetAllProductForAdmin);
     const [isModalAddOpen, setIsModalAddOpen] = useState(false);
     const [isModalEditOpen, setIsModalEditOpen] = useState(false);
+    const [products, setProducts] = useState<Product[]>([]);
+    const [value, setValue] = useState('');
     const dispatch = useAppDispatch();
     useEffect(() => {
         dispatch(getAllProductForAdmin());
     }, []);
+
+    useEffect(() => {
+        if (value === '') {
+            setProducts(listProduct);
+        } else {
+            setProducts(listProduct.filter((product) => product.productName.toLowerCase().includes(value)));
+        }
+    }, [value, listProduct]);
     const columns: GridColDef[] = [
         { field: 'stt', headerName: 'STT', width: 50, headerClassName: 'super-app-theme--header' },
         { field: 'id', headerName: 'Mã sản phẩm', width: 350, headerClassName: 'super-app-theme--header' },
@@ -132,7 +142,7 @@ export default function ListProductTable() {
             ),
         },
     ];
-    const rows = listProduct?.map((product, index) => {
+    const rows = products?.map((product, index) => {
         return { ...product, stt: index + 1 };
     });
     return isLoading && listProduct.length === 0 ? (
@@ -163,11 +173,7 @@ export default function ListProductTable() {
                         placeholder="Tìm kiếm..."
                         className="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-200 bg-transparent py-2.5 pl-12 pr-14 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-800 dark:bg-gray-900 dark:bg-white/[0.03] dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 xl:w-[430px]"
                         onChange={(e) => {
-                            if (e.target.value) {
-                                dispatch(getProductByNameForAdmin(e.target.value));
-                            } else {
-                                dispatch(getAllProductForAdmin());
-                            }
+                            setValue(e.target.value.toLowerCase());
                         }}
                     />
                 </div>

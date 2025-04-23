@@ -81,7 +81,7 @@ export default function ConfirmActivateCategory({
                                         />
                                     </svg>
                                     <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
-                                        Bạn có muốn kích hoạt danh mục phụ này?
+                                        Bạn có muốn kích hoạt danh mục này?
                                     </h3>
                                     <button
                                         type="button"

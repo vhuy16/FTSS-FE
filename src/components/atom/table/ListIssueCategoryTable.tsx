@@ -17,7 +17,7 @@ import AddProductModal from '../modal/AddProductModal';
 import { getAllCategory, SubCategory } from '@redux/slices/categorySlice';
 import AddCategoryModal from '../modal/AddCategoryModal';
 import LoadingPage from '../Loading/LoadingPage';
-import { getIssueCategorySlice } from '@redux/slices/issueCategorySlice';
+import { getIssueCategorySlice, IssueCategory } from '@redux/slices/issueCategorySlice';
 import AddIssueCategoryModal from '../modal/AddIssueCategoryModal';
 import IssueCategoryPopup from '../popup/IssueCategoryPopup';
 import EditIssueCategoryModal from '../modal/EditIssueCategoryModal';
@@ -38,10 +38,23 @@ export default function ListIssueCategoryTable() {
     const isLoading = useAppSelector((state) => state.issueCategory.isLoading);
     const [isModalAddOpen, setIsModalAddOpen] = useState(false);
     const [isModalEditOpen, setIsModalEditOpen] = useState(false);
+    const [issueCategories, setIssueCategories] = useState<IssueCategory[]>([]);
+    const [value, setValue] = useState('');
     const dispatch = useAppDispatch();
     useEffect(() => {
         dispatch(getIssueCategorySlice());
     }, []);
+    useEffect(() => {
+        if (value === '') {
+            setIssueCategories(listIssueCategory);
+        } else {
+            setIssueCategories(
+                listIssueCategory.filter((issueCategory) =>
+                    issueCategory.issueCategoryName.toLowerCase().includes(value),
+                ),
+            );
+        }
+    }, [value, listIssueCategory]);
     const columns: GridColDef[] = [
         { field: 'stt', headerName: 'STT', width: 50, headerClassName: 'super-app-theme--header' },
         { field: 'id', headerName: 'Mã danh mục', width: 350, headerClassName: 'super-app-theme--header' },
@@ -102,7 +115,7 @@ export default function ListIssueCategoryTable() {
             ),
         },
     ];
-    const rows = listIssueCategory?.map((category, index) => {
+    const rows = issueCategories?.map((category, index) => {
         return { ...category, stt: index + 1 };
     });
     return isLoading && listIssueCategory.length === 0 ? (
@@ -132,6 +145,9 @@ export default function ListIssueCategoryTable() {
                         type="text"
                         placeholder="Tìm kiếm..."
                         className="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-200 bg-transparent py-2.5 pl-12 pr-14 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-800 dark:bg-gray-900 dark:bg-white/[0.03] dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 xl:w-[430px]"
+                        onChange={(e) => {
+                            setValue(e.target.value.toLowerCase());
+                        }}
                     />
                 </div>
                 <Button
