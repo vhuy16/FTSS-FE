@@ -8,7 +8,7 @@ import { Modal } from '@ui/modal';
 import { useModal } from '@hooks/useModal';
 import { format } from 'date-fns';
 import { useAppDispatch, useAppSelector } from '@redux/hook';
-import { assignBooking, getAllBooking, getAllMission, getAlltechnician } from '@redux/slices/missionSlide';
+import { assignBooking, getAllBooking, getAllMission, getAlltechnician, ImageItem } from '@redux/slices/missionSlide';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Loading from '@components/atom/Loading/Loading';
@@ -45,6 +45,8 @@ const AddMissionBooking: React.FC = () => {
     const [des, setDes] = useState('');
     const [tech, setTech] = useState('');
     const [events, setEvents] = useState<CalendarEvent[]>([]);
+    const [cancelReason, setCancelReason] = useState('');
+    const [images, setImages] = useState<ImageItem[]>([]);
     const calendarRef = useRef<FullCalendar>(null);
     const { isOpen, openModal, closeModal } = useModal();
     const [data, setData] = useState({ bookingId: '', technicianId: '', missionName: '', missionDescription: '' });
@@ -59,6 +61,7 @@ const AddMissionBooking: React.FC = () => {
         Cancel: 'danger',
         NotStarted: 'primary',
         Processing: 'warning',
+        NotDone: 'notDone',
         Done: 'completed',
         Completed: 'success',
     };
@@ -83,6 +86,8 @@ const AddMissionBooking: React.FC = () => {
                     calendar: mission.status,
                     des: mission.missionDescription,
                     tech: mission.technicianName,
+                    cancelReason: mission.cancelReason,
+                    images: mission.images,
                 },
             };
         });
@@ -102,7 +107,8 @@ const AddMissionBooking: React.FC = () => {
             const localDate = new Date(date.getTime() - offset * 60 * 1000);
             return localDate.toISOString().slice(0, 16); // 'YYYY-MM-DDTHH:mm'
         };
-
+        setCancelReason(event.extendedProps.cancelReason);
+        setImages(event.extendedProps.images);
         setEventStartDate(formatDateTimeLocal(event.start));
         setEventEndDate(formatDateTimeLocal(event.end));
         openModal();
@@ -139,11 +145,41 @@ const AddMissionBooking: React.FC = () => {
     };
     const renderEventContent = (eventInfo: any) => {
         const colorClass = `fc-bg-${calendarsEvents[eventInfo.event.extendedProps.calendar]}`;
+        const start = eventInfo.event.start;
+        const end = eventInfo.event.end;
+
+        // Format thời gian (ví dụ: 9:30a - 11:00a)
+        const formatTime = (date: Date) =>
+            date
+                .toLocaleTimeString('en-US', {
+                    hour: 'numeric',
+                    minute: '2-digit',
+                })
+                .toLowerCase();
+
+        const timeText = `${formatTime(start)}${end ? ' - ' + formatTime(end) : ''}`;
         return (
             <div className={`event-fc-color flex fc-event-main ${colorClass} p-1 rounded`}>
                 <div className="fc-daygrid-event-dot flex-shrink-0"></div>
-                <div className="fc-event-time">{eventInfo.timeText}</div>
-                <div className="fc-event-title whitespace-normal break-words">{eventInfo.event.title}</div>
+
+                <div className="flex flex-col overflow-hidden">
+                    <div className="fc-event-time">{timeText}</div>
+                    <div
+                        className="fc-event-title overflow-hidden break-words whitespace-normal line-clamp-2"
+                        title={eventInfo.event.title}
+                    >
+                        {eventInfo.event.title}
+                    </div>
+                    {eventInfo.event.extendedProps.orderCode === 'Không có' ? (
+                        <div className="fc-event-title overflow-hidden break-words whitespace-normal line-clamp-2">
+                            {eventInfo.event.extendedProps.bookingCode}
+                        </div>
+                    ) : (
+                        <div className="fc-event-title overflow-hidden break-words whitespace-normal line-clamp-2">
+                            {eventInfo.event.extendedProps.orderCode}
+                        </div>
+                    )}
+                </div>
             </div>
         );
     };
@@ -179,7 +215,7 @@ const AddMissionBooking: React.FC = () => {
                     resetModalFields();
                     closeModal();
                 }}
-                className="max-w-[700px] p-6 lg:p-10"
+                className="max-w-[700px] max-h-[930px] p-6 lg:p-10 overflow-y-auto"
             >
                 <div className="flex flex-col px-2 overflow-y-auto custom-scrollbar">
                     <div>
@@ -270,7 +306,7 @@ dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 d
                             <label className="block mb-4 text-sm font-medium text-gray-700 dark:text-gray-400">
                                 Trạng thái
                             </label>
-                            <div className="flex flex-wrap items-center gap-4 sm:gap-5">
+                            <div className="flex items-center gap-4 sm:gap-5">
                                 {Object.entries(calendarsEvents).map(([key, value]) => (
                                     <div key={key} className="n-chk">
                                         <div className={`form-check form-check-${value} form-check-inline`}>
@@ -306,6 +342,8 @@ dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 d
                                                     ? 'Xong công việc'
                                                     : key === 'Completed'
                                                     ? 'Hoàn tất'
+                                                    : key === 'NotDone'
+                                                    ? 'Chưa xong'
                                                     : 'Đang thực hiện'}
                                             </label>
                                         </div>
@@ -313,7 +351,42 @@ dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 d
                                 ))}
                             </div>
                         </div>
-
+                        {eventLevel === 'Cancel' && cancelReason && (
+                            <div className="mt-6">
+                                <div>
+                                    <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                                        Lý do hủy
+                                    </label>
+                                    <input
+                                        id="event-title"
+                                        type="text"
+                                        value={cancelReason}
+                                        placeholder="Viết tiêu đề của công việc tại đây"
+                                        className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                    />
+                                </div>
+                            </div>
+                        )}
+                        {eventLevel === 'Cancel' && cancelReason && (
+                            <div className="mt-6">
+                                <div>
+                                    <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                                        Tệp đính kèm
+                                    </label>
+                                    <div className="flex gap-2">
+                                        {images.map((image) => {
+                                            return (
+                                                <img
+                                                    className="h-32 w-20 rounded-lg object-cover"
+                                                    src={image.linkImage}
+                                                    alt="Ảnh sản phẩm lỗi"
+                                                />
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                         <div className="mt-6">
                             <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
                                 Ngày bắt đầu

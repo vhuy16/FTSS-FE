@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import PageBreadcrumb from '@common/PageBreadCrumb';
 import { useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@redux/hook';
-import { getOrderById } from '@redux/slices/orderSlice';
 import Loading from '@components/atom/Loading/Loading';
 import { currencyFormat } from '@ultils/helper';
 import { getBookingById } from '@redux/slices/missionSlide';

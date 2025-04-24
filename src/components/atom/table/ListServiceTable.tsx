@@ -1,23 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { DownloadIcon } from '@icons/admin_icon';
 import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
 import Button from '@components/ui/button/Button';
 import { Box, styled } from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useAppDispatch, useAppSelector } from '@redux/hook';
-import { getAllUser } from '@redux/slices/userSlice';
-import UserPopup from '../popup/UserPopup';
-import { getAllOrder } from '@redux/slices/orderSlice';
 import { currencyFormat } from '@ultils/helper';
 import Badge from '@components/ui/badge/Badge';
-import OrderPopup from '../popup/OrderPopup';
-import { getAllProductForAdmin, getProductByNameForAdmin } from '@redux/slices/productSlice';
-import ProductPopup from '../popup/ProductPopup';
-import AddProductModal from '../modal/AddProductModal';
-import { getAllCategory, getAllSubCategory, SubCategory } from '@redux/slices/categorySlice';
-import AddSubCategoryModal from '../modal/AddSubCategoryModal';
-import { getAllService } from '@redux/slices/missionSlide';
 import LoadingPage from '../Loading/LoadingPage';
+import ServicePopup from '../popup/ServicePopup';
+import AddServiceModal from '../modal/AddServiceModal';
+import EditServiceModal from '../modal/EditServiceModal';
+import { getAllService, Service } from '@redux/slices/serviceSlice';
 
 const paginationModel = { page: 0, pageSize: 5 };
 const StyledDataGrid = styled(DataGrid)((theme) => ({
@@ -31,13 +24,23 @@ const StyledDataGrid = styled(DataGrid)((theme) => ({
     },
 }));
 export default function ListServiceTable() {
-    const listService = useAppSelector((state) => state.mission.listService);
-    const isLoading = useAppSelector((state) => state.mission.isLoadingGetAllService);
+    const listService = useAppSelector((state) => state.service.listService);
+    const isLoading = useAppSelector((state) => state.service.isLoading);
     const [isModalAddOpen, setIsModalAddOpen] = useState(false);
+    const [isModalEditOpen, setIsModalEditOpen] = useState(false);
+    const [services, setServices] = useState<Service[]>([]);
+    const [value, setValue] = useState('');
     const dispatch = useAppDispatch();
     useEffect(() => {
         dispatch(getAllService());
     }, []);
+    useEffect(() => {
+        if (value === '') {
+            setServices(listService);
+        } else {
+            setServices(listService.filter((service) => service.serviceName.toLowerCase().includes(value)));
+        }
+    }, [value, listService]);
     const columns: GridColDef[] = [
         { field: 'stt', headerName: 'STT', width: 50, headerClassName: 'super-app-theme--header' },
         { field: 'id', headerName: 'Mã dịch vụ', width: 350, headerClassName: 'super-app-theme--header' },
@@ -71,6 +74,38 @@ export default function ListServiceTable() {
             renderCell: (params) => currencyFormat(params.row.price),
         },
         {
+            field: 'description',
+            headerName: 'Mô tả',
+            width: 350,
+            headerClassName: 'super-app-theme--header',
+            renderCell: (params) => (
+                <span
+                    style={{
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        display: 'inline-block', // hoặc block
+                        width: '100%',
+                        maxWidth: '100%', // quan trọng để ngăn overflow
+                    }}
+                    title={params.row.description}
+                >
+                    {params.row.description}
+                </span>
+            ),
+        },
+        {
+            field: 'isDelete',
+            headerName: 'Trạng thái',
+            width: 120,
+            headerClassName: 'super-app-theme--header',
+            renderCell: (params) => (
+                <Badge size="sm" color={params.row.isDelete === false ? 'success' : 'error'}>
+                    {params.row.isDelete === false ? 'Đang hoạt động' : 'Ngừng hoạt động'}
+                </Badge>
+            ),
+        },
+        {
             field: 'actions',
             headerName: '',
             flex: 1,
@@ -81,12 +116,12 @@ export default function ListServiceTable() {
             sortable: false,
             renderCell: (params) => (
                 <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
-                    {/* <ProductPopup product={params.row} /> */}
+                    <ServicePopup service={params.row} setIsModalEditOpen={setIsModalEditOpen} />
                 </Box>
             ),
         },
     ];
-    const rows = listService?.map((service, index) => {
+    const rows = services?.map((service, index) => {
         return { ...service, stt: index + 1 };
     });
     return isLoading && listService.length === 0 ? (
@@ -116,6 +151,9 @@ export default function ListServiceTable() {
                         type="text"
                         placeholder="Tìm kiếm..."
                         className="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-200 bg-transparent py-2.5 pl-12 pr-14 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-800 dark:bg-gray-900 dark:bg-white/[0.03] dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 xl:w-[430px]"
+                        onChange={(e) => {
+                            setValue(e.target.value.toLowerCase());
+                        }}
                     />
                 </div>
                 <Button
@@ -188,10 +226,8 @@ export default function ListServiceTable() {
                     />
                 </Box>
             )}
-            {/* <AddSubCategoryModal
-           isModalAddOpen={isModalAddOpen}
-           setIsModalAddOpen={setIsModalAddOpen}
-       ></AddSubCategoryModal> */}
+            <AddServiceModal isModalAddOpen={isModalAddOpen} setIsModalAddOpen={setIsModalAddOpen} />
+            <EditServiceModal isModalEditOpen={isModalEditOpen} setIsModalEditOpen={setIsModalEditOpen} />
         </div>
     );
 }

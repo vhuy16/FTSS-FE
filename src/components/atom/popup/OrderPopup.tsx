@@ -8,11 +8,7 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import RemoveRedEyeOutlinedIcon from '@mui/icons-material/RemoveRedEyeOutlined';
 import UpdateOutlinedIcon from '@mui/icons-material/UpdateOutlined';
 import Popover from '@mui/material/Popover';
-import ConfirmDelete from '../popup_modal/ConfirmDelete';
 import 'flowbite';
-import ConfirmEditRole from '../popup_modal/ConfirmEditRole';
-import { UserProfile } from '@redux/slices/userSlice';
-
 import { useNavigate } from 'react-router-dom';
 import Badge from '@components/ui/badge/Badge';
 import ConfirmEditStatusOrder from '../popup_modal/ConfirmEditStatusOrder';

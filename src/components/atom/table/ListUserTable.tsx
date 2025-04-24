@@ -7,7 +7,6 @@ import { Box, IconButton, Paper, styled } from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useAppDispatch, useAppSelector } from '@redux/hook';
 import { getAllUser } from '@redux/slices/userSlice';
-import Loading from '../Loading/Loading';
 import UserPopup from '../popup/UserPopup';
 import LoadingPage from '../Loading/LoadingPage';
 

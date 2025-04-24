@@ -2,11 +2,9 @@ import { useState } from 'react';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import { useAppDispatch, useAppSelector } from '@redux/hook';
-import { deleteSetup, SetupPackage } from '@redux/slices/setupSlice';
 import Loading from '../Loading/Loading';
 import { toast } from 'react-toastify';
 import { Booking, refundedBooking } from '@redux/slices/missionSlide';
-import { refundedOrder } from '@redux/slices/orderSlice';
 type ConfirmRefundedBooking = {
     isModalOpenActivate: boolean;
     setIsModalOpenActivate: (isOpen: boolean) => void;

@@ -333,7 +333,7 @@ export default function AddSetupModal({ isModalAddOpen, setIsModalAddOpen }: Mod
                                                                                                     className="w-[3rem] bg-gray-50 border-x-0 border-gray-300 h-6 text-center text-gray-900 text-xs 
             focus:ring-blue-500 focus:border-blue-500 block w-full py-0.5 dark:bg-gray-700 
             dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                                                                                    placeholder="1"
+                                                                                                    placeholder="0"
                                                                                                     value={
                                                                                                         listProduct.find(
                                                                                                             (p) =>

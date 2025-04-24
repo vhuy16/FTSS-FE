@@ -2,8 +2,6 @@ import { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import { useAppDispatch, useAppSelector } from '@redux/hook';
-import { getAllCategory, getAllSubCategoryByCateName } from '@redux/slices/categorySlice';
-import { addProducts } from '@redux/slices/productSlice';
 import { toast } from 'react-toastify';
 import Loading from '../Loading/Loading';
 import { editBooking } from '@redux/slices/missionSlide';

@@ -5,18 +5,12 @@ import MenuItem from '@mui/material/MenuItem';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import BlockOutlinedIcon from '@mui/icons-material/BlockOutlined';
 import { ListItemIcon, ListItemText, Typography } from '@mui/material';
-import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
-import RemoveRedEyeOutlinedIcon from '@mui/icons-material/RemoveRedEyeOutlined';
-import UpdateOutlinedIcon from '@mui/icons-material/UpdateOutlined';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
-import Popover from '@mui/material/Popover';
-import ConfirmDelete from '../popup_modal/ConfirmDelete';
 import 'flowbite';
 import { Product, selectProduct } from '@redux/slices/productSlice';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import ConfirmDeleteProduct from '../popup_modal/ConfirmDeleteProduct';
 import ConfirmActivateProduct from '../popup_modal/ConfirmActivateProduct';
-import EditProductModal from '../modal/EditProductModal';
 import { useAppDispatch } from '@redux/hook';
 
 const ITEM_HEIGHT = 48;

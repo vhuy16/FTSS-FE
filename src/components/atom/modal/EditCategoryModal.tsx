@@ -3,18 +3,10 @@ import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import { useAppDispatch, useAppSelector } from '@redux/hook';
 import { addCategory, editCategory, getAllCategory, getAllSubCategoryByCateName } from '@redux/slices/categorySlice';
-import { addProducts, getAllCategoryWithProduct } from '@redux/slices/productSlice';
 import { toast } from 'react-toastify';
 import Loading from '../Loading/Loading';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import ListItemText from '@mui/material/ListItemText';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
-import Checkbox from '@mui/material/Checkbox';
+
 import 'flowbite';
-import { createSetupPackage } from '@redux/slices/setupSlice';
 type ModalEditProps = {
     isModalEditOpen: boolean;
     setIsModalEditOpen: (isOpen: boolean) => void;
@@ -328,7 +320,7 @@ export default function EditCategoryModal({ isModalEditOpen, setIsModalEditOpen 
                                                     id="description"
                                                     rows={4}
                                                     className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                                    placeholder="Viết mô tả sản phẩm tại đây"
+                                                    placeholder="Viết mô tả danh mục tại đây"
                                                     required={true}
                                                     value={data.Description}
                                                     onChange={(e) => setData({ ...data, Description: e.target.value })}
