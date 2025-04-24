@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { HeaderMainWrapper, SiteBrandWrapper } from "@styles/header";
 import { Container } from "@styles/styles";
 // import { navMenuData } from "../../data/data";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { Input, InputGroupWrapper } from "@styles/form";
 import { breakpoints, defaultTheme } from "@styles/themes/default";
 import { useDispatch } from "react-redux";
@@ -13,11 +13,12 @@ import user from "@icons/user.svg";
 import cart from "@icons/cart.svg";
 import login from "@icons/login.svg";
 import { BaseLinkGreen, BaseLinkOutlineDark } from "@styles/button";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAppDispatch } from "@redux/hook";
 import { changeSearchValue } from "@redux/slices/searchSlice";
 import UserDropdown from "./UserDropdown";
 import CustomerDropDown from "./CustomerDropDown";
+import { getProductByNameForUser } from "@redux/slices/productSlice";
 
 const NavigationAndSearchWrapper = styled.div`
   column-gap: 20px;
@@ -138,10 +139,17 @@ const IconLinksWrapper = styled.div`
 
 const Header = () => {
   const location = useLocation();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const token = localStorage.getItem("access_token");
   const navigate = useNavigate();
-  const [key, setKey] = useState("");
+  const handleSearch = (event: React.FormEvent) => {
+    event.preventDefault(); // k cho form refresh trang
+    const searchQuery = (event.target as HTMLFormElement).search.value; // Lấy input
+
+    if (searchQuery) {
+      navigate(`/product?productName=${searchQuery}`); // Cập nhật URL với tham số productName
+    }
+  };
   return (
     <HeaderMainWrapper className="header flex items-center">
       <Container className="container">
@@ -158,45 +166,23 @@ const Header = () => {
             </SiteBrandWrapper>
           </div>
           <NavigationAndSearchWrapper className="flex items-center">
-            <NavigationMenuWrapper>
-              {/* <ul className="nav-menu-list flex items-center">
-                {navMenuData?.map((menu) => {
-                  return (
-                    <li className="nav-menu-item" key={menu.id}>
-                      <Link
-                        to={menu.menuLink}
-                        className="nav-menu-link text-base font-medium text-gray"
-                      >
-                        {menu.menuText}
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul> */}
-            </NavigationMenuWrapper>
-            <div className="search-form">
-              <InputGroupWrapper className="input-group">
-                <span
-                  className="input-icon flex items-center justify-center text-xl text-gray"
-                  onClick={() => {
-                    dispatch(changeSearchValue(key));
-                    setKey("");
-                    navigate(`/search?keyword=${key}`);
-                  }}
-                >
-                  <i className="bi bi-search text-gray-500"></i>
-                </span>
-                <Input
-                  type="text"
-                  className="input-control w-full"
-                  placeholder="Search"
-                  value={key}
-                  onChange={(e) => {
-                    setKey(e.target.value);
-                  }}
-                />
-              </InputGroupWrapper>
-            </div>
+            <form
+              onSubmit={handleSearch}
+              className="relative flex items-center search-form mx-auto w-[300px] md:w-[400px] lg:w-[500px]"
+            >
+              {/* Icon  */}
+              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-xl text-gray-500">
+                <i className="bi bi-search"></i>
+              </span>
+
+              <input
+                type="text"
+                name="search"
+                placeholder="Tìm kiếm sản phẩm"
+                autoComplete="off"
+                className="h-11 w-full rounded-lg border border-gray-300 bg-white py-2.5 pl-12 pr-10 text-sm text-gray-800 shadow focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-200"
+              />
+            </form>
           </NavigationAndSearchWrapper>
 
           <IconLinksWrapper className="flex items-center">

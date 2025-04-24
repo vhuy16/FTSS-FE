@@ -117,8 +117,6 @@ const OrderListScreen = () => {
 
     return baseOrders.filter((order) => order.status === activeTab);
   })();
-  console.log("filter", filteredOrders);
-  console.log("setup", orderData);
   return (
     <OrderListScreenWrapper className="page-py-spacing">
       {isLoading && isLoadingProfile ? (

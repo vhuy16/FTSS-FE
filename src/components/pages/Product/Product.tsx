@@ -12,7 +12,7 @@ import { useLocation } from "react-router-dom";
 import { log } from "console";
 import Loading from "@components/atom/Loading/Loading";
 import { useEffect, useState } from "react";
-import { getAllProduct } from "@redux/slices/productSlice";
+import { getAllProduct, getProductByNameForUser } from "@redux/slices/productSlice";
 
 // Define breadcrumb type
 type BreadcrumbItem = {
@@ -115,18 +115,29 @@ const ProductListScreen: React.FC = () => {
   const minPrice = params.get("minPrice");
   const maxPrice = params.get("maxPrice");
   const subcategoryName = params.get("subcategoryName");
+  const productName = params.get("productName");
 
   useEffect(() => {
-    dispatch(
-      getAllProduct({
-        page: parseInt(page as string),
-        size: parseInt(size as string),
-        minPrice: parseInt(minPrice as string),
-        maxPrice: parseInt(maxPrice as string),
-        subcategoryName: subcategoryName as string,
-      })
-    );
-  }, [page, size, minPrice, maxPrice, subcategoryName]);
+    if (productName && productName.trim() !== "") {
+      dispatch(
+        getProductByNameForUser({
+          productName: productName,
+          page: parseInt(page),
+          size: parseInt(size),
+        })
+      );
+    } else {
+      dispatch(
+        getAllProduct({
+          page: parseInt(page as string),
+          size: parseInt(size as string),
+          minPrice: parseInt(minPrice as string),
+          maxPrice: parseInt(maxPrice as string),
+          subcategoryName: subcategoryName as string,
+        })
+      );
+    }
+  }, [page, size, minPrice, maxPrice, subcategoryName, productName]);
 
   return (
     <main className="page-py-spacing">
@@ -149,9 +160,11 @@ const ProductListScreen: React.FC = () => {
             </div>
 
             {isLoading ? (
-              <Loading></Loading>
+              <Loading />
             ) : listProducts && listProducts.length > 0 ? (
               <ProductListPage products={listProducts} />
+            ) : productName && productName.trim() !== "" ? (
+              <div>Không có sản phẩm nào</div>
             ) : (
               <div>Không có sản phẩm nào</div>
             )}

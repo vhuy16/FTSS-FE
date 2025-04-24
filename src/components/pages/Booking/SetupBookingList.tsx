@@ -1,20 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { FaCheck, FaTimes, FaClock, FaStar } from "react-icons/fa";
 import styled from "styled-components";
-import { breakpoints, defaultTheme } from "@styles/themes/default";
 import { Container } from "@styles/styles";
 import { UserContent, UserDashboardWrapper } from "@styles/user";
 import UserMenu from "@components/atom/user/UserMenu";
 import Breadcrumb from "@common/Breadcrumb";
 import Title from "@common/Title";
 import { useAppDispatch, useAppSelector } from "@redux/hook";
-import { getAllBookingofUsers } from "@redux/slices/bookingSlice";
 import { getUserProfile } from "@redux/slices/userSlice";
 import { useNavigate } from "react-router-dom";
 import beca from "@images/beca.jpg";
-import { currencyFormat, formatDate } from "@ultils/helper";
 import { BaseBtnGreen } from "@styles/button";
-import { getOrderById } from "@redux/slices/orderSlice";
 import LoadingPage from "@components/atom/Loading/LoadingPage";
 import { getAllOrdersByUsers, resetOrders } from "@redux/slices/orderListSlice";
 
@@ -23,7 +18,6 @@ const WishListScreenWrapper = styled.main`
     gap: 20px;
   }
 `;
-
 const breadcrumbItems = [
   { label: "Trang chủ", link: "/" },
   { label: "Hồ cá của tôi", link: "/setup-booking" },
@@ -32,15 +26,13 @@ const SetupBookingList = () => {
   const orderData = useAppSelector((state) => state.orderList.orders) || [];
   const isLoading = useAppSelector((state) => state.orderList.loading);
   const isLoadingProfile = useAppSelector((state) => state.userProfile.isLoading);
-
+  const orderSetups = orderData.filter((or) => typeof or.setupPackage !== "undefined" && or.setupPackage !== null);
   const dispatch = useAppDispatch();
   useEffect(() => {
     dispatch(resetOrders()); //  Clear dữ liệu cũ
     dispatch(getUserProfile());
     dispatch(getAllOrdersByUsers("COMPLETED"));
   }, [dispatch]);
-
-  const orderSetups = orderData?.filter((or) => or.setupPackage !== null);
   const navigate = useNavigate();
 
   return (
