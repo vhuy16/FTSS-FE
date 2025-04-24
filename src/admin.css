@@ -496,6 +496,9 @@ span.flatpickr-weekday,
 .event-fc-color.fc-bg-completed {
     @apply border-cyan-50 bg-cyan-50;
 }
+.event-fc-color.fc-bg-notDone {
+    @apply border-purple-50 bg-purple-50;
+}
 .event-fc-color.fc-bg-danger {
     @apply border-error-50 bg-error-50;
 }
@@ -510,6 +513,9 @@ span.flatpickr-weekday,
 }
 .event-fc-color.fc-bg-completed .fc-daygrid-event-dot {
     @apply bg-cyan-500;
+}
+.event-fc-color.fc-bg-notDone .fc-daygrid-event-dot {
+    @apply bg-purple-500;
 }
 .event-fc-color.fc-bg-danger .fc-daygrid-event-dot {
     @apply bg-error-500;

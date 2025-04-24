@@ -1,6 +1,5 @@
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { BsThreeDotsVertical, BsEmojiSmile, BsPaperclip, BsMic, BsSend } from 'react-icons/bs';
-import { IoCallOutline, IoVideocamOutline } from 'react-icons/io5';
 import PageBreadcrumb from '@common/PageBreadCrumb';
 import { useAppDispatch, useAppSelector } from '@redux/hook';
 import { createChat, getAllRoom, getRoomDetail, Room, selectRoom } from '@redux/slices/chatSlice';
@@ -141,33 +140,35 @@ const Chat = () => {
                             </div>
                             <div className="flex-1 overflow-y-auto">
                                 <div className="flex flex-col gap-y-3 p-3">
-                                    {listRooms.map((room) => (
-                                        <div
-                                            key={room.id}
-                                            className={`flex cursor-pointer items-center gap-3 rounded-lg p-3 hover:bg-gray-100 dark:hover:bg-white/[0.03] ${
-                                                room.id === selectedRoom?.id ? 'bg-gray-100' : 'hover:bg-gray-100'
-                                            }`}
-                                            onClick={() => dispatch(selectRoom(room))}
-                                        >
-                                            <div className="relative">
-                                                <div className="relative h-12 w-12 max-w-[48px] rounded-full">
-                                                    <Avatar name={room?.customerName as string}></Avatar>
+                                    {listRooms &&
+                                        listRooms.map((room) => (
+                                            <div
+                                                key={room.id}
+                                                className={`flex cursor-pointer items-center gap-3 rounded-lg p-3 hover:bg-gray-100 dark:hover:bg-white/[0.03] ${
+                                                    room.id === selectedRoom?.id ? 'bg-gray-100' : 'hover:bg-gray-100'
+                                                }`}
+                                                onClick={() => dispatch(selectRoom(room))}
+                                            >
+                                                <div className="relative">
+                                                    <div className="relative h-12 w-12 max-w-[48px] rounded-full">
+                                                        <Avatar name={room?.customerName as string}></Avatar>
+                                                    </div>
+                                                </div>
+                                                <div className="ml-3 flex-1">
+                                                    <div className="flex justify-between items-center">
+                                                        <h3 className="text-sm font-semibold text-gray-800">
+                                                            {room.customerName}
+                                                        </h3>
+                                                        <span className="text-xs text-gray-400">
+                                                            {room.latestMessageTime.split('T')[0]}
+                                                            {' lúc '}
+                                                            {room.latestMessageTime.split('T')[1]}
+                                                        </span>
+                                                    </div>
+                                                    <p className="text-xs text-gray-500">Khách hàng</p>
                                                 </div>
                                             </div>
-                                            <div className="ml-3 flex-1">
-                                                <div className="flex justify-between items-center">
-                                                    <h3 className="text-sm font-semibold text-gray-800">
-                                                        {room.customerName}
-                                                    </h3>
-                                                    <span className="text-xs text-gray-400">
-                                                        {room.latestMessageTime.split('T')[0]} lúc
-                                                        {room.latestMessageTime.split('T')[1]}
-                                                    </span>
-                                                </div>
-                                                <p className="text-xs text-gray-500">Khách hàng</p>
-                                            </div>
-                                        </div>
-                                    ))}
+                                        ))}
                                 </div>
                             </div>
                         </div>
@@ -240,7 +241,8 @@ const Chat = () => {
                                                         <p className="text-sm leading-5">{message.text}</p>
                                                     </div>
                                                     <p className="text-xs text-gray-400 mt-1">
-                                                        {message.timestamp.split('T')[0]} lúc
+                                                        {message.timestamp.split('T')[0]}
+                                                        {' lúc '}
                                                         {message.timestamp.split('T')[1]}
                                                     </p>
                                                 </div>

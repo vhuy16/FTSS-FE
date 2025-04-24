@@ -9,16 +9,16 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import 'flowbite';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import { useAppDispatch } from '@redux/hook';
-import { selectVoucher, Voucher } from '@redux/slices/voucherSlice';
-import ConfirmDeleteVoucher from '../popup_modal/ConfirmDeleteVoucher';
-import ConfirmActivatevoucher from '../popup_modal/ConfirmActivateVoucher';
+import ConfirmDeleteService from '../popup_modal/ConfirmDeleteService';
+import ConfirmActivateService from '../popup_modal/ConfirmActivateService';
+import { selectService, Service } from '@redux/slices/serviceSlice';
 
 const ITEM_HEIGHT = 48;
-type VoucherPopupProps = {
-    voucher: Voucher;
+type ServicePopupProps = {
+    service: Service;
     setIsModalEditOpen: (isOpen: boolean) => void;
 };
-export default function VoucherPopup({ voucher, setIsModalEditOpen }: VoucherPopupProps) {
+export default function ServicePopup({ service, setIsModalEditOpen }: ServicePopupProps) {
     const dispatch = useAppDispatch();
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const [isModalOpenDelete, setIsModalOpenDelete] = React.useState(false);
@@ -65,7 +65,7 @@ export default function VoucherPopup({ voucher, setIsModalEditOpen }: VoucherPop
                     onClick={() => {
                         handleClose();
                         setIsModalEditOpen(true);
-                        dispatch(selectVoucher(voucher));
+                        dispatch(selectService(service));
                     }}
                 >
                     <ListItemIcon>
@@ -73,7 +73,7 @@ export default function VoucherPopup({ voucher, setIsModalEditOpen }: VoucherPop
                     </ListItemIcon>
                     <ListItemText>Chỉnh sửa</ListItemText>
                 </MenuItem>
-                {voucher && voucher.status !== 'Active' ? (
+                {service && service.isDelete === true ? (
                     <MenuItem
                         onClick={() => {
                             handleClose();
@@ -99,15 +99,15 @@ export default function VoucherPopup({ voucher, setIsModalEditOpen }: VoucherPop
                     </MenuItem>
                 )}
             </Menu>
-            <ConfirmDeleteVoucher
+            <ConfirmDeleteService
                 isModalOpenDelete={isModalOpenDelete}
                 setIsModalOpenDelete={setIsModalOpenDelete}
-                voucher={voucher}
+                service={service}
             />
-            <ConfirmActivatevoucher
+            <ConfirmActivateService
                 isModalOpenActivate={isModalOpenActivate}
                 setIsModalOpenActivate={setIsModalOpenActivate}
-                voucher={voucher}
+                service={service}
             />
         </div>
     );

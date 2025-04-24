@@ -1,7 +1,15 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import myAxios from '@setup/axiosConfig';
 import { SetupPackage } from './setupSlice';
-
+export type ImageItem = {
+    id: string;
+    linkImage: string;
+    status: string;
+    createDate: string;
+    modifyDate: string;
+    isDelete: boolean;
+    type: string;
+};
 export type Mission = {
     id: string;
     missionName: string;
@@ -17,6 +25,8 @@ export type Mission = {
     orderId: string | null;
     bookingCode: string | null;
     orderCode: string | null;
+    cancelReason: string | null;
+    images: ImageItem[] | null;
 };
 export type Technician = {
     techId: string;
@@ -53,12 +63,13 @@ export type Service = {
     id: string;
     serviceName: string;
     price: number;
+    description: string;
+    isDelete: boolean;
 };
 type MissionType = {
     isLoading: boolean;
     isLoadingGetAllMission: boolean;
     isLoadingGetAllBooking: boolean;
-    isLoadingGetAllService: boolean;
     isLoadingCancelBooking: boolean;
     isLoadingEditBooking: boolean;
     isLoadingRefundedBooking: boolean;
@@ -68,7 +79,6 @@ type MissionType = {
     listBooking: Booking[];
     selectedBooking: Booking | null;
     booking: Booking | null;
-    listService: Service[];
     listTechnician: Technician[];
     isError: boolean;
 };
@@ -76,14 +86,12 @@ const initialState: MissionType = {
     isLoading: false,
     isLoadingGetAllMission: false,
     isLoadingGetAllBooking: false,
-    isLoadingGetAllService: false,
     isLoadingEditBooking: false,
     isLoadingCancelBooking: false,
     isLoadingRefundedBooking: false,
     isLoadingUpdate: false,
     isLoadingAssignBooking: false,
     listMission: [],
-    listService: [],
     listTechnician: [],
     listBooking: [],
     booking: null,
@@ -137,14 +145,7 @@ export const getAllBooking = createAsyncThunk('mission/getAllBooking', async () 
         console.log(error);
     }
 });
-export const getAllService = createAsyncThunk('mission/getAllService', async () => {
-    try {
-        const response = await myAxios.get(`/booking/servicepackage?page=1&size=100`);
-        return response.data.data;
-    } catch (error: any) {
-        console.log(error);
-    }
-});
+
 export const getBookingById = createAsyncThunk('mission/getBookingById', async (id: string) => {
     try {
         const response = await myAxios.get(`/booking/${id}`);
@@ -269,20 +270,7 @@ const missionSlice = createSlice({
                 state.isLoadingGetAllBooking = false;
                 state.isError = true;
             });
-        builder
-            .addCase(getAllService.pending, (state) => {
-                state.isLoadingGetAllService = true;
-                state.isError = false;
-            })
-            .addCase(getAllService.fulfilled, (state, action) => {
-                state.isLoadingGetAllService = false;
-                state.listService = action.payload;
-                state.isError = false;
-            })
-            .addCase(getAllService.rejected, (state, action) => {
-                state.isLoadingGetAllService = false;
-                state.isError = true;
-            });
+
         builder
             .addCase(assignBooking.pending, (state) => {
                 state.isLoadingAssignBooking = true;

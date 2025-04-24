@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
-import { getAllUser, updateRoleUser, UserProfile } from '@redux/slices/userSlice';
 import { useAppDispatch, useAppSelector } from '@redux/hook';
 import Loading from '../Loading/Loading';
 import { toast } from 'react-toastify';

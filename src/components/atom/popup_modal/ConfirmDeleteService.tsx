@@ -3,11 +3,12 @@ import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import { useAppDispatch, useAppSelector } from '@redux/hook';
 import Loading from '../Loading/Loading';
-import { deleteVoucher, Voucher } from '@redux/slices/voucherSlice';
-type ConfirmDeleteVoucherProps = {
+import { toast } from 'react-toastify';
+import { deleteService, Service } from '@redux/slices/serviceSlice';
+type ConfirmDeleteServiceProps = {
     isModalOpenDelete: boolean;
     setIsModalOpenDelete: (isOpen: boolean) => void;
-    voucher: Voucher;
+    service: Service;
 };
 const style = {
     position: 'absolute',
@@ -16,13 +17,13 @@ const style = {
     transform: 'translate(-50%, -50%)',
     width: 400,
 };
-export default function ConfirmDeleteVoucher({
+export default function ConfirmDeleteService({
     isModalOpenDelete,
     setIsModalOpenDelete,
-    voucher,
-}: ConfirmDeleteVoucherProps) {
+    service,
+}: ConfirmDeleteServiceProps) {
     const dispatch = useAppDispatch();
-    const isLoading = useAppSelector((state) => state.voucher.isLoadingDelete);
+    const isLoading = useAppSelector((state) => state.service.isLoadingDelete);
     return (
         <>
             {/* Modal */}
@@ -79,14 +80,18 @@ export default function ConfirmDeleteVoucher({
                                         />
                                     </svg>
                                     <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
-                                        Bạn có muốn ngừng hoạt động mã giảm giá này?
+                                        Bạn có muốn ngừng hoạt động dịch vụ này?
                                     </h3>
                                     <button
                                         type="button"
                                         className="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center"
                                         onClick={async () => {
-                                            await dispatch(deleteVoucher(voucher.id));
-                                            setIsModalOpenDelete(false);
+                                            try {
+                                                await dispatch(deleteService(service.id)).unwrap();
+                                                setIsModalOpenDelete(false);
+                                            } catch (error) {
+                                                toast.error(error as string);
+                                            }
                                         }}
                                     >
                                         {isLoading ? <Loading></Loading> : 'Xác nhận'}

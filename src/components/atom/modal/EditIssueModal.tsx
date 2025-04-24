@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import { useAppDispatch, useAppSelector } from '@redux/hook';
-import { addCategory, getAllCategory, getAllSubCategoryByCateName } from '@redux/slices/categorySlice';
 import {
     addProducts,
     getAllCategoryWithProduct,
@@ -15,16 +14,13 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
-import ListItemText from '@mui/material/ListItemText';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import Checkbox from '@mui/material/Checkbox';
 import 'flowbite';
-import { createSetupPackage } from '@redux/slices/setupSlice';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { getIssueCategorySlice } from '@redux/slices/issueCategorySlice';
 import { addIssue, editIssue } from '@redux/slices/issueSlice';
-import { DataSaverOff } from '@mui/icons-material';
 
 type ModalEditProps = {
     isModalEditOpen: boolean;

@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from '@redux/hook';
 import { toast } from 'react-toastify';
 import Loading from '../Loading/Loading';
 import 'flowbite';
-import { addIssueCategory } from '@redux/slices/issueCategorySlice';
+import { addService } from '@redux/slices/serviceSlice';
 type ModalAddProps = {
     isModalAddOpen: boolean;
     setIsModalAddOpen: (isOpen: boolean) => void;
@@ -27,37 +27,47 @@ const MenuProps = {
         },
     },
 };
-export default function AddIssueCategoryModal({ isModalAddOpen, setIsModalAddOpen }: ModalAddProps) {
+export default function AddServiceModal({ isModalAddOpen, setIsModalAddOpen }: ModalAddProps) {
     const dispatch = useAppDispatch();
-    const isLoadingAdd = useAppSelector((state) => state.issueCategory.isLoadingAdd);
+    const isLoadingAdd = useAppSelector((state) => state.service.isLoadingAdd);
     const [data, setData] = useState<{
-        issueCategoryName: string;
+        serviceName: string;
         description: string;
+        price: number;
     }>({
-        issueCategoryName: '',
+        serviceName: '',
         description: '',
+        price: 0,
     });
 
     useEffect(() => {
         if (!isModalAddOpen) {
             setData({
-                issueCategoryName: '',
+                serviceName: '',
                 description: '',
+                price: 0,
             });
         }
     }, [isModalAddOpen]);
 
     const handleSubmit = async () => {
-        if (data.issueCategoryName && data.description) {
-            try {
-                const res = await dispatch(addIssueCategory(data)).unwrap();
-                if (res.status == 201 || res.status == 200) {
-                    setIsModalAddOpen(false);
-                    toast.success('Thêm danh mục thành công');
+        if (data.serviceName && data.description && data.price !== 0) {
+            if (data.price > 0) {
+                const formData = new FormData();
+                formData.append('ServiceName', data.serviceName);
+                formData.append('Description', data.description);
+                formData.append('Price', data.price.toString());
+                try {
+                    const res = await dispatch(addService(formData)).unwrap();
+                    if (res.status == 201 || res.status == 200) {
+                        setIsModalAddOpen(false);
+                        toast.success('Thêm dịch vụ thành công');
+                    }
+                } catch (error) {
+                    toast.error(error as string);
                 }
-            } catch (error) {
-                setIsModalAddOpen(false);
-                toast.error(error as string);
+            } else {
+                toast.error('Giá tiền không được nhỏ hơn 0');
             }
         } else {
             toast.error('Vui lòng nhập đủ thông tin');
@@ -81,7 +91,7 @@ export default function AddIssueCategoryModal({ isModalAddOpen, setIsModalAddOpe
                                 <div className="relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
                                     <div className="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600">
                                         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                                            Thêm danh mục vấn đề
+                                            Thêm dịch vụ
                                         </h3>
                                         <button
                                             type="button"
@@ -108,26 +118,45 @@ export default function AddIssueCategoryModal({ isModalAddOpen, setIsModalAddOpe
                                     </div>
                                     <div>
                                         <div className="grid gap-4 mb-4 sm:grid-cols-6">
-                                            <div className="sm:col-span-6">
+                                            <div className="sm:col-span-3">
                                                 <label
                                                     htmlFor="name"
                                                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                                                 >
-                                                    Tên danh mục vấn đề
+                                                    Tên dịch vụ
                                                 </label>
                                                 <input
                                                     type="text"
                                                     name="name"
                                                     id="name"
                                                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                                    placeholder="Nhập tên danh mục"
+                                                    placeholder="Nhập tên dịch vụ"
                                                     required={true}
-                                                    value={data.issueCategoryName}
+                                                    value={data.serviceName}
+                                                    onChange={(e) => setData({ ...data, serviceName: e.target.value })}
+                                                />
+                                            </div>
+                                            <div className="sm:col-span-3">
+                                                <label
+                                                    htmlFor="name"
+                                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                                >
+                                                    Giá
+                                                </label>
+                                                <input
+                                                    type="number"
+                                                    name="price"
+                                                    id="price"
+                                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                                    placeholder="Nhập giá"
+                                                    required={true}
+                                                    value={data.price}
                                                     onChange={(e) =>
-                                                        setData({ ...data, issueCategoryName: e.target.value })
+                                                        setData({ ...data, price: parseInt(e.target.value) })
                                                     }
                                                 />
                                             </div>
+
                                             <div className="sm:col-span-6">
                                                 <label
                                                     htmlFor="description"
@@ -139,8 +168,9 @@ export default function AddIssueCategoryModal({ isModalAddOpen, setIsModalAddOpe
                                                     id="description"
                                                     rows={4}
                                                     className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                                    placeholder="Viết mô tả sản phẩm tại đây"
+                                                    placeholder="Viết mô tả dịch vụ tại đây"
                                                     required={true}
+                                                    value={data.description}
                                                     onChange={(e) => setData({ ...data, description: e.target.value })}
                                                 ></textarea>
                                             </div>

@@ -4,12 +4,9 @@ import Button from '@components/ui/button/Button';
 import { Box, styled } from '@mui/material';
 import { DataGrid, GridCellParams, GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
 import { useAppDispatch, useAppSelector } from '@redux/hook';
-import { getAllUser } from '@redux/slices/userSlice';
-import UserPopup from '../popup/UserPopup';
 import { getAllOrder, Order } from '@redux/slices/orderSlice';
 import { currencyFormat } from '@ultils/helper';
 import Badge from '@components/ui/badge/Badge';
-import OrderPopup from '../popup/OrderPopup';
 import { useNavigate } from 'react-router-dom';
 import { CSVLink } from 'react-csv';
 import OrderDeliveryPopup from '../popup/OrderDeliveryPopup';
@@ -124,22 +121,30 @@ export default function ListOrderDeliveryTable() {
                 <Badge
                     size="sm"
                     color={
-                        params.row.payment.paymentStatus === 'Processing'
+                        params.row.payment?.paymentStatus === 'Processing'
                             ? 'warning'
-                            : params.row.payment.paymentStatus === 'Completed'
+                            : params.row.payment?.paymentStatus === 'Completed'
                             ? 'success'
-                            : params.row.payment.paymentStatus === 'Cancelled'
+                            : params.row.payment?.paymentStatus === 'Cancelled'
                             ? 'error'
-                            : 'warning'
+                            : params.row.payment?.paymentStatus === 'Refunding'
+                            ? 'light'
+                            : params.row.payment?.paymentStatus === 'Refunded'
+                            ? 'dark'
+                            : 'primary'
                     }
                 >
-                    {params.row.payment.paymentStatus === 'Processing'
+                    {params.row.payment?.paymentStatus === 'Processing'
                         ? 'Đang chờ thanh toán'
-                        : params.row.payment.paymentStatus === 'Completed'
+                        : params.row.payment?.paymentStatus === 'Completed'
                         ? 'Đã thanh toán'
-                        : params.row.payment.paymentStatus === 'Cancelled'
+                        : params.row.payment?.paymentStatus === 'Cancelled'
                         ? 'Đã hủy'
-                        : 'Đang hoàn trả'}
+                        : params.row.payment?.paymentStatus === 'Refunding'
+                        ? 'Đang hoàn tiền'
+                        : params.row.payment?.paymentStatus === 'Refunded'
+                        ? 'Đã hoàn tiền'
+                        : 'primary'}
                 </Badge>
             ),
         },

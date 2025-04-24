@@ -6,7 +6,6 @@ import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useAppDispatch, useAppSelector } from '@redux/hook';
 import { currencyFormat } from '@ultils/helper';
 import Badge from '@components/ui/badge/Badge';
-import ProductPopup from '../popup/ProductPopup';
 import EditVoucherModal from '../modal/EditVoucherModal';
 import LoadingPage from '../Loading/LoadingPage';
 import { getAllVoucher, Voucher } from '@redux/slices/voucherSlice';

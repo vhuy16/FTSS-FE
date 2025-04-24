@@ -3,7 +3,6 @@ import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import { useAppDispatch, useAppSelector } from '@redux/hook';
 import { activateSetup, deleteSetup, SetupPackage } from '@redux/slices/setupSlice';
-import { enableProduct, Product } from '@redux/slices/productSlice';
 import Loading from '../Loading/Loading';
 type ConfirmActivateSetup = {
     isModalOpenActivate: boolean;

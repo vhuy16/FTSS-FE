@@ -1,6 +1,5 @@
 import PageBreadcrumb from '@common/PageBreadCrumb';
 import ListOrderDeliveryTable from '@components/atom/table/ListOrderDeliveryTable';
-import { useAppDispatch } from '@redux/hook';
 
 export default function ListOrderDelivery() {
     return (

@@ -4,8 +4,6 @@ import Button from '@components/ui/button/Button';
 import { Box, styled } from '@mui/material';
 import { DataGrid, GridCellParams, GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
 import { useAppDispatch, useAppSelector } from '@redux/hook';
-import { getAllUser } from '@redux/slices/userSlice';
-import UserPopup from '../popup/UserPopup';
 import { getAllOrder, Order } from '@redux/slices/orderSlice';
 import { currencyFormat } from '@ultils/helper';
 import Badge from '@components/ui/badge/Badge';
