@@ -357,6 +357,13 @@ const OrderItemList: React.FC<OrderItemListProps> = ({ orders }) => {
                   </button>
                 </>
               )}
+              {order.status === "RETURNED" && order?.payment?.paymentStatus === "Completed" && (
+                <>
+                  <button className="btn-secondary" onClick={() => openModal(order)}>
+                    Yêu Cầu Hoàn Tiền
+                  </button>
+                </>
+              )}
               {order.status === "PROCESSING" && (
                 <>
                   <button
@@ -381,13 +388,15 @@ const OrderItemList: React.FC<OrderItemListProps> = ({ orders }) => {
                   )}
                 </>
               )}
-              {order.status === "COMPLETED" && order?.payment?.paymentStatus === "Completed" && (
-                <>
-                  <button className="btn-secondary" onClick={() => openModalReturn(order)}>
-                    Yêu cầu hoàn trả
-                  </button>
-                </>
-              )}
+              {order.status === "COMPLETED" &&
+                order?.payment?.paymentStatus === "Completed" &&
+                order.isAssigned == true && (
+                  <>
+                    <button className="btn-secondary" onClick={() => openModalReturn(order)}>
+                      Yêu cầu hoàn trả
+                    </button>
+                  </>
+                )}
             </div>
           </div>
         </div>

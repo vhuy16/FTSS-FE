@@ -29,6 +29,7 @@ type initialStateProduct = {
   listProductForAdmin: Product[];
   selectedProduct: Product;
   listCateAndProduct: ListCateAndProduct[];
+  isLoadingSearchUser: boolean;
   isLoading: boolean;
   isLoadingGetCateWithProduct: boolean;
   isLoadingAdd: boolean;
@@ -114,16 +115,25 @@ export const getProductByNameForAdmin = createAsyncThunk(
 );
 export const getProductByNameForUser = createAsyncThunk(
   "product/getProductByNameForUser",
-  async (productName: string, { rejectWithValue }) => {
+  async ({ productName, page, size }: { productName: string; page?: number; size?: number }, { rejectWithValue }) => {
     try {
-      const response = await myAxios.get(`/product/get-all-product?page=1&size=100&productName=${productName}`);
-      return response.data.data.items;
+      const baseUrl = "/product/get-all-product";
+      const queryParams = new URLSearchParams();
+
+      if (productName) queryParams.append("productName", productName);
+      if (page) queryParams.append("page", String(page));
+      if (size) queryParams.append("size", String(size));
+
+      const url = `${baseUrl}?${queryParams.toString()}`;
+      const response = await myAxios.get(url);
+
+      return response.data.data;
     } catch (error: any) {
-      console.log(error);
-      return rejectWithValue(error.response?.data?.message || "Lấy sản phẩm thất bại");
+      return rejectWithValue(error.response?.data?.message || "Lấy sản phẩm theo tên thất bại");
     }
   }
 );
+
 export const getAllCategoryWithProduct = createAsyncThunk(
   "product/getAllCategoryWithProduct",
   async (_, { rejectWithValue }) => {
@@ -200,6 +210,7 @@ export const enableProduct = createAsyncThunk(
 const initialState: initialStateProduct = {
   data: null,
   listProductForAdmin: [],
+
   selectedProduct: {
     id: "",
     productName: "",
@@ -211,6 +222,7 @@ const initialState: initialStateProduct = {
     status: "",
     images: "",
   },
+  isLoadingSearchUser: false,
   listCateAndProduct: [],
   isLoading: false,
   isLoadingGetCateWithProduct: false,
@@ -352,6 +364,26 @@ const productSlice = createSlice({
       })
       .addCase(editProducts.rejected, (state, action) => {
         state.isLoadingEdit = false;
+        state.isError = true;
+      });
+    builder
+      .addCase(getProductByNameForUser.pending, (state) => {
+        state.isLoading = true;
+        state.isError = false;
+      })
+      .addCase(getProductByNameForUser.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isError = false;
+        state.data = {
+          items: action.payload.items,
+          page: action.payload.page,
+          size: action.payload.size,
+          total: action.payload.total,
+          totalPages: action.payload.totalPages,
+        };
+      })
+      .addCase(getProductByNameForUser.rejected, (state, action) => {
+        state.isLoading = false;
         state.isError = true;
       });
   },

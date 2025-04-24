@@ -36,6 +36,7 @@ const ForgotPassword = () => {
         navigate("/verify-forgot-password");
       }
     } catch (error) {
+      toast(error as string);
       console.log(error);
     }
   };
@@ -72,7 +73,7 @@ const ForgotPassword = () => {
                   {isLoading ? <Loading /> : <>Tiếp tục</>}
                 </BaseButtonGreen>
               </form>
-              {isError && <p className="error-text">Có lỗi xảy ra: {isError}</p>}
+              {/* {isError && <p className="error-text">Có lỗi xảy ra: {isError}</p>} */}
               <p className="flex flex-wrap account-rel-text">
                 <Link to="/login" className="font-medium">
                   Quay lại đăng nhập
