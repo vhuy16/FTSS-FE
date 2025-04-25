@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { FaClock, FaCheck, FaTimes, FaRegMoneyBillAlt } from "react-icons/fa";
 import { BookingServiceStyle } from "./BookingServiceStyle";
 import { Container, HorizontalLine } from "@styles/styles";
 import Breadcrumb from "@common/Breadcrumb";
 import { useAppDispatch, useAppSelector } from "@redux/hook";
 import { currencyFormat, formatDate } from "@ultils/helper";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { getOrderById } from "@redux/slices/orderSlice";
 import LoadingPage from "@components/atom/Loading/LoadingPage";
 import styled from "styled-components";
@@ -62,8 +62,6 @@ const SetupBookingDetail = () => {
     const price = product.price ?? 0;
     return acc + quantity * price;
   }, 0);
-  const navigate = useNavigate();
-  console.log("history", servicehistory);
 
   const breadcrumbItems = [
     { label: "Trang chủ", link: "/" },

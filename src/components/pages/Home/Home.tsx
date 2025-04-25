@@ -1,14 +1,10 @@
 import Brands from "@components/atom/brand/Brands";
 import Catalog from "@components/atom/catalog/Catalog";
-import Category from "@components/atom/category/Category";
 import Featured from "@components/atom/featured/Featured";
-import Feedback from "@components/atom/feedback/Feedback";
 import Hero from "@components/atom/hero/Hero";
-import Loading from "@components/atom/Loading/Loading";
 import LoadingPage from "@components/atom/Loading/LoadingPage";
 import { useAppDispatch, useAppSelector } from "@redux/hook";
 import { getAllProduct } from "@redux/slices/productSlice";
-import { getUserProfile } from "@redux/slices/userSlice";
 import { Container, HorizontalLine } from "@styles/styles";
 import React, { useEffect } from "react";
 import styled from "styled-components";

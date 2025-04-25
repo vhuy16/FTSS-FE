@@ -1,5 +1,3 @@
-import styled from "styled-components";
-import { breakpoints } from "@styles/themes/default";
 import { Issue } from "@redux/slices/issueSlice";
 import IssueItem from "./IssueItem";
 

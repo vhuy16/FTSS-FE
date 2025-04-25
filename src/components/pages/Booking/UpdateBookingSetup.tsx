@@ -1,27 +1,19 @@
 import { useEffect, useState } from "react";
-import { FaClock, FaWater, FaFish, FaCheck, FaTimes, FaRegMoneyBillAlt, FaTruck, FaBoxOpen } from "react-icons/fa";
-import { BookingContainer, BookingServiceStyle, CalendarContainer, InfoWrapper } from "./BookingServiceStyle";
-import { Container, HorizontalLine, HorizontalLineTAb } from "@styles/styles";
+import { FaClock, FaCheck, FaTimes, FaRegMoneyBillAlt, FaTruck, FaBoxOpen } from "react-icons/fa";
+import { BookingServiceStyle } from "./BookingServiceStyle";
+import { Container, HorizontalLine } from "@styles/styles";
 import Breadcrumb from "@common/Breadcrumb";
-import { Order } from "@redux/slices/orderListSlice";
-import BookingInfo from "./BookingInfo";
-import { DateCalendar, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
 import "dayjs/locale/vi";
-import { Box } from "@mui/material";
-import { getAllServices, ServicePackage } from "@redux/slices/listServiceSlice";
 import { useAppDispatch, useAppSelector } from "@redux/hook";
 import { currencyFormat, formatDate } from "@ultils/helper";
 import { useNavigate, useParams } from "react-router-dom";
 import { getOrderById, updateScheduleSetup } from "@redux/slices/orderSlice";
 import { toast } from "react-toastify";
-import { createBookingService, getAllUnavailableDates } from "@redux/slices/bookingSlice";
 import { BaseBtnGreen } from "@styles/button";
 import Loading from "@components/atom/Loading/Loading";
 import LoadingPage from "@components/atom/Loading/LoadingPage";
 import styled from "styled-components";
-import { addDays, startOfWeek } from "date-fns";
 import "dayjs/locale/vi"; // Import locale
 import FormSchedule from "@components/atom/FormSchedule/FormSchedule";
 dayjs.locale("vi"); // Set default locale
@@ -134,6 +126,18 @@ const UpdateBookingSetup = () => {
         text: "text-green-800",
         icon: <FaTruck className="inline-block mr-1" />,
         label: "Chờ giao hàng",
+      },
+      NOTDONE: {
+        bg: "bg-red-100",
+        text: "text-red-800",
+        icon: <FaTimes className="inline-block mr-1" />,
+        label: "Chưa lắp đặt",
+      },
+      DONE: {
+        bg: "bg-green-100",
+        text: "text-green-800",
+        icon: <FaCheck className="inline-block mr-1" />,
+        label: "Đã lắp đặt",
       },
     };
 

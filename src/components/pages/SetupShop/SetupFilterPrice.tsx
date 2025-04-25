@@ -1,18 +1,14 @@
 import { useState, ChangeEvent, useEffect } from "react";
-import { FilterSubWrap, FilterTitle, FilterWrap, PriceFilter, ProductCategoryFilter } from "@styles/filter";
-import { useAppDispatch, useAppSelector } from "@redux/hook";
-import { useLocation, useNavigate } from "react-router-dom";
+import { FilterTitle, FilterWrap, PriceFilter } from "@styles/filter";
+import { useLocation } from "react-router-dom";
 import { BaseBtnGreen } from "@styles/button";
 import { toast } from "react-toastify";
 import { useSearchParams } from "react-router-dom";
-import { getAllCategory } from "@redux/slices/categorySlice";
 
 const SetupFilterPrice = () => {
   const [isSetupFilterOpen, setSetupFilterOpen] = useState<boolean>(true);
   const [isPriceFilterOpen, setPriceFilterOpen] = useState<boolean>(true);
   const [searchParams, setSearchParams] = useSearchParams();
-  const dispatch = useAppDispatch();
-  const navigate = useNavigate();
   const location = useLocation();
   const k = location.search;
   const queryString = k.split("?")[1];

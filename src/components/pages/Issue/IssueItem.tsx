@@ -1,12 +1,8 @@
-import { Link, useNavigate } from "react-router-dom";
-import styled from "styled-components";
-import { commonCardStyles } from "@styles/card";
-import { breakpoints, defaultTheme } from "@styles/themes/default";
+import { useNavigate } from "react-router-dom";
+
 import { useDispatch } from "react-redux";
-// import { addItemWishList } from '@redux/slices/wishlistSlice';
-import { currencyFormat, formatDate } from "@ultils/helper";
-import { toast } from "react-toastify";
-import beca from "@images/beca.jpg";
+import { formatDate } from "@ultils/helper";
+
 import { Issue } from "@redux/slices/issueSlice";
 
 interface IssueItemProps {
@@ -14,7 +10,6 @@ interface IssueItemProps {
 }
 
 const IssueItem: React.FC<IssueItemProps> = ({ issue }) => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   return (
     <div

@@ -1,18 +1,18 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import myAxios from "@setup/axiosConfig";
-import { ServicePackage } from "./listServiceSlice";
+import { Service } from "./serviceSlice";
 
 export type ListServiceHistory = {
   scheduleDate: string;
-  services: ServicePackage[];
+  services: Service[];
 };
 
-type BankType = {
+type ListServiceHistoryType = {
   isLoading: boolean;
   isError: boolean;
   ListServiceHistory: ListServiceHistory[];
 };
-const initialState: BankType = {
+const initialState: ListServiceHistoryType = {
   isLoading: false,
   isError: false,
   ListServiceHistory: [],

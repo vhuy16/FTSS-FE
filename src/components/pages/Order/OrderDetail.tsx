@@ -7,25 +7,18 @@ import { ConfirmModal } from "@components/atom/modal/ConfirmModal";
 import SimpleModal, { ModalContent, ModalHeader } from "@components/atom/modal/Modal";
 import { RefundBankModal } from "@components/atom/modal/RefundBankModal";
 import UserMenu from "@components/atom/user/UserMenu";
-import { AssignmentTurnedIn, Cancel, CheckCircle, FeedOutlined, LocalShipping, StarBorder } from "@mui/icons-material";
+import { AssignmentTurnedIn, CheckCircle, FeedOutlined, LocalShipping } from "@mui/icons-material";
 import { useAppDispatch, useAppSelector } from "@redux/hook";
-import { getAllOrdersByUsers, Order, OrderDetail } from "@redux/slices/orderListSlice";
+import { Order, OrderDetail } from "@redux/slices/orderListSlice";
 import { getOrderById, updateOrder } from "@redux/slices/orderSlice";
 import { getUserProfile } from "@redux/slices/userSlice";
-import {
-  BaseBtnGreen,
-  BaseButtonGreen,
-  BaseButtonOuterspace,
-  BaseButtonWhite,
-  BaseButtonWhitesmoke,
-  BaseLinkRed,
-} from "@styles/button";
+import { BaseBtnGreen, BaseButtonOuterspace, BaseButtonWhite } from "@styles/button";
 import { Container } from "@styles/styles";
 import { breakpoints, defaultTheme } from "@styles/themes/default";
 import { UserContent, UserDashboardWrapper } from "@styles/user";
 import { currencyFormat, formatDate } from "@ultils/helper";
 import { useCallback, useEffect, useState } from "react";
-import { FaCheck, FaClock, FaRegMoneyBillAlt, FaTimes } from "react-icons/fa";
+import { FaBoxOpen, FaCheck, FaClock, FaRegMoneyBillAlt, FaTimes, FaTruck } from "react-icons/fa";
 import { Link, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import styled from "styled-components";
@@ -167,55 +160,6 @@ const OrderDetailStatusWrapper = styled.div<{ currentIndex: number; totalSteps: 
         }
       }
     }
-  }
-`;
-
-const OrderDetailStatusWrapperv2 = styled.div`
-  .refund-status-container {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    margin: 100px 0;
-  }
-
-  .refund-status-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 500px; /* Độ dài thanh ngang */
-    position: relative;
-  }
-
-  .status-step {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
-  }
-
-  .status-dot {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background-color: gray;
-    position: relative;
-    z-index: 1;
-  }
-
-  .status-line {
-    position: absolute;
-    top: 8px;
-    left: 50%;
-    width: 420px; /* Chiều dài thanh nối */
-    height: 2px;
-    background-color: gray;
-    z-index: 0;
-  }
-
-  .status-label {
-    margin-top: 5px;
-    font-size: 12px;
-    color: #666;
   }
 `;
 
@@ -582,6 +526,84 @@ const OrderDetailScreen = () => {
       </span>
     </div>
   );
+  const StatusTag = ({ status }: { status: string | null }) => {
+    const statusConfig: {
+      [key: string]: {
+        bg: string;
+        text: string;
+        icon: JSX.Element;
+        label: string;
+      };
+    } = {
+      COMPLETED: {
+        bg: "bg-green-100",
+        text: "text-green-800",
+        icon: <FaBoxOpen className="inline-block mr-1" />,
+        label: "Đã giao hàng",
+      },
+      PROCESSING: {
+        bg: "bg-gray-100",
+        text: "text-gray-800",
+        icon: <FaClock className="inline-block mr-1" />,
+        label: "Đang xử lý",
+      },
+      RETURNING: {
+        bg: "bg-gray-100",
+        text: "text-gray-800",
+        icon: <FaClock className="inline-block mr-1" />,
+        label: "Đang yêu cầu trả hàng",
+      },
+      PROCESSED: {
+        bg: "bg-green-100",
+        text: "text-green-800",
+        icon: <FaCheck className="inline-block mr-1" />,
+        label: "Đã xử lý",
+      },
+      CANCELLED: {
+        bg: "bg-red-100",
+        text: "text-red-800",
+        icon: <FaTimes className="inline-block mr-1" />,
+        label: "Đã hủy",
+      },
+      RETURNED: {
+        bg: "bg-green-100",
+        text: "text-green-800",
+        icon: <FaRegMoneyBillAlt className="inline-block mr-1" />,
+        label: "Trả hàng",
+      },
+      PENDING_DELIVERY: {
+        bg: "bg-green-100",
+        text: "text-green-800",
+        icon: <FaTruck className="inline-block mr-1" />,
+        label: "Chờ giao hàng",
+      },
+      NOTDONE: {
+        bg: "bg-red-100",
+        text: "text-red-800",
+        icon: <FaTimes className="inline-block mr-1" />,
+        label: "Chưa lắp đặt",
+      },
+      DONE: {
+        bg: "bg-green-100",
+        text: "text-green-800",
+        icon: <FaCheck className="inline-block mr-1" />,
+        label: "Đã lắp đặt",
+      },
+    };
+
+    const config = statusConfig[status ?? "null"];
+
+    if (!config) return null;
+
+    return (
+      <span
+        className={`${config.bg} ${config.text} px-3 py-1 rounded-full text-sm font-medium flex items-center w-fit`}
+      >
+        {config.icon}
+        {config.label}
+      </span>
+    );
+  };
   return (
     <OrderDetailScreenWrapper className="page-py-spacing">
       {isLoading && isLoadingProfile ? (
@@ -647,6 +669,14 @@ const OrderDetailScreen = () => {
                           <span className="text-gray-800 font-bold mr-2">SĐT:</span>
                           <span className="px-3 py-1 rounded-md text-xl font-medium text-gray-600 ">
                             {order?.phoneNumber}
+                          </span>
+                        </div>
+                      </p>
+                      <p className="text-lg font-medium text-gray mb-3">
+                        <div className="flex items-center">
+                          <span className="text-gray-800 font-bold mr-2">Trạng thái đơn hàng:</span>
+                          <span className="px-3 py-1 rounded-md text-xl font-medium text-gray-600 ">
+                            <StatusTag status={order?.status ?? "UNKNOWN"} />
                           </span>
                         </div>
                       </p>
