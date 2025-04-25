@@ -1,7 +1,6 @@
 import styled from "styled-components";
 import { useEffect, useState } from "react";
 import { breakpoints, defaultTheme } from "@styles/themes/default";
-import { Product } from "@redux/slices/productSlice";
 import { SetupPackage } from "@redux/slices/setupSlice";
 
 const ProductPreviewWrapper = styled.div`

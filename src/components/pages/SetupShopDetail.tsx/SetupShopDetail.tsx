@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { Container } from "@styles/styles";
 import Breadcrumb from "@common/Breadcrumb";
 import { product_one } from "./data";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 import { breakpoints, defaultTheme } from "@styles/themes/default";
 

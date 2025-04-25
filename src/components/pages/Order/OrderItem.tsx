@@ -1,9 +1,6 @@
 import styled from "styled-components";
-import PropTypes from "prop-types";
-import { breakpoints, defaultTheme } from "@styles/themes/default";
+import { breakpoints } from "@styles/themes/default";
 import { currencyFormat } from "@ultils/helper";
-import { BaseBtnGreen } from "@styles/button";
-import { type } from "@testing-library/user-event/dist/type";
 import { Order } from "@redux/slices/orderListSlice";
 import { useNavigate } from "react-router-dom";
 

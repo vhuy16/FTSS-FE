@@ -1,23 +1,14 @@
 import styled from "styled-components";
-import { Container, ContentStylings, Section } from "@styles/styles";
+import { Container } from "@styles/styles";
 import Breadcrumb from "@common/Breadcrumb";
 import { Link } from "react-router-dom";
-import Title from "@common/Title";
 import { breakpoints, defaultTheme } from "@styles/themes/default";
-import ProductFilter from "@components/atom/products/ProductFilter";
 import { useAppDispatch, useAppSelector } from "@redux/hook";
-import ProductListPage from "@components/atom/products/ProductListPage";
-import PaginationControlled from "@components/atom/pagination/Pagination";
 import { useLocation } from "react-router-dom";
-import { log } from "console";
 import Loading from "@components/atom/Loading/Loading";
-import { useEffect, useState } from "react";
-import { getAllProduct } from "@redux/slices/productSlice";
+import { useEffect } from "react";
 import { getSetupPackagesShop } from "@redux/slices/setupSlice";
 import SetupListShopPage from "./SetupListShopPage";
-import { BannerBox } from "../Setup/SetupStyles";
-import banner1 from "@images/aquarium-banner.jpg";
-import LoadingPage from "@components/atom/Loading/LoadingPage";
 import PaginationSetup from "@components/atom/pagination/PaginationSetup";
 import SetupFilterPrice from "./SetupFilterPrice";
 

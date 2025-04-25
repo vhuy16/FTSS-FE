@@ -1,13 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
-import { FaClock, FaWater, FaFish, FaTimes, FaCheck } from "react-icons/fa";
-import { Container, HorizontalLine, HorizontalLineTAb } from "@styles/styles";
+import { FaClock, FaTimes, FaCheck } from "react-icons/fa";
+import { Container, HorizontalLine } from "@styles/styles";
 import Breadcrumb from "@common/Breadcrumb";
-import { Order } from "@redux/slices/orderListSlice";
 import { useAppDispatch, useAppSelector } from "@redux/hook";
 import { currencyFormat, formatDate } from "@ultils/helper";
 import { useParams } from "react-router-dom";
 import { getOrderById } from "@redux/slices/orderSlice";
-import { BookingDetail, Confirm, getDetailBookingofUsers } from "@redux/slices/bookingSlice";
+import { BookingDetail, getDetailBookingofUsers } from "@redux/slices/bookingSlice";
 import LoadingPage from "@components/atom/Loading/LoadingPage";
 import { BookingServiceStyle } from "./BookingServiceStyle";
 import { breakpoints, defaultTheme } from "@styles/themes/default";
@@ -268,7 +267,17 @@ const BookingHistoryDetail = () => {
                   className="request-button px-6 py-2 text-sm font-medium  rounded hover:bg-green-500 transition"
                   onClick={() => openModalUpdate(bookingDetail)}
                 >
-                  Cập nhật thông tin
+                  Cập nhật thông tin bảo trì
+                </BaseButtonGreen>
+              </div>
+            )}
+            {bookingDetail?.status === "NOTDONE" && (
+              <div className="flex justify-end pr-12">
+                <BaseButtonGreen
+                  className="request-button px-6 py-2 text-sm font-medium  rounded hover:bg-green-500 transition"
+                  onClick={() => openModalUpdate(bookingDetail)}
+                >
+                  Cập nhật thông tin bảo trì
                 </BaseButtonGreen>
               </div>
             )}

@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector } from "@redux/hook";
 import { getAllIssue } from "@redux/slices/issueSlice";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 const IssueRecentPost = () => {
   const dispatch = useAppDispatch();
   const listIssuess = useAppSelector((state) => state.issue.data?.items);

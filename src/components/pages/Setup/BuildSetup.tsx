@@ -1,13 +1,11 @@
-import React, { useState, useEffect, ReactNode } from "react";
-import ReactDOM from "react-dom";
-import styled from "styled-components";
+import React, { useState, useEffect } from "react";
 import { Container } from "@styles/styles";
 import Breadcrumb from "@common/Breadcrumb";
 import { useAppDispatch, useAppSelector } from "@redux/hook";
 import { getAllCategory } from "@redux/slices/categorySlice";
 import { getAllProductSimilar, Product } from "@redux/slices/productSlice";
 import { toast } from "react-toastify";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { currencyFormat } from "@ultils/helper";
 import {
   BannerBox,

@@ -1,32 +1,26 @@
 import { useEffect, useState } from "react";
-import { FaClock, FaWater, FaFish } from "react-icons/fa";
-import { BookingContainer, BookingServiceStyle, CalendarContainer, InfoWrapper } from "./BookingServiceStyle";
-import { Container, HorizontalLine, HorizontalLineTAb } from "@styles/styles";
+import { BookingContainer, BookingServiceStyle } from "./BookingServiceStyle";
+import { Container, HorizontalLine } from "@styles/styles";
 import Breadcrumb from "@common/Breadcrumb";
-import { Order } from "@redux/slices/orderListSlice";
 import BookingInfo from "./BookingInfo";
-import { DateCalendar, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import dayjs, { Dayjs } from "dayjs";
 import "dayjs/locale/vi";
-import { Box } from "@mui/material";
-import { getAllServices, ServicePackage } from "@redux/slices/listServiceSlice";
 import { useAppDispatch, useAppSelector } from "@redux/hook";
 import { currencyFormat } from "@ultils/helper";
 import { useNavigate, useParams } from "react-router-dom";
 import { getOrderById } from "@redux/slices/orderSlice";
 import { toast } from "react-toastify";
-import { createBookingService, getAllUnavailableDates } from "@redux/slices/bookingSlice";
+import { createBookingService } from "@redux/slices/bookingSlice";
 import { BaseBtnGreen } from "@styles/button";
 import Loading from "@components/atom/Loading/Loading";
 import LoadingPage from "@components/atom/Loading/LoadingPage";
 import FormSchedule from "@components/atom/FormSchedule/FormSchedule";
+import { getAllService } from "@redux/slices/serviceSlice";
 
 const BookingService = () => {
   const { setupBookingId } = useParams();
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
   const dispatch = useAppDispatch();
-  const services = useAppSelector((state) => state.serviceList.servicePackages);
+  const services = useAppSelector((state) => state.service.listService);
   const orderDetail = useAppSelector((state) => state.order.order);
   const isLoadingDetail = useAppSelector((state) => state.order.isLoading);
   const isLoadingBooking = useAppSelector((state) => state.bookingService.loading);
@@ -62,7 +56,7 @@ const BookingService = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
     dispatch(getOrderById(setupBookingId as string));
-    dispatch(getAllServices());
+    dispatch(getAllService());
   }, [dispatch]);
   useEffect(() => {
     if (orderDetail?.isEligible) {
@@ -136,7 +130,8 @@ const BookingService = () => {
     : services
         .filter((service) => selectedServices.includes(service.id))
         .reduce((acc, service) => acc + service.price, 0);
-  console.log("form", formValue);
+  console.log("service", services);
+
   return (
     <BookingServiceStyle>
       {isLoadingDetail ? (

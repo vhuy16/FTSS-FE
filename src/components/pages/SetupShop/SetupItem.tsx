@@ -1,11 +1,9 @@
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { commonCardStyles } from "@styles/card";
 import { breakpoints, defaultTheme } from "@styles/themes/default";
 import { useDispatch } from "react-redux";
-// import { addItemWishList } from '@redux/slices/wishlistSlice';
 import { currencyFormat } from "@ultils/helper";
-import { toast } from "react-toastify";
 import { SetupPackage } from "@redux/slices/setupSlice";
 
 interface ProductItemProps {

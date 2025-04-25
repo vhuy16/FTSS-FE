@@ -1,12 +1,12 @@
 import PropTypes from "prop-types";
 import OrderItem from "./OrderItem";
 import { getAllOrdersByUsers, Order } from "@redux/slices/orderListSlice";
-import { breakpoints, defaultTheme } from "@styles/themes/default";
+import { breakpoints } from "@styles/themes/default";
 import styled from "styled-components";
-import { BaseBtnGreen, BaseLinkOutlineGreen, BaseLinkRed } from "@styles/button";
+import { BaseBtnGreen } from "@styles/button";
 import { useNavigate } from "react-router-dom";
-import { currencyFormat, formatDate } from "@ultils/helper";
-import { HorizontalLine, HorizontalLineTAb } from "@styles/styles";
+import { currencyFormat } from "@ultils/helper";
+import { HorizontalLineTAb } from "@styles/styles";
 import SimpleModal, { ModalContent, ModalHeader } from "@components/atom/modal/Modal";
 import Loading from "@components/atom/Loading/Loading";
 import { useState } from "react";
@@ -258,6 +258,18 @@ const OrderItemList: React.FC<OrderItemListProps> = ({ orders }) => {
         icon: <FaTruck className="inline-block mr-1" />,
         label: "Chờ giao hàng",
       },
+      NOTDONE: {
+        bg: "bg-red-100",
+        text: "text-red-800",
+        icon: <FaTimes className="inline-block mr-1" />,
+        label: "Chưa lắp đặt",
+      },
+      DONE: {
+        bg: "bg-green-100",
+        text: "text-green-800",
+        icon: <FaCheck className="inline-block mr-1" />,
+        label: "Đã lắp đặt",
+      },
     };
 
     const config = statusConfig[status ?? "null"];
@@ -344,6 +356,13 @@ const OrderItemList: React.FC<OrderItemListProps> = ({ orders }) => {
             {/* Các nút thao tác */}
             <div className="order-btn">
               {order.status === "PROCESSING" && order.setupPackage != null && (
+                <>
+                  <button className="btn-secondary" onClick={() => navigate(`/booking-setup-schedule/${order?.id}`)}>
+                    Cập nhật lịch lắp đặt
+                  </button>
+                </>
+              )}
+              {order.status === "NOTDONE" && order.setupPackage != null && (
                 <>
                   <button className="btn-secondary" onClick={() => navigate(`/booking-setup-schedule/${order?.id}`)}>
                     Cập nhật lịch lắp đặt

@@ -1,8 +1,8 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { FaCheck, FaTimes, FaClock, FaStar, FaRegMoneyBillAlt } from "react-icons/fa";
+import React, { useCallback, useState } from "react";
+import { FaCheck, FaTimes, FaClock, FaRegMoneyBillAlt } from "react-icons/fa";
 import styled from "styled-components";
 import { useAppDispatch, useAppSelector } from "@redux/hook";
-import { BookingList, CancelBooking, getAllBookingofUsers } from "@redux/slices/bookingSlice";
+import { BookingList, CancelBooking } from "@redux/slices/bookingSlice";
 import { useNavigate } from "react-router-dom";
 import { currencyFormat, formatDate } from "@ultils/helper";
 import { BaseBtnGreen } from "@styles/button";
@@ -14,11 +14,6 @@ import { RefundBankModal } from "@components/atom/modal/RefundBankModal";
 interface BookingItemListProps {
   bookings: BookingList[]; // Changed to an array of Order
 }
-const WishListScreenWrapper = styled.main`
-  .wishlist {
-    gap: 20px;
-  }
-`;
 
 const BookingHistory: React.FC<BookingItemListProps> = ({ bookings }) => {
   const dispatch = useAppDispatch();
