@@ -3,8 +3,7 @@ import { Container } from "@styles/styles";
 import Breadcrumb from "@common/Breadcrumb";
 import { product_one } from "./data";
 import ProductPreview from "@components/atom/products/ProductPreview";
-import { Link, useParams } from "react-router-dom";
-import { BaseBtnGreen } from "@styles/button";
+import { useParams } from "react-router-dom";
 import { breakpoints, defaultTheme } from "@styles/themes/default";
 import ProductDescriptionTab from "@components/atom/products/ProductDescriptionTab";
 import ProductSimilar from "@components/atom/products/ProductSimilar";
@@ -188,15 +187,6 @@ const ProductColorWrapper = styled.div`
   }
 `;
 const ActionsWrapper = styled.div`
-  /* Nếu bạn muốn 2 phần tử nằm ngang, 
-     ta đã có "flex items-center flex-wrap" 
-     (từ Tailwind hay tùy framework). 
-     Nếu muốn, bạn có thể dùng styled-components thuần như bên dưới:
-
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  */
   gap: 25px; /* Khoảng cách giữa 2 nút */
   margin-top: 20px;
 `;

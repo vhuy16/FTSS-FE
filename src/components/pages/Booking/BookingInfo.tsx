@@ -1,17 +1,10 @@
 import styled from "styled-components";
 import { Input } from "@styles/form";
-import { BaseButtonGreen } from "@styles/button";
 import { breakpoints, defaultTheme } from "@styles/themes/default";
 import { useAppDispatch, useAppSelector } from "@redux/hook";
 import { useEffect, useState } from "react";
 import { getAllDistrict, getAllProvince, getAllWard } from "@redux/slices/addressSlice";
-import { CartItem } from "@redux/slices/cartSlice";
-// import { createPayment } from '@redux/slices/paymentSlice';
-import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
-import { getUserProfile } from "@redux/slices/userSlice";
 import { Order } from "@redux/slices/orderSlice";
-import { createShipment } from "@redux/slices/shipmentSlice";
 
 const BillingOrderWrapper = styled.div`
   gap: 60px;

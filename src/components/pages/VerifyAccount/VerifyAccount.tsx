@@ -14,9 +14,7 @@ const VerificationScreenWrapper = styled.section``;
 const VerifyAccount: React.FC = () => {
   const inputsRef = useRef<Array<HTMLInputElement | null>>([]);
   const dispatch = useAppDispatch();
-  const isVerify = useAppSelector((state) => state.verifyAccount.isVerified);
   const isLoadingVerify = useAppSelector((state) => state.verifyAccount.isLoading);
-  const isErrorVerify = useAppSelector((state) => state.verifyAccount.isError);
   const [countdown, setCountdown] = useState(30);
   const [isDisabled, setIsDisabled] = useState(true);
 

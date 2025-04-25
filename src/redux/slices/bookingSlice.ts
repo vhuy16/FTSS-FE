@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import myAxios from "@setup/axiosConfig";
-import { ServicePackage } from "./listServiceSlice";
+import { Service } from "./serviceSlice";
 import { getAllOrdersByUsers } from "./orderListSlice";
 import { getOrderById } from "./orderSlice";
 export interface BookingData {
@@ -29,7 +29,7 @@ export interface BookingList {
   totalPrice: number;
   orderId: string;
   isAssigned: boolean;
-  services: ServicePackage[];
+  services: Service[];
   bookingCode: string;
   payment: {
     paymentId: string | null;
@@ -49,7 +49,7 @@ export interface BookingDetail {
   fullName: string;
   orderId: string;
   isAssigned: boolean;
-  services: ServicePackage[];
+  services: Service[];
   bookingCode: string;
   payment: {
     paymentId: string | null;

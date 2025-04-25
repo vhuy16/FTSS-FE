@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { format } from "date-fns";
-import { FaUser, FaCalendar, FaShare } from "react-icons/fa";
+import { FaCalendar } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@redux/hook";
 import { formatDate } from "@ultils/helper";
