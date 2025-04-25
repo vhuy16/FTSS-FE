@@ -62,6 +62,7 @@ const Calendar: React.FC = () => {
         Processing: 'warning',
         NotDone: 'notDone',
         Done: 'completed',
+        Reported: 'reported',
         Completed: 'success',
     };
 
@@ -139,23 +140,33 @@ const Calendar: React.FC = () => {
         formData.append('MissionDescription', data.missionDescription);
         formData.append('TechnicianId', data.technicianId);
         formData.append('Status', eventLevel);
-        try {
-            const res = await dispatch(updateMission({ formData: formData, id: missionId })).unwrap();
-            if (res.status == '200') {
-                toast.success('Cập nhật công việc thành công');
-                closeModal();
-                resetModalFields();
-            } else {
-                toast.error('Cập nhật công việc không thành công');
+        if (
+            eventLevel === 'Cancel' ||
+            eventLevel === 'NotDone' ||
+            eventLevel === 'Completed' ||
+            eventLevel === 'Reported'
+        ) {
+            try {
+                const res = await dispatch(updateMission({ formData: formData, id: missionId })).unwrap();
+                if (res.status == '200') {
+                    toast.success('Cập nhật công việc thành công');
+                    closeModal();
+                    resetModalFields();
+                } else {
+                    toast.error('Cập nhật công việc không thành công');
+                }
+            } catch (error) {
+                toast.error(error as string);
             }
-        } catch (error) {
-            toast.error(error as string);
+        } else {
+            toast.error('Manager chỉ được cập nhật các trạng thái được cho phép');
         }
     };
 
     const resetModalFields = () => {
         setData({ bookingId: '', technicianId: '', missionName: '', missionDescription: '' });
         setSelectedEvent(null);
+        setCancelReason('');
     };
     const renderEventContent = (eventInfo: any) => {
         const colorClass = `fc-bg-${calendarsEvents[eventInfo.event.extendedProps.calendar]}`;
@@ -326,6 +337,8 @@ dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 d
                                                     ? 'Hoàn tất'
                                                     : key === 'NotDone'
                                                     ? 'Chưa xong'
+                                                    : key === 'Reported'
+                                                    ? 'Báo cáo'
                                                     : 'Đang thực hiện'}
                                             </label>
                                         </div>

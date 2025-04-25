@@ -253,7 +253,8 @@ export default function OrderDeliveryPopup({ order, setIsModalEditOpen }: OrderP
                         </Popover>
                     )}
                 </div>
-                {order.installationDate && order.status === 'PROCESSED' && order.isAssigned === false && (
+                {((order.installationDate && order.status === 'PROCESSED' && order.isAssigned === false) ||
+                    (order.installationDate && order.status === 'NOTDONE' && order.isAssigned === false)) && (
                     <MenuItem
                         onClick={() => {
                             navigate(`/addMissionOrder?orderId=${order.id}&scheduleDate=${order.installationDate}`);
