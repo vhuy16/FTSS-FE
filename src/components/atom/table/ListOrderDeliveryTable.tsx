@@ -94,7 +94,7 @@ export default function ListOrderDeliveryTable() {
             renderCell: (params) => {
                 const dateTime = params.row.installationDate?.split('T');
                 const date = dateTime?.[0];
-                const time = dateTime?.[1]?.split('.')[0]; // Cắt bỏ phần mili giây
+                const time = dateTime?.[1]?.split(':').slice(0, 2).join(':'); // Chỉ lấy giờ và phút
                 return `${date} lúc ${time}`;
             },
         },

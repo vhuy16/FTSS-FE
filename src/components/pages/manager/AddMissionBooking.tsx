@@ -63,6 +63,7 @@ const AddMissionBooking: React.FC = () => {
         Processing: 'warning',
         NotDone: 'notDone',
         Done: 'completed',
+        Reported: 'reported',
         Completed: 'success',
     };
 
@@ -142,6 +143,7 @@ const AddMissionBooking: React.FC = () => {
     const resetModalFields = () => {
         setData({ bookingId: '', technicianId: '', missionName: '', missionDescription: '' });
         setSelectedEvent(null);
+        setCancelReason('');
     };
     const renderEventContent = (eventInfo: any) => {
         const colorClass = `fc-bg-${calendarsEvents[eventInfo.event.extendedProps.calendar]}`;
@@ -344,6 +346,8 @@ dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 d
                                                     ? 'Hoàn tất'
                                                     : key === 'NotDone'
                                                     ? 'Chưa xong'
+                                                    : key === 'Reported'
+                                                    ? 'Báo cáo'
                                                     : 'Đang thực hiện'}
                                             </label>
                                         </div>

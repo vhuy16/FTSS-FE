@@ -76,7 +76,7 @@ export default function BookingPopup({ booking, setIsModalEditOpen }: bookingPop
                         </ListItemIcon>
                         <ListItemText>Xem chi tiết</ListItemText>
                     </MenuItem>
-                    {booking.status === 'NOTASSIGN' && (
+                    {(booking.status === 'NOTASSIGN' || booking.status === 'NOTDONE') && (
                         <div>
                             <MenuItem
                                 onClick={() => {
@@ -103,7 +103,8 @@ export default function BookingPopup({ booking, setIsModalEditOpen }: bookingPop
                             </MenuItem>
                         </div>
                     )}
-                    {booking.status === 'NOTASSIGN' && booking.payment?.paymentStatus === 'Completed' && (
+                    {((booking.status === 'NOTASSIGN' && booking.payment?.paymentStatus === 'Completed') ||
+                        (booking.status === 'NOTDONE' && booking.payment?.paymentStatus === 'Completed')) && (
                         <MenuItem
                             onClick={() => {
                                 navigate(
