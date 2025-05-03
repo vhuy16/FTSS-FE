@@ -96,8 +96,12 @@ export default function ListBookingTable() {
             headerName: 'Thời gian bảo trì',
             width: 200,
             headerClassName: 'super-app-theme--header',
-            renderCell: (params) =>
-                `${params.row.scheduleDate.split('T')[0]} lúc ${params.row.scheduleDate.split('T')[1]}`,
+            renderCell: (params) => {
+                const dateTime = params.row.scheduleDate?.split('T');
+                const date = dateTime?.[0];
+                const time = dateTime?.[1]?.split(':').slice(0, 2).join(':'); // Chỉ lấy giờ và phút
+                return `${date} lúc ${time}`;
+            },
         },
         {
             field: 'payment',
