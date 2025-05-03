@@ -333,23 +333,26 @@ const SetupDetail: React.FC<ProductItemProps> = () => {
                             />
                             <div className="product-info-center">
                               <h2 className="product-name">{product.productName}</h2>
-                              <div className="product-info-center-btn">
-                                <QuantityWrapper>
-                                  <button
-                                    onClick={() => handleQuantityChange(product.id, product.quantity - 1)}
-                                    disabled={product.quantity <= 1}
-                                  >
-                                    -
+                              {cat.categoryName !== "Bể" && (
+                                <div className="product-info-center-btn">
+                                  <QuantityWrapper>
+                                    <button
+                                      onClick={() => handleQuantityChange(product.id, product.quantity - 1)}
+                                      disabled={product.quantity <= 1}
+                                    >
+                                      -
+                                    </button>
+                                    <span>{product.quantity}</span>
+                                    <button onClick={() => handleQuantityChange(product.id, product.quantity + 1)}>
+                                      +
+                                    </button>
+                                  </QuantityWrapper>
+
+                                  <button className="delete-btn" onClick={() => openModalDelete(product)}>
+                                    Xóa
                                   </button>
-                                  <span>{product.quantity}</span>
-                                  <button onClick={() => handleQuantityChange(product.id, product.quantity + 1)}>
-                                    +
-                                  </button>
-                                </QuantityWrapper>
-                                <button className="delete-btn" onClick={() => openModalDelete(product)}>
-                                  Xóa
-                                </button>
-                              </div>
+                                </div>
+                              )}
                             </div>
                             <div className="product-info-last">
                               <h2 className="current-price">{currencyFormat(product.price * product.quantity)}</h2>
