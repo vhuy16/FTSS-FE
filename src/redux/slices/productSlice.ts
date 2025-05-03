@@ -11,6 +11,7 @@ export type Product = {
   price: number;
   status: string;
   images: string[] | string;
+  size: string;
 };
 
 type ProductData = {
@@ -221,6 +222,7 @@ const initialState: initialStateProduct = {
     price: 0,
     status: "",
     images: "",
+    size: "",
   },
   isLoadingSearchUser: false,
   listCateAndProduct: [],
