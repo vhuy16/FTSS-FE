@@ -196,7 +196,7 @@ const Register = () => {
     if (check) {
       const data = {
         email: formValue.email,
-        address: formValue.street + " " + formValue.ward + " " + formValue.district + " " + formValue.province,
+        address: formValue.street + ", " + formValue.ward + ", " + formValue.district + ", " + formValue.province,
         phoneNumber: formValue.phoneNumber,
         password: formValue.password,
         userName: formValue.userName,
@@ -204,6 +204,7 @@ const Register = () => {
         gender: formValue.gender,
         cityId: idProvice.id,
         districtId: district.id,
+        wardId: ward.id,
       };
       try {
         const res = await dispatch(createAccount(data)).unwrap();
