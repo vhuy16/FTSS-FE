@@ -31,6 +31,8 @@ export default function AddProductModal({ isModalAddOpen, setIsModalAddOpen }: M
         price: number;
         quantity: number;
         subCategoryId: string;
+        size: string;
+        power: number;
         images: File[];
     }>({
         productName: '',
@@ -38,6 +40,8 @@ export default function AddProductModal({ isModalAddOpen, setIsModalAddOpen }: M
         price: 0,
         quantity: 0,
         subCategoryId: '',
+        size: '',
+        power: 0,
         images: [],
     });
 
@@ -67,7 +71,8 @@ export default function AddProductModal({ isModalAddOpen, setIsModalAddOpen }: M
             formData.append('Price', data.price.toString());
             formData.append('Quantity', data.quantity.toString());
             formData.append('SubCategoryId', data.subCategoryId);
-            formData.append('Size', '3x4x5');
+            formData.append('Size', data.size);
+            formData.append('Power', data.power.toString());
 
             for (let i = 0; i < data.images.length; i++) {
                 formData.append('ImageLink', data.images[i]);
@@ -82,8 +87,12 @@ export default function AddProductModal({ isModalAddOpen, setIsModalAddOpen }: M
                     price: 0,
                     quantity: 0,
                     subCategoryId: '',
+                    size: '',
+                    power: 0,
                     images: [],
                 });
+                setCateName('');
+                setSubCate({ name: '', id: '' });
                 toast.success('Thêm sản phẩm thành công');
             } catch (error) {
                 toast.error(error as string);
@@ -100,6 +109,18 @@ export default function AddProductModal({ isModalAddOpen, setIsModalAddOpen }: M
                     open={isModalAddOpen}
                     onClose={() => {
                         setIsModalAddOpen(false);
+                        setData({
+                            productName: '',
+                            description: '',
+                            price: 0,
+                            quantity: 0,
+                            subCategoryId: '',
+                            size: '',
+                            power: 0,
+                            images: [],
+                        });
+                        setCateName('');
+                        setSubCate({ name: '', id: '' });
                     }}
                     aria-labelledby="modal-modal-title"
                     aria-describedby="modal-modal-description"
@@ -123,8 +144,12 @@ export default function AddProductModal({ isModalAddOpen, setIsModalAddOpen }: M
                                                     price: 0,
                                                     quantity: 0,
                                                     subCategoryId: '',
+                                                    size: '',
+                                                    power: 0,
                                                     images: [],
                                                 });
+                                                setCateName('');
+                                                setSubCate({ name: '', id: '' });
                                             }}
                                         >
                                             <svg
@@ -271,6 +296,52 @@ export default function AddProductModal({ isModalAddOpen, setIsModalAddOpen }: M
                                                     )}
                                                 </select>
                                             </div>
+                                            {(cateName === 'Lọc' || cateName === 'Đèn') && (
+                                                <div className="sm:col-span-6">
+                                                    <label
+                                                        htmlFor="brand"
+                                                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                                    >
+                                                        Công suất {cateName === 'Lọc' ? '(L/h)' : '(W)'}
+                                                    </label>
+                                                    <input
+                                                        type="number"
+                                                        name="power"
+                                                        id="brand"
+                                                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                                        placeholder="Nhập công suất"
+                                                        required={true}
+                                                        onChange={(e) =>
+                                                            setData({ ...data, power: parseInt(e.target.value) })
+                                                        }
+                                                    />
+                                                </div>
+                                            )}
+                                            {(cateName === 'Bể' || cateName === 'Layout') && (
+                                                <div className="sm:col-span-6">
+                                                    <label
+                                                        htmlFor="name"
+                                                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                                    >
+                                                        Kích thước
+                                                    </label>
+                                                    <select
+                                                        id="size"
+                                                        onChange={(e) => setData({ ...data, size: e.target.value })}
+                                                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                                    >
+                                                        <option selected={true} value="">
+                                                            Chọn kích thước
+                                                        </option>
+                                                        <option value="30x20x20">30x20x20</option>
+                                                        <option value="40x30x30">40x30x30</option>
+                                                        <option value="40x40x40">40x40x40</option>
+                                                        <option value="60x40x40">60x40x40</option>
+                                                        <option value="80x40x50">80x40x50</option>
+                                                        <option value="120x50x50">120x50x50</option>
+                                                    </select>
+                                                </div>
+                                            )}
                                             <div className="sm:col-span-6">
                                                 <label
                                                     htmlFor="description"
@@ -324,8 +395,12 @@ export default function AddProductModal({ isModalAddOpen, setIsModalAddOpen }: M
                                                         price: 0,
                                                         quantity: 0,
                                                         subCategoryId: '',
+                                                        size: '',
+                                                        power: 0,
                                                         images: [],
                                                     });
+                                                    setCateName('');
+                                                    setSubCate({ name: '', id: '' });
                                                 }}
                                                 className="text-red-600 inline-flex items-center mt-3 font-bold text-sm underline"
                                             >

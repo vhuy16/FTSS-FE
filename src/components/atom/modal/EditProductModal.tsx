@@ -36,6 +36,8 @@ export default function EditProductModal({ isModalEditOpen, setIsModalEditOpen }
         price: number;
         quantity: number;
         subCategoryId: string;
+        size: string;
+        power: number;
         images: File[];
     }>({
         productName: product.productName,
@@ -45,6 +47,8 @@ export default function EditProductModal({ isModalEditOpen, setIsModalEditOpen }
         price: product.price,
         quantity: product.quantity,
         subCategoryId: '',
+        size: product.size,
+        power: product.power,
         images: [],
     });
 
@@ -67,6 +71,8 @@ export default function EditProductModal({ isModalEditOpen, setIsModalEditOpen }
                 subCateName: product.subCategoryName,
                 price: product.price,
                 quantity: product.quantity,
+                size: product.size,
+                power: product.power,
                 subCategoryId: '',
                 images: [],
             });
@@ -122,6 +128,8 @@ export default function EditProductModal({ isModalEditOpen, setIsModalEditOpen }
                         price: 0,
                         quantity: 0,
                         subCategoryId: '',
+                        size: '',
+                        power: 0,
                         images: [],
                     });
                     toast.success('Cập nhật sản phẩm thành công');
@@ -157,6 +165,8 @@ export default function EditProductModal({ isModalEditOpen, setIsModalEditOpen }
                             price: 0,
                             quantity: 0,
                             subCategoryId: '',
+                            size: '',
+                            power: 0,
                             images: [],
                         });
                     }}
@@ -186,6 +196,8 @@ export default function EditProductModal({ isModalEditOpen, setIsModalEditOpen }
                                                     price: 0,
                                                     quantity: 0,
                                                     subCategoryId: '',
+                                                    size: '',
+                                                    power: 0,
                                                     images: [],
                                                 });
                                             }}
@@ -350,7 +362,63 @@ export default function EditProductModal({ isModalEditOpen, setIsModalEditOpen }
                                                     </select>
                                                 </div>
                                             )}
-
+                                            {(cateName === 'Lọc' || cateName === 'Đèn') && (
+                                                <div className="sm:col-span-6">
+                                                    <label
+                                                        htmlFor="brand"
+                                                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                                    >
+                                                        Công suất {cateName === 'Lọc' ? '(L/h)' : '(W)'}
+                                                    </label>
+                                                    <input
+                                                        type="number"
+                                                        name="power"
+                                                        id="brand"
+                                                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                                        placeholder="Nhập công suất"
+                                                        required={true}
+                                                        value={data.power ?? 0}
+                                                        onChange={(e) =>
+                                                            setData({ ...data, power: parseInt(e.target.value) })
+                                                        }
+                                                    />
+                                                </div>
+                                            )}
+                                            {(cateName === 'Bể' || cateName === 'Layout') && (
+                                                <div className="sm:col-span-6">
+                                                    <label
+                                                        htmlFor="name"
+                                                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                                    >
+                                                        Kích thước
+                                                    </label>
+                                                    <select
+                                                        id="size"
+                                                        value={data.size}
+                                                        onChange={(e) => setData({ ...data, size: e.target.value })}
+                                                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                                    >
+                                                        <option value="30x20x20" selected={data.size === '30x20x20'}>
+                                                            30x20x20
+                                                        </option>
+                                                        <option value="40x30x30" selected={data.size === '40x30x30'}>
+                                                            40x30x30
+                                                        </option>
+                                                        <option value="40x40x40" selected={data.size === '40x40x40'}>
+                                                            40x40x40
+                                                        </option>
+                                                        <option value="60x40x40" selected={data.size === '60x40x40'}>
+                                                            60x40x40
+                                                        </option>
+                                                        <option value="80x40x50" selected={data.size === '80x40x50'}>
+                                                            80x40x50
+                                                        </option>
+                                                        <option value="120x50x50" selected={data.size === '120x50x50'}>
+                                                            120x50x50
+                                                        </option>
+                                                    </select>
+                                                </div>
+                                            )}
                                             <div className="sm:col-span-6">
                                                 <label
                                                     htmlFor="description"
@@ -408,6 +476,8 @@ export default function EditProductModal({ isModalEditOpen, setIsModalEditOpen }
                                                         price: 0,
                                                         quantity: 0,
                                                         subCategoryId: '',
+                                                        size: '',
+                                                        power: 0,
                                                         images: [],
                                                     });
                                                 }}

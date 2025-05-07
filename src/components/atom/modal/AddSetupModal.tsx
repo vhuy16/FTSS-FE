@@ -312,6 +312,12 @@ export default function AddSetupModal({ isModalAddOpen, setIsModalAddOpen }: Mod
                                                                                         <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
                                                                                             {product.subCategoryName}
                                                                                         </span>
+                                                                                        {product.categoryName ===
+                                                                                            'Bể' && (
+                                                                                            <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
+                                                                                                {product.size}
+                                                                                            </span>
+                                                                                        )}
                                                                                     </div>
                                                                                 </div>
                                                                                 {listProduct.some(
