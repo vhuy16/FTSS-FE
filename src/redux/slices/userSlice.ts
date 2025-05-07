@@ -13,6 +13,7 @@ export type UserProfile = {
   isDeleted: boolean;
   cityId: string | null;
   districtId: string | null;
+  wardId: string | null;
   bankName: string;
   bankNumber: string;
   bankHolder: string;

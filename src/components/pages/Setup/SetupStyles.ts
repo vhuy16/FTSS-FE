@@ -308,7 +308,7 @@ export const ProductList = styled.div`
 `;
 
 export const ProductCard = styled.div`
-  width: 220px;
+  width: 255px;
   height: 100%;
   background: #fff;
   border: 1px solid #ddd;
@@ -317,29 +317,42 @@ export const ProductCard = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: space-between;
 
   img {
-    width: 100%;
-    height: 180px;
+    width: 200px;
+    height: 200px;
     object-fit: contain;
     display: block;
   }
 
   .product-info {
     text-align: center;
-    margin-bottom: 8px;
+    flex: 1; /* đẩy phần nút xuống dưới */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    margin-top: 8px;
 
     .product-name {
       font-size: 14px;
-      font-weight: 500;
-      margin: 0 0 4px 0;
+      font-weight: 700;
+      margin-bottom: 4px;
+      min-height: 36px; /* để giữ dòng text cố định chiều cao */
     }
 
     .new-price {
       font-size: 16px;
       font-weight: 700;
       color: #e00;
+      margin-bottom: 8px;
     }
+    .size {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 7px;
+    }
+
     .product-info-center {
       .product-name {
         font-size: 20px;

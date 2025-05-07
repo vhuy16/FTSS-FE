@@ -28,6 +28,8 @@ import { updateSetupPackage } from "@redux/slices/setupSlice";
 import { addSetup, deleteSelectSetupId, removeCart, selectSetup, selectSetupId } from "@redux/slices/cartSlice";
 import Loading from "@components/atom/Loading/Loading";
 import SimpleModal, { ModalContent, ModalHeader } from "@components/atom/modal/Modal";
+import BuildSetupModal from "@components/atom/modal/BuildSetupModal";
+import { getRecommendations } from "@redux/slices/recommendSlice";
 
 const breadcrumbItems = [
   { label: "Trang chủ", link: "/" },
@@ -61,6 +63,8 @@ const SetupDetail: React.FC<ProductItemProps> = () => {
   const [subCategories, setSubCategories] = useState<string[]>(["Tất cả"]);
   const [selectedSubcategory, setSelectedSubcategory] = useState<string>("Tất cả");
   const validCategories = listCategory.filter((item) => item.isSolution === false);
+  const productRecommend = useAppSelector((state) => state.recommend.recommendations);
+  const [selectedTankSize, setSelectedTankSize] = useState<string>("");
   const navigate = useNavigate();
   useEffect(() => {
     dispatch(removeCart());
@@ -69,7 +73,6 @@ const SetupDetail: React.FC<ProductItemProps> = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
     dispatch(getSetupDetail(setupPackageId as string));
-    console.log(setupData);
   }, [setupPackageId]);
 
   useEffect(() => {
@@ -81,7 +84,18 @@ const SetupDetail: React.FC<ProductItemProps> = () => {
       setSelectedProducts(initialSelectedProducts);
     }
   }, [setupData]);
-
+  // tim trong mang product seup detail nao co cate la be thi truyenn vao cai sizesize
+  useEffect(() => {
+    const tankProduct = selectedProducts.find((product) => product.categoryName === "Bể");
+    if (tankProduct?.size) {
+      setSelectedTankSize(tankProduct.size);
+    }
+  }, [selectedProducts]);
+  useEffect(() => {
+    if (selectedTankSize) {
+      dispatch(getRecommendations({ size: selectedTankSize }));
+    }
+  }, [selectedTankSize]);
   useEffect(() => {
     dispatch(getAllCategory());
   }, [dispatch]);
@@ -138,6 +152,9 @@ const SetupDetail: React.FC<ProductItemProps> = () => {
   };
 
   const handleSelectProduct = (product: Product) => {
+    if (product.categoryName === "Bể") {
+      setSelectedTankSize(product?.size);
+    }
     if (productToChange) {
       // Nếu đang trong chế độ thay đổi sản phẩm
       setSelectedProducts((prev) =>
@@ -316,23 +333,26 @@ const SetupDetail: React.FC<ProductItemProps> = () => {
                             />
                             <div className="product-info-center">
                               <h2 className="product-name">{product.productName}</h2>
-                              <div className="product-info-center-btn">
-                                <QuantityWrapper>
-                                  <button
-                                    onClick={() => handleQuantityChange(product.id, product.quantity - 1)}
-                                    disabled={product.quantity <= 1}
-                                  >
-                                    -
+                              {cat.categoryName !== "Bể" && (
+                                <div className="product-info-center-btn">
+                                  <QuantityWrapper>
+                                    <button
+                                      onClick={() => handleQuantityChange(product.id, product.quantity - 1)}
+                                      disabled={product.quantity <= 1}
+                                    >
+                                      -
+                                    </button>
+                                    <span>{product.quantity}</span>
+                                    <button onClick={() => handleQuantityChange(product.id, product.quantity + 1)}>
+                                      +
+                                    </button>
+                                  </QuantityWrapper>
+
+                                  <button className="delete-btn" onClick={() => openModalDelete(product)}>
+                                    Xóa
                                   </button>
-                                  <span>{product.quantity}</span>
-                                  <button onClick={() => handleQuantityChange(product.id, product.quantity + 1)}>
-                                    +
-                                  </button>
-                                </QuantityWrapper>
-                                <button className="delete-btn" onClick={() => openModalDelete(product)}>
-                                  Xóa
-                                </button>
-                              </div>
+                                </div>
+                              )}
                             </div>
                             <div className="product-info-last">
                               <h2 className="current-price">{currencyFormat(product.price * product.quantity)}</h2>
@@ -398,66 +418,19 @@ const SetupDetail: React.FC<ProductItemProps> = () => {
           </RightSide>
         </ContentWrapper>
       </Container>
-      <SimpleModal isOpen={isModalOpen} onClose={closeModal}>
-        <ModalHeader>
-          <h2>{selectedCategoryName}</h2>
-          <button onClick={closeModal}>&times;</button>
-        </ModalHeader>
-        <ModalContent>
-          <FilterWrapper>
-            <div className="filter-group">
-              <span>Chọn theo loại:</span>
-              {subCategories.map(
-                (
-                  subcat // Sử dụng state subCategories
-                ) => (
-                  <button
-                    key={subcat}
-                    className={`filter-btn ${selectedSubcategory === subcat ? "active" : ""}`}
-                    onClick={() => setSelectedSubcategory(subcat)}
-                  >
-                    {subcat}
-                  </button>
-                )
-              )}
-            </div>
-          </FilterWrapper>
-          {isLoading ? (
-            <Loading />
-          ) : filterProductsBySubcategory(products, selectedSubcategory).length > 0 ? (
-            <ProductList>
-              {filterProductsBySubcategory(products, selectedSubcategory).map((prod: Product) => (
-                <ProductCard key={prod.id}>
-                  <img src={prod.images[0]} alt={prod.productName} />
-                  <div className="product-info">
-                    <h3 className="product-name">{prod.productName}</h3>
-                    <span className="new-price">{currencyFormat(prod.price)}</span>
-                  </div>
-                  <div className="buttons">
-                    <button
-                      className="detail-btn"
-                      onClick={() => {
-                        if (prod.status === "Available") {
-                          navigate(`/product/${prod.id}`);
-                        } else {
-                          toast.error("Sản Phẩm Đã Dừng Hoạt Động");
-                        }
-                      }}
-                    >
-                      Xem chi tiết
-                    </button>
-                    <button className="select-btn" onClick={() => handleSelectProduct(prod)}>
-                      Chọn
-                    </button>
-                  </div>
-                </ProductCard>
-              ))}
-            </ProductList>
-          ) : (
-            <p>Không có sản phẩm nào.</p>
-          )}
-        </ModalContent>
-      </SimpleModal>
+      <BuildSetupModal
+        isModalOpen={isModalOpen}
+        closeModal={closeModal}
+        selectedCategoryName={selectedCategoryName}
+        subCategories={subCategories}
+        selectedSubcategory={selectedSubcategory}
+        setSelectedSubcategory={setSelectedSubcategory}
+        products={products || []}
+        filterProductsBySubcategory={filterProductsBySubcategory}
+        isLoading={isLoading}
+        handleSelectProduct={handleSelectProduct}
+        recommendations={productRecommend}
+      />
       <SimpleModal isOpen={isModalOpenDelete} onClose={closeModalDelete}>
         <ModalHeader></ModalHeader>
         <ModalContent>

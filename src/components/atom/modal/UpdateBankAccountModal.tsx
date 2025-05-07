@@ -113,8 +113,8 @@ export const UpdateBankAccountModal = ({ isOpen, onClose }: UpdateBankAccountMod
                   <div
                     key={bank.id}
                     onClick={() => {
-                      const fullName = `${bank.name} (${bank.shortName})`;
-                      setData({ ...data, BankName: fullName });
+                      // const fullName = `${bank.name} (${bank.shortName})`;
+                      setData({ ...data, BankName: bank.name });
                       setSearchTerm(bank.name);
                     }}
                     className={`p-2 border rounded-lg cursor-pointer 
