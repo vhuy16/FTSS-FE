@@ -160,9 +160,9 @@ const Chat = () => {
                                                             {room.customerName}
                                                         </h3>
                                                         <span className="text-xs text-gray-400">
-                                                            {room.latestMessageTime.split('T')[0]}
+                                                            {room.latestMessageTime?.split('T')[0]}
                                                             {' lúc '}
-                                                            {room.latestMessageTime.split('T')[1]}
+                                                            {room.latestMessageTime?.split('T')[1]}
                                                         </span>
                                                     </div>
                                                     <p className="text-xs text-gray-500">Khách hàng</p>
