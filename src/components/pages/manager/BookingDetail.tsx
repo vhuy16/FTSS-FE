@@ -49,6 +49,11 @@ export default function BookingDetail() {
                                         ? 'Chưa tiến hành'
                                         : 'error'}
                                 </p>
+                                {bookingDetail.reason && (
+                                    <p className="text-base dark:text-gray-300 font-medium leading-6 text-gray-600">
+                                        Lý do hủy: {bookingDetail.reason}
+                                    </p>
+                                )}
 
                                 <p className="text-base dark:text-gray-300 font-medium leading-6 text-gray-600">
                                     Thời gian bảo trì: {bookingDetail.scheduleDate.split('T')[0]} lúc{' '}

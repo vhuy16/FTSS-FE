@@ -227,7 +227,7 @@ export default function ListBookingTable() {
         return { ...booking, stt: index + 1 };
     });
 
-    return isLoading && listBooking.length === 0 ? (
+    return isLoading && listBooking?.length === 0 ? (
         <LoadingPage></LoadingPage>
     ) : (
         <div>
