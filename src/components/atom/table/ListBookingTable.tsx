@@ -16,6 +16,7 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
+import DeleteBookingModal from '../modal/DeleteBookingModal';
 
 const paginationModel = { page: 0, pageSize: 5 };
 const StyledDataGrid = styled(DataGrid)((theme) => ({
@@ -36,6 +37,7 @@ export default function ListBookingTable() {
     const [searchValue, setSearchValue] = useState('');
     const [status, setStatus] = useState('All');
     const [isModalEditOpen, setIsModalEditOpen] = useState(false);
+    const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
     const dispatch = useAppDispatch();
     useEffect(() => {
         dispatch(getAllBooking());
@@ -206,7 +208,11 @@ export default function ListBookingTable() {
                     sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}
                     onClick={(event) => event.stopPropagation()}
                 >
-                    <BookingPopup booking={params.row} setIsModalEditOpen={setIsModalEditOpen} />
+                    <BookingPopup
+                        booking={params.row}
+                        setIsModalEditOpen={setIsModalEditOpen}
+                        setIsModalDeleteOpen={setIsModalDeleteOpen}
+                    />
                 </Box>
             ),
         },
@@ -359,6 +365,7 @@ export default function ListBookingTable() {
                 </Box>
             )}
             <EditBookingModal isModalEditOpen={isModalEditOpen} setIsModalEditOpen={setIsModalEditOpen} />
+            <DeleteBookingModal isModalDeleteOpen={isModalDeleteOpen} setIsModalDeleteOpen={setIsModalDeleteOpen} />
         </div>
     );
 }

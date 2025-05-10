@@ -10,7 +10,6 @@ import { useNavigate } from 'react-router-dom';
 import { Booking, selectBooking } from '@redux/slices/missionSlide';
 import RemoveRedEyeOutlinedIcon from '@mui/icons-material/RemoveRedEyeOutlined';
 import BlockIcon from '@mui/icons-material/Block';
-import ConfirmCancelBooking from '../popup_modal/ConfirmCancelBooking';
 import DoneIcon from '@mui/icons-material/Done';
 import ConfirmRefundedBooking from '../popup_modal/ConfirmRefundedBooking';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
@@ -20,8 +19,9 @@ const ITEM_HEIGHT = 48;
 type bookingPopupProps = {
     booking: Booking;
     setIsModalEditOpen: (isOpen: boolean) => void;
+    setIsModalDeleteOpen: (isOpen: boolean) => void;
 };
-export default function BookingPopup({ booking, setIsModalEditOpen }: bookingPopupProps) {
+export default function BookingPopup({ booking, setIsModalEditOpen, setIsModalDeleteOpen }: bookingPopupProps) {
     const [anchorEl1, setAnchorEl1] = React.useState<null | HTMLElement>(null);
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
@@ -33,7 +33,6 @@ export default function BookingPopup({ booking, setIsModalEditOpen }: bookingPop
         setAnchorEl1(null);
     };
     const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
-    const [isModalOpenDelete, setIsModalOpenDelete] = React.useState(false);
     const [isModalOpenActivate, setIsModalOpenActivate] = React.useState(false);
     return (
         <div>
@@ -81,7 +80,8 @@ export default function BookingPopup({ booking, setIsModalEditOpen }: bookingPop
                             <MenuItem
                                 onClick={() => {
                                     handleClose();
-                                    setIsModalOpenDelete(true);
+                                    setIsModalDeleteOpen(true);
+                                    dispatch(selectBooking(booking));
                                 }}
                             >
                                 <ListItemIcon>
@@ -134,11 +134,7 @@ export default function BookingPopup({ booking, setIsModalEditOpen }: bookingPop
                     )}
                 </div>
             </Menu>
-            <ConfirmCancelBooking
-                isModalOpenDelete={isModalOpenDelete}
-                setIsModalOpenDelete={setIsModalOpenDelete}
-                booking={booking}
-            />
+
             <ConfirmRefundedBooking
                 isModalOpenActivate={isModalOpenActivate}
                 setIsModalOpenActivate={setIsModalOpenActivate}
