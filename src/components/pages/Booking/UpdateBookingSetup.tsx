@@ -241,7 +241,15 @@ const UpdateBookingSetup = () => {
                     </span>
                   </div>
                 </p>
-                <p className="text-lg font-medium text-gray mb-3">
+                <p className="text-lg font-medium text-gray mb-1">
+                  <div className="flex items-center">
+                    <span className="text-gray-800 font-bold mr-2">Ngày lắp đặt:</span>
+                    <span className="px-3 py-1 rounded-md text-xl font-medium text-gray-600 ">
+                      {formatDate(orderDetail?.installationDate || "")}
+                    </span>
+                  </div>
+                </p>
+                <p className="text-lg font-medium text-gray mb-1">
                   <div className="flex items-center">
                     <span className="text-gray-800 font-bold mr-2">Trạng thái đơn hàng:</span>
                     <span className="px-3 py-1 rounded-md text-xl font-medium text-gray-600 ">
