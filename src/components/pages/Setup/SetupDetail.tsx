@@ -264,6 +264,30 @@ const SetupDetail: React.FC<ProductItemProps> = () => {
       toast.error("Cập nhật thất bại, vui lòng thử lại.");
     }
   };
+  const handleCheckout = async () => {
+    const token = localStorage.getItem("access_token");
+
+    if (totalPrice === 0) {
+      toast.warning("Vui lòng chọn sản phẩm để thanh toán");
+      return;
+    }
+
+    if (!token) {
+      toast.warning("Xin mời đăng nhập trước để thanh toán");
+      navigate("/login");
+      return;
+    }
+
+    try {
+      const response = await dispatch(addSetup(setupPackageId)).unwrap();
+      dispatch(selectSetup(response.cartItems));
+      dispatch(selectSetupId(response.setupId));
+      navigate("/checkout");
+    } catch (error: any) {
+      console.error("Add setup failed:", error);
+      toast.error(error || "Tạo đơn hàng thất bại");
+    }
+  };
 
   const handleQuantityChange = (productId: string, newQuantity: number) => {
     setSelectedProducts((prev) =>
@@ -393,27 +417,8 @@ const SetupDetail: React.FC<ProductItemProps> = () => {
                 Giá chưa bao gồm khuyến mãi Build Hồ Cá. <a href="#xemchi">Xem chi tiết</a>
               </p>
             </TempPriceBox>
-            <BaseButtonGreen
-              type="submit"
-              className="checkout-btn"
-              onClick={async () => {
-                const token = localStorage.getItem("access_token");
-                if (totalPrice === 0) {
-                  toast.warning("Vui lòng chọn sản phẩm để thanh toán");
-                } else {
-                  if (token) {
-                    const res = await dispatch(addSetup(setupPackageId)).unwrap();
-                    dispatch(selectSetup(res.cartItems));
-                    dispatch(selectSetupId(res.setupId));
-                    navigate("/checkout");
-                  } else {
-                    toast.warning("Xin mời đăng nhập trước để thanh toán");
-                    navigate("/login");
-                  }
-                }
-              }}
-            >
-              {isLoadingAdd ? <Loading></Loading> : "Tiến hành thanh toán"}
+            <BaseButtonGreen type="submit" className="checkout-btn" onClick={handleCheckout}>
+              {isLoadingAdd ? <Loading /> : "Tiến hành thanh toán"}
             </BaseButtonGreen>
           </RightSide>
         </ContentWrapper>
