@@ -43,6 +43,7 @@ export default function ListOrderDeliveryTable() {
 
     useEffect(() => {
         if (status === 'All' && !searchValue) {
+            setOrders(listOrder.filter((order) => order.setupPackage != null));
         } else if (status === 'All' && searchValue) {
             setOrders(
                 listOrder.filter(
