@@ -58,6 +58,7 @@ export type Booking = {
     bookingCode: string;
     payment: Payment;
     setupPackage: SetupPackage;
+    reason: string | null;
 };
 export type Service = {
     id: string;

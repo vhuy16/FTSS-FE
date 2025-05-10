@@ -11,6 +11,10 @@ type DashboardStats = {
     productsSold: Statistic;
     users: Statistic;
 };
+type FinancialValueStats = {
+    name: string;
+    value: number;
+};
 type RevenueData = {
     day: string; // Ngày ở định dạng "DD/MM/YYYY"
     revenue: number;
@@ -24,6 +28,15 @@ export const getDashboard = createAsyncThunk('dashboard/getDashboard', async (_,
     try {
         const response = await myAxios.get('/monthly');
         return response.data;
+    } catch (error: any) {
+        console.log(error);
+        return rejectWithValue(error.response?.data?.message || 'Lấy doanh thu thất bại');
+    }
+});
+export const getFinancial = createAsyncThunk('dashboard/getFinancial', async (_, { rejectWithValue }) => {
+    try {
+        const response = await myAxios.get('/financial-statistics');
+        return response.data.statistics;
     } catch (error: any) {
         console.log(error);
         return rejectWithValue(error.response?.data?.message || 'Lấy doanh thu thất bại');
@@ -58,8 +71,10 @@ type CategoryState = {
     isLoadingDashboard: boolean;
     isLoadingChartOne: boolean;
     isLoadingChartTwo: boolean;
+    isLoadingFinancial: boolean;
     isError: boolean;
     dashboardValue: DashboardStats;
+    financialValue: FinancialValueStats[];
     dataChartOne: RevenueData[];
     dataChartTwo: ProductSalesData[];
 };
@@ -68,6 +83,7 @@ const initialState: CategoryState = {
     isLoadingDashboard: false,
     isLoadingChartOne: false,
     isLoadingChartTwo: false,
+    isLoadingFinancial: false,
     isError: false,
     dashboardValue: {
         revenue: { value: 0, changePercentage: '' },
@@ -75,6 +91,7 @@ const initialState: CategoryState = {
         productsSold: { value: 0, changePercentage: '' },
         users: { value: 0, changePercentage: '' },
     },
+    financialValue: [],
     dataChartOne: [],
     dataChartTwo: [],
 };
@@ -124,6 +141,20 @@ const dashboardSlice = createSlice({
             })
             .addCase(getDataChartTwo.rejected, (state, action) => {
                 state.isLoadingChartTwo = false;
+                state.isError = true;
+            });
+        builder
+            .addCase(getFinancial.pending, (state) => {
+                state.isLoadingFinancial = true;
+                state.isError = false;
+            })
+            .addCase(getFinancial.fulfilled, (state, action) => {
+                state.isLoadingFinancial = false;
+                state.financialValue = action.payload;
+                state.isError = false;
+            })
+            .addCase(getFinancial.rejected, (state, action) => {
+                state.isLoadingFinancial = false;
                 state.isError = true;
             });
     },
