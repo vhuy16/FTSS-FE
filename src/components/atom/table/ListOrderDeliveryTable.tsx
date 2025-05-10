@@ -43,22 +43,21 @@ export default function ListOrderDeliveryTable() {
 
     useEffect(() => {
         if (status === 'All' && !searchValue) {
-            setOrders(listOrder.filter((order) => order.setupPackage !== null));
         } else if (status === 'All' && searchValue) {
             setOrders(
                 listOrder.filter(
-                    (order) => order.oderCode.toLowerCase().includes(searchValue) && order.setupPackage !== null,
+                    (order) => order.oderCode.toLowerCase().includes(searchValue) && order.setupPackage != null,
                 ),
             );
         } else if (status !== 'All' && !searchValue) {
-            setOrders(listOrder.filter((order) => order.status === status && order.setupPackage !== null));
+            setOrders(listOrder.filter((order) => order.status === status && order.setupPackage != null));
         } else {
             setOrders(
                 listOrder.filter(
                     (order) =>
                         order.oderCode.toLowerCase().includes(searchValue) &&
                         order.status === status &&
-                        order.setupPackage !== null,
+                        order.setupPackage != null,
                 ),
             );
         }

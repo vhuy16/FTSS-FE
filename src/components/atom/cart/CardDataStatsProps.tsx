@@ -19,6 +19,7 @@ const CardDataStats: React.FC<CardDataStatsProps> = ({ title, total, rate, level
                 <div>
                     <h4 className="text-title-md font-bold text-black dark:text-white">{total}</h4>
                     <span className="text-title-xsm font-semibold text-bodydark">{title}</span>
+                    <span className="text-title-xsm font-semibold text-bodydark block">(Trong tháng)</span>
                 </div>
 
                 <span

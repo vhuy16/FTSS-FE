@@ -173,10 +173,10 @@ export const updateMission = createAsyncThunk(
 );
 export const cancelBooking = createAsyncThunk(
     'mission/cancelBooking',
-    async (id: string, { dispatch, rejectWithValue }) => {
+    async ({ id, data }: { id: string; data: { reason: string } }, { dispatch, rejectWithValue }) => {
         try {
-            const response = await myAxios.put(`/booking/cancel-booking/${id}`);
-            await dispatch(getAllMission());
+            const response = await myAxios.put(`/booking/cancel-booking/${id}`, data);
+            await dispatch(getAllBooking());
             return response.data;
         } catch (error: any) {
             const errorMessage = error.response?.data?.message || 'Something went wrong';
