@@ -220,7 +220,7 @@ const OrderItemList: React.FC<OrderItemListProps> = ({ orders }) => {
         bg: "bg-green-100",
         text: "text-green-800",
         icon: <FaBoxOpen className="inline-block mr-1" />,
-        label: "Đã giao hàng",
+        label: "Hoàn thành",
       },
       PROCESSING: {
         bg: "bg-gray-100",
@@ -396,26 +396,13 @@ const OrderItemList: React.FC<OrderItemListProps> = ({ orders }) => {
                   </button>
                 </>
               )}
-              {order.status === "COMPLETED" && (
+              {order.status === "COMPLETED" && order?.payment?.paymentStatus === "Completed" && (
                 <>
-                  {order.setupPackage ? (
-                    <button className="btn-primary" onClick={() => navigate(`/setup-booking/${order.id}`)}>
-                      Đặt Lịch bảo trì
-                    </button>
-                  ) : (
-                    <></>
-                  )}
+                  <button className="btn-secondary" onClick={() => openModalReturn(order)}>
+                    Yêu cầu hoàn trả
+                  </button>
                 </>
               )}
-              {order.status === "COMPLETED" &&
-                order?.payment?.paymentStatus === "Completed" &&
-                order.isAssigned == true && (
-                  <>
-                    <button className="btn-secondary" onClick={() => openModalReturn(order)}>
-                      Yêu cầu hoàn trả
-                    </button>
-                  </>
-                )}
             </div>
           </div>
         </div>

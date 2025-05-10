@@ -640,14 +640,18 @@ const OrderDetailScreen = () => {
                           </span>
                         </div>
                       </p>
-                      <p className="text-lg font-medium text-gray">
-                        <div className="flex items-center">
-                          <span className="text-gray-800 font-bold mr-2">Ngày lắp đặt:</span>
-                          <span className="px-3 py-1 rounded-md text-xl font-medium text-gray-600 ">
-                            {formatDate(order?.installationDate || "")}
-                          </span>
-                        </div>
-                      </p>
+                      {order?.setupPackage ? (
+                        <p className="text-lg font-medium text-gray">
+                          <div className="flex items-center">
+                            <span className="text-gray-800 font-bold mr-2">Ngày lắp đặt:</span>
+                            <span className="px-3 py-1 rounded-md text-xl font-medium text-gray-600 ">
+                              {formatDate(order?.installationDate || "")}
+                            </span>
+                          </div>
+                        </p>
+                      ) : (
+                        <></>
+                      )}
                       <p className="text-lg font-medium text-gray">
                         <div className="flex items-center">
                           <span className="text-gray-800 font-bold mr-2">Người nhận:</span>
@@ -867,7 +871,23 @@ const OrderDetailScreen = () => {
                       </div>
                     </OrderDetailMessageWrapperv2>
                   ) : null}
-
+                  {["COMPLETED", "DONE"].includes(order?.status || "") && (
+                    <OrderDetailMessageWrapper>
+                      <div className="order-message-content">
+                        <p className="font-semibold">Hãy kiểm tra cẩn thận tất cả các sản phẩm trong đơn hàng</p>
+                        <p className="font-semibold">Đơn hàng của bạn đã được giao</p>
+                        <p className="text-gray-600">{formatDate(order?.modifyDate || "")}.</p>
+                      </div>
+                      <div className="order-buttons">
+                        <BaseButtonOuterspace
+                          className="confirm-button"
+                          onClick={() => openChatboxWithOrder(order as Order)}
+                        >
+                          Báo cáo/Khiếu nại
+                        </BaseButtonOuterspace>
+                      </div>
+                    </OrderDetailMessageWrapper>
+                  )}
                   {order?.status === "PROCESSING" && order?.setupPackage && (
                     <OrderDetailMessageWrapperv2>
                       <div className="order-message-content">
