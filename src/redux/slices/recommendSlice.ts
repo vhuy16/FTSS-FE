@@ -14,9 +14,9 @@ export interface RecommendationItem {
 }
 
 export interface Recommendations {
-  filter?: RecommendationItem;
-  light?: RecommendationItem;
-  substrate?: RecommendationItem;
+  filters?: RecommendationItem[];
+  lights?: RecommendationItem[];
+  substrates?: RecommendationItem[];
   otherProducts?: RecommendationItem[];
 }
 

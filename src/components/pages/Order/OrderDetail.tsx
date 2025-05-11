@@ -871,7 +871,7 @@ const OrderDetailScreen = () => {
                       </div>
                     </OrderDetailMessageWrapperv2>
                   ) : null}
-                  {["COMPLETED", "DONE"].includes(order?.status || "") && (
+                  {["COMPLETED"].includes(order?.status || "") && (
                     <OrderDetailMessageWrapper>
                       <div className="order-message-content">
                         <p className="font-semibold">Hãy kiểm tra cẩn thận tất cả các sản phẩm trong đơn hàng</p>
