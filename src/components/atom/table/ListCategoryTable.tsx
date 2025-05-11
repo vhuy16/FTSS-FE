@@ -23,7 +23,7 @@ const StyledDataGrid = styled(DataGrid)((theme) => ({
     },
 }));
 export default function ListCategoryTable() {
-    const listCategory = useAppSelector((state) => state.category.categories);
+    const listCategory = useAppSelector((state) => state.category.categories ?? []);
     const isLoading = useAppSelector((state) => state.category.isLoadingGetAllCategory);
     const [isModalAddOpen, setIsModalAddOpen] = useState(false);
     const [isModalEditOpen, setIsModalEditOpen] = useState(false);

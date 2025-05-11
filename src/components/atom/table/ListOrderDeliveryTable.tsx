@@ -29,7 +29,7 @@ const StyledDataGrid = styled(DataGrid)((theme) => ({
     },
 }));
 export default function ListOrderDeliveryTable() {
-    const listOrder = useAppSelector((state) => state.order.listOrder);
+    const listOrder = useAppSelector((state) => state.order.listOrder ?? []);
     const isLoading = useAppSelector((state) => state.order.isLoadingGetAllOrder);
     const [selectedRow, setSelectedRow] = useState<any[]>([]);
     const [searchValue, setSearchValue] = useState('');
@@ -43,7 +43,7 @@ export default function ListOrderDeliveryTable() {
 
     useEffect(() => {
         if (status === 'All' && !searchValue) {
-            setOrders(listOrder.filter((order) => order.setupPackage != null));
+            setOrders(listOrder?.filter((order) => order.setupPackage != null));
         } else if (status === 'All' && searchValue) {
             setOrders(
                 listOrder.filter(

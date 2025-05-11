@@ -30,7 +30,7 @@ const StyledDataGrid = styled(DataGrid)((theme) => ({
     },
 }));
 export default function ListBookingTable() {
-    const listBooking = useAppSelector((state) => state.mission.listBooking);
+    const listBooking = useAppSelector((state) => state.mission.listBooking ?? []);
     const isLoading = useAppSelector((state) => state.mission.isLoadingGetAllBooking);
     const [selectedRow, setSelectedRow] = useState<any[]>([]);
     const [bookings, setBookings] = useState<Booking[]>([]);

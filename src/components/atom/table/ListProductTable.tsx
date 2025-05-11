@@ -25,7 +25,7 @@ const StyledDataGrid = styled(DataGrid)((theme) => ({
     },
 }));
 export default function ListProductTable() {
-    const listProduct = useAppSelector((state) => state.product.listProductForAdmin);
+    const listProduct = useAppSelector((state) => state.product.listProductForAdmin ?? []);
     const isLoading = useAppSelector((state) => state.product.isLoadingGetAllProductForAdmin);
     const [isModalAddOpen, setIsModalAddOpen] = useState(false);
     const [isModalEditOpen, setIsModalEditOpen] = useState(false);
