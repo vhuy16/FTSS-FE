@@ -113,6 +113,10 @@ export default function BuildSetupModal({
                       <FiX size={24} />
                     </button>
                   </div>
+                  <div className="mt-2 flex items-center">
+                    <span className="rounded-full p-1 text-yellow-500 text-xl">⭐</span>
+                    <p className="text-xl text-gray-800">: Các sản phẩm gợi ý setup dành cho bể</p>
+                  </div>
                 </div>
                 <div className="px-6 pt-4">
                   <div className="flex flex-wrap items-center gap-4 mb-4">
