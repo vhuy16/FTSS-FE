@@ -244,7 +244,7 @@ export default function ListOrderDeliveryTable() {
         return { ...order, stt: index + 1 };
     });
 
-    return isLoading && orders.length === 0 ? (
+    return isLoading && orders?.length === 0 ? (
         <LoadingPage></LoadingPage>
     ) : (
         <div>

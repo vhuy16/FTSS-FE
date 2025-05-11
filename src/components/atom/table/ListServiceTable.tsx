@@ -124,7 +124,7 @@ export default function ListServiceTable() {
     const rows = services?.map((service, index) => {
         return { ...service, stt: index + 1 };
     });
-    return isLoading && listService.length === 0 ? (
+    return isLoading && listService?.length === 0 ? (
         <LoadingPage></LoadingPage>
     ) : (
         <div>

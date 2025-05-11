@@ -226,7 +226,7 @@ export default function ListOrderTable() {
     const rows = orders?.map((order, index) => {
         return { ...order, stt: index + 1 };
     });
-    return isLoading && listOrder.length === 0 ? (
+    return isLoading && listOrder?.length === 0 ? (
         <LoadingPage></LoadingPage>
     ) : (
         <div>
