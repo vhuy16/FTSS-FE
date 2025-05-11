@@ -10,6 +10,7 @@ import { HorizontalLine, Section } from "@styles/styles";
 import styled from "styled-components";
 import { breakpoints, defaultTheme } from "@styles/themes/default";
 import { commonCardStyles } from "@styles/card";
+import DOMPurify from "dompurify";
 const ProductListWrapper = styled.div`
   column-gap: 20px;
   row-gap: 40px;
@@ -115,7 +116,7 @@ const IssueBlogDetail = () => {
                 </h2>
                 {/* Render HTML từ backend */}
                 <div
-                  className="text-gray-800 mb-2 prose max-w-none"
+                  className="prose prose-li:marker:text-gray-500 prose-ol:list-decimal prose-ul:list-disc max-w-none"
                   dangerouslySetInnerHTML={{ __html: solution.description }}
                 />
                 <HorizontalLine />
