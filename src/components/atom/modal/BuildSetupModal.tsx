@@ -11,6 +11,8 @@ import { FilterWrapper, ProductCard, ProductList } from "@components/pages/Setup
 import { currencyFormat } from "@ultils/helper";
 import { Product } from "@redux/slices/productSlice";
 import { RecommendationItem, Recommendations } from "@redux/slices/recommendSlice";
+import { useMemo } from "react";
+
 interface BuildSetupModalProps {
   isModalOpen: boolean;
   closeModal: () => void;
@@ -24,6 +26,7 @@ interface BuildSetupModalProps {
   handleSelectProduct: (product: Product) => void;
   recommendations: Recommendations | null | undefined;
 }
+
 const style = {
   position: "absolute",
   top: "50%",
@@ -31,6 +34,7 @@ const style = {
   transform: "translate(-50%, -50%)",
   width: 1200,
 };
+
 const BillingOrderWrapper = styled.div`
   gap: 60px;
 
@@ -42,6 +46,7 @@ const BillingOrderWrapper = styled.div`
     grid-template-columns: 100%;
   }
 `;
+
 export default function BuildSetupModal({
   isModalOpen,
   closeModal,
@@ -56,6 +61,37 @@ export default function BuildSetupModal({
   recommendations,
 }: BuildSetupModalProps) {
   const navigate = useNavigate();
+
+  // Hàm sắp xếp sản phẩm, ưu tiên sản phẩm có trong recommendations
+  const sortProducts = (products: Product[]): Product[] => {
+    return [...products].sort((a, b) => {
+      // Kiểm tra xem sản phẩm có trong recommendations không
+      const isARecommended = recommendations
+        ? [
+            ...(recommendations.filters || []),
+            ...(recommendations.lights || []),
+            ...(recommendations.substrates || []),
+            ...(recommendations.otherProducts || []),
+          ].some((rec) => rec.id === a.id)
+        : false;
+
+      const isBRecommended = recommendations
+        ? [
+            ...(recommendations.filters || []),
+            ...(recommendations.lights || []),
+            ...(recommendations.substrates || []),
+            ...(recommendations.otherProducts || []),
+          ].some((rec) => rec.id === b.id)
+        : false;
+
+      // Nếu a được recommend mà b không, a lên đầu
+      if (isARecommended && !isBRecommended) return -1;
+      // Nếu b được recommend mà a không, b lên đầu
+      if (!isARecommended && isBRecommended) return 1;
+      // Nếu cả hai đều được recommend hoặc không, giữ nguyên thứ tự
+      return 0;
+    });
+  };
   return (
     <>
       {/* Modal */}
@@ -81,23 +117,19 @@ export default function BuildSetupModal({
                 <div className="px-6 pt-4">
                   <div className="flex flex-wrap items-center gap-4 mb-4">
                     <span className="font-semibold">Chọn theo loại:</span>
-                    {subCategories.map(
-                      (
-                        subcat // Sử dụng state subCategories
-                      ) => (
-                        <button
-                          key={subcat}
-                          className={`px-6 py-1 rounded-full border ${
-                            selectedSubcategory === subcat
-                              ? "bg-green-200 text-green-700 border-green-500 font-semibold"
-                              : "bg-gray-100 text-gray-700"
-                          }`}
-                          onClick={() => setSelectedSubcategory(subcat)}
-                        >
-                          {subcat}
-                        </button>
-                      )
-                    )}
+                    {subCategories.map((subcat) => (
+                      <button
+                        key={subcat}
+                        className={`px-6 py-1 rounded-full border ${
+                          selectedSubcategory === subcat
+                            ? "bg-green-200 text-green-700 border-green-500 font-semibold"
+                            : "bg-gray-100 text-gray-700"
+                        }`}
+                        onClick={() => setSelectedSubcategory(subcat)}
+                      >
+                        {subcat}
+                      </button>
+                    ))}
                   </div>
                   {/* danh sách sản phẩm */}
                   <div className="px-6 pb-6">
@@ -105,47 +137,57 @@ export default function BuildSetupModal({
                       <Loading />
                     ) : filterProductsBySubcategory(products, selectedSubcategory).length > 0 ? (
                       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-                        {filterProductsBySubcategory(products, selectedSubcategory).map((prod: Product) => {
-                          // lay tat ca cac value trong recomendation xong trỏ vào prod.name so sánh khi == nhau thì cho nó hiện
-                          const matchedRecommendation = Object.values(recommendations || {}).find(
-                            (rec) => rec?.id === prod.id
-                          );
+                        {sortProducts(filterProductsBySubcategory(products, selectedSubcategory)).map(
+                          (prod: Product) => {
+                            // Kiểm tra sản phẩm có trong recommendations không
+                            const matchedRecommendation = prod.id
+                              ? [
+                                  ...(recommendations?.filters || []),
+                                  ...(recommendations?.lights || []),
+                                  ...(recommendations?.substrates || []),
+                                  ...(recommendations?.otherProducts || []),
+                                ].find((rec) => rec.id && rec.id.trim() === prod.id.trim())
+                              : undefined;
+                            // console.log("matach recomend", recommendations);
+                            // console.log("matach pro ", prod.id);
+                            // console.log("matach re", matchedRecommendation);
 
-                          return (
-                            <ProductCard key={prod.id}>
-                              <div className="relative product-img">
-                                {matchedRecommendation && (
-                                  <span className="absolute top-2 right-0 bg-white bg-opacity-80 rounded-full p-1 text-yellow-500 text-2xl">
-                                    ⭐
-                                  </span>
-                                )}
-                                <img src={prod.images[0]} alt={prod.productName} className="w-full h-auto" />
-                              </div>
-                              <div className="product-info">
-                                <h3 className="product-name">{prod.productName}</h3>
-                                <span className="new-price">{currencyFormat(prod.price)}</span>
-                                <span className="size">{prod.size}</span>
-                              </div>
-                              <div className="buttons">
-                                <button
-                                  className="detail-btn"
-                                  onClick={() => {
-                                    if (prod.status === "Available") {
-                                      navigate(`/product/${prod.id}`);
-                                    } else {
-                                      toast.error("Sản Phẩm Đã Dừng Hoạt Động");
-                                    }
-                                  }}
-                                >
-                                  Xem chi tiết
-                                </button>
-                                <button className="select-btn" onClick={() => handleSelectProduct(prod)}>
-                                  Chọn
-                                </button>
-                              </div>
-                            </ProductCard>
-                          );
-                        })}
+                            return (
+                              <ProductCard key={prod.id}>
+                                <div className="relative product-img">
+                                  {matchedRecommendation && (
+                                    <span className="absolute top-2 right-0 bg-white bg-opacity-80 rounded-full p-1 text-yellow-500 text-2xl">
+                                      ⭐
+                                    </span>
+                                  )}
+                                  <img src={prod.images[0]} alt={prod.productName} className="w-full h-auto" />
+                                </div>
+                                <div className="product-info">
+                                  <h3 className="product-name">{prod.productName}</h3>
+                                  <span className="new-price">{currencyFormat(prod.price)}</span>
+                                  <span className="size">{prod.size}</span>
+                                </div>
+                                <div className="buttons">
+                                  <button
+                                    className="detail-btn"
+                                    onClick={() => {
+                                      if (prod.status === "Available") {
+                                        navigate(`/product/${prod.id}`);
+                                      } else {
+                                        toast.error("Sản Phẩm Đã Dừng Hoạt Động");
+                                      }
+                                    }}
+                                  >
+                                    Xem chi tiết
+                                  </button>
+                                  <button className="select-btn" onClick={() => handleSelectProduct(prod)}>
+                                    Chọn
+                                  </button>
+                                </div>
+                              </ProductCard>
+                            );
+                          }
+                        )}
                       </div>
                     ) : (
                       <p>Không có sản phẩm nào.</p>

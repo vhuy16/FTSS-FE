@@ -63,6 +63,7 @@ const BuildSetup: React.FC<ProductItemProps> = () => {
   const [page, setPage] = useState(1);
   const [size, setSize] = useState(100);
   const navigate = useNavigate();
+  console.log("pro commenr", productRecommend);
 
   useEffect(() => {
     dispatch(getAllCategory());
