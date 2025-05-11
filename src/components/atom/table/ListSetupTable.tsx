@@ -127,7 +127,7 @@ export default function ListSetupTable() {
     const rows = setups?.map((setup, index) => {
         return { ...setup, stt: index + 1, id: setup.setupPackageId };
     });
-    return isLoading && listSetup.length === 0 ? (
+    return isLoading && listSetup?.length === 0 ? (
         <LoadingPage></LoadingPage>
     ) : (
         <div>

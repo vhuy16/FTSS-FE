@@ -141,7 +141,7 @@ export default function ListProductTable() {
     const rows = products?.map((product, index) => {
         return { ...product, stt: index + 1 };
     });
-    return isLoading && listProduct.length === 0 ? (
+    return isLoading && listProduct?.length === 0 ? (
         <LoadingPage></LoadingPage>
     ) : (
         <div>

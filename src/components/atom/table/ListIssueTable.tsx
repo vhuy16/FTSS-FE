@@ -114,7 +114,7 @@ export default function ListIssueTable() {
     const rows = issues?.map((issue, index) => {
         return { ...issue, stt: index + 1 };
     });
-    return isLoading && listIssue.length === 0 ? (
+    return isLoading && listIssue?.length === 0 ? (
         <LoadingPage></LoadingPage>
     ) : (
         <div>

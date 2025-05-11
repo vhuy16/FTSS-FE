@@ -127,7 +127,7 @@ export default function ListCategoryTable() {
     const rows = categories?.map((category, index) => {
         return { ...category, stt: index + 1 };
     });
-    return isLoading && listCategory.length === 0 ? (
+    return isLoading && listCategory?.length === 0 ? (
         <LoadingPage></LoadingPage>
     ) : (
         <div>

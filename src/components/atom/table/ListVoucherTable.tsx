@@ -127,7 +127,7 @@ export default function ListVoucherTable() {
     const rows = vouchers?.map((voucher, index) => {
         return { ...voucher, stt: index + 1 };
     });
-    return isLoading && listVoucher.length === 0 ? (
+    return isLoading && listVoucher?.length === 0 ? (
         <LoadingPage></LoadingPage>
     ) : (
         <div>

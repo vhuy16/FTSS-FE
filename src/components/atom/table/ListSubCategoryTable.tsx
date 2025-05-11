@@ -100,7 +100,7 @@ export default function ListSubCategoryTable() {
     const rows = subCategories?.map((subCategory, index) => {
         return { ...subCategory, stt: index + 1 };
     });
-    return isLoading && listSubCategory.length === 0 ? (
+    return isLoading && listSubCategory?.length === 0 ? (
         <LoadingPage></LoadingPage>
     ) : (
         <div>
