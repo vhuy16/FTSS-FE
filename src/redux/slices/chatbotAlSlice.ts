@@ -23,7 +23,7 @@ export const sendChatbotAlMessage = createAsyncThunk<ChatResponse, string, { rej
   async (message, { rejectWithValue }) => {
     try {
       const res = await axios.post(
-        "https://chatbot-q6c1jhq1r-self-check-out.vercel.app/chat",
+        "https://chatbot-c6218kwl0-self-check-out.vercel.app/chat",
         { message },
         {
           headers: {

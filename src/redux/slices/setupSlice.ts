@@ -59,7 +59,7 @@ const initialState: SetupState = {
 
 export const getSetupPackages = createAsyncThunk("setup/getSetupPackages", async () => {
   try {
-    const response = await myAxios.get(`/setuppackage?page=1&size=10`);
+    const response = await myAxios.get(`/setuppackage?page=1&size=50`);
     return response.data.data;
   } catch (error: any) {
     console.error("Error fetching setup packages:", error);

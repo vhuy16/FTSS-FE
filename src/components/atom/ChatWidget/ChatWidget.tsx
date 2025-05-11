@@ -238,7 +238,7 @@ const ChatboxWidget = ({ isOpen, onClose, order, setIsOpen }: ChatboxWidgetProps
                       <div key={msg.id} className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}>
                         {msg.sender !== "user" ? (
                           <div className="flex items-start space-x-2 max-w-[80%]">
-                            <div className="w-44 h-11 rounded-full bg-[#10ac97] flex items-center justify-center mr-2">
+                            <div className="w-10 h-10 rounded-full bg-[#10ac97] flex items-center justify-center mr-2">
                               <RiCustomerService2Fill className="text-white text-lg" />
                             </div>
                             <div
@@ -246,10 +246,9 @@ const ChatboxWidget = ({ isOpen, onClose, order, setIsOpen }: ChatboxWidgetProps
                                 msg.sender === "ai"
                                   ? "bg-white text-gray-800 self-start"
                                   : "bg-[#10ac97] text-white self-end"
-                              }max-w-[80%] whitespace-pre-line`}
-                            >
-                              {msg.text}
-                            </div>
+                              } max-w-[80%] whitespace-pre-line`}
+                              dangerouslySetInnerHTML={{ __html: msg.text }}
+                            />
                           </div>
                         ) : (
                           <div className="p-4 rounded-2xl bg-[#10ac97] text-white self-end max-w-[80%] break-words">
