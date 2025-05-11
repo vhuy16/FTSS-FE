@@ -23,7 +23,7 @@ const StyledDataGrid = styled(DataGrid)((theme) => ({
     },
 }));
 export default function ListIssueCategoryTable() {
-    const listIssueCategory = useAppSelector((state) => state.issueCategory.listIssueCategory);
+    const listIssueCategory = useAppSelector((state) => state.issueCategory.listIssueCategory ?? []);
     const isLoading = useAppSelector((state) => state.issueCategory.isLoading);
     const [isModalAddOpen, setIsModalAddOpen] = useState(false);
     const [isModalEditOpen, setIsModalEditOpen] = useState(false);

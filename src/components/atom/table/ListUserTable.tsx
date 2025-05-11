@@ -22,7 +22,7 @@ const StyledDataGrid = styled(DataGrid)((theme) => ({
     },
 }));
 export default function ListUserTable() {
-    const listUser = useAppSelector((state) => state.userProfile.listUser);
+    const listUser = useAppSelector((state) => state.userProfile.listUser ?? []);
     const isLoading = useAppSelector((state) => state.userProfile.isLoading);
     const isLoadingGetAllUser = useAppSelector((state) => state.userProfile.isLoadingGetAllUser);
     const [users, setUsers] = useState<UserProfile[]>([]);

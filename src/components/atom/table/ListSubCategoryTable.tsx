@@ -24,7 +24,7 @@ const StyledDataGrid = styled(DataGrid)((theme) => ({
     },
 }));
 export default function ListSubCategoryTable() {
-    const listSubCategory = useAppSelector((state) => state.category.subCategory);
+    const listSubCategory = useAppSelector((state) => state.category.subCategory ?? []);
     const isLoading = useAppSelector((state) => state.category.isLoadingGetAllSubCategory);
     const [isModalAddOpen, setIsModalAddOpen] = useState(false);
     const [isModalEditOpen, setIsModalEditOpen] = useState(false);
@@ -67,8 +67,28 @@ export default function ListSubCategoryTable() {
                 </span>
             ),
         },
-        { field: 'description', headerName: 'Mô tả', width: 200, headerClassName: 'super-app-theme--header' },
-        { field: 'categoryName', headerName: 'Danh mục', width: 350, headerClassName: 'super-app-theme--header' },
+        {
+            field: 'description',
+            headerName: 'Mô tả',
+            width: 300,
+            headerClassName: 'super-app-theme--header',
+            renderCell: (params) => (
+                <span
+                    style={{
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        display: 'inline-block', // hoặc block
+                        width: '100%',
+                        maxWidth: '100%', // quan trọng để ngăn overflow
+                    }}
+                    title={params.row.description}
+                >
+                    {params.row.description}
+                </span>
+            ),
+        },
+        { field: 'categoryName', headerName: 'Danh mục', width: 250, headerClassName: 'super-app-theme--header' },
         {
             field: 'isDelete',
             headerName: 'Trạng thái',

@@ -24,7 +24,7 @@ const StyledDataGrid = styled(DataGrid)((theme) => ({
     },
 }));
 export default function ListVoucherTable() {
-    const listVoucher = useAppSelector((state) => state.voucher.listVoucher);
+    const listVoucher = useAppSelector((state) => state.voucher.listVoucher ?? []);
     const isLoading = useAppSelector((state) => state.voucher.isLoading);
     const [isModalAddOpen, setIsModalAddOpen] = useState(false);
     const [isModalEditOpen, setIsModalEditOpen] = useState(false);

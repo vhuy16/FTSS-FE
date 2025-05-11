@@ -26,7 +26,7 @@ const StyledDataGrid = styled(DataGrid)((theme) => ({
     },
 }));
 export default function ListSetupTable() {
-    const listSetup = useAppSelector((state) => state.setupPackage.setupPackagesShop?.setupPackages);
+    const listSetup = useAppSelector((state) => state.setupPackage.setupPackagesShop?.setupPackages ?? []);
     const isLoading = useAppSelector((state) => state.setupPackage.isloadingGetAllPackageShop);
     const [isModalAddOpen, setIsModalAddOpen] = useState(false);
     const [isModalEditOpen, setIsModalEditOpen] = useState(false);
