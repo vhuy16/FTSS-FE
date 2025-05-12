@@ -305,7 +305,7 @@ const Billing = () => {
                         navigate('/order');
                     }
                 } catch (error) {
-                    console.log(error);
+                    toast.error(error as string);
                 }
             } else {
                 console.log('payment invalid');
