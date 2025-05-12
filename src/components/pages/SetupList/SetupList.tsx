@@ -201,7 +201,7 @@ const SetupList = () => {
 
   return (
     <WishListScreenWrapper className="page-py-spacing">
-      {isLoadingSetup && isLoadingProfile ? (
+      {isLoadingSetup || isLoadingProfile ? (
         <LoadingPage />
       ) : (
         <Container>
