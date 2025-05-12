@@ -114,7 +114,7 @@ export const AddBankAccountModal = ({ isOpen, onClose }: AddBankAccountModalProp
                   <div
                     key={bank.id}
                     onClick={() => {
-                      setData({ ...data, BankName: bank.name + " (" + bank.shortName + ")" });
+                      setData({ ...data, BankName: bank.name });
                       setSearchTerm(bank.name);
                     }}
                     className={`p-2 border rounded-lg cursor-pointer 
