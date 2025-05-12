@@ -14,7 +14,7 @@ import { BaseBtnGreen } from "@styles/button";
 import Loading from "@components/atom/Loading/Loading";
 import LoadingPage from "@components/atom/Loading/LoadingPage";
 import FormSchedule from "@components/atom/FormSchedule/FormSchedule";
-import { getAllService } from "@redux/slices/serviceSlice";
+import { getAllService, Service } from "@redux/slices/serviceSlice";
 
 const BookingService = () => {
   const { setupBookingId } = useParams();
@@ -26,6 +26,7 @@ const BookingService = () => {
   const isLoadingBooking = useAppSelector((state) => state.bookingService.loading);
   const [selectedSchedule, setSelectedSchedule] = useState<string | null>(null);
   const [infoDefault, setInfoDefault] = useState(true);
+  const [listServices, setListServices] = useState<Service[]>([]);
 
   const handleInfoDefaultChange = (value: boolean) => {
     setInfoDefault(value);
@@ -59,12 +60,15 @@ const BookingService = () => {
     dispatch(getAllService());
   }, [dispatch]);
   useEffect(() => {
+    setListServices(services.filter((se) => se.isDelete === false));
+  }, [services]);
+  useEffect(() => {
     if (orderDetail?.isEligible) {
-      setSelectedServices(services.map((s) => s.id)); // Chọn tất cả dịch vụ
+      setSelectedServices(listServices.map((s) => s.id)); // Chọn tất cả dịch vụ
     } else {
       setSelectedServices([]);
     }
-  }, [orderDetail?.isEligible, services]);
+  }, [orderDetail?.isEligible, listServices]);
 
   const products = orderDetail?.setupPackage?.products;
 
@@ -127,10 +131,10 @@ const BookingService = () => {
   // tong tien dich vuvu
   const totalPrice = orderDetail?.isEligible
     ? 0
-    : services
+    : listServices
         .filter((service) => selectedServices.includes(service.id))
         .reduce((acc, service) => acc + service.price, 0);
-  console.log("service", services);
+  console.log("service", listServices);
 
   return (
     <BookingServiceStyle>
@@ -185,7 +189,7 @@ const BookingService = () => {
                 </p>
               )}
               <div className="serviceGrid">
-                {services.map((service) => (
+                {listServices.map((service) => (
                   <button
                     key={service.id}
                     onClick={() => toggleService(service.id)}

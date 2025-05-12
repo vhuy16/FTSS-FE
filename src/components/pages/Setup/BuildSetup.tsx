@@ -3,7 +3,7 @@ import { Container } from "@styles/styles";
 import Breadcrumb from "@common/Breadcrumb";
 import { useAppDispatch, useAppSelector } from "@redux/hook";
 import { getAllCategory } from "@redux/slices/categorySlice";
-import { getAllProductSimilar, Product } from "@redux/slices/productSlice";
+import { getAllProduct, getAllProductSimilar, Product } from "@redux/slices/productSlice";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { currencyFormat } from "@ultils/helper";
@@ -60,8 +60,10 @@ const BuildSetup: React.FC<ProductItemProps> = () => {
   const validCategories = listCategory.filter((item) => item.isSolution === false);
   const productRecommend = useAppSelector((state) => state.recommend.recommendations);
   const [selectedTankSize, setSelectedTankSize] = useState<string>("");
-
+  const [page, setPage] = useState(1);
+  const [size, setSize] = useState(100);
   const navigate = useNavigate();
+  console.log("pro commenr", productRecommend);
 
   useEffect(() => {
     dispatch(getAllCategory());
@@ -81,7 +83,14 @@ const BuildSetup: React.FC<ProductItemProps> = () => {
     }
     setIsLoading(true);
     try {
-      await dispatch(getAllProductSimilar(categoryName));
+      await dispatch(
+        getAllProduct({
+          page,
+          size,
+          cateName: categoryName, //  truyền cateName (categoryName) để lọc catecate
+          subcategoryName: selectedSubcategory === "Tất cả" ? undefined : selectedSubcategory, // Truyền subcategoryName nếu không phải "Tất cả"
+        })
+      );
       const currentCategory = listCategory.find((cat) => cat.categoryName === categoryName);
       const newSubCategories =
         currentCategory && currentCategory.subCategories

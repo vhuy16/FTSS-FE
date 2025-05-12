@@ -122,7 +122,6 @@ export default function UpdateBookingModal({ isModalUpdateOpen, onClose, booking
   const [idProvice, setIdProvince] = useState({ id: "700000", name: "Hồ Chí Minh" });
   const [district, setDistrict] = useState({ id: "0", name: "", city_id: "" });
   const [ward, setWard] = useState({ id: "0", name: "" });
-  const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
   const isLoadingUpdate = useAppSelector((state) => state.bookingService.isLoadingUpdate);
   const [selectedSchedule, setSelectedSchedule] = useState<string | null>(null);
   const [infoDefault, setInfoDefault] = useState(true);
@@ -151,11 +150,11 @@ export default function UpdateBookingModal({ isModalUpdateOpen, onClose, booking
     }
   }, [isModalUpdateOpen]);
 
-  useEffect(() => {
-    if (booking?.scheduleDate) {
-      setSelectedDate(dayjs(booking.scheduleDate));
-    }
-  }, [booking]);
+  // useEffect(() => {
+  //   if (booking?.scheduleDate) {
+  //     setSelectedSchedule(dayjs(booking.scheduleDate));
+  //   }
+  // }, [booking]);
 
   const initFormValue = {
     phone: "",
@@ -176,12 +175,6 @@ export default function UpdateBookingModal({ isModalUpdateOpen, onClose, booking
     address: "",
     ward: "",
   });
-  const handleDateChange = (date: Dayjs | null) => {
-    setSelectedDate(date);
-  };
-
-  const formattedDate = selectedDate?.format("YYYY-MM-DD");
-
   const handleSave = async () => {
     if (
       !selectedSchedule ||
@@ -199,7 +192,7 @@ export default function UpdateBookingModal({ isModalUpdateOpen, onClose, booking
       const formData = new FormData();
       formData.append("Address", address || "");
       formData.append("PhoneNumber", formValue.phone || "");
-      formData.append("ScheduleDate", formattedDate || "");
+      formData.append("ScheduleDate", selectedSchedule || "");
       if (!booking?.id) {
         toast.error("Không tìm thấy ID của đơn đặt lịch.");
         return;
@@ -231,7 +224,6 @@ export default function UpdateBookingModal({ isModalUpdateOpen, onClose, booking
     setIdProvince({ id: "700000", name: "Hồ Chí Minh" });
     setDistrict({ id: "0", name: "", city_id: "" });
     setWard({ id: "0", name: "" });
-    setSelectedDate(null);
     onClose();
   };
   console.log("formvalue", formValue);

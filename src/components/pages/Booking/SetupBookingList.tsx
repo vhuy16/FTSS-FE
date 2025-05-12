@@ -9,7 +9,7 @@ import { useAppDispatch, useAppSelector } from "@redux/hook";
 import { getUserProfile } from "@redux/slices/userSlice";
 import { useNavigate } from "react-router-dom";
 import beca from "@images/beca.jpg";
-import { BaseBtnGreen } from "@styles/button";
+import { BaseBtnGreen, BaseButtonOuterspace } from "@styles/button";
 import LoadingPage from "@components/atom/Loading/LoadingPage";
 import { getAllOrdersByUsers, resetOrders } from "@redux/slices/orderListSlice";
 
@@ -37,7 +37,7 @@ const SetupBookingList = () => {
 
   return (
     <WishListScreenWrapper className="page-py-spacing">
-      {isLoading && isLoadingProfile ? (
+      {isLoading || isLoadingProfile ? (
         <LoadingPage />
       ) : (
         <Container>
@@ -89,9 +89,12 @@ const SetupBookingList = () => {
                                   </div>
                                 </div>
                                 <div className="flex flex-col gap-3">
-                                  <BaseBtnGreen onClick={() => navigate(`/setup-booking/service/${setup?.id}`)}>
-                                    Đặt dịch vụ
+                                  <BaseBtnGreen onClick={() => navigate(`/setup-booking/detail/${setup?.id}`)}>
+                                    Xem chi tiết
                                   </BaseBtnGreen>
+                                  <BaseButtonOuterspace onClick={() => navigate(`/setup-booking/service/${setup?.id}`)}>
+                                    Đặt dịch vụ
+                                  </BaseButtonOuterspace>
                                 </div>
                               </div>
                               <div className="flex flex-col gap-4 ml-8">
