@@ -146,17 +146,18 @@ export const updateBookingSchedule = createAsyncThunk(
 );
 export const CancelBooking = createAsyncThunk(
   "booking/CancelBooking",
-  async ({ bookingid }: { bookingid: string }, { dispatch, rejectWithValue }) => {
+  async ({ bookingid, reason }: { bookingid: string; reason: string }, { dispatch, rejectWithValue }) => {
     try {
-      const response = await myAxios.put(`/booking/cancel-booking/${bookingid}`);
+      const response = await myAxios.put(`/booking/cancel-booking/${bookingid}`, { reason });
       await dispatch(getAllBookingofUsers());
       return response.data;
     } catch (error: any) {
-      console.error("Error creating setup package:", error);
+      console.error("Error canceling booking:", error);
       return rejectWithValue(error.response?.data?.message || "Hủy dịch vụ thất bại");
     }
   }
 );
+
 export const Confirm = createAsyncThunk(
   "booking/Confirm",
   async (
