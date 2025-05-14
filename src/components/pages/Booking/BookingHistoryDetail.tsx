@@ -15,6 +15,7 @@ import { BaseButtonGreen, BaseButtonWhite } from "@styles/button";
 import { RefundBankModal } from "@components/atom/modal/RefundBankModal";
 import UpdateBookingModal from "@components/atom/modal/UpdateBookingModal";
 import { ConfirmModal } from "@components/atom/modal/ConfirmModal";
+import ChatboxWidget from "@components/atom/ChatWidget/ChatWidget";
 const BookingDetailMessageWrapper = styled.div`
   background-color: ${defaultTheme.color_lighwhite};
   max-width: 100%;
@@ -144,11 +145,17 @@ const BookingHistoryDetail = () => {
         icon: <FaTimes className="inline-block mr-1" />,
         label: "Đã hủy",
       },
+      MISSED: {
+        bg: "bg-red-100",
+        text: "text-red-800",
+        icon: <FaTimes className="inline-block mr-1" />,
+        label: "Không thực hiện được",
+      },
       NOTDONE: {
         bg: "bg-red-100",
         text: "text-red-800",
         icon: <FaTimes className="inline-block mr-1" />,
-        label: "Chưa bảo trì",
+        label: "Chưa xong",
       },
     };
 
@@ -194,6 +201,17 @@ const BookingHistoryDetail = () => {
     setSelectedBooking(null);
   }, []);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  //chat
+  const openChatboxWithOrder = (book: BookingDetail) => {
+    setShowChatModal(true); // Mở chatbox
+    setSelectedBooking(book);
+    // setHasNotification(false); // Tắt notification khi mở chat
+  };
+  const closeModalChat = useCallback(() => {
+    setShowChatModal(false);
+    setSelectedBooking(null);
+  }, []);
+  const [showChatModal, setShowChatModal] = useState(false);
   return (
     <BookingServiceStyle>
       {isLoadingDetail && isLoadingBooking ? (
@@ -255,7 +273,7 @@ const BookingHistoryDetail = () => {
                 </div>
                 <div className="order-buttons">
                   <BaseButtonGreen onClick={() => openModalConfirm(bookingDetail)}>Hoàn thành</BaseButtonGreen>
-                  <BaseButtonWhite className="request-button" onClick={() => openModal(bookingDetail)}>
+                  <BaseButtonWhite className="request-button" onClick={() => openChatboxWithOrder(bookingDetail)}>
                     Báo cáo/Khiếu nại
                   </BaseButtonWhite>
                 </div>
@@ -372,6 +390,12 @@ const BookingHistoryDetail = () => {
             isModalUpdateOpen={showUpdateModal}
             onClose={closeModalUpdate}
             booking={selectedBooking}
+          />
+          <ChatboxWidget
+            isOpen={showChatModal}
+            onClose={closeModalChat}
+            booking={selectedBooking}
+            setIsOpen={setShowChatModal}
           />
         </Container>
       ) : (

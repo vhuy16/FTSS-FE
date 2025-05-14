@@ -8,15 +8,17 @@ import { CreateChatofUser, CreateChatRoom, getRoomDetail } from "@redux/slices/c
 import { Order } from "@redux/slices/orderListSlice";
 import { sendChatbotAlMessage, clearChatResponse } from "@redux/slices/chatbotAlSlice"; // Import action
 import { formatDate } from "@ultils/helper";
+import { BookingList } from "@redux/slices/bookingSlice";
 
 interface ChatboxWidgetProps {
   order?: Order | null;
+  booking?: BookingList | null;
   isOpen: boolean;
   onClose: () => void;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const ChatboxWidget = ({ isOpen, onClose, order, setIsOpen }: ChatboxWidgetProps) => {
+const ChatboxWidget = ({ isOpen, onClose, order, setIsOpen, booking }: ChatboxWidgetProps) => {
   const dispatch = useAppDispatch();
   const chatMessages = useAppSelector((state) => state.chat.chat);
   const { data: aiResponse, loading: aiLoading, error: aiError } = useAppSelector((state) => state.chatbot); // Lấy trạng thái từ chatbotAlSlice
@@ -75,19 +77,23 @@ const ChatboxWidget = ({ isOpen, onClose, order, setIsOpen }: ChatboxWidgetProps
   }, [roomId, chatMode]);
 
   useEffect(() => {
-    if (order) {
+    if (order || booking) {
       setIsOpen(true);
       setHasNotification(false);
       setChatMode("employee");
     }
-  }, [order]);
+  }, [order, booking]);
 
   useEffect(() => {
     if (order && isOpen && chatMode == "employee") {
       const orderInfo = `Báo cáo đơn hàng #${order.oderCode}`;
       setInputMessage(orderInfo);
     }
-  }, [order, isOpen, chatMode]);
+    if (booking && isOpen && chatMode == "employee") {
+      const bookingInfo = `Báo cáo đơn bảo trì #${booking.bookingCode}`;
+      setInputMessage(bookingInfo);
+    }
+  }, [order, isOpen, chatMode, booking]);
 
   useEffect(() => {
     if (isOpen && chatMode) {

@@ -30,16 +30,21 @@ const BookingHistory: React.FC<BookingItemListProps> = ({ bookings }) => {
   };
   const handleCancelBooking = async () => {
     if (!selectedBookingId) return;
+
     try {
-      const res = await dispatch(CancelBooking({ bookingid: selectedBookingId })).unwrap();
-      if (res.status === "200") {
+      const res = await dispatch(
+        CancelBooking({
+          bookingid: selectedBookingId,
+          reason: "huy",
+        })
+      ).unwrap();
+
+      if (res.status === "200" || res.status === 200) {
         toast.success("Đơn dịch vụ đã được hủy!");
         setIsModalOpenDelete(false);
-      } else {
-        toast.error("Hủy dịch vụ không thành công");
       }
     } catch (error) {
-      toast.error(error as string); // Vì rejectWithValue trả ra string
+      toast.error(error as string);
       console.error("Lỗi khi hủy đơn hàng:", error);
     }
   };
@@ -130,6 +135,12 @@ const BookingHistory: React.FC<BookingItemListProps> = ({ bookings }) => {
         text: "text-red-800",
         icon: <FaTimes className="inline-block mr-1" />,
         label: "Đã hủy",
+      },
+      MISSED: {
+        bg: "bg-red-100",
+        text: "text-red-800",
+        icon: <FaTimes className="inline-block mr-1" />,
+        label: "Không thực hiện được",
       },
       NOTDONE: {
         bg: "bg-red-100",
