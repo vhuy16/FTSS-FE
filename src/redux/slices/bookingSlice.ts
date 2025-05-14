@@ -87,12 +87,18 @@ export const createBookingService = createAsyncThunk(
   }
 );
 
-export const getAllUnavailableDates = createAsyncThunk("booking/getAllUnavailableDates", async () => {
+// Trong file thunk
+export const getAllUnavailableDates = createAsyncThunk("booking/getAllUnavailableDates", async (date?: string) => {
   try {
-    const response = await myAxios.get(`/booking/date-unavailable`);
-    return response.data.data;
+    if (date) {
+      const response = await myAxios.get(`/booking/date-unavailable/?date=${date}`);
+      return response.data.data;
+    } else {
+      const response = await myAxios.get(`/booking/date-unavailable/`);
+      return response.data.data;
+    }
   } catch (error: any) {
-    console.error("Error fetching user profile:", error);
+    console.error("Error fetching unavailable dates:", error);
     throw error;
   }
 });

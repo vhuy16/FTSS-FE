@@ -15,7 +15,7 @@ export default function AccountInfoCard() {
   const [showUpdateAccountModal, setshowUpdateAccountModal] = useState(false);
   return (
     <div className="p-5 rounded-xl lg:p-6">
-      <div className="flex gap-6 lg:flex-row lg:items-start lg:justify-between">
+      <div className="flex gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <h4 className="text-2xl font-bold text-gray-800 dark:text-white/90 lg:mb-6">Thông tin cá nhân</h4>
 
@@ -54,7 +54,7 @@ export default function AccountInfoCard() {
 
         <button
           onClick={openUpdateModal}
-          className="flex items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200 lg:inline-flex lg:w-auto"
+          className="flex items-center justify-center gap-2 whitespace-nowrap rounded-full border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200"
         >
           <svg
             className="fill-current"

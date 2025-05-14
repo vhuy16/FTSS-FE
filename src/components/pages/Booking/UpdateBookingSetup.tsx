@@ -309,7 +309,10 @@ const UpdateBookingSetup = () => {
             </div>
             <HorizontalLine />
             {/* //date time  */}
-            <FormSchedule setSelectedSchedule={setSelectedSchedule} />
+            <FormSchedule
+              setSelectedSchedule={setSelectedSchedule}
+              dateSchedule={orderDetail?.installationDate as string}
+            />
             <HorizontalLine />
             <div className="flexContainer">
               <div className="build-info">

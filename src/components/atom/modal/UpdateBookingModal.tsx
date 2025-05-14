@@ -245,7 +245,7 @@ export default function UpdateBookingModal({ isModalUpdateOpen, onClose, booking
                 <div className="p-6 border-b border-gray-200">
                   <div className="flex justify-between items-center">
                     <h2 className="text-2xl font-bold text-gray-800">Cập nhật thông tin</h2>
-                    <button className="text-gray-500 hover:text-gray-700">
+                    <button className="text-gray-500 hover:text-gray-700" onClick={handleCloseModal}>
                       <FiX size={24} />
                     </button>
                   </div>
@@ -393,7 +393,10 @@ export default function UpdateBookingModal({ isModalUpdateOpen, onClose, booking
                       </BillingDetailsWrapper>
                     </BillingOrderWrapper>
                     {/* //date time  */}
-                    <FormSchedule setSelectedSchedule={setSelectedSchedule} />
+                    <FormSchedule
+                      setSelectedSchedule={setSelectedSchedule}
+                      dateSchedule={booking?.scheduleDate as string}
+                    />
                   </BookingContainer>
 
                   <div className="flex justify-end space-x-3 mt-6">
