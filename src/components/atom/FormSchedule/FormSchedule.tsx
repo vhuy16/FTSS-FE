@@ -5,8 +5,9 @@ import { useEffect, useState } from "react";
 
 type FormScheduleProps = {
   setSelectedSchedule: (value: string) => void;
+  dateSchedule?: string;
 };
-const FormSchedule = ({ setSelectedSchedule }: FormScheduleProps) => {
+const FormSchedule = ({ setSelectedSchedule, dateSchedule }: FormScheduleProps) => {
   const dispatch = useAppDispatch();
   //select date time
   const [selectedDate, setSelectedDate] = useState<Dayjs>(dayjs());
@@ -55,7 +56,11 @@ const FormSchedule = ({ setSelectedSchedule }: FormScheduleProps) => {
     return fullDateTime.format("YYYY-MM-DDTHH:mm:ss");
   };
   useEffect(() => {
-    dispatch(getAllUnavailableDates());
+    if (dateSchedule) {
+      dispatch(getAllUnavailableDates(dateSchedule));
+    } else {
+      dispatch(getAllUnavailableDates());
+    }
   }, [dispatch]);
 
   useEffect(() => {

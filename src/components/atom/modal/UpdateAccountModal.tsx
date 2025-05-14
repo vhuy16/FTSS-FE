@@ -179,7 +179,7 @@ export const UpdateAccountModal = ({ isOpen, onClose, user }: UpdateAccountModal
                 </div>
                 <div className="col-span-2 lg:col-span-1">
                   <Label>Địa chỉ email</Label>
-                  <Input type="text" name="email" value={formData.email} onChange={handleChange} />
+                  <Input type="text" name="email" value={formData.email} onChange={handleChange} readOnly />
                 </div>
                 <div className="col-span-2 lg:col-span-1">
                   <Label>Giới tính</Label>

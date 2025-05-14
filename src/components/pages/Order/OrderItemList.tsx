@@ -396,13 +396,26 @@ const OrderItemList: React.FC<OrderItemListProps> = ({ orders }) => {
                   </button>
                 </>
               )}
-              {order.status === "COMPLETED" && order?.payment?.paymentStatus === "Completed" && (
-                <>
-                  <button className="btn-secondary" onClick={() => openModalReturn(order)}>
-                    Yêu cầu hoàn trả
-                  </button>
-                </>
-              )}
+              {/* // qua 2 ngay thi k cho hoan tratra */}
+              {order.status === "COMPLETED" &&
+                order?.payment?.paymentStatus === "Completed" &&
+                order.modifyDate &&
+                (() => {
+                  const modifiedDate = new Date(order.modifyDate);
+                  const now = new Date();
+                  const diffInMs = now.getTime() - modifiedDate.getTime();
+                  const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+
+                  if (diffInDays <= 2) {
+                    return (
+                      <button className="btn-secondary" onClick={() => openModalReturn(order)}>
+                        Yêu cầu hoàn trả
+                      </button>
+                    );
+                  }
+
+                  return null;
+                })()}
             </div>
           </div>
         </div>
