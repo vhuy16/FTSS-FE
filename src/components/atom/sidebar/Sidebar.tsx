@@ -6,7 +6,7 @@ import { Input, InputGroupWrapper } from '@styles/form';
 // import { sideMenuData } from "../../data/data";
 import { breakpoints, defaultTheme } from '@styles/themes/default';
 import { useAppDispatch, useAppSelector } from '@redux/hook';
-import souvi from '@images/logo.png';
+import logo from '@images/logo2.png';
 import { sideMenuData } from './data';
 import { selectIsSidebarOpen, toggleSidebar } from '@redux/slices/sidebarSlice';
 import { RootState } from '@redux/store'; // Đảm bảo đã import đúng kiểu RootState
@@ -115,7 +115,7 @@ const Sidebar: React.FC = () => {
             <div className="sidenav-head">
                 <SiteBrandWrapper to="/" className="inline-flex">
                     <div className="brand-img-wrap flex items-center justify-center">
-                        <img className="site-brand-img" src={souvi} alt="Logo" />
+                        <img className="site-brand-img" src={logo} alt="Logo" />
                     </div>
                     <span className="site-brand-text text-outerspace">FTSS</span>
                 </SiteBrandWrapper>

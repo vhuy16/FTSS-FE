@@ -66,10 +66,12 @@ export default function OrderDetail() {
                                 <p className="text-base dark:text-gray-300 font-medium leading-6 text-gray-600">
                                     Ngày đặt: {orderDetail.createDate.split('T')[0]}
                                 </p>
-                                <p className="text-base dark:text-gray-300 font-medium leading-6 text-gray-600">
-                                    Ngày giao: {orderDetail?.installationDate?.split('T')[0]} lúc{' '}
-                                    {orderDetail?.installationDate?.split('T')[1].split(':').slice(0, 2).join(':')}
-                                </p>
+                                {orderDetail?.installationDate && (
+                                    <p className="text-base dark:text-gray-300 font-medium leading-6 text-gray-600">
+                                        Ngày giao: {orderDetail?.installationDate?.split('T')[0]} lúc{' '}
+                                        {orderDetail?.installationDate?.split('T')[1].split(':').slice(0, 2).join(':')}
+                                    </p>
+                                )}
                             </div>
                             <div className="mt-10 flex flex-col xl:flex-row jusitfy-center items-stretch w-full xl:space-x-8 space-y-4 md:space-y-6 xl:space-y-0">
                                 <div className="flex flex-col justify-start items-start w-full space-y-4 md:space-y-6 xl:space-y-8">

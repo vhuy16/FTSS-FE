@@ -4,6 +4,7 @@ import { ThemeToggleButton } from '@common/ThemeToggleButton';
 import NotificationDropdown from '@atom/header/NotificationDropdown';
 import UserDropdown from '@atom/header/UserDropdown';
 import { Link } from 'react-router-dom';
+import logo from '@images/logo2.png';
 
 const AppHeader: React.FC = () => {
     const [isApplicationMenuOpen, setApplicationMenuOpen] = useState(false);
@@ -81,10 +82,10 @@ const AppHeader: React.FC = () => {
                         {/* Cross Icon */}
                     </button>
 
-                    <Link to="/" className="lg:hidden">
-                        <img className="dark:hidden" src="./images/logo/logo.svg" alt="Logo" />
-                        <img className="hidden dark:block" src="./images/logo/logo-dark.svg" alt="Logo" />
-                    </Link>
+                    {/* <Link to="/" className="lg:hidden">
+                        <img className="dark:hidden" src={logo} alt="Logo" />
+                        <img className="hidden dark:block" src={logo} alt="Logo" />
+                    </Link> */}
 
                     <button
                         onClick={toggleApplicationMenu}
