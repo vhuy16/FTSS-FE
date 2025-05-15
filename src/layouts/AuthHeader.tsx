@@ -4,6 +4,7 @@ import { Container } from '@styles/styles';
 import { staticImages } from '@ultils/images';
 import { BaseLinkGreen, BaseLinkOutlineGreen } from '@styles/button';
 import { breakpoints } from '@styles/themes/default';
+import logo from '@images/logo2.png';
 
 const ButtonGroupWrapper = styled.div`
     gap: 8px;
@@ -22,7 +23,7 @@ const AuthHeader = () => {
                 <div className="header-wrap flex items-center justify-between">
                     <SiteBrandWrapper to="/" className="inline-flex">
                         <div className="brand-img-wrap flex items-center justify-center">
-                            <img className="site-brand-img" src={staticImages.logo} alt="" />
+                            <img className="site-brand-img" src={logo} alt="logo" />
                         </div>
                         <span className="site-brand-text">FTSS</span>
                     </SiteBrandWrapper>

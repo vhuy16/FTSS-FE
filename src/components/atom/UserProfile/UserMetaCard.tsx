@@ -10,7 +10,10 @@ export default function UserMetaCard() {
             <div className="p-5 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6">
                 <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
                     <div className="flex flex-col items-center w-full gap-6 xl:flex-row">
-                        <Avatar name={user?.username as string}></Avatar>
+                        <span className="mr-3 overflow-hidden rounded-full h-12 w-12">
+                            <Avatar name={user?.username as string}></Avatar>
+                        </span>
+
                         <div className="order-3 xl:order-2">
                             <h4 className="mb-2 text-lg font-semibold text-center text-gray-800 dark:text-white/90 xl:text-left">
                                 {user?.username}

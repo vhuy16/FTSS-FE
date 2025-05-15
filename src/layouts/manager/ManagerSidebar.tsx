@@ -1,6 +1,6 @@
 import React, { useEffect, useCallback, useRef, useState } from 'react';
 import { useLocation } from 'react-router';
-import logo from '@images/logo.png';
+import logo from '@images/logo2.png';
 
 // Assume these icons are imported from an icon library
 import { useSidebar } from '@context/SidebarContext';
@@ -312,7 +312,7 @@ const ManagerSidebar: React.FC = () => {
             onMouseLeave={() => setIsHovered(false)}
         >
             <div className={`py-8 flex  ${!isExpanded && !isHovered ? 'lg:justify-center' : 'justify-start'}`}>
-                <Link to="/" className="flex items-center">
+                <div className="flex items-center">
                     {isExpanded || isHovered || isMobileOpen ? (
                         <>
                             <img className="dark:hidden inline-block " src={logo} alt="Logo" width={40} height={40} />
@@ -329,7 +329,7 @@ const ManagerSidebar: React.FC = () => {
                     ) : (
                         <img src={logo} alt="Logo" width={32} height={32} />
                     )}
-                </Link>
+                </div>
             </div>
             <div className="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar">
                 <nav className="mb-6">

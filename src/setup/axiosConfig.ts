@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 
 // Set config defaults when creating the instance
 const instance: AxiosInstance = axios.create({
-    baseURL: 'https://ftss.id.vn/api/v1',
+    baseURL: 'https://api.ftss.id.vn/api/v1',
 });
 instance.defaults.withCredentials = true;
 

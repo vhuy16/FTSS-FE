@@ -75,36 +75,42 @@ export default function BookingPopup({ booking, setIsModalEditOpen, setIsModalDe
                         </ListItemIcon>
                         <ListItemText>Xem chi tiết</ListItemText>
                     </MenuItem>
-                    {(booking.status === 'NOTASSIGN' || booking.status === 'NOTDONE') && (
-                        <div>
-                            <MenuItem
-                                onClick={() => {
-                                    handleClose();
-                                    setIsModalDeleteOpen(true);
-                                    dispatch(selectBooking(booking));
-                                }}
-                            >
-                                <ListItemIcon>
-                                    <BlockIcon fontSize="small" className="text-red-600" />
-                                </ListItemIcon>
-                                <ListItemText>Hủy</ListItemText>
-                            </MenuItem>
-                            <MenuItem
-                                onClick={() => {
-                                    handleClose();
-                                    setIsModalEditOpen(true);
-                                    dispatch(selectBooking(booking));
-                                }}
-                            >
-                                <ListItemIcon>
-                                    <EditOutlinedIcon fontSize="small" className="text-yellow-300" />
-                                </ListItemIcon>
-                                <ListItemText>Chỉnh sửa</ListItemText>
-                            </MenuItem>
-                        </div>
+                    {(booking.status === 'NOTASSIGN' ||
+                        booking.status === 'NOTDONE' ||
+                        booking.status === 'CANCELLED') && (
+                        <MenuItem
+                            onClick={() => {
+                                handleClose();
+                                setIsModalEditOpen(true);
+                                dispatch(selectBooking(booking));
+                            }}
+                        >
+                            <ListItemIcon>
+                                <EditOutlinedIcon fontSize="small" className="text-yellow-300" />
+                            </ListItemIcon>
+                            <ListItemText>Chỉnh sửa</ListItemText>
+                        </MenuItem>
+                    )}
+                    {(booking.status === 'NOTASSIGN' ||
+                        booking.status === 'PROCESSING' ||
+                        booking.status === 'NOTSTARTED' ||
+                        booking.status === 'ASSIGNED') && (
+                        <MenuItem
+                            onClick={() => {
+                                handleClose();
+                                setIsModalDeleteOpen(true);
+                                dispatch(selectBooking(booking));
+                            }}
+                        >
+                            <ListItemIcon>
+                                <BlockIcon fontSize="small" className="text-red-600" />
+                            </ListItemIcon>
+                            <ListItemText>Hủy</ListItemText>
+                        </MenuItem>
                     )}
                     {((booking.status === 'NOTASSIGN' && booking.payment?.paymentStatus === 'Completed') ||
-                        (booking.status === 'NOTDONE' && booking.payment?.paymentStatus === 'Completed')) && (
+                        (booking.status === 'NOTDONE' && booking.payment?.paymentStatus === 'Completed') ||
+                        (booking.status === 'CANCELLED' && booking.payment?.paymentStatus === 'Completed')) && (
                         <MenuItem
                             onClick={() => {
                                 navigate(

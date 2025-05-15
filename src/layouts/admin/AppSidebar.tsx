@@ -1,6 +1,6 @@
 import React, { useEffect, useCallback, useRef, useState } from 'react';
 import { useLocation } from 'react-router';
-import logo from '@images/logo.png';
+import logo from '@images/logo2.png';
 
 // Assume these icons are imported from an icon library
 import { useSidebar } from '@context/SidebarContext';
