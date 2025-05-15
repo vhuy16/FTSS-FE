@@ -1,7 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useSidebar } from '@context/SidebarContext';
-import { ThemeToggleButton } from '@common/ThemeToggleButton';
-import NotificationDropdown from '@atom/header/NotificationDropdown';
 import UserDropdown from '@atom/header/UserDropdown';
 import { Link } from 'react-router-dom';
 import logo from '@images/logo2.png';
