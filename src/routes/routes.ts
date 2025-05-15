@@ -16,7 +16,7 @@ import CheckoutScreen from '@components/pages/Checkout/Checkout';
 import ConfirmScreen from '@components/pages/Checkout/PaymentSuccess';
 import ErrorScreen from '@components/pages/Checkout/PaymentError';
 import NotFoundScreen from '@components/pages/error/NotFoundScreen';
-import Dashboard from '@components/pages/admin/Dashboad';
+import Dashboard from '@components/pages/manager/Dashboad';
 import AdminLayout from '@layouts/admin/AdminLayouts';
 import OrderListScreen from '@components/pages/Order/OrderListScreen';
 import OrderDetailScreen from '@components/pages/Order/OrderDetail';
@@ -31,6 +31,28 @@ import ListOrder from '@components/pages/manager/ListOrder';
 import ListProduct from '@components/pages/manager/ListProduct';
 import ListSetUp from '@components/pages/manager/ListSetUp';
 import OrderDetail from '@components/pages/manager/OrderDetail';
+import ListCategory from '@components/pages/manager/ListCategory';
+import ListSubCategory from '@components/pages/manager/ListSubCategory';
+import ManagerProfiles from '@components/pages/manager/ManagerProfile';
+import BookingService from '@components/pages/Booking/BookingService';
+import SetupBookingList from '@components/pages/Booking/SetupBookingList';
+import Calendar from '@components/pages/manager/Calendar';
+import ListBooking from '@components/pages/manager/ListBooking';
+import AddMissionBooking from '@components/pages/manager/AddMissionBooking';
+import ListService from '@components/pages/manager/ListService';
+import BookingDetail from '@components/pages/manager/BookingDetail';
+import ListOrderDelivery from '@components/pages/manager/ListOrderDelivery';
+import AddMissionOrder from '@components/pages/manager/AddMissionOrder';
+import BookingHistoryDetail from '@components/pages/Booking/BookingHistoryDetail';
+import IssueBlog from '@components/pages/Issue/IssueBlog';
+import ListVoucher from '@components/pages/manager/ListVoucher';
+import ListIssueCategory from '@components/pages/manager/ListIssueCategory';
+import ListIssue from '@components/pages/manager/ListIssue';
+import IssueBlogDetail from '@components/pages/Issue/IssueBlogDetail';
+import BookingHistoryListSCreen from '@components/pages/Booking/BookingHistoryListSCreen';
+import SetupBookingDetail from '@components/pages/Booking/SetupBookingDetail';
+import UpdateBookingSetup from '@components/pages/Booking/UpdateBookingSetup';
+import Chat from '@components/pages/manager/Chat';
 
 export type RouteType = {
     path: string;
@@ -76,11 +98,7 @@ if (role === 'Admin') {
             component: ResetPassword,
             layout: AuthLayout,
         },
-        {
-            path: '/dashboard',
-            component: Dashboard,
-            layout: AdminLayout,
-        },
+
         {
             path: '/listUser',
             component: ListUser,
@@ -147,6 +165,82 @@ if (role === 'Admin') {
         {
             path: '/listSetup',
             component: ListSetUp,
+            layout: ManagerLayout,
+        },
+        {
+            path: '/listCategory',
+            component: ListCategory,
+            layout: ManagerLayout,
+        },
+        {
+            path: '/listSubCategory',
+            component: ListSubCategory,
+            layout: ManagerLayout,
+        },
+        {
+            path: '/dashboard',
+            component: Dashboard,
+            layout: ManagerLayout,
+        },
+        {
+            path: '/manager/profile',
+            component: ManagerProfiles,
+            layout: ManagerLayout,
+        },
+        {
+            path: '/calendar',
+            component: Calendar,
+            layout: ManagerLayout,
+        },
+        {
+            path: '/addMissionBooking',
+            component: AddMissionBooking,
+            layout: ManagerLayout,
+        },
+        {
+            path: '/addMissionOrder',
+            component: AddMissionOrder,
+            layout: ManagerLayout,
+        },
+        {
+            path: '/listBooking',
+            component: ListBooking,
+            layout: ManagerLayout,
+        },
+        {
+            path: '/listService',
+            component: ListService,
+            layout: ManagerLayout,
+        },
+        {
+            path: '/listVoucher',
+            component: ListVoucher,
+            layout: ManagerLayout,
+        },
+        {
+            path: '/listIssueCategory',
+            component: ListIssueCategory,
+            layout: ManagerLayout,
+        },
+        {
+            path: '/listIssue',
+            component: ListIssue,
+            layout: ManagerLayout,
+        },
+
+        {
+            path: '/listOrder-setup',
+            component: ListOrderDelivery,
+            layout: ManagerLayout,
+        },
+        {
+            path: '/chat',
+            component: Chat,
+            layout: ManagerLayout,
+        },
+        {
+            path: '/listBooking/:id',
+            component: BookingDetail,
             layout: ManagerLayout,
         },
         {
@@ -227,7 +321,6 @@ if (role === 'Admin') {
             component: ErrorScreen,
             layout: MainLayout,
         },
-
         {
             path: '/order',
             component: OrderListScreen,
@@ -266,6 +359,46 @@ if (role === 'Admin') {
         {
             path: '/setup-package-shop/:setupPackageId',
             component: SetupShopDetailScreen,
+            layout: MainLayout,
+        },
+        {
+            path: '/setup-booking/detail/:orderId',
+            component: SetupBookingDetail,
+            layout: MainLayout,
+        },
+        {
+            path: '/setup-booking/service/:setupBookingId',
+            component: BookingService,
+            layout: MainLayout,
+        },
+        {
+            path: '/setup-booking',
+            component: SetupBookingList,
+            layout: MainLayout,
+        },
+        {
+            path: '/booking-setup-schedule/:orderId',
+            component: UpdateBookingSetup,
+            layout: MainLayout,
+        },
+        {
+            path: '/booking-history',
+            component: BookingHistoryListSCreen,
+            layout: MainLayout,
+        },
+        {
+            path: '/booking-detail/:id',
+            component: BookingHistoryDetail,
+            layout: MainLayout,
+        },
+        {
+            path: '/issue-post',
+            component: IssueBlog,
+            layout: MainLayout,
+        },
+        {
+            path: '/issue-post/:id',
+            component: IssueBlogDetail,
             layout: MainLayout,
         },
     ];

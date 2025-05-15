@@ -3,6 +3,8 @@ import { Input } from '@styles/form';
 // import { cardsData } from "../../data/data";
 import { BaseButtonGreen } from '@styles/button';
 import { breakpoints, defaultTheme } from '@styles/themes/default';
+import { useAppSelector } from '@redux/hook';
+import { CartItem } from '@redux/slices/cartSlice';
 
 const ShippingPaymentWrapper = styled.div`
     .shipping-addr,
@@ -146,20 +148,63 @@ const ShippingPaymentWrapper = styled.div`
         }
     }
 `;
-
-const ShippingPayment = () => {
+type ShippingPaymentProps = {
+    setSelectedPayment: (value: string) => void;
+    selectedPayment: string;
+};
+const ShippingPayment = ({ setSelectedPayment, selectedPayment }: ShippingPaymentProps) => {
+    const setupId = useAppSelector((state) => state.cart.setupId);
+    const listCart = useAppSelector((state) => state.cart.cartselected);
+    const totalPrice = listCart.reduce((total: number, item: CartItem) => {
+        return total + item.price;
+    }, 0);
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSelectedPayment(event.target.value);
+    };
     return (
         <ShippingPaymentWrapper>
             <div className="shipping-addr">
+                <div className="horiz-line-separator"></div>
                 <h3 className="text-xxl font-bold text-outerspace">Phương thức thanh toán</h3>
                 <p className="text-base text-outerspace">Chọn phương thức thanh toán.</p>
                 <div className="list-group">
                     <div className="list-group-item flex items-center">
-                        <Input type="radio" name="shipping_addr" defaultChecked />
+                        <input
+                            type="radio"
+                            name="shipping_addr"
+                            value="VnPay"
+                            checked={selectedPayment === 'VnPay'}
+                            onChange={handleChange}
+                        />
                         <span className="font-semibold text-lg">Thanh toán online</span>
+                    </div>
+                    <div className="horiz-line-separator"></div>
+                    <div className="list-group-item flex items-center">
+                        <input
+                            type="radio"
+                            name="shipping_addr"
+                            value="COD"
+                            checked={selectedPayment === 'COD'}
+                            onChange={handleChange}
+                        />
+                        <span className="font-semibold text-lg">Thanh toán khi nhận hàng</span>
                     </div>
                 </div>
             </div>
+            {setupId && (
+                <div className="shipping-addr">
+                    <h3 className="text-xxl font-bold text-outerspace">Dịch vụ bảo trì</h3>
+                    <p className=" text-yellow-500 font-bold">
+                        Bạn sẽ được tặng dịch dụ bảo trì nếu mua bể cá trên 2 triệu*
+                    </p>
+                    <div className="list-group">
+                        <div className="list-group-item flex items-center">
+                            <input type="radio" name="shipping_addrr" checked={totalPrice >= 2000000 ? true : false} />
+                            <span className="font-semibold text-lg">Gói bảo trì</span>
+                        </div>
+                    </div>
+                </div>
+            )}
         </ShippingPaymentWrapper>
     );
 };

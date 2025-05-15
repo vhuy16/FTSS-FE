@@ -128,7 +128,7 @@ const Footer = () => {
                                     <ul className="ftr-links">
                                         {footer.links?.map((link, index) => (
                                             <li className="ftr-link-item" key={index}>
-                                                <Link to={link.url} className="text-white text-base">
+                                                <Link to="/" className="text-white text-base">
                                                     {link.text}
                                                 </Link>
                                             </li>
@@ -152,18 +152,17 @@ const Footer = () => {
                     <div className="ftr-social-links flex items-center">
                         {socialLinksData?.map((socialLink) => {
                             return (
-                                <Link
-                                    to={socialLink.site_url}
+                                <div
                                     key={socialLink.id}
                                     className="ftr-social-link bg-white flex items-center justify-center"
                                 >
                                     <i className={socialLink.site_icon}></i>
-                                </Link>
+                                </div>
                             );
                         })}
                     </div>
                     <div className="ftr-app-links">
-                        <p className="app-links-title text-white text-xl font-semibold text-lg">Donwload the App</p>
+                        <p className="app-links-title text-white text-xl font-semibold text-lg">Tải ngay</p>
                         <div className="app-links-group flex items-center">
                             <Link to="/">
                                 <img src={staticImages.google_play} />
@@ -176,11 +175,10 @@ const Footer = () => {
                 </div>
                 <div className="footer-bottom text-center">
                     <p className="text-base text-white">
-                        Copyright &copy; 2023 &nbsp;
+                        Copyright &copy; 2025 &nbsp;
                         <Link to="/" className="text-white">
-                            Achats site
+                            FTSS .
                         </Link>
-                        &nbsp;. All rights reserved.
                     </p>
                 </div>
             </Container>

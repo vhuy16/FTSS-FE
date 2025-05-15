@@ -1,6 +1,6 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import myAxios from '@setup/axiosConfig';
-type SubCategory = {
+export type SubCategory = {
     id: string;
     subCategoryName: string;
     categoryId: string;
@@ -8,8 +8,9 @@ type SubCategory = {
     createDate: string;
     modifyDate: string;
     categoryName: string;
+    isDelete: boolean;
 };
-type categoryType = {
+export type categoryType = {
     categoryName: string;
     id: string;
     description: string;
@@ -17,14 +18,27 @@ type categoryType = {
     createDate: string;
     modifyDate: string;
     subCategories: SubCategory[] | null;
+    isFishTank: boolean;
+    isObligatory: boolean;
+    isSolution: boolean;
+    isDelete: boolean;
 };
 
-export const getAllCategory = createAsyncThunk('user/getAllCategory', async () => {
+export const getAllCategory = createAsyncThunk('category/getAllCategory', async () => {
     const response = await myAxios.get('/category?page=1&size=100');
     return response.data.data.items;
 });
+export const getAllSubCategory = createAsyncThunk('category/getAllSubCategory', async (_, { rejectWithValue }) => {
+    try {
+        const response = await myAxios.get('/subcategory?page=1&size=100');
+        return response.data.data.items;
+    } catch (error: any) {
+        console.log(error);
+        return rejectWithValue(error.response?.data?.message || 'Lấy danh mục phụ thất bại');
+    }
+});
 export const getAllSubCategoryByCateName = createAsyncThunk(
-    'user/getAllSubCategoryByCateName',
+    'category/getAllSubCategoryByCateName',
     async (cateName: string) => {
         try {
             const response = await myAxios.get(`/category?page=1&size=100&searchName=${cateName}`);
@@ -34,38 +48,182 @@ export const getAllSubCategoryByCateName = createAsyncThunk(
         }
     },
 );
-
+export const addCategory = createAsyncThunk('category/addCategory', async (formData: FormData, { dispatch }) => {
+    try {
+        const response = await myAxios.post(`/category`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        await dispatch(getAllCategory());
+        return response.data;
+    } catch (error: any) {
+        console.log(error);
+    }
+});
+export const addSubCategory = createAsyncThunk(
+    'category/addSubCategory',
+    async (data: { subCategoryName: string; categoryId: string; description: string }, { dispatch }) => {
+        try {
+            const response = await myAxios.post(`/subcategory`, data);
+            await dispatch(getAllSubCategory());
+            return response.data;
+        } catch (error: any) {
+            console.log(error);
+        }
+    },
+);
+export const editSubCategory = createAsyncThunk(
+    'category/editSubCategory',
+    async (
+        { id, data }: { id: string; data: { subCategoryName: string; categoryId: string; description: string } },
+        { dispatch, rejectWithValue },
+    ) => {
+        try {
+            const response = await myAxios.put(`/subcategory/${id}`, data);
+            await dispatch(getAllSubCategory());
+            return response.data;
+        } catch (error: any) {
+            console.log(error);
+            return rejectWithValue(error.response?.data?.message || 'Chỉnh sửa danh mục phụ thất bại');
+        }
+    },
+);
+export const editCategory = createAsyncThunk(
+    'category/editcategory',
+    async ({ id, formData }: { id: string; formData: FormData }, { dispatch, rejectWithValue }) => {
+        try {
+            const response = await myAxios.put(`/category/${id}`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+            await dispatch(getAllCategory());
+            return response.data;
+        } catch (error: any) {
+            console.log(error);
+            return rejectWithValue(error.response?.data?.message || 'Chỉnh sửa danh mục thất bại');
+        }
+    },
+);
+export const deleteCategory = createAsyncThunk(
+    'category/deleteCategory',
+    async (id: string, { rejectWithValue, dispatch }) => {
+        try {
+            const response = await myAxios.delete(`/category/${id}`);
+            await dispatch(getAllCategory());
+            return response.data;
+        } catch (error: any) {
+            console.log(error);
+            return rejectWithValue(error.response?.data?.message || 'Something went wrong');
+        }
+    },
+);
+export const deleteSubCategory = createAsyncThunk(
+    'category/deleteSubCategory',
+    async (id: string, { rejectWithValue, dispatch }) => {
+        try {
+            const response = await myAxios.delete(`/subcategory/${id}`);
+            await dispatch(getAllSubCategory());
+            return response.data;
+        } catch (error: any) {
+            console.log(error);
+            return rejectWithValue(error.response?.data?.message || 'Something went wrong');
+        }
+    },
+);
+export const activeCategory = createAsyncThunk(
+    'category/activeCategory',
+    async (id: string, { rejectWithValue, dispatch }) => {
+        try {
+            const response = await myAxios.put(`/category/enable-category/${id}`);
+            await dispatch(getAllCategory());
+            return response.data;
+        } catch (error: any) {
+            console.log(error);
+            return rejectWithValue(error.response?.data?.message || 'Something went wrong');
+        }
+    },
+);
+export const activeSubCategory = createAsyncThunk(
+    'category/activeSubCategory',
+    async (id: string, { rejectWithValue, dispatch }) => {
+        try {
+            const response = await myAxios.put(`/subcategory/enable-subcategory/${id}`);
+            await dispatch(getAllSubCategory());
+            return response.data;
+        } catch (error: any) {
+            console.log(error);
+            return rejectWithValue(error.response?.data?.message || 'Something went wrong');
+        }
+    },
+);
 type CategoryState = {
     isLoading: boolean;
+    isLoadingAdd: boolean;
+    isLoadingAddSubCate: boolean;
+    isLoadingGetAllCategory: boolean;
+    isLoadingGetAllSubCategory: boolean;
+    isLoadingEditCategory: boolean;
+    isLoadingEditSubCategory: boolean;
+    isLoadingDeleteCategory: boolean;
+    isLoadingActiveCategory: boolean;
+    isLoadingActiveSubCategory: boolean;
+    isLoadingDeleteSubCategory: boolean;
     categories: categoryType[];
     subCates: SubCategory[];
+    subCategory: SubCategory[];
     isError: boolean;
+    selectedCategory: categoryType | null;
+    selectedSubCategory: SubCategory | null;
 };
 
 const initialState: CategoryState = {
     isLoading: false,
+    isLoadingAdd: false,
+    isLoadingAddSubCate: false,
+    isLoadingGetAllCategory: false,
+    isLoadingGetAllSubCategory: false,
+    isLoadingEditCategory: false,
+    isLoadingEditSubCategory: false,
+    isLoadingDeleteCategory: false,
+    isLoadingDeleteSubCategory: false,
+    isLoadingActiveCategory: false,
+    isLoadingActiveSubCategory: false,
     categories: [],
     subCates: [],
+    subCategory: [],
     isError: false,
+    selectedCategory: null,
+    selectedSubCategory: null,
 };
 
 const ListCategorySlice = createSlice({
     name: 'listCategory',
     initialState,
-    reducers: {},
+    reducers: {
+        selectCategory: (state, action: PayloadAction<categoryType>) => {
+            const category = action.payload;
+            state.selectedCategory = category;
+        },
+        selectSubCategory: (state, action: PayloadAction<SubCategory>) => {
+            const subCategory = action.payload;
+            state.selectedSubCategory = subCategory;
+        },
+    },
     extraReducers: (builder) => {
         builder
             .addCase(getAllCategory.pending, (state) => {
-                state.isLoading = true;
+                state.isLoadingGetAllCategory = true;
                 state.isError = false;
             })
             .addCase(getAllCategory.fulfilled, (state, action) => {
-                state.isLoading = false;
+                state.isLoadingGetAllCategory = false;
                 state.categories = action.payload;
                 state.isError = false;
             })
             .addCase(getAllCategory.rejected, (state, action) => {
-                state.isLoading = false;
+                state.isLoadingGetAllCategory = false;
                 state.isError = true;
             });
         builder
@@ -82,7 +240,125 @@ const ListCategorySlice = createSlice({
                 state.isLoading = false;
                 state.isError = true;
             });
+        builder
+            .addCase(getAllSubCategory.pending, (state) => {
+                state.isLoadingGetAllSubCategory = true;
+                state.isError = false;
+            })
+            .addCase(getAllSubCategory.fulfilled, (state, action) => {
+                state.isLoadingGetAllSubCategory = false;
+                state.subCategory = action.payload;
+                state.isError = false;
+            })
+            .addCase(getAllSubCategory.rejected, (state, action) => {
+                state.isLoadingGetAllSubCategory = false;
+                state.isError = true;
+            });
+        builder
+            .addCase(addCategory.pending, (state) => {
+                state.isLoadingAdd = true;
+                state.isError = false;
+            })
+            .addCase(addCategory.fulfilled, (state, action) => {
+                state.isLoadingAdd = false;
+                state.isError = false;
+            })
+            .addCase(addCategory.rejected, (state, action) => {
+                state.isLoadingAdd = false;
+                state.isError = true;
+            });
+        builder
+            .addCase(addSubCategory.pending, (state) => {
+                state.isLoadingAddSubCate = true;
+                state.isError = false;
+            })
+            .addCase(addSubCategory.fulfilled, (state, action) => {
+                state.isLoadingAddSubCate = false;
+                state.isError = false;
+            })
+            .addCase(addSubCategory.rejected, (state, action) => {
+                state.isLoadingAddSubCate = false;
+                state.isError = true;
+            });
+        builder
+            .addCase(editCategory.pending, (state) => {
+                state.isLoadingEditCategory = true;
+                state.isError = false;
+            })
+            .addCase(editCategory.fulfilled, (state, action) => {
+                state.isLoadingEditCategory = false;
+                state.isError = false;
+            })
+            .addCase(editCategory.rejected, (state, action) => {
+                state.isLoadingEditCategory = false;
+                state.isError = true;
+            });
+        builder
+            .addCase(editSubCategory.pending, (state) => {
+                state.isLoadingEditSubCategory = true;
+                state.isError = false;
+            })
+            .addCase(editSubCategory.fulfilled, (state, action) => {
+                state.isLoadingEditSubCategory = false;
+                state.isError = false;
+            })
+            .addCase(editSubCategory.rejected, (state, action) => {
+                state.isLoadingEditSubCategory = false;
+                state.isError = true;
+            });
+        builder
+            .addCase(deleteCategory.pending, (state) => {
+                state.isLoadingDeleteCategory = true;
+                state.isError = false;
+            })
+            .addCase(deleteCategory.fulfilled, (state, action) => {
+                state.isLoadingDeleteCategory = false;
+                state.isError = false;
+            })
+            .addCase(deleteCategory.rejected, (state, action) => {
+                state.isLoadingDeleteCategory = false;
+                state.isError = true;
+            });
+        builder
+            .addCase(deleteSubCategory.pending, (state) => {
+                state.isLoadingDeleteSubCategory = true;
+                state.isError = false;
+            })
+            .addCase(deleteSubCategory.fulfilled, (state, action) => {
+                state.isLoadingDeleteSubCategory = false;
+                state.isError = false;
+            })
+            .addCase(deleteSubCategory.rejected, (state, action) => {
+                state.isLoadingDeleteSubCategory = false;
+                state.isError = true;
+            });
+        builder
+            .addCase(activeCategory.pending, (state) => {
+                state.isLoadingActiveCategory = true;
+                state.isError = false;
+            })
+            .addCase(activeCategory.fulfilled, (state, action) => {
+                state.isLoadingActiveCategory = false;
+                state.isError = false;
+            })
+            .addCase(activeCategory.rejected, (state, action) => {
+                state.isLoadingActiveCategory = false;
+                state.isError = true;
+            });
+        builder
+            .addCase(activeSubCategory.pending, (state) => {
+                state.isLoadingActiveSubCategory = true;
+                state.isError = false;
+            })
+            .addCase(activeSubCategory.fulfilled, (state, action) => {
+                state.isLoadingActiveSubCategory = false;
+                state.isError = false;
+            })
+            .addCase(activeSubCategory.rejected, (state, action) => {
+                state.isLoadingActiveSubCategory = false;
+                state.isError = true;
+            });
     },
 });
-
+export const { selectCategory, selectSubCategory } = ListCategorySlice.actions;
 export default ListCategorySlice.reducer;

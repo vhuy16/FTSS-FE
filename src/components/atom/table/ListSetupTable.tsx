@@ -5,18 +5,14 @@ import Button from '@components/ui/button/Button';
 import { Box, styled } from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useAppDispatch, useAppSelector } from '@redux/hook';
-import { getAllUser } from '@redux/slices/userSlice';
-import UserPopup from '../popup/UserPopup';
-import { getAllOrder } from '@redux/slices/orderSlice';
 import { currencyFormat } from '@ultils/helper';
 import Badge from '@components/ui/badge/Badge';
-import OrderPopup from '../popup/OrderPopup';
 import { getAllProductForAdmin, Product } from '@redux/slices/productSlice';
-import ProductPopup from '../popup/ProductPopup';
-import AddProductModal from '../modal/AddProductModal';
-import { getSetupPackagesShop } from '@redux/slices/setupSlice';
+import { getSetupPackagesShop, SetupPackage } from '@redux/slices/setupSlice';
 import AddSetupModal from '../modal/AddSetupModal';
 import SetupPopup from '../popup/SetupPopup';
+import EditSetupModal from '../modal/EditSetupModal';
+import LoadingPage from '../Loading/LoadingPage';
 
 const paginationModel = { page: 0, pageSize: 5 };
 const StyledDataGrid = styled(DataGrid)((theme) => ({
@@ -30,12 +26,23 @@ const StyledDataGrid = styled(DataGrid)((theme) => ({
     },
 }));
 export default function ListSetupTable() {
-    const listSetup = useAppSelector((state) => state.setupPackage.setupPackages);
+    const listSetup = useAppSelector((state) => state.setupPackage.setupPackagesShop?.setupPackages ?? []);
+    const isLoading = useAppSelector((state) => state.setupPackage.isloadingGetAllPackageShop);
     const [isModalAddOpen, setIsModalAddOpen] = useState(false);
+    const [isModalEditOpen, setIsModalEditOpen] = useState(false);
+    const [setups, setSetups] = useState<SetupPackage[]>([]);
+    const [value, setValue] = useState('');
     const dispatch = useAppDispatch();
     useEffect(() => {
-        dispatch(getSetupPackagesShop());
+        dispatch(getSetupPackagesShop({ page: 1, size: 100 }));
     }, []);
+    useEffect(() => {
+        if (value === '') {
+            setSetups(listSetup);
+        } else {
+            setSetups(listSetup.filter((setup) => setup.setupName.toLowerCase().includes(value)));
+        }
+    }, [value, listSetup]);
     const columns: GridColDef[] = [
         { field: 'stt', headerName: 'STT', width: 50, headerClassName: 'super-app-theme--header' },
         { field: 'id', headerName: 'Mã thiết kế', width: 350, headerClassName: 'super-app-theme--header' },
@@ -50,7 +57,16 @@ export default function ListSetupTable() {
                         <img src={params.row.images} alt={params.row.setupName} />
                     </div>
                     <div>
-                        <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
+                        <span
+                            className="block font-medium text-gray-800 text-theme-sm dark:text-white/90"
+                            style={{
+                                whiteSpace: 'nowrap',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                width: '200px',
+                            }}
+                            title={params.row.setupName}
+                        >
                             {params.row.setupName}
                         </span>
                         <span className="block text-gray-500 text-theme-xs dark:text-gray-400">{params.row.size}</span>
@@ -68,7 +84,7 @@ export default function ListSetupTable() {
         {
             field: 'products',
             headerName: 'Thành phần',
-            width: 200,
+            width: 300,
             headerClassName: 'super-app-theme--header',
             renderCell: (params) => (
                 <div className="flex items-center -space-x-2 h-full">
@@ -103,15 +119,17 @@ export default function ListSetupTable() {
             sortable: false,
             renderCell: (params) => (
                 <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
-                    <SetupPopup setup={params.row} />
+                    <SetupPopup setup={params.row} setIsModalEditOpen={setIsModalEditOpen} />
                 </Box>
             ),
         },
     ];
-    const rows = listSetup?.map((setup, index) => {
+    const rows = setups?.map((setup, index) => {
         return { ...setup, stt: index + 1, id: setup.setupPackageId };
     });
-    return (
+    return isLoading && listSetup?.length === 0 ? (
+        <LoadingPage></LoadingPage>
+    ) : (
         <div>
             <div className="flex justify-between mb-4">
                 <div className="relative">
@@ -136,6 +154,9 @@ export default function ListSetupTable() {
                         type="text"
                         placeholder="Tìm kiếm..."
                         className="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-200 bg-transparent py-2.5 pl-12 pr-14 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-800 dark:bg-gray-900 dark:bg-white/[0.03] dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 xl:w-[430px]"
+                        onChange={(e) => {
+                            setValue(e.target.value.toLowerCase());
+                        }}
                     />
                 </div>
                 <Button
@@ -209,6 +230,7 @@ export default function ListSetupTable() {
                 </Box>
             )}
             <AddSetupModal isModalAddOpen={isModalAddOpen} setIsModalAddOpen={setIsModalAddOpen}></AddSetupModal>
+            <EditSetupModal isModalEditOpen={isModalEditOpen} setIsModalEditOpen={setIsModalEditOpen} />
         </div>
     );
 }

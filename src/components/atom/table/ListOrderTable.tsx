@@ -4,15 +4,17 @@ import Button from '@components/ui/button/Button';
 import { Box, styled } from '@mui/material';
 import { DataGrid, GridCellParams, GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
 import { useAppDispatch, useAppSelector } from '@redux/hook';
-import { getAllUser } from '@redux/slices/userSlice';
-import UserPopup from '../popup/UserPopup';
-import { getAllOrder } from '@redux/slices/orderSlice';
+import { getAllOrder, Order } from '@redux/slices/orderSlice';
 import { currencyFormat } from '@ultils/helper';
 import Badge from '@components/ui/badge/Badge';
 import OrderPopup from '../popup/OrderPopup';
 import { useNavigate } from 'react-router-dom';
-import { Order } from '@redux/slices/orderListSlice';
 import { CSVLink } from 'react-csv';
+import LoadingPage from '../Loading/LoadingPage';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 
 const paginationModel = { page: 0, pageSize: 5 };
 const StyledDataGrid = styled(DataGrid)((theme) => ({
@@ -26,23 +28,51 @@ const StyledDataGrid = styled(DataGrid)((theme) => ({
     },
 }));
 export default function ListOrderTable() {
-    const listOrder = useAppSelector((state) => state.order.listOrder);
+    const listOrder = useAppSelector((state) => state.order.listOrder ?? []);
+    const isLoading = useAppSelector((state) => state.order.isLoadingGetAllOrder);
     const [selectedRow, setSelectedRow] = useState<any[]>([]);
+    const [searchValue, setSearchValue] = useState('');
+    const [orders, setOrders] = useState<Order[]>([]);
+    const [status, setStatus] = useState('All');
     const dispatch = useAppDispatch();
+
     useEffect(() => {
         dispatch(getAllOrder());
     }, []);
+
+    useEffect(() => {
+        if (status === 'All' && !searchValue) {
+            setOrders(listOrder?.filter((order) => order.setupPackage == null));
+        } else if (status === 'All' && searchValue) {
+            setOrders(
+                listOrder.filter(
+                    (order) => order.oderCode.toLowerCase().includes(searchValue) && order.setupPackage == null,
+                ),
+            );
+        } else if (status !== 'All' && !searchValue) {
+            setOrders(listOrder.filter((order) => order.status === status && order.setupPackage == null));
+        } else {
+            setOrders(
+                listOrder.filter(
+                    (order) =>
+                        order.oderCode.toLowerCase().includes(searchValue) &&
+                        order.status === status &&
+                        order.setupPackage == null,
+                ),
+            );
+        }
+    }, [status, searchValue, listOrder]);
     const columns: GridColDef[] = [
         { field: 'stt', headerName: 'STT', width: 50, headerClassName: 'super-app-theme--header' },
 
         {
             field: 'id',
             headerName: 'Mã đơn hàng',
-            width: 320,
+            width: 150,
             headerClassName: 'super-app-theme--header',
             renderCell: (params) => (
-                <span onClick={(event) => event.stopPropagation()} style={{ cursor: 'pointer', userSelect: 'none' }}>
-                    {params.value}
+                <span onClick={(event) => event.stopPropagation()} style={{ cursor: 'pointer' }}>
+                    {params.row.oderCode}
                 </span>
             ),
         },
@@ -60,30 +90,7 @@ export default function ListOrderTable() {
             headerClassName: 'super-app-theme--header',
             renderCell: (params) => params.row.createDate.split('T')[0],
         },
-        {
-            field: 'paymentStatus',
-            headerName: 'Trạng thái thanh toán',
-            width: 200,
-            headerClassName: 'super-app-theme--header',
-            renderCell: (params) => (
-                <Badge
-                    size="sm"
-                    color={
-                        params.row.payment.paymentStatus === 'Processing'
-                            ? 'warning'
-                            : params.row.payment.paymentStatus === 'Completed'
-                            ? 'success'
-                            : 'error'
-                    }
-                >
-                    {params.row.payment.paymentStatus === 'Processing'
-                        ? 'Đang chờ thanh toán'
-                        : params.row.payment.paymentStatus === 'Completed'
-                        ? 'Đã thanh toán'
-                        : 'Đã hủy'}
-                </Badge>
-            ),
-        },
+
         {
             field: 'totalPrice',
             headerName: 'Tổng tiền',
@@ -94,9 +101,46 @@ export default function ListOrderTable() {
         {
             field: 'paymentMethod',
             headerName: 'Phương thức thanh toán',
-            width: 200,
+            width: 220,
             headerClassName: 'super-app-theme--header',
-            renderCell: (params) => params.row.payment.paymentMethod,
+            renderCell: (params) => params.row.payment?.paymentMethod,
+        },
+        {
+            field: 'paymentStatus',
+            headerName: 'Trạng thái thanh toán',
+            width: 200,
+            sortable: true,
+            headerClassName: 'super-app-theme--header',
+            renderCell: (params) => (
+                <Badge
+                    size="sm"
+                    color={
+                        params.row.payment?.paymentStatus === 'Processing'
+                            ? 'warning'
+                            : params.row.payment?.paymentStatus === 'Completed'
+                            ? 'success'
+                            : params.row.payment?.paymentStatus === 'Cancelled'
+                            ? 'error'
+                            : params.row.payment?.paymentStatus === 'Refunding'
+                            ? 'light'
+                            : params.row.payment?.paymentStatus === 'Refunded'
+                            ? 'dark'
+                            : 'primary'
+                    }
+                >
+                    {params.row.payment?.paymentStatus === 'Processing'
+                        ? 'Đang chờ thanh toán'
+                        : params.row.payment?.paymentStatus === 'Completed'
+                        ? 'Đã thanh toán'
+                        : params.row.payment?.paymentStatus === 'Cancelled'
+                        ? 'Đã hủy'
+                        : params.row.payment?.paymentStatus === 'Refunding'
+                        ? 'Đang hoàn tiền'
+                        : params.row.payment?.paymentStatus === 'Refunded'
+                        ? 'Đã hoàn tiền'
+                        : 'primary'}
+                </Badge>
+            ),
         },
         {
             field: 'status',
@@ -108,17 +152,49 @@ export default function ListOrderTable() {
                     size="sm"
                     color={
                         params.row.status === 'PENDING_DELIVERY'
-                            ? 'success'
+                            ? 'primary'
                             : params.row.status === 'PROCESSING'
                             ? 'warning'
+                            : params.row.status === 'PROCESSED'
+                            ? 'info'
+                            : params.row.status === 'CANCELLED'
+                            ? 'error'
+                            : params.row.status === 'COMPLETED'
+                            ? 'success'
+                            : params.row.status === 'DONE'
+                            ? 'done'
+                            : params.row.status === 'NOTDONE'
+                            ? 'notDone'
+                            : params.row.status === 'RETURNING'
+                            ? 'light'
+                            : params.row.status === 'RETURNED'
+                            ? 'dark'
+                            : params.row.status === 'RETURN_ACCEPTED'
+                            ? 'info'
                             : 'error'
                     }
                 >
-                    {params.row.status === 'PROCESSING'
-                        ? 'Đang xử lý'
-                        : params.row.status === 'PENDING_DELIVERY'
+                    {params.row.status === 'PENDING_DELIVERY'
                         ? 'Đang giao'
-                        : 'Hoàn tất'}
+                        : params.row.status === 'PROCESSING'
+                        ? 'Đang xử lý'
+                        : params.row.status === 'PROCESSED'
+                        ? 'Đã xử lý'
+                        : params.row.status === 'CANCELLED'
+                        ? 'Đã hủy'
+                        : params.row.status === 'COMPLETED'
+                        ? 'Hoàn tất'
+                        : params.row.status === 'DONE'
+                        ? 'Xong công việc'
+                        : params.row.status === 'NOTDONE'
+                        ? 'Chưa xong'
+                        : params.row.status === 'RETURNING'
+                        ? 'Yêu cầu hoàn trả'
+                        : params.row.status === 'RETURNED'
+                        ? 'Đã hoàn trả'
+                        : params.row.status === 'RETURN_ACCEPTED'
+                        ? 'Đã chấp nhận hoàn trả'
+                        : 'error'}
                 </Badge>
             ),
         },
@@ -147,14 +223,15 @@ export default function ListOrderTable() {
             navigate(`/listOrder/${params.row.id}`);
         }
     };
-    const rows = listOrder?.map((order, index) => {
+    const rows = orders?.map((order, index) => {
         return { ...order, stt: index + 1 };
     });
-
-    return (
+    return isLoading && listOrder?.length === 0 ? (
+        <LoadingPage></LoadingPage>
+    ) : (
         <div>
             <div className="flex justify-between mb-4">
-                <div className="relative">
+                <div className="relative flex items-center">
                     <span className="absolute -translate-y-1/2 pointer-events-none left-4 top-1/2">
                         <svg
                             className="fill-gray-500 dark:fill-gray-400"
@@ -175,8 +252,31 @@ export default function ListOrderTable() {
                     <input
                         type="text"
                         placeholder="Tìm kiếm..."
+                        onChange={(e) => {
+                            setSearchValue(e.target.value.toLowerCase());
+                        }}
                         className="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-200 bg-transparent py-2.5 pl-12 pr-14 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-800 dark:bg-gray-900 dark:bg-white/[0.03] dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 xl:w-[430px]"
                     />
+                    <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+                        <InputLabel id="demo-select-small-label">Trạng thái</InputLabel>
+                        <Select
+                            labelId="demo-select-small-label"
+                            id="demo-select-small"
+                            label="Trạng thái"
+                            value={status}
+                            onChange={(e) => setStatus(e.target.value)}
+                        >
+                            <MenuItem value={'All'}>Tất cả</MenuItem>
+                            <MenuItem value={'PROCESSING'}>Đang xử lý</MenuItem>
+                            <MenuItem value={'PROCESSED'}>Đã xử lý</MenuItem>
+                            <MenuItem value={'PENDING_DELIVERY'}>Đang giao</MenuItem>
+                            <MenuItem value={'COMPLETED'}>Hoàn tất</MenuItem>
+                            <MenuItem value={'CANCELLED'}>Đã hủy</MenuItem>
+                            <MenuItem value={'RETURNING'}>Yêu cầu hoàn trả</MenuItem>
+                            <MenuItem value={'RETURN_ACCEPTED'}>Đã chấp nhận hoàn trả</MenuItem>
+                            <MenuItem value={'RETURNED'}>Đã hoàn trả</MenuItem>
+                        </Select>
+                    </FormControl>
                 </div>
                 <Button size="ssm" variant="primary" startIcon={<DownloadIcon />}>
                     <CSVLink data={selectedRow} filename="order">
@@ -250,7 +350,7 @@ export default function ListOrderTable() {
                         onRowSelectionModelChange={(row) => {
                             const orders = listOrder.filter((order) => row.includes(order.id as string));
                             const dataCSV = orders.map((order) => ({
-                                'Mã đơn hàng': order.id,
+                                'Mã đơn hàng': order.oderCode,
                                 'Ngày tạo': order.createDate,
                                 'Tên khách hàng': order.userResponse.name,
                                 'Số điện thoại': order.userResponse.phoneNumber,

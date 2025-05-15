@@ -2,7 +2,6 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
 @layer base {
     body {
         @apply relative text-base font-normal z-1 bg-gray-50 font-outfit;
@@ -66,6 +65,7 @@
     /* .base {
         @apply relative text-base font-normal z-1 bg-gray-50 font-outfit;
     } */
+
     .menu-item {
         @apply relative flex items-center w-full gap-3 px-3 py-2 font-medium rounded-lg text-theme-sm;
     }
@@ -99,7 +99,7 @@
         @apply relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-theme-sm font-medium;
     }
     .menu-dropdown-item-active {
-        @apply bg-brand-50 text-brand-500 dark:bg-brand-500/[0.12] dark:text-brand-400;
+        @apply bg-whiteBlue2 text-black dark:bg-brand-500/[0.12] dark:text-brand-400;
     }
     .menu-dropdown-item-inactive {
         @apply text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/5;
@@ -195,8 +195,8 @@
 #chartTwo .apexcharts-datalabels-group {
     @apply !-translate-y-24;
 }
-#chartTwo .apexcharts-datalabels-group .apexcharts-text {
-    @apply !fill-gray-800 !font-semibold dark:!fill-white/90;
+#chartTwo .apexcharts-text {
+    @apply !fill-white !font-semibold dark:!fill-white/90;
 }
 
 #chartSixteen .apexcharts-legend {
@@ -430,7 +430,7 @@ span.flatpickr-weekday,
     @apply hidden;
 }
 .fc-addEventButton-button {
-    @apply !rounded-lg !border-0 !bg-brand-500 !px-4 !py-2.5 !text-sm !font-medium hover:!bg-brand-600 focus:!shadow-none;
+    @apply !bg-blackGreen text-white shadow-theme-xs hover:!bg-blackGreenHover disabled:bg-brand-300;
 }
 .fc-toolbar-title {
     @apply !text-lg !font-medium text-gray-800 dark:text-white/90;
@@ -493,6 +493,15 @@ span.flatpickr-weekday,
 .event-fc-color.fc-bg-success {
     @apply border-success-50 bg-success-50;
 }
+.event-fc-color.fc-bg-completed {
+    @apply border-cyan-50 bg-cyan-50;
+}
+.event-fc-color.fc-bg-notDone {
+    @apply border-purple-50 bg-purple-50;
+}
+.event-fc-color.fc-bg-reported {
+    @apply border-gray-100 bg-gray-100;
+}
 .event-fc-color.fc-bg-danger {
     @apply border-error-50 bg-error-50;
 }
@@ -504,6 +513,15 @@ span.flatpickr-weekday,
 }
 .event-fc-color.fc-bg-success .fc-daygrid-event-dot {
     @apply bg-success-500;
+}
+.event-fc-color.fc-bg-completed .fc-daygrid-event-dot {
+    @apply bg-cyan-500;
+}
+.event-fc-color.fc-bg-notDone .fc-daygrid-event-dot {
+    @apply bg-purple-500;
+}
+.event-fc-color.fc-bg-reported .fc-daygrid-event-dot {
+    @apply bg-gray-500;
 }
 .event-fc-color.fc-bg-danger .fc-daygrid-event-dot {
     @apply bg-error-500;
@@ -520,7 +538,9 @@ span.flatpickr-weekday,
 .fc .fc-timegrid-axis-cushion {
     @apply text-sm font-medium text-gray-500 dark:text-gray-400;
 }
-
+.fc-daygrid-block-event .fc-event-time {
+    font-weight: 400;
+}
 .input-date-icon::-webkit-inner-spin-button,
 .input-date-icon::-webkit-calendar-picker-indicator {
     opacity: 0;
@@ -608,4 +628,15 @@ span.flatpickr-weekday,
 }
 .fc.fc-media-screen {
     @apply min-h-screen;
+}
+.fc-v-event {
+    background-color: transparent !important;
+    border: solid #dad7d7 0.1px !important;
+}
+.fc-event-time {
+    color: black;
+    margin-right: 1rem;
+}
+.fc-event-main {
+    width: 100%;
 }

@@ -1,117 +1,121 @@
-import styled, { css } from 'styled-components';
-import { defaultTheme } from './themes/default';
-import { Link } from 'react-router-dom';
+import styled, { css } from "styled-components";
+import { defaultTheme } from "./themes/default";
+import { Link } from "react-router-dom";
 
 // writing button stylings in normal css
 const commonButtonStyles = css`
-    font-family: inherit;
-    min-width: 110px;
-    height: 36px;
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    border-radius: 4px;
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 14px;
-    border: 1px solid transparent;
-    padding-left: 12px;
-    padding-right: 12px;
-    transition: ${defaultTheme.default_transition};
-    &:hover {
-        transform: scale(0.97);
-    }
+  font-family: inherit;
+  min-width: 110px;
+  height: 36px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 14px;
+  border: 1px solid transparent;
+  padding-left: 12px;
+  padding-right: 12px;
+  transition: ${defaultTheme.default_transition};
+  &:hover {
+    transform: scale(0.97);
+  }
 `;
 
 const BaseButton = styled.button`
-    ${commonButtonStyles}
-    color: ${defaultTheme.color_white};
+  ${commonButtonStyles}
+  color: ${defaultTheme.color_white};
 `;
 
 const BaseLink = styled(Link)`
-    ${commonButtonStyles}
-    color: ${defaultTheme.color_white};
+  ${commonButtonStyles}
+  color: ${defaultTheme.color_white};
 `;
 
 const BaseButtonGreen = styled(BaseButton)`
-    background-color: ${defaultTheme.color_sea_green};
-    border-color: ${defaultTheme.color_sea_green};
+  background-color: ${defaultTheme.color_sea_green};
+  border-color: ${defaultTheme.color_sea_green};
 `;
 
 const BaseButtonBlack = styled(BaseButton)`
-    background-color: ${defaultTheme.color_black};
+  background-color: ${defaultTheme.color_black};
 `;
 
 const BaseButtonOuterspace = styled(BaseButton)`
-    background-color: ${defaultTheme.color_outerspace};
+  background-color: ${defaultTheme.color_outerspace};
 `;
 
 const BaseButtonWhitesmoke = styled(BaseButton)`
-    color: ${defaultTheme.color_black};
-    background-color: ${defaultTheme.color_whitesmoke};
+  color: ${defaultTheme.color_black};
+  background-color: ${defaultTheme.color_whitesmoke};
 `;
-
+const BaseButtonWhite = styled(BaseButton)`
+  color: ${defaultTheme.color_black};
+  background-color: ${defaultTheme.color_white};
+`;
 const BaseLinkGreen = styled(BaseLink)`
-    background-color: ${defaultTheme.color_sea_green};
-    border-color: ${defaultTheme.color_sea_green};
+  background-color: ${defaultTheme.color_sea_green};
+  border-color: ${defaultTheme.color_sea_green};
 `;
 const BaseLinkRed = styled(BaseButton)`
-    background-color: ${defaultTheme.color_red};
-    border-color: ${defaultTheme.color_red};
+  background-color: ${defaultTheme.color_red};
+  border-color: ${defaultTheme.color_red};
 `;
 const BaseBtnGreen = styled(BaseButton)`
-    background-color: ${defaultTheme.color_sea_green};
-    border-color: ${defaultTheme.color_sea_green};
+  background-color: ${defaultTheme.color_sea_green};
+  border-color: ${defaultTheme.color_sea_green};
 `;
 
 const BaseLinkBlack = styled(BaseLink)`
-    background-color: ${defaultTheme.color_black};
+  background-color: ${defaultTheme.color_black};
 `;
 
 const BaseLinkWhite = styled(BaseLink)`
-    color: ${defaultTheme.color_black};
-    background-color: ${defaultTheme.color_white};
+  color: ${defaultTheme.color_black};
+  background-color: ${defaultTheme.color_white};
 `;
 
 const BaseLinkOutlineDark = styled(BaseLink)`
-    color: ${defaultTheme.color_black};
-    border-color: ${defaultTheme.color_black};
+  color: ${defaultTheme.color_black};
+  border-color: ${defaultTheme.color_black};
 `;
 const BaseLinkOutlineGreen = styled(BaseLink)`
-    color: ${defaultTheme.color_sea_green};
-    border-color: ${defaultTheme.color_sea_green};
+  color: ${defaultTheme.color_sea_green};
+  border-color: ${defaultTheme.color_sea_green};
 `;
 
 const BaseLinkOutlineWhite = styled(BaseLink)`
-    color: ${defaultTheme.color_white};
-    border-color: ${defaultTheme.color_white};
+  color: ${defaultTheme.color_white};
+  border-color: ${defaultTheme.color_white};
 
-    &:hover {
-        background-color: ${defaultTheme.color_white};
-        color: ${defaultTheme.color_outerspace};
-    }
+  &:hover {
+    background-color: ${defaultTheme.color_white};
+    color: ${defaultTheme.color_outerspace};
+  }
 `;
 
 const BaseLinkOutlinePlatinum = styled(BaseLink)`
-    color: ${defaultTheme.color_black};
-    border-color: ${defaultTheme.color_platinum};
+  color: ${defaultTheme.color_black};
+  border-color: ${defaultTheme.color_platinum};
 `;
 
 export {
-    BaseButton,
-    BaseLink,
-    BaseButtonGreen,
-    BaseButtonBlack,
-    BaseButtonOuterspace,
-    BaseButtonWhitesmoke,
-    BaseLinkGreen,
-    BaseLinkBlack,
-    BaseLinkWhite,
-    BaseLinkOutlineDark,
-    BaseLinkOutlineWhite,
-    BaseLinkOutlinePlatinum,
-    BaseBtnGreen,
-    BaseLinkRed,
-    BaseLinkOutlineGreen,
+  BaseButton,
+  BaseLink,
+  BaseButtonGreen,
+  BaseButtonBlack,
+  BaseButtonOuterspace,
+  BaseButtonWhitesmoke,
+  BaseLinkGreen,
+  BaseLinkBlack,
+  BaseLinkWhite,
+  BaseLinkOutlineDark,
+  BaseLinkOutlineWhite,
+  BaseLinkOutlinePlatinum,
+  BaseBtnGreen,
+  BaseLinkRed,
+  BaseLinkOutlineGreen,
+  BaseButtonWhite,
 };

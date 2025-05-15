@@ -1,7 +1,7 @@
-import hero1 from "@images/hero1.jpg";
 import hero2 from "@images/hero1.jpg";
-import hero3 from "@images/hero1.jpg";
-import hero4 from "@images/hero1.jpg";
+import beca4 from "@images/beca4.jpg";
+import beca2 from "@images/beca2.jpg";
+import beca3 from "@images/beca3.jpg";
 // Định nghĩa kiểu cho một banner
 interface Banner {
   id: string;
@@ -22,7 +22,7 @@ export const bannerData: Banner[] = [
     bottomText: "sang trọng / đẳng cấp / hiện đại",
     buttonLink: "/product",
     buttonText: "Xem Ngay",
-    imgSource: hero1,
+    imgSource: beca2,
   },
   {
     id: "banner-2",
@@ -40,7 +40,7 @@ export const bannerData: Banner[] = [
     bottomText: "hút vượng khí / tăng tài lộc",
     buttonLink: "/product",
     buttonText: "Xem ngay",
-    imgSource: hero3,
+    imgSource: beca3,
   },
   {
     id: "banner-4",
@@ -49,6 +49,6 @@ export const bannerData: Banner[] = [
     bottomText: "bơm oxy / đèn LED / máy lọc nước",
     buttonLink: "/product",
     buttonText: "Mua Ngay",
-    imgSource: hero4,
+    imgSource: beca4,
   },
 ];

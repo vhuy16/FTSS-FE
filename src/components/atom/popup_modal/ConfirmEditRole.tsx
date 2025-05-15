@@ -27,8 +27,6 @@ export default function ConfirmEditRole({
     const dispatch = useAppDispatch();
     const isLoading = useAppSelector((state) => state.userProfile.isLoadingEdit);
     const handleEdit = async () => {
-        console.log('user', user);
-        console.log('role', newRole);
         const data = {
             gender: user.gender == 'Male' ? 0 : 1,
             fullName: user.fullName,
@@ -100,7 +98,7 @@ export default function ConfirmEditRole({
                                     </h3>
                                     <button
                                         type="button"
-                                        className="text-white bg-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center"
+                                        className="text-white bg-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-yellow-400 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center"
                                         onClick={handleEdit}
                                     >
                                         {isLoading ? <Loading></Loading> : 'Xác nhận'}

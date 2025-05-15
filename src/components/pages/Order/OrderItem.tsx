@@ -1,9 +1,6 @@
 import styled from "styled-components";
-import PropTypes from "prop-types";
-import { breakpoints, defaultTheme } from "@styles/themes/default";
+import { breakpoints } from "@styles/themes/default";
 import { currencyFormat } from "@ultils/helper";
-import { BaseBtnGreen } from "@styles/button";
-import { type } from "@testing-library/user-event/dist/type";
 import { Order } from "@redux/slices/orderListSlice";
 import { useNavigate } from "react-router-dom";
 
@@ -11,101 +8,112 @@ interface OrderItemProps {
   order: Order;
 }
 const OrderDetailListWrapper = styled.div`
-  padding: 24px;
-  margin-top: 15px;
-  border: 2px solid rgba(0, 0, 0, 0.07);
-
-  @media (max-width: ${breakpoints.md}) {
-    padding: 18px;
-  }
-
-  @media (max-width: ${breakpoints.md}) {
-    padding: 12px;
-  }
+  background: #fff;
+  padding: 0 25px;
 
   .order-d-item {
-    grid-template-columns: 80px 1fr 1fr 32px;
-    gap: 20px;
+    display: grid;
+    grid-template-columns: 80px 1fr auto;
+    gap: 46px;
     padding: 12px 0;
-    border-bottom: 1px solid ${defaultTheme.color_whitesmoke};
-    position: relative;
-
-    @media (max-width: ${breakpoints.xl}) {
-      grid-template-columns: 80px 3fr 2fr 32px;
-      padding: 16px 0;
-      gap: 16px;
-    }
+    align-items: center;
 
     @media (max-width: ${breakpoints.sm}) {
-      grid-template-columns: 50px 3fr 2fr;
-      gap: 16px;
-    }
-
-    @media (max-width: ${breakpoints.xs}) {
-      grid-template-columns: 100%;
+      grid-template-columns: 60px 1fr;
       gap: 12px;
     }
 
-    &:first-child {
-      padding-top: 0;
-    }
-
-    &:last-child {
-      padding-bottom: 0;
-      border-bottom: 0;
-    }
-
     &-img {
-      width: 80px;
-      height: 80px;
+      width: 100px;
+      height: 100px;
       border-radius: 8px;
       overflow: hidden;
       box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
 
       @media (max-width: ${breakpoints.sm}) {
-        width: 50px;
-        height: 50px;
+        width: 60px;
+        height: 60px;
       }
 
-      @media (max-width: ${breakpoints.sm}) {
+      img {
         width: 100%;
         height: 100%;
+        object-fit: cover;
       }
     }
 
-    &-calc {
+    &-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+
+      .product-name {
+        font-size: 1rem;
+        font-weight: bold;
+      }
+
+      .variant {
+        font-size: 0.875rem;
+        color: #666;
+      }
+
+      .quantity {
+        font-size: 0.875rem;
+        color: #666;
+      }
+    }
+
+    &-price {
+      text-align: right;
+      min-width: 100px;
+
       p {
-        display: inline-block;
-        margin-right: 50px;
+        margin: 0;
+      }
 
-        @media (max-width: ${breakpoints.lg}) {
-          margin-right: 20px;
-        }
+      .line-through {
+        text-decoration: line-through;
+        color: gray;
+      }
+
+      .text-red-500 {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: red;
       }
     }
+  }
 
-    &-btn {
-      margin-bottom: auto;
-      &:hover {
-        color: ${defaultTheme.color_sea_green};
-      }
+  /* Phần tổng kết */
+  .order-summary {
+    width: 100%;
+  }
 
-      @media (max-width: ${breakpoints.sm}) {
-        position: absolute;
-        right: 0;
-        top: 10px;
-      }
+  .order-summary table {
+    width: 100%;
+    border-collapse: collapse;
+  }
 
-      @media (max-width: ${breakpoints.xs}) {
-        width: 28px;
-        height: 28px;
-        z-index: 5;
-        background-color: ${defaultTheme.color_white};
-        border-radius: 50%;
-        right: 8px;
-        top: 24px;
-      }
-    }
+  .order-summary td {
+    padding: 8px 0;
+    text-align: right;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .order-summary tr:last-child td {
+    border-bottom: none;
+  }
+
+  .order-summary .text-red-500 {
+    color: #fd053b;
+  }
+
+  .order-summary .text-gray-500 {
+    color: #6b7280;
+  }
+
+  .order-summary .font-bold {
+    font-weight: bold;
   }
 `;
 
@@ -121,28 +129,29 @@ interface OrderItemProps {
   item: OrderDetail;
 }
 const OrderItem: React.FC<OrderItemProps> = ({ item }) => {
-  console.log("eee", item);
   const navigate = useNavigate();
   return (
     <OrderDetailListWrapper className="order-d-list">
-      <div className="order-d-item grid">
-        <div className="order-d-item-img">
-          <img src={item.linkImage} alt="" className="object-fit-cover" />
+      <>
+        <div className="order-d-item grid">
+          {/* Hình ảnh sản phẩm */}
+          <div className="order-d-item-img">
+            <img src={item.linkImage} alt={item.productName} className="object-fit-cover" />
+          </div>
+
+          {/* Thông tin sản phẩm */}
+          <div className="order-d-item-info">
+            <p className="text-xl font-bold">{item.productName}</p>
+            <p className="text-gray">x{item.quantity}</p>
+          </div>
+
+          {/* Giá sản phẩm */}
+          <div className="order-d-item-price">
+            <p className="text-gray-500 font-bold">{currencyFormat(item.price)}</p>
+          </div>
         </div>
-        <div className="order-d-item-info">
-          <p className="text-xl font-bold">{item.productName}</p>
-        </div>
-        <div className="order-d-item-calc">
-          <p className="font-bold text-lg">
-            Số lượng: &nbsp;
-            <span className="text-gray">{item.quantity}</span>
-          </p>
-          <p className="font-bold text-lg">
-            Giá: &nbsp;
-            <span className="text-gray">{currencyFormat(item.price)}</span>
-          </p>
-        </div>
-      </div>
+        {/* Thông tin tổng đơn hàng */}
+      </>
     </OrderDetailListWrapper>
   );
 };

@@ -7,10 +7,11 @@ import { breakpoints } from "@styles/themes/default";
 import CartDiscount from "@atom/cart/CartDiscount";
 import CartSummary from "@atom/cart/CartSummary";
 import { useAppDispatch, useAppSelector } from "@redux/hook";
-import { CartItem, getAllCart } from "@redux/slices/cartSlice";
+import { CartItem, deleteSelectSetupId, getAllCart, removeCart } from "@redux/slices/cartSlice";
 import CartEmptyScreen from "@components/atom/cart/EmptyCart";
 import CartTable from "@components/atom/cart/CartTable";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { clearShip } from "@redux/slices/shipmentSlice";
 
 const CartPageWrapper = styled.main`
   padding: 48px 0;
@@ -61,6 +62,9 @@ const CartScreen = () => {
   const dispatch = useAppDispatch();
   useEffect(() => {
     dispatch(getAllCart());
+    dispatch(removeCart());
+    dispatch(deleteSelectSetupId());
+    dispatch(clearShip());
   }, [dispatch]);
   const listCart: CartItem[] = useAppSelector((state) => state.cart.items);
   const OddCart = listCart.filter((item) => item.status === "Odd");
@@ -72,7 +76,6 @@ const CartScreen = () => {
     return <CartEmptyScreen />;
   }
   const token = localStorage.getItem("access_token");
-  console.log("kk", listCart);
   return (
     <CartPageWrapper>
       <Container>

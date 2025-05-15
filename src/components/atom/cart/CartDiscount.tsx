@@ -43,16 +43,8 @@ const CartDiscountWrapper = styled.div`
 const CartDiscount = () => {
   return (
     <CartDiscountWrapper>
-      <h3 className="text-xxl text-outerspace">Mã giảm giá</h3>
-      <p className="text-base text-gray-150">Nhập mã phiếu giảm giá của bạn nếu bạn có.</p>
-      <form>
-        <div className="coupon-group flex">
-          <Input type="text" className="coupon-input w-full" placeholder="Tìm kiếm" />
-          <div className="coupon-btn no-wrap h-full bg-black-50 cursor-pointer">
-            <p className="text-title-2xsm text-white  ">Áp dụng mã giảm giá</p>
-          </div>
-        </div>
-      </form>
+      <h3 className="text-xxl text-outerspace">Tìm kiếm thêm sản phẩm</h3>
+      <p className="text-base text-gray-150">Tiếp tục mua thêm sản phẩm mới nếu bạn có.</p>
       <BaseLinkOutlinePlatinum as={BaseLinkOutlinePlatinum} to="/" className="contd-shop-btn w-full text-gray">
         Tiếp tục mua sắm
       </BaseLinkOutlinePlatinum>

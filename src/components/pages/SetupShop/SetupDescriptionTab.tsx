@@ -4,12 +4,10 @@ import { productDescriptionTabHeads } from "../ProductDetail/data";
 import Title from "@common/Title";
 import { ContentStylings } from "@styles/styles";
 import { breakpoints, defaultTheme } from "@styles/themes/default";
-import { Product } from "@redux/slices/productSlice";
 import { SetupPackage } from "@redux/slices/setupSlice";
-import { ProductCard, ProductList, SetupItem, SetupItemsList } from "../Setup/SetupStyles";
+import { SetupItem, SetupItemsList } from "../Setup/SetupStyles";
 import { currencyFormat } from "@ultils/helper";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
 
 interface TabHead {
   id: string;
@@ -90,7 +88,6 @@ const DescriptionTabsWrapper = styled.div`
   }
 
   .tabs-contents {
-    max-height: 400px;
     overflow-y: scroll;
 
     &::-webkit-scrollbar {
@@ -145,7 +142,9 @@ const SetupDescriptionTab = ({ setup }: SetupDescriptionTabProps) => {
                 className="tabs-head text-gray font-medium text-lg flex items-center"
                 onClick={() => handleTabChange(tab.tabHead)}
               >
-                <span className={`${tab.tabHead === activeDesTab ? "text-sea-green" : ""}`}>{tab.tabText}</span>
+                <span className={`${tab.tabHead === activeDesTab ? "text-sea-green" : ""}`}>
+                  {tab.tabText == "Mô tả" ? "Chi tiết" : tab.tabText}
+                </span>
                 {tab.badgeValue && (
                   <span
                     className={`tabs-badge inline-flex items-center justify-center text-white tabs-badge-${tab.badgeColor}`}

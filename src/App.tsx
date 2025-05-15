@@ -20,7 +20,20 @@ function AppContent() {
         location.pathname.startsWith('/listUser') ||
         location.pathname.startsWith('/listOrder') ||
         location.pathname.startsWith('/listProduct') ||
-        location.pathname.startsWith('/listSetup');
+        location.pathname.startsWith('/listSetup') ||
+        location.pathname.startsWith('/listCategory') ||
+        location.pathname.startsWith('/listSubCategory') ||
+        location.pathname.startsWith('/manager/profile') ||
+        location.pathname.startsWith('/calendar') ||
+        location.pathname.startsWith('/listBooking') ||
+        location.pathname.startsWith('/addMissionBooking') ||
+        location.pathname.startsWith('/addMissionOrder') ||
+        location.pathname.startsWith('/listService') ||
+        location.pathname.startsWith('/listOrder-setup') ||
+        location.pathname.startsWith('/listVoucher') ||
+        location.pathname.startsWith('/listIssueCategory') ||
+        location.pathname.startsWith('/listIssue') ||
+        location.pathname.startsWith('/chat');
     return (
         <div className="App">
             {!isAdminRoute && <GlobalStyles />}

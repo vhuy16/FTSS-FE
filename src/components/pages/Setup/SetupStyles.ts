@@ -67,11 +67,20 @@ export const SetupItem = styled.div`
   gap: 12px;
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Tạo hiệu ứng tách biệt */
 
-  .change-btn {
+  .titleCategory {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     align-items: center;
+    .text-title {
+      font-size: 18px;
+      font-weight: 600;
+      padding-left: 20px;
+    }
+    .change-btn {
+      align-items: center;
+    }
   }
+
   .setup-item-content {
     display: flex;
     align-items: center;
@@ -289,50 +298,6 @@ export const breadcrumbItems = [
   { label: "Build hồ cá", link: "/setup-package" },
 ];
 
-export const ModalOverlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-export const ModalBox = styled.div`
-  background: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  width: 800px;
-  max-width: 100%;
-`;
-
-export const ModalHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-
-  h2 {
-    margin: 0;
-    font-size: 20px;
-    font-weight: 700;
-  }
-
-  button {
-    background: transparent;
-    border: none;
-    font-size: 20px;
-    cursor: pointer;
-  }
-`;
-
-export const ModalContent = styled.div`
-  font-size: 16px;
-`;
 export const ProductList = styled.div`
   padding: 16px 24px;
   display: flex;
@@ -343,7 +308,7 @@ export const ProductList = styled.div`
 `;
 
 export const ProductCard = styled.div`
-  width: 220px;
+  width: 255px;
   height: 100%;
   background: #fff;
   border: 1px solid #ddd;
@@ -352,29 +317,42 @@ export const ProductCard = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: space-between;
 
   img {
-    width: 100%;
-    height: 180px;
+    width: 200px;
+    height: 200px;
     object-fit: contain;
     display: block;
   }
 
   .product-info {
     text-align: center;
-    margin-bottom: 8px;
+    flex: 1; /* đẩy phần nút xuống dưới */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    margin-top: 8px;
 
     .product-name {
       font-size: 14px;
-      font-weight: 500;
-      margin: 0 0 4px 0;
+      font-weight: 700;
+      margin-bottom: 4px;
+      min-height: 36px; /* để giữ dòng text cố định chiều cao */
     }
 
     .new-price {
       font-size: 16px;
       font-weight: 700;
       color: #e00;
+      margin-bottom: 8px;
     }
+    .size {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 7px;
+    }
+
     .product-info-center {
       .product-name {
         font-size: 20px;

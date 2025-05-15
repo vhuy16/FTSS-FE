@@ -7,7 +7,6 @@ import { FormElement, Input } from "styles/form";
 import { BaseButtonGreen } from "styles/button";
 import { useAppDispatch, useAppSelector } from "@redux/hook";
 import { useState } from "react";
-import { forgotPassword } from "@redux/slices/forgotPasswordSlice";
 import Loading from "../../atom/Loading/Loading";
 import { toast } from "react-toastify";
 import { resetPassword } from "@redux/slices/resetPassword";

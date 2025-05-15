@@ -8,6 +8,7 @@ import {
     BoxCubeIcon,
     CalenderIcon,
     ChevronDownIcon,
+    DocsIcon,
     GridIcon,
     HorizontaLDots,
     ListIcon,
@@ -16,6 +17,8 @@ import {
     PlugInIcon,
     TableIcon,
     UserCircleIcon,
+    InfoIcon,
+    ChatIcon,
 } from '@icons/admin_icon';
 import { Link } from 'react-router-dom';
 
@@ -28,14 +31,31 @@ type NavItem = {
 
 const navItems: NavItem[] = [
     {
-        icon: <CalenderIcon />,
-        name: 'Danh sách công việc',
-        path: '/calenderIcon',
+        icon: <PieChartIcon />,
+        name: 'Doanh thu',
+        path: '/dashboard',
     },
     {
+        icon: <CalenderIcon />,
+        name: 'Danh sách công việc',
+        path: '/calendar',
+    },
+
+    {
+        name: 'Đơn hàng',
         icon: <ListIcon />,
-        name: 'Danh sách đơn hàng',
-        path: '/listOrder',
+        subItems: [
+            { name: 'Đơn hàng mua lẻ', path: '/listOrder' },
+            { name: 'Đơn hàng mua theo bộ', path: '/listOrder-setup' },
+        ],
+    },
+    {
+        name: 'Bảo trì',
+        icon: <DocsIcon />,
+        subItems: [
+            { name: 'Danh sách đơn bảo trì', path: '/listBooking' },
+            { name: 'Danh sách dịch vụ bảo trì', path: '/listService' },
+        ],
     },
     {
         icon: <TableIcon />,
@@ -47,6 +67,33 @@ const navItems: NavItem[] = [
         icon: <BoxCubeIcon />,
         name: 'Các thiết kế bể cá',
         path: '/listSetup',
+    },
+    {
+        name: 'Danh mục sản phẩm',
+        icon: <GridIcon />,
+        subItems: [
+            { name: 'Danh sách danh mục', path: '/listCategory' },
+            { name: 'Danh sách danh mục phụ', path: '/listSubCategory' },
+        ],
+    },
+
+    {
+        icon: <PageIcon />,
+        name: 'Danh sách mã khuyến mãi',
+        path: '/listVoucher',
+    },
+    {
+        name: 'Hỗ trợ',
+        icon: <ChatIcon />,
+        path: '/chat',
+    },
+    {
+        name: 'Vấn đề',
+        icon: <InfoIcon />,
+        subItems: [
+            { name: 'Danh sách danh mục vấn đề', path: '/listIssueCategory' },
+            { name: 'Danh sách vấn đề', path: '/listIssue' },
+        ],
     },
 ];
 
@@ -293,7 +340,7 @@ const ManagerSidebar: React.FC = () => {
                                     !isExpanded && !isHovered ? 'lg:justify-center' : 'justify-start'
                                 }`}
                             >
-                                {isExpanded || isHovered || isMobileOpen ? 'Menu' : <HorizontaLDots />}
+                                {/* {isExpanded || isHovered || isMobileOpen ? 'Menu' : <HorizontaLDots />} */}
                             </h2>
                             {renderMenuItems(navItems, 'main')}
                         </div>

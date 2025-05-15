@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Table, TableBody, TableCell, TableHeader, TableRow } from '../../ui/table';
 import { DownloadIcon } from '@icons/admin_icon';
 import Badge from '../../ui/badge/Badge';
@@ -6,9 +6,9 @@ import Button from '@components/ui/button/Button';
 import { Box, IconButton, Paper, styled } from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useAppDispatch, useAppSelector } from '@redux/hook';
-import { getAllUser } from '@redux/slices/userSlice';
-import Loading from '../Loading/Loading';
+import { getAllUser, UserProfile } from '@redux/slices/userSlice';
 import UserPopup from '../popup/UserPopup';
+import LoadingPage from '../Loading/LoadingPage';
 
 const paginationModel = { page: 0, pageSize: 5 };
 const StyledDataGrid = styled(DataGrid)((theme) => ({
@@ -22,18 +22,30 @@ const StyledDataGrid = styled(DataGrid)((theme) => ({
     },
 }));
 export default function ListUserTable() {
-    const listUser = useAppSelector((state) => state.userProfile.listUser);
+    const listUser = useAppSelector((state) => state.userProfile.listUser ?? []);
     const isLoading = useAppSelector((state) => state.userProfile.isLoading);
+    const isLoadingGetAllUser = useAppSelector((state) => state.userProfile.isLoadingGetAllUser);
+    const [users, setUsers] = useState<UserProfile[]>([]);
+    const [searchValue, setSearchValue] = useState('');
     const dispatch = useAppDispatch();
     useEffect(() => {
         dispatch(getAllUser());
     }, []);
+    useEffect(() => {
+        if (!searchValue) {
+            setUsers(listUser.filter((user) => user.role != 'Admin'));
+        } else {
+            setUsers(
+                listUser.filter((user) => user.username.toLowerCase().includes(searchValue) && user.role != 'Admin'),
+            );
+        }
+    }, [searchValue, listUser]);
     const columns: GridColDef[] = [
         { field: 'stt', headerName: 'STT', width: 50, headerClassName: 'super-app-theme--header' },
         { field: 'username', headerName: 'Tên đăng nhập', width: 150, headerClassName: 'super-app-theme--header' },
-        { field: 'fullName', headerName: 'Họ tên', width: 150, headerClassName: 'super-app-theme--header' },
+        { field: 'fullName', headerName: 'Họ tên', width: 200, headerClassName: 'super-app-theme--header' },
         { field: 'email', headerName: 'Email', width: 250, headerClassName: 'super-app-theme--header' },
-        { field: 'address', headerName: 'Địa chỉ', width: 300, headerClassName: 'super-app-theme--header' },
+        // { field: 'address', headerName: 'Địa chỉ', width: 300, headerClassName: 'super-app-theme--header' },
         { field: 'phoneNumber', headerName: 'SĐT', width: 150, headerClassName: 'super-app-theme--header' },
         {
             field: 'gender',
@@ -73,21 +85,48 @@ export default function ListUserTable() {
                     </div>
                 ),
         },
-        { field: 'role', headerName: 'Vai trò', width: 150, headerClassName: 'super-app-theme--header' },
+        {
+            field: 'role',
+            headerName: 'Vai trò',
+            width: 200,
+            headerClassName: 'super-app-theme--header',
+            renderCell: (params) =>
+                params.row.role === 'Customer'
+                    ? 'Khách hàng'
+                    : params.row.role === 'Technician'
+                    ? 'Nhân viên kĩ thuật'
+                    : params.row.role === 'Manager'
+                    ? 'Quản lý'
+                    : 'Admin',
+        },
+        {
+            field: 'status',
+            headerName: 'Trạng thái',
+            width: 200,
+            headerClassName: 'super-app-theme--header',
+            renderCell: (params) => (
+                <Badge size="sm" color={params.row.status === 'Available' ? 'success' : 'error'}>
+                    {params.row.status === 'Available' ? 'Đang hoạt động' : 'Đang bị chặn'}
+                </Badge>
+            ),
+        },
         {
             field: 'actions',
             headerName: '',
             flex: 1,
-            width: 50,
+            width: 100,
+            align: 'center',
+            headerAlign: 'center',
             headerClassName: 'super-app-theme--header',
             renderCell: (params) => <UserPopup user={params.row}></UserPopup>,
         },
     ];
-    const rowsUser = listUser?.filter((user) => user.role !== 'Admin');
-    const rows = rowsUser?.map((user, index) => {
+    const rows = users?.map((user, index) => {
         return { ...user, stt: index + 1, id: user.userId };
     });
-    return (
+    return isLoadingGetAllUser && listUser?.length === 0 ? (
+        <LoadingPage></LoadingPage>
+    ) : (
         <div>
             <div className="flex justify-between mb-4">
                 <div className="relative">
@@ -111,6 +150,7 @@ export default function ListUserTable() {
                     <input
                         type="text"
                         placeholder="Tìm kiếm..."
+                        onChange={(e) => setSearchValue(e.target.value.toLowerCase())}
                         className="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-200 bg-transparent py-2.5 pl-12 pr-14 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-800 dark:bg-gray-900 dark:bg-white/[0.03] dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 xl:w-[430px]"
                     />
                 </div>

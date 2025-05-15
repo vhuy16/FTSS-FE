@@ -6,12 +6,13 @@ import AuthOptions from '@components/atom/auth/AuthOptions';
 import { FormElement, Input } from '../../../styles/form';
 import PasswordInput from '@components/atom/auth/PasswordInput';
 import { Link, useNavigate } from 'react-router-dom';
-import { BaseButtonBlack, BaseButtonGreen } from '@styles/button';
+import { BaseButtonGreen } from '@styles/button';
 import { breakpoints, defaultTheme } from '@styles/themes/default';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@redux/hook';
 import { loginUser } from '@redux/slices/loginSlice';
 import Loading from '@components/atom/Loading/Loading';
+import { toast } from 'react-toastify';
 
 const SignInScreenWrapper = styled.section`
     .form-separator {
@@ -95,18 +96,19 @@ const Login = () => {
                 if (messenger && messenger === 'Login successful.') {
                     localStorage.setItem('access_token', res.data.token);
                     localStorage.setItem('role', res.data.roleEnum);
+                    localStorage.setItem('userId', res.data.userId);
                     if (res.data.roleEnum === 'Customer') {
                         window.location.href = '/';
                     }
                     if (res.data.roleEnum === 'Admin') {
-                        window.location.href = '/dashboard';
+                        window.location.href = '/listUser';
                     }
                     if (res.data.roleEnum === 'Manager') {
-                        window.location.href = '/listOrder';
+                        window.location.href = '/dashboard';
                     }
                 }
             } catch (error) {
-                console.log(error);
+                toast.error(error as string);
             }
         } else {
             console.log('Form invalid');
@@ -133,7 +135,12 @@ const Login = () => {
                                 <span className="separator-line"></span>
                             </div>
 
-                            <div>
+                            <form
+                                onSubmit={(e) => {
+                                    e.preventDefault(); // Ngăn reload trang
+                                    handleLogin();
+                                }}
+                            >
                                 <FormElement>
                                     {messageLogin && messageLogin != 'Login successful.' && (
                                         <span className="form-elem-error text-end font-medium">*{messageLogin}</span>
@@ -143,8 +150,8 @@ const Login = () => {
                                     </label>
                                     <Input
                                         type="text"
-                                        placeholder=""
                                         name=""
+                                        placeholder="Nhập tên đăng nhập"
                                         className="form-elem-control"
                                         onChange={(e) => {
                                             setFormValue({ ...formValue, username: e.target.value });
@@ -169,7 +176,7 @@ const Login = () => {
                                 <BaseButtonGreen className="form-submit-btn" onClick={handleLogin}>
                                     {isLoadingLogin ? <Loading /> : <>Đăng nhập</>}
                                 </BaseButtonGreen>
-                            </div>
+                            </form>
                             <p className="flex flex-wrap account-rel-text">
                                 Chưa có tài khoản?
                                 <Link to="/register" className="font-medium">

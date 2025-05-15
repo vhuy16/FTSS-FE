@@ -21,7 +21,7 @@
             "@atom/*": ["components/atom/*"],
             "@pages/*": ["components/pages/*"],
             "@ui/*": ["components/ui/*"],
-            // "@api/*": ["api/*"],
+            "@hooks/*": ["hooks/*"],
             "@layouts/*": ["layouts/*"],
             "@routes/*": ["routes/*"],
             "@images/*": ["assets/images/*"],

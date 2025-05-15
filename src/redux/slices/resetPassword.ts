@@ -9,7 +9,7 @@ type resetPasswordType = {
 
 export const resetPassword = createAsyncThunk("user/resetPassword", async (data: resetPasswordType) => {
   try {
-    const request = await myAxios.post(`https://ftss.id.vn/api/v1/user/reset-password`, data);
+    const request = await myAxios.post(`/user/reset-password`, data);
     const response = request.data;
     return response;
   } catch (error: any) {

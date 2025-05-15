@@ -5,6 +5,7 @@ import { useAppDispatch, useAppSelector } from '@redux/hook';
 import { CartItem, getAllCart } from '@redux/slices/cartSlice';
 import { currencyFormat } from '@ultils/helper';
 import { useEffect } from 'react';
+import { Voucher } from '@redux/slices/voucherSlice';
 
 const CheckoutSummaryWrapper = styled.div`
     box-shadow: 2px 2px 4px 0px rgba(0, 0, 0, 0.05), -2px -2px 4px 0px rgba(0, 0, 0, 0.05);
@@ -76,7 +77,7 @@ const CheckoutSummaryWrapper = styled.div`
     }
 `;
 
-const CheckoutSummary = () => {
+const CheckoutSummary = ({ selectedVoucher }: { selectedVoucher: Voucher | null }) => {
     const listCart = useAppSelector((state) => state.cart.cartselected);
     const ship = useAppSelector((state) => state.shipment.ship);
     const dispatch = useAppDispatch();
@@ -90,6 +91,28 @@ const CheckoutSummary = () => {
     const totalItems = listCart.reduce((total: number, item: CartItem) => {
         return total + item.quantity;
     }, 0);
+    const caculateDiscount = (totalPrice: number): number => {
+        if (selectedVoucher == null) {
+            return 0;
+        } else {
+            let discount = 0;
+            if (selectedVoucher.discountType === 'Percentage') {
+                discount = parseFloat((totalPrice * (selectedVoucher.discount / 100)).toFixed(2));
+                if (discount > selectedVoucher.maximumOrderValue) {
+                    discount = selectedVoucher.maximumOrderValue;
+                }
+                return discount;
+            } else {
+                if (selectedVoucher.discount > totalPrice) {
+                    discount = totalPrice;
+                } else {
+                    discount = selectedVoucher.discount;
+                }
+                return discount;
+            }
+        }
+    };
+
     return (
         <CheckoutSummaryWrapper>
             <h4 className="text-xxl font-bold text-outersapce">Tóm tắt đơn hàng thanh toán</h4>
@@ -125,6 +148,12 @@ const CheckoutSummary = () => {
                 </li>
 
                 <li className="flex items-center justify-between">
+                    <span className="text-outerspace font-bold text-lg">Giảm giá</span>
+                    <span className="text-outerspace font-bold text-lg">
+                        -{currencyFormat(caculateDiscount(totalPrice))}
+                    </span>
+                </li>
+                <li className="flex items-center justify-between">
                     <span className="text-outerspace font-bold text-lg">Phí vận chuyển</span>
                     <span className="text-outerspace font-bold text-lg">{currencyFormat(ship?.total_fee ?? 0)}</span>
                 </li>
@@ -132,7 +161,7 @@ const CheckoutSummary = () => {
                 <li className="flex items-center justify-between">
                     <span className="text-outerspace font-bold text-lg">Tổng</span>
                     <span className="text-outerspace font-bold text-lg">
-                        {currencyFormat(totalPrice + (ship?.total_fee ?? 0))}
+                        {currencyFormat(totalPrice + (ship?.total_fee ?? 0) - caculateDiscount(totalPrice))}
                     </span>
                 </li>
             </ul>

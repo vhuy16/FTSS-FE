@@ -5,24 +5,24 @@ import MenuItem from '@mui/material/MenuItem';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import BlockOutlinedIcon from '@mui/icons-material/BlockOutlined';
 import { ListItemIcon, ListItemText, Typography } from '@mui/material';
-import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
-import RemoveRedEyeOutlinedIcon from '@mui/icons-material/RemoveRedEyeOutlined';
-import UpdateOutlinedIcon from '@mui/icons-material/UpdateOutlined';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import 'flowbite';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
-import { SetupPackage } from '@redux/slices/setupSlice';
+import { selectSetup, SetupPackage } from '@redux/slices/setupSlice';
 import ConfirmDeleteSetup from '../popup_modal/ConfirmDeleteSetup';
 import ConfirmActivateSetup from '../popup_modal/ConfirmActivateSetup';
+import { useAppDispatch } from '@redux/hook';
 
 const ITEM_HEIGHT = 48;
 type SetupPopupProps = {
     setup: SetupPackage;
+    setIsModalEditOpen: (isOpen: boolean) => void;
 };
-export default function SetupPopup({ setup }: SetupPopupProps) {
+export default function SetupPopup({ setup, setIsModalEditOpen }: SetupPopupProps) {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const [isModalOpenDelete, setIsModalOpenDelete] = React.useState(false);
     const [isModalOpenActivate, setIsModalOpenActivate] = React.useState(false);
+    const dispatch = useAppDispatch();
     const open = Boolean(anchorEl);
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
@@ -59,22 +59,11 @@ export default function SetupPopup({ setup }: SetupPopupProps) {
                     },
                 }}
             >
-                {/* <MenuItem
-                    onClick={() => {
-                        handleClose();
-                        setIsModalOpenDelete(true);
-                    }}
-                >
-                    <ListItemIcon>
-                        <RemoveRedEyeOutlinedIcon fontSize="small" className="text-green-400" />
-                    </ListItemIcon>
-                    <ListItemText>Xem chi tiết</ListItemText>
-                </MenuItem> */}
-
                 <MenuItem
                     onClick={() => {
                         handleClose();
-                        setIsModalOpenDelete(true);
+                        setIsModalEditOpen(true);
+                        dispatch(selectSetup(setup));
                     }}
                 >
                     <ListItemIcon>

@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { Input } from '@styles/form';
-import { BaseButtonGreen } from '@styles/button';
+import { BaseBtnGreen, BaseButtonGreen } from '@styles/button';
 import CheckoutSummary from './CheckoutSummary';
 import { breakpoints, defaultTheme } from '@styles/themes/default';
 import ShippingPayment from '../ShippingPayment/ShippingPayment';
@@ -13,8 +13,13 @@ import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { getUserProfile } from '@redux/slices/userSlice';
 import { createOrder } from '@redux/slices/orderSlice';
-import { createShipment } from '@redux/slices/shipmentSlice';
+import { clearShip, createShipment } from '@redux/slices/shipmentSlice';
 import Loading from '../Loading/Loading';
+import { Voucher } from '@redux/slices/voucherSlice';
+import { FaTicketAlt } from 'react-icons/fa';
+import { VoucherModal } from '../modal/VoucherModal';
+import FormSchedule from '../FormSchedule/FormSchedule';
+import FormScheduleOrderSetup from '../FormSchedule/FormScheduleOrderSetup';
 
 const BillingOrderWrapper = styled.div`
     gap: 60px;
@@ -120,9 +125,23 @@ const Billing = () => {
     const isLoadingOrder = useAppSelector((state) => state.order.isLoading);
     const cart = useAppSelector((state) => state.cart.cartselected);
     const ship = useAppSelector((state) => state.shipment.ship);
+    const user = useAppSelector((state) => state.userProfile.user);
+    const setupId = useAppSelector((state) => state.cart.setupId);
     const [idProvice, setIdProvince] = useState({ id: '0', name: 'chon tinh' });
     const [district, setDistrict] = useState({ id: '0', name: '', city_id: '' });
     const [ward, setWard] = useState({ id: '0', name: '' });
+    const [infoDefault, setInfoDefault] = useState(false);
+    const openModal = () => setShowVoucherModal(true);
+    const closeModal = () => setShowVoucherModal(false);
+    const [showVoucherModal, setShowVoucherModal] = useState(false);
+    const [selectedVoucher, setSelectedVoucher] = useState<Voucher | null>(null);
+    const [selectedPayment, setSelectedPayment] = useState('VnPay');
+    const [selectedSchedule, setSelectedSchedule] = useState<string | null>(null);
+    const navigate = useNavigate();
+    const handleSelectVoucher = (voucher: Voucher) => {
+        setSelectedVoucher(voucher);
+        closeModal();
+    };
 
     const initFormValue = {
         phone: '',
@@ -135,7 +154,7 @@ const Billing = () => {
         ShipCost: 0,
         VoucherId: null,
         Address: '',
-        PaymentMethod: 'PayOs',
+        PaymentMethod: '',
     };
     type DataCheckOut = {
         cartItem: string[];
@@ -144,7 +163,9 @@ const Billing = () => {
         voucherId: string | null;
         paymentMethod: string;
         phoneNumber: string;
-        name: string;
+        recipientName: string;
+        setupPackageId: string | null;
+        installationDate: string | null;
     };
     const [formValue, setFormValue] = useState(initFormValue);
     const [formError, setFormError] = useState({
@@ -153,8 +174,32 @@ const Billing = () => {
         street: '',
         province: '',
         district: '',
+        address: '',
         ward: '',
     });
+    useEffect(() => {
+        dispatch(getUserProfile());
+    }, []);
+    useEffect(() => {
+        if (!infoDefault) {
+            setFormValue({ ...formValue, customer_name: '', phone: '', Address: '' });
+            dispatch(clearShip());
+        } else {
+            setFormValue({
+                ...formValue,
+                customer_name: user?.fullName as string,
+                phone: user?.phoneNumber as string,
+                Address: user?.address as string,
+            });
+            dispatch(
+                createShipment({
+                    district: user?.districtId as string,
+                    city: user?.cityId as string,
+                    amount: cart.reduce((a: number, b: CartItem) => a + b.price, 0),
+                }),
+            );
+        }
+    }, [infoDefault]);
     useEffect(() => {
         dispatch(getAllProvince());
         if (idProvice.id != '0') {
@@ -171,6 +216,7 @@ const Billing = () => {
             street: '',
             province: '',
             district: '',
+            address: '',
             ward: '',
         };
         let check = true;
@@ -186,60 +232,100 @@ const Billing = () => {
             errors.phone = 'Vui lòng nhập đúng số điện thoại !';
             check = false;
         }
-        if (isEmptyValue(formValue.street)) {
-            errors.street = 'Tên đường không được để trống !';
-            check = false;
+        if (infoDefault) {
+            if (isEmptyValue(formValue.Address)) {
+                errors.address = 'Địa chỉ không được để trống !';
+                check = false;
+            }
+        } else {
+            if (isEmptyValue(formValue.street)) {
+                errors.street = 'Tên đường không được để trống !';
+                check = false;
+            }
+            if (!formValue.province) {
+                errors.province = 'Vui lòng chọn Tỉnh !';
+                check = false;
+            }
+            if (!formValue.district) {
+                errors.district = 'Vui lòng chọn Huyện !';
+                check = false;
+            }
+            if (!formValue.ward) {
+                errors.ward = 'Vui lòng chọn Phường !';
+                check = false;
+            }
         }
-        if (!formValue.province) {
-            errors.province = 'Vui lòng chọn Tỉnh !';
-            check = false;
-        }
-        if (!formValue.district) {
-            errors.district = 'Vui lòng chọn Huyện !';
-            check = false;
-        }
-        if (!formValue.ward) {
-            errors.district = 'Vui lòng chọn Phường !';
-            check = false;
-        }
+
         setFormError(errors);
         return check;
     };
     const handlePayNow = async () => {
         const check = validateForm();
-        if (check) {
-            const data: DataCheckOut = {
-                shipCost: ship?.total_fee as number,
-                cartItem: cart.map((item: CartItem) => {
-                    return item.cartItemId;
-                }),
-                address:
-                    formValue.street + ', ' + formValue.ward + ', ' + formValue.district + ', ' + formValue.province,
-                voucherId: formValue.VoucherId,
-                paymentMethod: formValue.PaymentMethod,
-                phoneNumber: formValue.phone,
-                name: formValue.customer_name,
-            };
-
-            try {
-                const res: string = await dispatch(createOrder(data)).unwrap();
-                if (res !== '') {
-                    await toast.success('Vui lòng chờ để thanh toán');
-                    setTimeout(() => {
-                        window.location.href = res;
-                    }, 1000);
-                }
-            } catch (error) {
-                console.log(error);
-            }
+        if (
+            setupId &&
+            infoDefault &&
+            formValue.Address.split(',').map((part) => part.trim())[formValue.Address.length - 1] != 'Hồ Chí Minh'
+        ) {
+            toast.error('Cửa hàng chỉ hỗ trợ mua và lắp đặt bể cá trong khu vực tp Hồ Chí Minh');
         } else {
-            console.log('payment invalid');
+            if (check) {
+                const data: DataCheckOut = {
+                    shipCost: ship?.total_fee ?? 0,
+                    cartItem: !setupId
+                        ? cart.map((item: CartItem) => {
+                              return item.cartItemId;
+                          })
+                        : [],
+                    address: infoDefault
+                        ? formValue.Address
+                        : formValue.street +
+                          ', ' +
+                          formValue.ward +
+                          ', ' +
+                          formValue.district +
+                          ', ' +
+                          formValue.province,
+                    voucherId: selectedVoucher?.id ? selectedVoucher.id : null,
+                    paymentMethod: selectedPayment,
+                    phoneNumber: formValue.phone,
+                    recipientName: formValue.customer_name,
+                    installationDate: setupId ? selectedSchedule : null,
+                    setupPackageId: setupId ? setupId : null,
+                };
+
+                try {
+                    const res: string = await dispatch(createOrder(data)).unwrap();
+                    if (res !== '') {
+                        await toast.success('Vui lòng chờ để thanh toán');
+                        setTimeout(() => {
+                            window.location.href = res;
+                        }, 1000);
+                    } else {
+                        await toast.success('Đặt hàng thành công');
+                        navigate('/order');
+                    }
+                } catch (error) {
+                    toast.error(error as string);
+                }
+            } else {
+                console.log('payment invalid');
+            }
         }
     };
     return (
         <BillingOrderWrapper className="billing-and-order grid items-start">
             <BillingDetailsWrapper>
                 <h4 className="text-xxl font-bold text-outerspace">Thông tin người nhận hàng</h4>
+                <div className="input-check-group flex items-center flex-wrap mt-2">
+                    <input
+                        id="default-checkbox"
+                        type="checkbox"
+                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                        checked={infoDefault}
+                        onChange={(e) => setInfoDefault(e.target.checked)}
+                    />
+                    <p className="text-base ml-4">Sử dụng thông tin mặc định của tài khoản</p>
+                </div>
                 <div className="checkout-form">
                     <div className="input-elem-group elem-col-2">
                         <div className="input-elem">
@@ -267,128 +353,189 @@ const Billing = () => {
                             {formError.phone && <div className="text-red text-sm">{formError.phone}</div>}
                         </div>
                     </div>
-                    <div className="input-elem-group elem-col-3">
-                        <div className="input-elem">
-                            <label htmlFor="" className="text-base text-outerspace font-semibold">
-                                Tỉnh*
-                            </label>
-                            <select
-                                id="Tinh"
-                                value={JSON.stringify(idProvice)}
-                                onChange={(e) => {
-                                    setIdProvince(JSON.parse(e.target.value));
-                                    setFormValue({ ...formValue, province: JSON.parse(e.target.value).name });
-                                }}
-                                className="block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            >
-                                <option value="">Chọn tỉnh ...</option>
-                                {listProvince.map((province, index) => {
-                                    return (
+                    {/* //check in4 default  */}
+                    {!infoDefault ? (
+                        <div>
+                            <div className="input-elem-group elem-col-3">
+                                <div className="input-elem">
+                                    <label htmlFor="" className="text-base text-outerspace font-semibold">
+                                        Tỉnh*
+                                    </label>
+                                    <select
+                                        id="Tinh"
+                                        value={JSON.stringify(idProvice)}
+                                        onChange={(e) => {
+                                            setIdProvince(JSON.parse(e.target.value));
+                                            setFormValue({ ...formValue, province: JSON.parse(e.target.value).name });
+                                        }}
+                                        className="block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                    >
                                         <option
-                                            key={index}
                                             value={JSON.stringify({
-                                                id: province.id,
-                                                name: province.name,
+                                                id: '',
+                                                name: '',
                                             })}
                                         >
-                                            {province.name}
+                                            Chọn tỉnh ...
                                         </option>
-                                    );
-                                })}
-                            </select>
-                            {formError.province && <div className="text-red text-sm">{formError.province}</div>}
-                        </div>
-                        <div className="input-elem">
-                            <label htmlFor="" className="text-base text-outerspace font-semibold">
-                                Huyện/Thành phố*
-                            </label>
-                            <select
-                                id="huyen"
-                                value={JSON.stringify(district)}
-                                onChange={(e) => {
-                                    setDistrict(JSON.parse(e.target.value));
-                                    setFormValue({ ...formValue, district: JSON.parse(e.target.value).name });
-                                    dispatch(
-                                        createShipment({
-                                            district: JSON.parse(e.target.value).id,
-                                            city: JSON.parse(e.target.value).city_id,
-                                            amount: cart.reduce((a: number, b: CartItem) => a + b.price, 0),
-                                        }),
-                                    );
-                                }}
-                                className="block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            >
-                                <option value="">Chọn huyện ...</option>
-                                {listDistrict.map((district, index) => {
-                                    return (
+                                        {listProvince
+                                            .filter((province) => {
+                                                if (setupId && !infoDefault) {
+                                                    return province.id === '700000'; // chỉ cho phép TPHCM
+                                                }
+                                                return true; // cho phép tất cả tỉnh nếu không có setupId
+                                            })
+                                            .map((province, index) => {
+                                                return (
+                                                    <option
+                                                        key={index}
+                                                        value={JSON.stringify({
+                                                            id: province.id,
+                                                            name: province.name,
+                                                        })}
+                                                    >
+                                                        {province.name}
+                                                    </option>
+                                                );
+                                            })}
+                                    </select>
+                                    {formError.province && <div className="text-red text-sm">{formError.province}</div>}
+                                </div>
+                                <div className="input-elem">
+                                    <label htmlFor="" className="text-base text-outerspace font-semibold">
+                                        Huyện/Thành phố*
+                                    </label>
+                                    <select
+                                        id="huyen"
+                                        value={JSON.stringify(district)}
+                                        onChange={(e) => {
+                                            setDistrict(JSON.parse(e.target.value));
+                                            setFormValue({ ...formValue, district: JSON.parse(e.target.value).name });
+                                            dispatch(
+                                                createShipment({
+                                                    district: JSON.parse(e.target.value).id,
+                                                    city: JSON.parse(e.target.value).city_id,
+                                                    amount: cart.reduce((a: number, b: CartItem) => a + b.price, 0),
+                                                }),
+                                            );
+                                        }}
+                                        className="block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                    >
                                         <option
-                                            key={index}
                                             value={JSON.stringify({
-                                                id: district.id,
-                                                name: district.name,
-                                                city_id: district.city_id,
+                                                id: '',
+                                                name: '',
                                             })}
                                         >
-                                            {district.name}
+                                            Chọn huyện ...
                                         </option>
-                                    );
-                                })}
-                            </select>
-                            {formError.district && <div className="text-red text-sm">{formError.district}</div>}
-                        </div>
-                        <div className="input-elem">
-                            <label htmlFor="" className="text-base text-outerspace font-semibold">
-                                Phường/Xã*
-                            </label>
-                            <select
-                                id="Phuong"
-                                value={JSON.stringify(ward)}
-                                onChange={(e) => {
-                                    setWard(JSON.parse(e.target.value));
-                                    setFormValue({ ...formValue, ward: JSON.parse(e.target.value).name });
-                                }}
-                                className="block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            >
-                                <option value="">Chọn phường ...</option>
-                                {listWard.map((ward, index) => {
-                                    return (
+                                        {listDistrict.map((district, index) => {
+                                            return (
+                                                <option
+                                                    key={index}
+                                                    value={JSON.stringify({
+                                                        id: district.id,
+                                                        name: district.name,
+                                                        city_id: district.city_id,
+                                                    })}
+                                                >
+                                                    {district.name}
+                                                </option>
+                                            );
+                                        })}
+                                    </select>
+                                    {formError.district && <div className="text-red text-sm">{formError.district}</div>}
+                                </div>
+                                <div className="input-elem">
+                                    <label htmlFor="" className="text-base text-outerspace font-semibold">
+                                        Phường/Xã*
+                                    </label>
+                                    <select
+                                        id="Phuong"
+                                        value={JSON.stringify(ward)}
+                                        onChange={(e) => {
+                                            setWard(JSON.parse(e.target.value));
+                                            setFormValue({ ...formValue, ward: JSON.parse(e.target.value).name });
+                                        }}
+                                        className="block w-full px-4 py-3 text-base text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                    >
                                         <option
-                                            key={index}
                                             value={JSON.stringify({
-                                                id: ward.id,
-                                                name: ward.name,
+                                                id: '',
+                                                name: '',
                                             })}
                                         >
-                                            {ward.name}
+                                            Chọn phường ...
                                         </option>
-                                    );
-                                })}
-                            </select>
-                            {formError.ward && <div className="text-red text-sm">{formError.ward}</div>}
+                                        {listWard.map((ward, index) => {
+                                            return (
+                                                <option
+                                                    key={index}
+                                                    value={JSON.stringify({
+                                                        id: ward.id,
+                                                        name: ward.name,
+                                                    })}
+                                                >
+                                                    {ward.name}
+                                                </option>
+                                            );
+                                        })}
+                                    </select>
+                                    {formError.ward && <div className="text-red text-sm">{formError.ward}</div>}
+                                </div>
+                            </div>
+                            <div className="input-elem-group elem-col-1">
+                                <div className="input-elem">
+                                    <label htmlFor="" className="text-base text-outerspace font-semibold">
+                                        Số nhà, tên đường*
+                                    </label>
+                                    <Input
+                                        type="text"
+                                        placeholder="Đường"
+                                        value={formValue.street}
+                                        onChange={(e) => setFormValue({ ...formValue, street: e.target.value })}
+                                    />
+                                    {formError.street && <div className="text-red text-sm">{formError.street}</div>}
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div className="input-elem-group elem-col-1">
-                        <div className="input-elem">
-                            <label htmlFor="" className="text-base text-outerspace font-semibold">
-                                Số nhà, tên đường*
-                            </label>
-                            <Input
-                                type="text"
-                                placeholder="Đường"
-                                value={formValue.street}
-                                onChange={(e) => setFormValue({ ...formValue, street: e.target.value })}
-                            />
-                            {formError.street && <div className="text-red text-sm">{formError.street}</div>}
+                    ) : (
+                        <div className="input-elem-group elem-col-1">
+                            <div className="input-elem">
+                                <label htmlFor="" className="text-base text-outerspace font-semibold">
+                                    Địa chỉ*
+                                </label>
+                                <Input type="text" placeholder="Địa chỉ" value={formValue.Address} />
+                                {formError.address && <div className="text-red text-sm">{formError.address}</div>}
+                            </div>
                         </div>
-                    </div>
+                    )}
+
                     <div className="horiz-line-separator w-full"></div>
-                    <ShippingPayment />
+                    <div className="flex items-center justify-between p-3 bg-gray-100">
+                        {selectedVoucher ? (
+                            selectedVoucher.description
+                        ) : (
+                            <div className="flex items-center gap-2">
+                                <FaTicketAlt className="text-green text-2xl" />
+                                <h3 className="text-xl font-bold">FTSS voucher</h3>
+                            </div>
+                        )}
+
+                        <BaseBtnGreen onClick={openModal} className="text-title-4xsm text-white">
+                            Chọn mã giảm giá
+                        </BaseBtnGreen>
+                    </div>
+                    {/* //lich */}
+                    {setupId && <FormScheduleOrderSetup setSelectedSchedule={setSelectedSchedule} />}
+                    <ShippingPayment setSelectedPayment={setSelectedPayment} selectedPayment={selectedPayment} />
                     <BaseButtonGreen className="pay-now-btn" onClick={handlePayNow}>
                         {isLoadingOrder ? <Loading></Loading> : <>Thanh toán ngay</>}
                     </BaseButtonGreen>
                 </div>
+                <VoucherModal isOpen={showVoucherModal} onClose={closeModal} onSelectVoucher={handleSelectVoucher} />
             </BillingDetailsWrapper>
-            <CheckoutSummary />
+            <CheckoutSummary selectedVoucher={selectedVoucher} />
         </BillingOrderWrapper>
     );
 };

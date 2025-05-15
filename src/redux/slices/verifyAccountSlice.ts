@@ -5,7 +5,7 @@ export const verifyAccount = createAsyncThunk(
   "user/verifyAccount",
   async (data: { userId: string; otpCheck: string }, { rejectWithValue }) => {
     try {
-      const response = await myAxios.post("https://ftss.id.vn/api/v1/user/verify-otp", data);
+      const response = await myAxios.post("/user/verify-otp", data);
       return response.data;
     } catch (error: any) {
       if (error.response && error.response.data) {
@@ -22,7 +22,7 @@ export const verifyForgotPassword = createAsyncThunk(
   "user/verifyForgotPassword",
   async (data: { userId: string; otp: string }, { rejectWithValue }) => {
     try {
-      const response = await myAxios.post("https://ftss.id.vn/api/v1/user/verify-forgot-password", data);
+      const response = await myAxios.post("/user/verify-forgot-password", data);
       return response.data;
     } catch (error: any) {
       if (error.response && error.response.data) {

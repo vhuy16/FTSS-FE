@@ -20,6 +20,7 @@ interface CartState {
     loading: boolean;
     error: string | null;
     message: string | null;
+    setupId: string;
 }
 
 const initialState: CartState = {
@@ -28,6 +29,7 @@ const initialState: CartState = {
     loading: false,
     error: null,
     message: null,
+    setupId: '',
 };
 
 // Async thunk để thêm sản phẩm vào giỏ hàng
@@ -35,9 +37,7 @@ export const addItem = createAsyncThunk(
     'cart/addItemToCart',
     async ({ productId, quantity }: { productId: string; quantity: number }, { rejectWithValue }) => {
         try {
-            const response = await myAxios.post(`https://ftss.id.vn/api/v1/cart/item`, [
-                { productId, quantity, status: 'Odd' },
-            ]);
+            const response = await myAxios.post(`/cart/item`, [{ productId, quantity, status: 'Odd' }]);
             return response.data.data; // Trả về dữ liệu sản phẩm vừa thêm
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || 'Failed to add item to cart');
@@ -49,13 +49,9 @@ export const addSetup = createAsyncThunk(
     'cart/cart/addSetUpToCart',
     async (setupPackageId: string | undefined, { rejectWithValue }) => {
         try {
-            const response = await myAxios.post(
-                'https://ftss.id.vn/api/v1/cart/setup-package',
-                JSON.stringify(setupPackageId),
-                {
-                    headers: { 'Content-Type': 'application/json' },
-                },
-            );
+            const response = await myAxios.post('/cart/setup-package', JSON.stringify(setupPackageId), {
+                headers: { 'Content-Type': 'application/json' },
+            });
             return response.data.data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || 'Failed to update item quantity');
@@ -66,7 +62,7 @@ export const updateItemQuantity = createAsyncThunk(
     'cart/updateItemQuantity',
     async ({ cartItemId, quantity }: { cartItemId: string; quantity: number }, { rejectWithValue }) => {
         try {
-            const response = await myAxios.put(`https://ftss.id.vn/api/v1/cartitem/${cartItemId}`, { quantity });
+            const response = await myAxios.put(`/cartitem/${cartItemId}`, { quantity });
             return response.data.data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || 'Failed to update item quantity');
@@ -77,7 +73,7 @@ export const removeItem = createAsyncThunk(
     'cart/removeItem',
     async ({ cartItemId }: { cartItemId: string }, { rejectWithValue }) => {
         try {
-            const response = await myAxios.delete(`https://ftss.id.vn/api/v1/cartitem/${cartItemId}`);
+            const response = await myAxios.delete(`/cartitem/${cartItemId}`);
             return response.data.message;
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || 'Failed to update item quantity');
@@ -87,7 +83,7 @@ export const removeItem = createAsyncThunk(
 
 // Async thunk để lấy danh sách sản phẩm trong giỏ hàng
 export const getAllCart = createAsyncThunk('cart/getAllCart', async () => {
-    const response = await myAxios.get('https://ftss.id.vn/api/v1/cart');
+    const response = await myAxios.get('/cart');
     return response.data.data;
 });
 
@@ -121,6 +117,19 @@ const cartSlice = createSlice({
                     state.cartselected = state.cartselected.filter((p) => p.cartItemId !== cartItem.cartItemId);
                 }
             }
+        },
+        selectSetup: (state, action: PayloadAction<CartItem[]>) => {
+            const cartItem = action.payload;
+            state.cartselected = cartItem;
+        },
+        selectSetupId: (state, action: PayloadAction<string>) => {
+            state.setupId = action.payload;
+        },
+        deleteSelectSetupId: (state) => {
+            state.setupId = '';
+        },
+        removeCart: (state) => {
+            state.cartselected = [];
         },
         deleteSelectedCart: (state, action: PayloadAction<CartItem>) => {
             const cartItem = action.payload;
@@ -224,5 +233,14 @@ const cartSlice = createSlice({
     },
 });
 
-export const { clearCart, selectCart, updateSelectedCart, deleteSelectedCart } = cartSlice.actions;
+export const {
+    clearCart,
+    selectCart,
+    updateSelectedCart,
+    deleteSelectedCart,
+    selectSetup,
+    removeCart,
+    selectSetupId,
+    deleteSelectSetupId,
+} = cartSlice.actions;
 export default cartSlice.reducer;

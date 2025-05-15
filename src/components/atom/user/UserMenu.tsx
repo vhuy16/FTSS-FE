@@ -9,7 +9,7 @@ const NavMenuWrapper = styled.nav`
   margin-top: 32px;
 
   .nav-menu-list {
-    row-gap: 8px;
+    row-gap: 10px;
 
     @media (max-width: ${breakpoints.md}) {
       display: flex;
@@ -103,7 +103,33 @@ const UserMenu = () => {
               <span className="nav-link-icon flex items-center justify-center">
                 <img src="./assets/icons/ac_user.svg" alt="" />
               </span>
-              <span className="text-base font-semibold nav-link-text no-wrap">Build của tôi</span>
+              <span className="text-base font-semibold nav-link-text no-wrap">Thiết kế của tôi</span>
+            </Link>
+          </li>
+          <li className="nav-menu-item">
+            <Link
+              to="/booking-history"
+              className={`nav-menu-link flex items-center ${
+                location.pathname === "//booking-history" || location.pathname === "/booking-history" ? "active" : ""
+              }`}
+            >
+              <span className="nav-link-icon flex items-center justify-center">
+                <img src="./assets/icons/ac_user.svg" alt="" />
+              </span>
+              <span className="text-base font-semibold nav-link-text no-wrap">Danh sách bảo trì</span>
+            </Link>
+          </li>
+          <li className="nav-menu-item">
+            <Link
+              to="/setup-booking"
+              className={`nav-menu-link flex items-center ${
+                location.pathname === "/setup-booking" || location.pathname === "/setup-booking/add" ? "active" : ""
+              }`}
+            >
+              <span className="nav-link-icon flex items-center justify-center">
+                <img src="./assets/icons/ac_user.svg" alt="" />
+              </span>
+              <span className="text-base font-semibold nav-link-text no-wrap">Hồ cá của tôi</span>
             </Link>
           </li>
           <li className="nav-menu-item">

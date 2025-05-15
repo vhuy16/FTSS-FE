@@ -97,7 +97,7 @@ export default function AddSetupModal({ isModalAddOpen, setIsModalAddOpen }: Mod
                 };
             }),
         );
-        if (data.SetupName && data.Description && data.ImageFile && ProductJson) {
+        if (data.SetupName && data.Description && data.ImageFile && JSON.parse(ProductJson).length >= 3) {
             if (data.SetupName.length < 10) {
                 const formData = new FormData();
                 formData.append('SetupName', data.SetupName);
@@ -109,17 +109,22 @@ export default function AddSetupModal({ isModalAddOpen, setIsModalAddOpen }: Mod
                     const res = await dispatch(createSetupPackage(formData)).unwrap();
                     if (res.status == 201) {
                         setIsModalAddOpen(false);
+                        setData({
+                            SetupName: '',
+                            Description: '',
+                            ProductItemsJson: '',
+                            ImageFile: null,
+                        });
                         toast.success('Thêm mẫu thiết kế bể cá thành công');
                     }
                 } catch (error) {
-                    setIsModalAddOpen(false);
-                    toast.error('Thêm mẫu thiết kế bể cá thất bại');
+                    toast.error(error as string);
                 }
             } else {
-                toast.error('Tên mẫu thiếu kế phải là chữ in hoa và ít hơn 10 kí tự');
+                toast.error('Tên mẫu thiếu kế phải ít hơn 10 kí tự');
             }
         } else {
-            toast.error('Vui lòng nhập đủ thông tin');
+            toast.error('Vui lòng nhập đủ thông tin!');
         }
     };
     return (
@@ -147,6 +152,12 @@ export default function AddSetupModal({ isModalAddOpen, setIsModalAddOpen }: Mod
                                             className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
                                             onClick={() => {
                                                 setIsModalAddOpen(false);
+                                                setData({
+                                                    SetupName: '',
+                                                    Description: '',
+                                                    ProductItemsJson: '',
+                                                    ImageFile: null,
+                                                });
                                             }}
                                         >
                                             <svg
@@ -200,7 +211,12 @@ export default function AddSetupModal({ isModalAddOpen, setIsModalAddOpen }: Mod
                                                     required={true}
                                                     value={data.SetupName}
                                                     onChange={(e) =>
-                                                        setData({ ...data, SetupName: e.target.value.toUpperCase() })
+                                                        setData({
+                                                            ...data,
+                                                            SetupName:
+                                                                e.target.value.charAt(0).toUpperCase() +
+                                                                e.target.value.slice(1).toLowerCase(),
+                                                        })
                                                     }
                                                 />
                                             </div>
@@ -228,7 +244,7 @@ export default function AddSetupModal({ isModalAddOpen, setIsModalAddOpen }: Mod
                                                                     onChange={(event) => {
                                                                         handleChange(event, cate.categoryName);
                                                                     }}
-                                                                    input={<OutlinedInput label="Tag" />}
+                                                                    input={<OutlinedInput label={cate.categoryName} />}
                                                                     renderValue={() => {
                                                                         const listProductByCate = listProduct.filter(
                                                                             (product) =>
@@ -296,6 +312,12 @@ export default function AddSetupModal({ isModalAddOpen, setIsModalAddOpen }: Mod
                                                                                         <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
                                                                                             {product.subCategoryName}
                                                                                         </span>
+                                                                                        {product.categoryName ===
+                                                                                            'Bể' && (
+                                                                                            <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
+                                                                                                {product.size}
+                                                                                            </span>
+                                                                                        )}
                                                                                     </div>
                                                                                 </div>
                                                                                 {listProduct.some(
@@ -311,35 +333,13 @@ export default function AddSetupModal({ isModalAddOpen, setIsModalAddOpen }: Mod
                                                                                             }
                                                                                         >
                                                                                             <div className="relative flex items-center max-w-[5rem]">
-                                                                                                <button
-                                                                                                    type="button"
-                                                                                                    id="decrement-button"
-                                                                                                    className="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 
-            hover:bg-gray-200 border border-gray-300 rounded-s-lg p-1 h-6 focus:ring-gray-100 
-            dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
-                                                                                                >
-                                                                                                    <svg
-                                                                                                        className="w-1.5 h-1.5 text-gray-900 dark:text-white"
-                                                                                                        xmlns="http://www.w3.org/2000/svg"
-                                                                                                        fill="none"
-                                                                                                        viewBox="0 0 18 2"
-                                                                                                    >
-                                                                                                        <path
-                                                                                                            stroke="currentColor"
-                                                                                                            stroke-linecap="round"
-                                                                                                            stroke-linejoin="round"
-                                                                                                            stroke-width="2"
-                                                                                                            d="M1 1h16"
-                                                                                                        />
-                                                                                                    </svg>
-                                                                                                </button>
                                                                                                 <input
                                                                                                     type="text"
                                                                                                     id="quantity-input"
                                                                                                     className="w-[3rem] bg-gray-50 border-x-0 border-gray-300 h-6 text-center text-gray-900 text-xs 
             focus:ring-blue-500 focus:border-blue-500 block w-full py-0.5 dark:bg-gray-700 
             dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                                                                                    placeholder="1"
+                                                                                                    placeholder="0"
                                                                                                     value={
                                                                                                         listProduct.find(
                                                                                                             (p) =>
@@ -390,28 +390,6 @@ export default function AddSetupModal({ isModalAddOpen, setIsModalAddOpen }: Mod
                                                                                                         );
                                                                                                     }}
                                                                                                 />
-                                                                                                <button
-                                                                                                    type="button"
-                                                                                                    id="increment-button"
-                                                                                                    className="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 
-            hover:bg-gray-200 border border-gray-300 rounded-e-lg p-1 h-6 focus:ring-gray-100 
-            dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
-                                                                                                >
-                                                                                                    <svg
-                                                                                                        className="w-1.5 h-1.5 text-gray-900 dark:text-white"
-                                                                                                        xmlns="http://www.w3.org/2000/svg"
-                                                                                                        fill="none"
-                                                                                                        viewBox="0 0 18 18"
-                                                                                                    >
-                                                                                                        <path
-                                                                                                            stroke="currentColor"
-                                                                                                            stroke-linecap="round"
-                                                                                                            stroke-linejoin="round"
-                                                                                                            stroke-width="2"
-                                                                                                            d="M9 1v16M1 9h16"
-                                                                                                        />
-                                                                                                    </svg>
-                                                                                                </button>
                                                                                             </div>
                                                                                         </div>
                                                                                     )}
@@ -450,7 +428,15 @@ export default function AddSetupModal({ isModalAddOpen, setIsModalAddOpen }: Mod
                                             </button>
 
                                             <button
-                                                onClick={() => setIsModalAddOpen(false)}
+                                                onClick={() => {
+                                                    setIsModalAddOpen(false);
+                                                    setData({
+                                                        SetupName: '',
+                                                        Description: '',
+                                                        ProductItemsJson: '',
+                                                        ImageFile: null,
+                                                    });
+                                                }}
                                                 className="text-red-600 inline-flex items-center mt-3 font-bold text-sm underline"
                                             >
                                                 <svg

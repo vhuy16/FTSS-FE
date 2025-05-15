@@ -9,37 +9,68 @@ export type UserProfile = {
     email: string;
     phoneNumber: string;
     gender: string;
+    status: string;
     role: string;
+    isDeleted: boolean;
+    cityId: string | null;
+    districtId: string | null;
+    wardId: string | null;
+    bankName: string;
+    bankNumber: string;
+    bankHolder: string;
 };
 
 type ProfileType = {
     isLoading: boolean | null;
     isLoadingEdit: boolean | null;
+    isLoadingUpdate: boolean | null;
+    isLoadingGetAllUser: boolean | null;
+    isLoadingDelete: boolean;
+    isLoadingActive: boolean;
     user: UserProfile | null;
-    listUser: UserProfile[] | null;
+    listUser: UserProfile[];
     isError: boolean | null;
+    error: string | null;
 };
 const initialState: ProfileType = {
     isLoading: false,
     isLoadingEdit: false,
+    isLoadingGetAllUser: false,
+    isLoadingDelete: false,
+    isLoadingActive: false,
+    isLoadingUpdate: false,
     user: null,
     listUser: [],
     isError: false,
+    error: null,
 };
 
 // Async thunk for fetching the user profile
 export const getUserProfile = createAsyncThunk('profile/UserProfile', async () => {
     try {
-        const response = await myAxios.get(`https://ftss.id.vn/api/v1/usertoken`);
+        const response = await myAxios.get(`/usertoken`);
         return response.data.data;
     } catch (error: any) {
         console.error('Error fetching user profile:', error);
         throw error;
     }
 });
+export const updateProfile = createAsyncThunk(
+    'profile/updateProfile',
+    async ({ userId, updatedData }: { userId: string; updatedData: any }, { dispatch, rejectWithValue }) => {
+        try {
+            const response = await myAxios.put(`/user/${userId}`, updatedData);
+            await dispatch(getUserProfile());
+            return response.data;
+        } catch (error: any) {
+            console.log(error);
+            return rejectWithValue(error.response?.data?.message || 'Cập nhật thông tin thất bại !!');
+        }
+    },
+);
 export const getAllUser = createAsyncThunk('user/getAllUser', async () => {
     try {
-        const response = await myAxios.get(`https://ftss.id.vn/api/v1/user?page=1&size=100`);
+        const response = await myAxios.get(`/user?page=1&size=100`);
         return response.data.data.items;
     } catch (error: any) {
         console.error('Error fetching user profile:', error);
@@ -47,7 +78,7 @@ export const getAllUser = createAsyncThunk('user/getAllUser', async () => {
     }
 });
 export const updateRoleUser = createAsyncThunk(
-    'user/updateRoleUser',
+    '/user/updateRoleUser',
     async (
         {
             userId,
@@ -68,8 +99,26 @@ export const updateRoleUser = createAsyncThunk(
         }
     },
 );
-
-// Assuming UserProfile is defined appropriately somewhere
+export const deleteUser = createAsyncThunk('user/deleteUser', async (id: string, { dispatch, rejectWithValue }) => {
+    try {
+        const response = await myAxios.put(`/user/${id}`, { status: 'Baned' });
+        await dispatch(getAllUser());
+        return response.data;
+    } catch (error: any) {
+        console.log(error);
+        return rejectWithValue(error.response?.data?.message || 'Something went wrong');
+    }
+});
+export const activeUser = createAsyncThunk('user/activeUser', async (id: string, { dispatch, rejectWithValue }) => {
+    try {
+        const response = await myAxios.put(`/user/${id}`, { status: 'Available' });
+        await dispatch(getAllUser());
+        return response.data;
+    } catch (error: any) {
+        console.log(error);
+        return rejectWithValue(error.response?.data?.message || 'Something went wrong');
+    }
+});
 
 const userSlice = createSlice({
     name: 'profile',
@@ -94,16 +143,16 @@ const userSlice = createSlice({
             });
         builder
             .addCase(getAllUser.pending, (state) => {
-                state.isLoading = true;
+                state.isLoadingGetAllUser = true;
                 state.isError = null;
             })
             .addCase(getAllUser.fulfilled, (state, action) => {
-                state.isLoading = false;
+                state.isLoadingGetAllUser = false;
                 state.listUser = action.payload; // lam theo cai ta return
                 state.isError = null;
             })
             .addCase(getAllUser.rejected, (state, action) => {
-                state.isLoading = false;
+                state.isLoadingGetAllUser = false;
                 state.isError = true;
             });
         builder
@@ -118,6 +167,45 @@ const userSlice = createSlice({
             .addCase(updateRoleUser.rejected, (state, action) => {
                 state.isLoadingEdit = false;
                 state.isError = true;
+            });
+        builder
+            .addCase(updateProfile.pending, (state) => {
+                state.isLoadingUpdate = true;
+                state.error = null;
+            })
+            .addCase(updateProfile.fulfilled, (state, action) => {
+                state.isLoadingUpdate = false;
+                state.error = null;
+            })
+            .addCase(updateProfile.rejected, (state, action) => {
+                state.isLoadingUpdate = false;
+                state.error = action.payload as string;
+            });
+        builder
+            .addCase(deleteUser.pending, (state) => {
+                state.isLoadingDelete = true;
+                state.error = null;
+            })
+            .addCase(deleteUser.fulfilled, (state, action) => {
+                state.isLoadingDelete = false;
+                state.error = null;
+            })
+            .addCase(deleteUser.rejected, (state, action) => {
+                state.isLoadingDelete = false;
+                state.error = action.payload as string;
+            });
+        builder
+            .addCase(activeUser.pending, (state) => {
+                state.isLoadingActive = true;
+                state.error = null;
+            })
+            .addCase(activeUser.fulfilled, (state, action) => {
+                state.isLoadingActive = false;
+                state.error = null;
+            })
+            .addCase(activeUser.rejected, (state, action) => {
+                state.isLoadingActive = false;
+                state.error = action.payload as string;
             });
     },
 });

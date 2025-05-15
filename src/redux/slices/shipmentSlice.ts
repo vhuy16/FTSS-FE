@@ -92,7 +92,11 @@ export const createShipment = createAsyncThunk(
 const shipmentSlice = createSlice({
     name: 'profile',
     initialState,
-    reducers: {},
+    reducers: {
+        clearShip: (state) => {
+            state.ship = null;
+        },
+    },
     extraReducers: (builder) => {
         builder
             .addCase(createShipment.pending, (state) => {
@@ -110,5 +114,5 @@ const shipmentSlice = createSlice({
             });
     },
 });
-
+export const { clearShip } = shipmentSlice.actions;
 export default shipmentSlice.reducer;

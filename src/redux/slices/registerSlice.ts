@@ -1,10 +1,20 @@
-import { RegisterType } from "@components/pages/Register/Register";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import myAxios from "@setup/axiosConfig";
 import axios from "axios";
+export type RegisterType = {
+  email: string;
+  address: string;
+  phoneNumber: string;
+  password: string;
+  userName: string;
+  fullName: string;
+  gender: number;
+  cityId: string;
+  districtId: string;
+};
 export const createAccount = createAsyncThunk("user/createAccount", async (data: RegisterType, { rejectWithValue }) => {
   try {
-    const response = await myAxios.post("https://ftss.id.vn/api/v1/user/register", data);
+    const response = await myAxios.post("/user/register", data);
     return response.data;
   } catch (error: any) {
     if (error.response && error.response.data) {
@@ -17,7 +27,7 @@ export const createAccount = createAsyncThunk("user/createAccount", async (data:
 
 export const googleSignin = createAsyncThunk("user/googleSignin", async (any, { rejectWithValue }) => {
   try {
-    const response = await myAxios.get("https://ftss.id.vn/api/v1/google-auth/login");
+    const response = await myAxios.get("/google-auth/login");
     return response.data;
   } catch (error: any) {
     if (error.response && error.response.data) {

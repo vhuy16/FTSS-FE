@@ -31,6 +31,8 @@ export default function AddProductModal({ isModalAddOpen, setIsModalAddOpen }: M
         price: number;
         quantity: number;
         subCategoryId: string;
+        size: string;
+        power: number;
         images: File[];
     }>({
         productName: '',
@@ -38,6 +40,8 @@ export default function AddProductModal({ isModalAddOpen, setIsModalAddOpen }: M
         price: 0,
         quantity: 0,
         subCategoryId: '',
+        size: '',
+        power: 0,
         images: [],
     });
 
@@ -56,6 +60,7 @@ export default function AddProductModal({ isModalAddOpen, setIsModalAddOpen }: M
             data.productName &&
             data.description &&
             data.subCategoryId &&
+            data.subCategoryId != '1' &&
             data.price != 0 &&
             data.quantity != 0 &&
             data.images.length > 0
@@ -66,15 +71,32 @@ export default function AddProductModal({ isModalAddOpen, setIsModalAddOpen }: M
             formData.append('Price', data.price.toString());
             formData.append('Quantity', data.quantity.toString());
             formData.append('SubCategoryId', data.subCategoryId);
-            formData.append('Size', '3x4x5');
+            formData.append('Size', data.size);
+            formData.append('Power', data.power.toString());
 
             for (let i = 0; i < data.images.length; i++) {
                 formData.append('ImageLink', data.images[i]);
             }
 
-            await dispatch(addProducts(formData));
-            setIsModalAddOpen(false);
-            toast.success('Thêm sản phẩm thành công');
+            try {
+                await dispatch(addProducts(formData)).unwrap();
+                setIsModalAddOpen(false);
+                setData({
+                    productName: '',
+                    description: '',
+                    price: 0,
+                    quantity: 0,
+                    subCategoryId: '',
+                    size: '',
+                    power: 0,
+                    images: [],
+                });
+                setCateName('');
+                setSubCate({ name: '', id: '' });
+                toast.success('Thêm sản phẩm thành công');
+            } catch (error) {
+                toast.error(error as string);
+            }
         } else {
             toast.error('Vui lòng nhập đủ thông tin');
         }
@@ -87,6 +109,18 @@ export default function AddProductModal({ isModalAddOpen, setIsModalAddOpen }: M
                     open={isModalAddOpen}
                     onClose={() => {
                         setIsModalAddOpen(false);
+                        setData({
+                            productName: '',
+                            description: '',
+                            price: 0,
+                            quantity: 0,
+                            subCategoryId: '',
+                            size: '',
+                            power: 0,
+                            images: [],
+                        });
+                        setCateName('');
+                        setSubCate({ name: '', id: '' });
                     }}
                     aria-labelledby="modal-modal-title"
                     aria-describedby="modal-modal-description"
@@ -104,6 +138,18 @@ export default function AddProductModal({ isModalAddOpen, setIsModalAddOpen }: M
                                             className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
                                             onClick={() => {
                                                 setIsModalAddOpen(false);
+                                                setData({
+                                                    productName: '',
+                                                    description: '',
+                                                    price: 0,
+                                                    quantity: 0,
+                                                    subCategoryId: '',
+                                                    size: '',
+                                                    power: 0,
+                                                    images: [],
+                                                });
+                                                setCateName('');
+                                                setSubCate({ name: '', id: '' });
                                             }}
                                         >
                                             <svg
@@ -225,7 +271,15 @@ export default function AddProductModal({ isModalAddOpen, setIsModalAddOpen }: M
                                                     }}
                                                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                                                 >
-                                                    <option selected={true}>Chọn danh mục phụ</option>
+                                                    <option
+                                                        selected={true}
+                                                        value={JSON.stringify({
+                                                            name: 'Chọn danh mục phụ',
+                                                            id: '1',
+                                                        })}
+                                                    >
+                                                        Chọn danh mục phụ
+                                                    </option>
                                                     {listSubCate ? (
                                                         listSubCate.map((cate) => (
                                                             <option
@@ -242,6 +296,52 @@ export default function AddProductModal({ isModalAddOpen, setIsModalAddOpen }: M
                                                     )}
                                                 </select>
                                             </div>
+                                            {(cateName === 'Lọc' || cateName === 'Đèn') && (
+                                                <div className="sm:col-span-6">
+                                                    <label
+                                                        htmlFor="brand"
+                                                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                                    >
+                                                        Công suất {cateName === 'Lọc' ? '(L/h)' : '(W)'}
+                                                    </label>
+                                                    <input
+                                                        type="number"
+                                                        name="power"
+                                                        id="brand"
+                                                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                                        placeholder="Nhập công suất"
+                                                        required={true}
+                                                        onChange={(e) =>
+                                                            setData({ ...data, power: parseInt(e.target.value) })
+                                                        }
+                                                    />
+                                                </div>
+                                            )}
+                                            {(cateName === 'Bể' || cateName === 'Layout') && (
+                                                <div className="sm:col-span-6">
+                                                    <label
+                                                        htmlFor="name"
+                                                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                                    >
+                                                        Kích thước
+                                                    </label>
+                                                    <select
+                                                        id="size"
+                                                        onChange={(e) => setData({ ...data, size: e.target.value })}
+                                                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                                    >
+                                                        <option selected={true} value="">
+                                                            Chọn kích thước
+                                                        </option>
+                                                        <option value="30x20x20">30x20x20</option>
+                                                        <option value="40x30x30">40x30x30</option>
+                                                        <option value="40x40x40">40x40x40</option>
+                                                        <option value="60x40x40">60x40x40</option>
+                                                        <option value="80x40x50">80x40x50</option>
+                                                        <option value="120x50x50">120x50x50</option>
+                                                    </select>
+                                                </div>
+                                            )}
                                             <div className="sm:col-span-6">
                                                 <label
                                                     htmlFor="description"
@@ -283,23 +383,25 @@ export default function AddProductModal({ isModalAddOpen, setIsModalAddOpen }: M
                                                 onClick={handleSubmit}
                                                 className="text-white inline-flex items-center bg-blackGreen  hover:bg-blackGreenHover focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 mt-3 mr-3"
                                             >
-                                                {/* <svg
-                                                    className="mr-1 -ml-1 w-6 h-6"
-                                                    fill="currentColor"
-                                                    viewBox="0 0 20 20"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                >
-                                                    <path
-                                                        fill-rule="evenodd"
-                                                        d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
-                                                        clip-rule="evenodd"
-                                                    ></path>
-                                                </svg> */}
                                                 {isLoading ? <Loading></Loading> : 'Thêm'}
                                             </button>
 
                                             <button
-                                                onClick={() => setIsModalAddOpen(false)}
+                                                onClick={() => {
+                                                    setIsModalAddOpen(false);
+                                                    setData({
+                                                        productName: '',
+                                                        description: '',
+                                                        price: 0,
+                                                        quantity: 0,
+                                                        subCategoryId: '',
+                                                        size: '',
+                                                        power: 0,
+                                                        images: [],
+                                                    });
+                                                    setCateName('');
+                                                    setSubCate({ name: '', id: '' });
+                                                }}
                                                 className="text-red-600 inline-flex items-center mt-3 font-bold text-sm underline"
                                             >
                                                 <svg

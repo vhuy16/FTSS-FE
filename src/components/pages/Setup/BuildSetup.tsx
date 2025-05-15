@@ -1,13 +1,11 @@
-import React, { useState, useEffect, ReactNode } from "react";
-import ReactDOM from "react-dom";
-import styled from "styled-components";
+import React, { useState, useEffect } from "react";
 import { Container } from "@styles/styles";
 import Breadcrumb from "@common/Breadcrumb";
 import { useAppDispatch, useAppSelector } from "@redux/hook";
 import { getAllCategory } from "@redux/slices/categorySlice";
-import { getAllProductSimilar, Product } from "@redux/slices/productSlice";
+import { getAllProduct, getAllProductSimilar, Product } from "@redux/slices/productSlice";
 import { toast } from "react-toastify";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { currencyFormat } from "@ultils/helper";
 import {
   BannerBox,
@@ -15,10 +13,6 @@ import {
   ContentWrapper,
   FilterWrapper,
   LeftSide,
-  ModalBox,
-  ModalContent,
-  ModalHeader,
-  ModalOverlay,
   ProductCard,
   ProductList,
   QuantityWrapper,
@@ -31,28 +25,14 @@ import {
 import { BaseBtnGreen } from "@styles/button";
 import { createSetupPackage } from "@redux/slices/setupSlice";
 import Loading from "@components/atom/Loading/Loading";
+import SimpleModal, { ModalContent, ModalHeader } from "@components/atom/modal/Modal";
+import BuildSetupModal from "@components/atom/modal/BuildSetupModal";
+import { getRecommendations, Recommendations } from "@redux/slices/recommendSlice";
 
 const breadcrumbItems = [
   { label: "Trang chủ", link: "/" },
   { label: "Build hồ cá", link: "/setup-package" },
 ];
-
-/* ------------------ Modal ------------------ */
-interface SimpleModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  children: ReactNode;
-}
-
-const SimpleModal: React.FC<SimpleModalProps> = ({ isOpen, onClose, children }) => {
-  if (!isOpen) return null;
-  return ReactDOM.createPortal(
-    <ModalOverlay onClick={onClose}>
-      <ModalBox onClick={(e) => e.stopPropagation()}>{children}</ModalBox>
-    </ModalOverlay>,
-    document.body
-  );
-};
 
 interface ProductItemProps {
   products: Product;
@@ -67,7 +47,7 @@ const BuildSetup: React.FC<ProductItemProps> = () => {
   const [isModalOpenSave, setIsModalOpenSave] = useState(false);
   const [selectedCategoryName, setSelectedCategoryName] = useState<string>("");
   const [selectedProducts, setSelectedProducts] = useState<(Product & { quantity: number })[]>([]);
-  const products = useAppSelector((state) => state.product.data?.items);
+  const products = useAppSelector((state) => state.product?.data?.items);
   const [setupName, setSetupName] = useState("");
   const [description, setDescription] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -77,14 +57,25 @@ const BuildSetup: React.FC<ProductItemProps> = () => {
   const isLoadingSetup = useAppSelector((state) => state.setupPackage.loading);
   const [subCategories, setSubCategories] = useState<string[]>(["Tất cả"]);
   const [selectedSubcategory, setSelectedSubcategory] = useState<string>("Tất cả");
-
+  const validCategories = listCategory.filter((item) => item.isSolution === false);
+  const productRecommend = useAppSelector((state) => state.recommend.recommendations);
+  const [selectedTankSize, setSelectedTankSize] = useState<string>("");
+  const [page, setPage] = useState(1);
+  const [size, setSize] = useState(100);
   const navigate = useNavigate();
+  console.log("pro commenr", productRecommend);
 
   useEffect(() => {
     dispatch(getAllCategory());
   }, [dispatch]);
 
+  useEffect(() => {
+    if (selectedTankSize) {
+      dispatch(getRecommendations({ size: selectedTankSize }));
+    }
+  }, [selectedTankSize]);
   const openModal = async (categoryName: string, product?: Product) => {
+    setSelectedSubcategory("Tất cả");
     setSelectedCategoryName(categoryName);
     setIsModalOpen(true);
     if (product) {
@@ -92,7 +83,14 @@ const BuildSetup: React.FC<ProductItemProps> = () => {
     }
     setIsLoading(true);
     try {
-      await dispatch(getAllProductSimilar(categoryName));
+      await dispatch(
+        getAllProduct({
+          page,
+          size,
+          cateName: categoryName, //  truyền cateName (categoryName) để lọc catecate
+          subcategoryName: selectedSubcategory === "Tất cả" ? undefined : selectedSubcategory, // Truyền subcategoryName nếu không phải "Tất cả"
+        })
+      );
       const currentCategory = listCategory.find((cat) => cat.categoryName === categoryName);
       const newSubCategories =
         currentCategory && currentCategory.subCategories
@@ -130,6 +128,9 @@ const BuildSetup: React.FC<ProductItemProps> = () => {
   };
 
   const handleSelectProduct = (product: Product) => {
+    if (product.categoryName === "Bể") {
+      setSelectedTankSize(product?.size);
+    }
     if (productToChange) {
       // Nếu đang trong chế độ thay đổi sản phẩm
       setSelectedProducts((prev) =>
@@ -213,15 +214,17 @@ const BuildSetup: React.FC<ProductItemProps> = () => {
 
   const totalPrice = selectedProducts.reduce((sum, product) => sum + product.price * product.quantity, 0);
   // lọc theo subcate
-
+  // cap nhat subcate chay lai khi sub thay doi
   useEffect(() => {
-    const currentCategory = listCategory.find((cat) => cat.categoryName === selectedCategoryName);
-    const newSubCategories =
-      currentCategory && currentCategory.subCategories
+    const updateSubCategories = () => {
+      const currentCategory = listCategory.find((cat) => cat.categoryName === selectedCategoryName);
+      const newSubCategories = currentCategory?.subCategories?.length
         ? ["Tất cả", ...currentCategory.subCategories.map((sub) => sub.subCategoryName)]
         : ["Tất cả"];
-    setSubCategories(newSubCategories); // Cập nhật state subCategories
-  }, [listCategory, selectedCategoryName]); // Chỉ chạy lại khi listCategory hoặc selectedCategoryName thay đổi
+      setSubCategories(newSubCategories);
+    };
+    updateSubCategories();
+  }, [listCategory, selectedCategoryName]);
 
   // Lọc sản phẩm theo subcategory
   const filterProductsBySubcategory = (products: Product[] | null | undefined, subcategory: string) => {
@@ -231,6 +234,7 @@ const BuildSetup: React.FC<ProductItemProps> = () => {
     }
     return products.filter((product) => product.subCategoryName === subcategory);
   };
+
   return (
     <SetupScreenWrapper>
       <Container>
@@ -247,16 +251,19 @@ const BuildSetup: React.FC<ProductItemProps> = () => {
         <ContentWrapper>
           <LeftSide>
             <SetupItemsList>
-              {listCategory?.map((cat: any) => (
+              {validCategories?.map((cat: any) => (
                 <SetupItem key={cat.id}>
                   {selectedProducts.some((p) => p.categoryName === cat.categoryName) ? (
                     <div>
-                      {/* Thêm điều kiện ẩn nút "Chọn thêm" khi là loại bể */}
-                      {cat.categoryName !== "Bể" && (
-                        <div className="change-btn">
-                          <BaseBtnGreen onClick={() => openModal(cat.categoryName)}>Chọn thêm</BaseBtnGreen>
-                        </div>
-                      )}
+                      <div className="titleCategory">
+                        <div className="text-title">{cat.categoryName}</div>
+                        {/* Thêm điều kiện ẩn nút "Chọn thêm" khi là loại bể */}
+                        {cat.categoryName !== "Bể" && (
+                          <div className="change-btn">
+                            <BaseBtnGreen onClick={() => openModal(cat.categoryName)}>Chọn thêm</BaseBtnGreen>
+                          </div>
+                        )}
+                      </div>
                       {selectedProducts
                         .filter((product) => product.categoryName === cat.categoryName)
                         .map((product) => (
@@ -264,23 +271,26 @@ const BuildSetup: React.FC<ProductItemProps> = () => {
                             <img src={product.images[0]} alt={product.productName} className="product-image" />
                             <div className="product-info-center">
                               <h2 className="product-name">{product.productName}</h2>
-                              <div className="product-info-center-btn">
-                                <QuantityWrapper>
-                                  <button
-                                    onClick={() => handleQuantityChange(product.id, product.quantity - 1)}
-                                    disabled={product.quantity <= 1}
-                                  >
-                                    -
+                              {cat.categoryName !== "Bể" && (
+                                <div className="product-info-center-btn">
+                                  <QuantityWrapper>
+                                    <button
+                                      onClick={() => handleQuantityChange(product.id, product.quantity - 1)}
+                                      disabled={product.quantity <= 1}
+                                    >
+                                      -
+                                    </button>
+                                    <span>{product.quantity}</span>
+                                    <button onClick={() => handleQuantityChange(product.id, product.quantity + 1)}>
+                                      +
+                                    </button>
+                                  </QuantityWrapper>
+
+                                  <button className="delete-btn" onClick={() => openModalDelete(product)}>
+                                    Xóa
                                   </button>
-                                  <span>{product.quantity}</span>
-                                  <button onClick={() => handleQuantityChange(product.id, product.quantity + 1)}>
-                                    +
-                                  </button>
-                                </QuantityWrapper>
-                                <button className="delete-btn" onClick={() => openModalDelete(product)}>
-                                  Xóa
-                                </button>
-                              </div>
+                                </div>
+                              )}
                             </div>
                             <div className="product-info-last">
                               <h2 className="current-price">{currencyFormat(product.price * product.quantity)}</h2>
@@ -325,66 +335,19 @@ const BuildSetup: React.FC<ProductItemProps> = () => {
           </RightSide>
         </ContentWrapper>
       </Container>
-      <SimpleModal isOpen={isModalOpen} onClose={closeModal}>
-        <ModalHeader>
-          <h2>{selectedCategoryName}</h2>
-          <button onClick={closeModal}>&times;</button>
-        </ModalHeader>
-        <ModalContent>
-          <FilterWrapper>
-            <div className="filter-group">
-              <span>Chọn theo loại:</span>
-              {subCategories.map(
-                (
-                  subcat // Sử dụng state subCategories
-                ) => (
-                  <button
-                    key={subcat}
-                    className={`filter-btn ${selectedSubcategory === subcat ? "active" : ""}`}
-                    onClick={() => setSelectedSubcategory(subcat)}
-                  >
-                    {subcat}
-                  </button>
-                )
-              )}
-            </div>
-          </FilterWrapper>
-          {isLoading ? (
-            <Loading />
-          ) : filterProductsBySubcategory(products, selectedSubcategory).length > 0 ? (
-            <ProductList>
-              {filterProductsBySubcategory(products, selectedSubcategory).map((prod: Product) => (
-                <ProductCard key={prod.id}>
-                  <img src={prod.images[0]} alt={prod.productName} />
-                  <div className="product-info">
-                    <h3 className="product-name">{prod.productName}</h3>
-                    <span className="new-price">{currencyFormat(prod.price)}</span>
-                  </div>
-                  <div className="buttons">
-                    <button
-                      className="detail-btn"
-                      onClick={() => {
-                        if (prod.status === "Available") {
-                          navigate(`/product/${prod.id}`);
-                        } else {
-                          toast.error("Sản Phẩm Đã Dừng Hoạt Động");
-                        }
-                      }}
-                    >
-                      Xem chi tiết
-                    </button>
-                    <button className="select-btn" onClick={() => handleSelectProduct(prod)}>
-                      Chọn
-                    </button>
-                  </div>
-                </ProductCard>
-              ))}
-            </ProductList>
-          ) : (
-            <p>Không có sản phẩm nào.</p>
-          )}
-        </ModalContent>
-      </SimpleModal>
+      <BuildSetupModal
+        isModalOpen={isModalOpen}
+        closeModal={closeModal}
+        selectedCategoryName={selectedCategoryName}
+        subCategories={subCategories}
+        selectedSubcategory={selectedSubcategory}
+        setSelectedSubcategory={setSelectedSubcategory}
+        products={products || []}
+        filterProductsBySubcategory={filterProductsBySubcategory}
+        isLoading={isLoading}
+        handleSelectProduct={handleSelectProduct}
+        recommendations={productRecommend}
+      />
       <SimpleModal isOpen={isModalOpenDelete} onClose={closeModalDelete}>
         <ModalHeader></ModalHeader>
         <ModalContent>
@@ -397,7 +360,10 @@ const BuildSetup: React.FC<ProductItemProps> = () => {
             >
               Không
             </button>
-            <button onClick={handleDeleteProduct} className="w-1/2 py-2 bg-red-600 text-white font-semibold rounded-lg">
+            <button
+              onClick={handleDeleteProduct}
+              className="w-1/2 py-2 bg-red-600 text-white font-semibold rounded-lg flex justify-center items-center"
+            >
               Có
             </button>
           </div>

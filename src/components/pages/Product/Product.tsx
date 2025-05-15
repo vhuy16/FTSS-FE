@@ -1,18 +1,16 @@
 import styled from "styled-components";
-import { Container, ContentStylings, Section } from "@styles/styles";
+import { Container, Section } from "@styles/styles";
 import Breadcrumb from "@common/Breadcrumb";
 import { Link } from "react-router-dom";
-import Title from "@common/Title";
 import { breakpoints, defaultTheme } from "@styles/themes/default";
 import ProductFilter from "@components/atom/products/ProductFilter";
 import { useAppDispatch, useAppSelector } from "@redux/hook";
 import ProductListPage from "@components/atom/products/ProductListPage";
 import PaginationControlled from "@components/atom/pagination/Pagination";
 import { useLocation } from "react-router-dom";
-import { log } from "console";
 import Loading from "@components/atom/Loading/Loading";
-import { useEffect, useState } from "react";
-import { getAllProduct } from "@redux/slices/productSlice";
+import { useEffect } from "react";
+import { getAllProduct, getProductByNameForUser } from "@redux/slices/productSlice";
 
 // Define breadcrumb type
 type BreadcrumbItem = {
@@ -115,18 +113,29 @@ const ProductListScreen: React.FC = () => {
   const minPrice = params.get("minPrice");
   const maxPrice = params.get("maxPrice");
   const subcategoryName = params.get("subcategoryName");
+  const productName = params.get("productName");
 
   useEffect(() => {
-    dispatch(
-      getAllProduct({
-        page: parseInt(page as string),
-        size: parseInt(size as string),
-        minPrice: parseInt(minPrice as string),
-        maxPrice: parseInt(maxPrice as string),
-        subcategoryName: subcategoryName as string,
-      })
-    );
-  }, [page, size, minPrice, maxPrice, subcategoryName]);
+    if (productName && productName.trim() !== "") {
+      dispatch(
+        getProductByNameForUser({
+          productName: productName,
+          page: parseInt(page),
+          size: parseInt(size),
+        })
+      );
+    } else {
+      dispatch(
+        getAllProduct({
+          page: parseInt(page as string),
+          size: parseInt(size as string),
+          minPrice: parseInt(minPrice as string),
+          maxPrice: parseInt(maxPrice as string),
+          subcategoryName: subcategoryName as string,
+        })
+      );
+    }
+  }, [page, size, minPrice, maxPrice, subcategoryName, productName]);
 
   return (
     <main className="page-py-spacing">
@@ -149,9 +158,11 @@ const ProductListScreen: React.FC = () => {
             </div>
 
             {isLoading ? (
-              <Loading></Loading>
+              <Loading />
             ) : listProducts && listProducts.length > 0 ? (
               <ProductListPage products={listProducts} />
+            ) : productName && productName.trim() !== "" ? (
+              <div>Không có sản phẩm nào</div>
             ) : (
               <div>Không có sản phẩm nào</div>
             )}
@@ -164,35 +175,7 @@ const ProductListScreen: React.FC = () => {
         </ProductsContent>
       </Container>
       <Section>
-        <Container>
-          {/* <DescriptionContent>
-                        <Title titleText={'Clothing for Everyone Online'} />
-                        <ContentStylings className="text-base content-stylings">
-                            <h4>Reexplore Clothing Collection Online at Achats.</h4>
-                            <p>
-                                Lorem ipsum dolor sit amet consectetur, adipisicing elit. Sed, molestiae ex atque
-                                similique consequuntur ipsum sapiente inventore magni ducimus sequi nemo id, numquam
-                                officiis fugit pariatur esse, totam facere ullam?
-                            </p>
-                            <p>
-                                Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequatur nam magnam placeat
-                                nesciunt ipsa amet, vel illo veritatis eligendi voluptatem!
-                            </p>
-                            <h4>One-stop Destination to Shop Every Clothing for Everyone: Achats.</h4>
-                            <p>
-                                Lorem ipsum dolor sit amet consectetur adipisicing elit. Nemo iure doloribus optio
-                                aliquid id. Quos quod delectus, dolor est ab exercitationem odio quae quas qui
-                                doloremque. Esse natus minima ratione reiciendis nostrum, quam, quisquam modi aut, neque
-                                hic provident dolorem.
-                            </p>
-                            <p>
-                                Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quasi laborum dolorem deserunt
-                                aperiam voluptate mollitia.
-                            </p>
-                            <Link to="/">See More</Link>
-                        </ContentStylings>
-                    </DescriptionContent> */}
-        </Container>
+        <Container></Container>
       </Section>
     </main>
   );

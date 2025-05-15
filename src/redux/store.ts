@@ -16,6 +16,18 @@ import shipmentReducer from "./slices/shipmentSlice";
 import orderListReducer from "./slices/orderListSlice";
 import setupPackageReducer from "./slices/setupSlice";
 import setupPackageDetailReducer from "./slices/setupDetailSlice";
+import dashboardReducer from "./slices/dashboardSlice";
+import bookingServiceReducer from "./slices/bookingSlice";
+import missionReducer from "./slices/missionSlide";
+import voucherReducer from "./slices/voucherSlice";
+import BankReducer from "./slices/bankSlice";
+import issueCategoryReducer from "./slices/issueCategorySlice";
+import issueReducer from "./slices/issueSlice";
+import historyServiceReducer from "./slices/historyServiceSetupSlice";
+import chatReducer from "./slices/chatSlice";
+import serviceReducer from "./slices/serviceSlice";
+import recommendReducer from "./slices/recommendSlice";
+import chatbotReducer from "./slices/chatbotAlSlice";
 export const store = configureStore({
   reducer: {
     address: addressReducer,
@@ -35,6 +47,18 @@ export const store = configureStore({
     orderList: orderListReducer,
     setupPackage: setupPackageReducer,
     setupPackageDetail: setupPackageDetailReducer,
+    dashboard: dashboardReducer,
+    bookingService: bookingServiceReducer,
+    mission: missionReducer,
+    voucher: voucherReducer,
+    bank: BankReducer,
+    issueCategory: issueCategoryReducer,
+    issue: issueReducer,
+    historyService: historyServiceReducer,
+    chat: chatReducer,
+    service: serviceReducer,
+    recommend: recommendReducer,
+    chatbot: chatbotReducer,
   },
 });
 

@@ -12,6 +12,8 @@ import ConfirmDelete from '../popup_modal/ConfirmDelete';
 import 'flowbite';
 import ConfirmEditRole from '../popup_modal/ConfirmEditRole';
 import { UserProfile } from '@redux/slices/userSlice';
+import LockOpenIcon from '@mui/icons-material/LockOpen';
+import ConfirmActivateUser from '../popup_modal/ConfirmActivateUser';
 
 const ITEM_HEIGHT = 48;
 type UserPopupProps = {
@@ -20,6 +22,7 @@ type UserPopupProps = {
 export default function UserPopup({ user }: UserPopupProps) {
     const [anchorEl1, setAnchorEl1] = React.useState<null | HTMLElement>(null);
     const [isModalOpenBan, setIsModalOpenBan] = React.useState(false);
+    const [isModalOpenActivate, setIsModalOpenActivate] = React.useState(false);
     const [isModalOpenEditRole, setIsModalOpenEditRole] = React.useState(false);
     const [newRole, setNewRole] = React.useState('');
     const open1 = Boolean(anchorEl1);
@@ -69,17 +72,31 @@ export default function UserPopup({ user }: UserPopupProps) {
                     },
                 }}
             >
-                <MenuItem
-                    onClick={() => {
-                        handleClose();
-                        setIsModalOpenBan(true);
-                    }}
-                >
-                    <ListItemIcon>
-                        <BlockIcon fontSize="small" className="text-red-600" />
-                    </ListItemIcon>
-                    <ListItemText>Chặn</ListItemText>
-                </MenuItem>
+                {user && user.status === 'Available' ? (
+                    <MenuItem
+                        onClick={() => {
+                            handleClose();
+                            setIsModalOpenBan(true);
+                        }}
+                    >
+                        <ListItemIcon>
+                            <BlockIcon fontSize="small" className="text-red-600" />
+                        </ListItemIcon>
+                        <ListItemText>Chặn</ListItemText>
+                    </MenuItem>
+                ) : (
+                    <MenuItem
+                        onClick={() => {
+                            handleClose();
+                            setIsModalOpenActivate(true);
+                        }}
+                    >
+                        <ListItemIcon>
+                            <LockOpenIcon fontSize="small" className="text-green-500" />
+                        </ListItemIcon>
+                        <ListItemText>Mở chặn</ListItemText>
+                    </MenuItem>
+                )}
 
                 <div>
                     <MenuItem onMouseEnter={handlePopoverOpen}>
@@ -112,37 +129,48 @@ export default function UserPopup({ user }: UserPopupProps) {
                         }}
                         // Đóng Popover khi rời chuột
                     >
-                        <MenuItem
-                            onClick={() => {
-                                handleClose();
-                                setNewRole('Customer');
-                                setIsModalOpenEditRole(true);
-                            }}
-                        >
-                            Customer
-                        </MenuItem>
-                        <MenuItem
-                            onClick={() => {
-                                handleClose();
-                                setNewRole('Manager');
-                                setIsModalOpenEditRole(true);
-                            }}
-                        >
-                            Manager
-                        </MenuItem>
-                        <MenuItem
-                            onClick={() => {
-                                handleClose();
-                                setNewRole('Technician');
-                                setIsModalOpenEditRole(true);
-                            }}
-                        >
-                            Technician
-                        </MenuItem>
+                        {user && user.role != 'Customer' && (
+                            <MenuItem
+                                onClick={() => {
+                                    handleClose();
+                                    setNewRole('Customer');
+                                    setIsModalOpenEditRole(true);
+                                }}
+                            >
+                                Khách hàng
+                            </MenuItem>
+                        )}
+                        {user && user.role != 'Manager' && (
+                            <MenuItem
+                                onClick={() => {
+                                    handleClose();
+                                    setNewRole('Manager');
+                                    setIsModalOpenEditRole(true);
+                                }}
+                            >
+                                Quản lý
+                            </MenuItem>
+                        )}
+                        {user && user.role != 'Technician' && (
+                            <MenuItem
+                                onClick={() => {
+                                    handleClose();
+                                    setNewRole('Technician');
+                                    setIsModalOpenEditRole(true);
+                                }}
+                            >
+                                Nhân viên kĩ thuật
+                            </MenuItem>
+                        )}
                     </Popover>
                 </div>
             </Menu>
-            <ConfirmDelete isModalOpenBan={isModalOpenBan} setIsModalOpenBan={setIsModalOpenBan} />
+            <ConfirmDelete isModalOpenBan={isModalOpenBan} setIsModalOpenBan={setIsModalOpenBan} user={user} />
+            <ConfirmActivateUser
+                isModalOpenActivate={isModalOpenActivate}
+                setIsModalOpenActivate={setIsModalOpenActivate}
+                user={user}
+            />
             <ConfirmEditRole
                 user={user}
                 newRole={newRole}

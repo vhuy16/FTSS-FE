@@ -1,23 +1,16 @@
 import styled from "styled-components";
-import { Container, ContentStylings, Section } from "@styles/styles";
+import { Container } from "@styles/styles";
 import Breadcrumb from "@common/Breadcrumb";
 import { Link } from "react-router-dom";
-import Title from "@common/Title";
 import { breakpoints, defaultTheme } from "@styles/themes/default";
-import ProductFilter from "@components/atom/products/ProductFilter";
 import { useAppDispatch, useAppSelector } from "@redux/hook";
-import ProductListPage from "@components/atom/products/ProductListPage";
-import PaginationControlled from "@components/atom/pagination/Pagination";
 import { useLocation } from "react-router-dom";
-import { log } from "console";
 import Loading from "@components/atom/Loading/Loading";
-import { useEffect, useState } from "react";
-import { getAllProduct } from "@redux/slices/productSlice";
+import { useEffect } from "react";
 import { getSetupPackagesShop } from "@redux/slices/setupSlice";
 import SetupListShopPage from "./SetupListShopPage";
-import { BannerBox } from "../Setup/SetupStyles";
-import banner1 from "@images/aquarium-banner.jpg";
-import LoadingPage from "@components/atom/Loading/LoadingPage";
+import PaginationSetup from "@components/atom/pagination/PaginationSetup";
+import SetupFilterPrice from "./SetupFilterPrice";
 
 // Define breadcrumb type
 type BreadcrumbItem = {
@@ -109,55 +102,64 @@ const SetupShop: React.FC = () => {
     { label: "Hồ Cá", link: "/setup-package-shop" },
   ];
   const dispatch = useAppDispatch();
-  const listSetupShop = useAppSelector((state) => state.setupPackage.setupPackages);
-  const isLoading = useAppSelector((state) => state.setupPackage.loading);
+  const listSetupShop = useAppSelector((state) => state.setupPackage.setupPackagesShop?.setupPackages);
+  const isLoading = useAppSelector((state) => state.setupPackage.isloadingGetAllPackageShop);
   const location = useLocation();
   const k = location.search;
   const queryString = k.split("?")[1];
   const params = new URLSearchParams(queryString);
+  const page = params.get("page") ?? "1";
+  const size = params.get("size") ?? "6";
+  const minPrice = params.get("minPrice");
+  const maxPrice = params.get("maxPrice");
 
   useEffect(() => {
-    dispatch(getSetupPackagesShop());
-  }, []);
-  console.log("listSetupShop", listSetupShop);
+    dispatch(
+      getSetupPackagesShop({
+        page: parseInt(page as string),
+        size: parseInt(size as string),
+        minPrice: parseInt(minPrice as string),
+        maxPrice: parseInt(maxPrice as string),
+      })
+    );
+  }, [page, size, minPrice, maxPrice]);
+
+  const filteredSetupShop = listSetupShop?.filter((item) => item.isDelete == false);
 
   return (
     <main className="page-py-spacing">
-      {isLoading ? (
-        <LoadingPage />
-      ) : (
-        <Container>
-          <Breadcrumb items={breadcrumbItems} />
-          <ProductsContent className="grid items-start">
-            <ProductsContentLeft>
-              <BannerBox>{/* <img src={banner1} alt="Banner hồ cá" /> */}</BannerBox>
-            </ProductsContentLeft>
-            <ProductsContentRight>
-              <div className="products-right-top flex items-center justify-between">
-                <h4 className="text-xxl"></h4>
-                <ul className="products-right-nav flex items-center justify-end flex-wrap">
-                  <li>
-                    <Link to="/" className="active text-lg font-semibold">
-                      Đề xuất
-                    </Link>
-                  </li>
-                </ul>
-              </div>
+      <Container>
+        <Breadcrumb items={breadcrumbItems} />
+        <ProductsContent className="grid items-start">
+          <ProductsContentLeft>
+            <SetupFilterPrice />
+          </ProductsContentLeft>
+          <ProductsContentRight>
+            <div className="products-right-top flex items-center justify-between">
+              <h4 className="text-xxl"></h4>
+              <ul className="products-right-nav flex items-center justify-end flex-wrap">
+                <li>
+                  <Link to="/" className="active text-lg font-semibold">
+                    Đề xuất
+                  </Link>
+                </li>
+              </ul>
+            </div>
+            {isLoading ? (
+              <Loading></Loading>
+            ) : filteredSetupShop && filteredSetupShop.length > 0 ? (
+              <SetupListShopPage setups={filteredSetupShop} />
+            ) : (
+              <div>Không có sản phẩm nào</div>
+            )}
 
-              {listSetupShop && listSetupShop.length > 0 ? (
-                <SetupListShopPage setups={listSetupShop} />
-              ) : (
-                <div>Không có sản phẩm nào</div>
-              )}
-
-              {/* số lượng product hiện ra */}
-              <div className="mt-20 flex justify-center">
-                <PaginationControlled></PaginationControlled>
-              </div>
-            </ProductsContentRight>
-          </ProductsContent>
-        </Container>
-      )}
+            {/* số lượng product hiện ra */}
+            <div className="mt-20 flex justify-center">
+              <PaginationSetup></PaginationSetup>
+            </div>
+          </ProductsContentRight>
+        </ProductsContent>
+      </Container>
     </main>
   );
 };

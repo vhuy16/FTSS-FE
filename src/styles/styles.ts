@@ -66,6 +66,12 @@ export const HorizontalLine = styled.hr`
   background-color: #0000001a;
   margin: 24px 0;
 `;
+export const HorizontalLineTAb = styled.hr`
+  border: none;
+  height: 1px;
+  background-color: #0000001a;
+  margin: 3px 0;
+`;
 export const ContentStylings = styled.div`
   color: ${defaultTheme.color_gray};
   h1,
