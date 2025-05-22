@@ -20,11 +20,12 @@ import 'flowbite';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { getIssueCategorySlice } from '@redux/slices/issueCategorySlice';
-import { addIssue, editIssue } from '@redux/slices/issueSlice';
+import { addIssue, editIssue, Issue } from '@redux/slices/issueSlice';
 
 type ModalEditProps = {
     isModalEditOpen: boolean;
     setIsModalEditOpen: (isOpen: boolean) => void;
+    issue: Issue;
 };
 const style = {
     position: 'absolute',
@@ -43,14 +44,14 @@ const MenuProps = {
     },
 };
 
-export default function EditIssueModal({ isModalEditOpen, setIsModalEditOpen }: ModalEditProps) {
+export default function EditIssueModal({ isModalEditOpen, setIsModalEditOpen, issue }: ModalEditProps) {
     const dispatch = useAppDispatch();
     const isLoadingEdit = useAppSelector((state) => state.issue.isLoadingEdit);
     const listIssueCategory = useAppSelector((state) => state.issueCategory.listIssueCategory);
     const listProduct = useAppSelector((state) => state.product.listProductForAdmin);
     const isLoadingIssueCategory = useAppSelector((state) => state.issueCategory.isLoading);
     const isLoadingGetProduct = useAppSelector((state) => state.product.isLoadingGetAllProductForAdmin);
-    const issue = useAppSelector((state) => state.issue.selectedIssue);
+    // const issue = useAppSelector((state) => state.issue.selectedIssue);
 
     const [data, setData] = useState<{
         title: string;
@@ -61,36 +62,38 @@ export default function EditIssueModal({ isModalEditOpen, setIsModalEditOpen }: 
         desSolution: string;
         ImageFile: File | null;
     }>({
-        title: '',
-        issueCategoryId: '',
-        description: '',
-        solutionName: '',
-        productIds: [],
-        desSolution: '',
+        title: issue.title,
+        issueCategoryId: issue.issueCategoryId,
+        description: issue.description,
+        solutionName: issue.solutions[0]?.solutionName,
+        productIds: issue.solutions[0]?.products.map((p) => p.productId),
+        desSolution: issue.solutions[0]?.description,
         ImageFile: null,
     });
     const [productValue, setProductValue] = useState<string[]>([]);
+    console.log('issue', issue);
+    console.log('data', data);
 
     useEffect(() => {
         dispatch(getIssueCategorySlice());
         dispatch(getAllProductForAdmin());
     }, []);
     useEffect(() => {
-        if (isModalEditOpen && issue.title) {
+        if (isModalEditOpen && issue.id) {
             setData({
                 title: issue.title,
                 issueCategoryId: issue.issueCategoryId,
                 description: issue.description,
-                solutionName: issue.solutions[0].solutionName,
-                productIds: issue.solutions[0].products.map((p) => p.productId),
-                desSolution: issue.solutions[0].description,
+                solutionName: issue.solutions[0]?.solutionName,
+                productIds: issue.solutions[0]?.products.map((p) => p.productId),
+                desSolution: issue.solutions[0]?.description,
                 ImageFile: null,
             });
             setProductValue(
                 issue.solutions[0]?.products.map((p) => JSON.stringify({ name: p.productName, id: p.productId })),
             );
         }
-    }, [isModalEditOpen, issue.title]);
+    }, [isModalEditOpen]);
 
     const handleChange = (event: SelectChangeEvent<typeof productValue>) => {
         const {
@@ -307,7 +310,7 @@ export default function EditIssueModal({ isModalEditOpen, setIsModalEditOpen }: 
                                                             labelId="demo-multiple-checkbox-label"
                                                             id="demo-multiple-checkbox"
                                                             multiple
-                                                            value={productValue}
+                                                            value={productValue ?? []}
                                                             onChange={handleChange}
                                                             input={<OutlinedInput label="Chọn sản phẩm" />}
                                                             renderValue={() => {

@@ -27,7 +27,6 @@ export default function ListIssueTable() {
     const listIssue = useAppSelector((state) => state.issue.listIssue ?? []);
     const isLoading = useAppSelector((state) => state.issue.isLoading);
     const [isModalAddOpen, setIsModalAddOpen] = useState(false);
-    const [isModalEditOpen, setIsModalEditOpen] = useState(false);
     const [issues, setIssues] = useState<Issue[]>([]);
     const [value, setValue] = useState('');
     const dispatch = useAppDispatch();
@@ -67,7 +66,16 @@ export default function ListIssueTable() {
                         >
                             {params.row.title}
                         </span>
-                        <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
+                        <span
+                            className="block text-gray-500 text-theme-xs dark:text-gray-400"
+                            style={{
+                                whiteSpace: 'nowrap',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                width: '200px',
+                            }}
+                            title={params.row.description}
+                        >
                             {params.row.description}
                         </span>
                     </div>
@@ -106,7 +114,7 @@ export default function ListIssueTable() {
             sortable: false,
             renderCell: (params) => (
                 <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
-                    <IssuePopup issue={params.row} setIsModalEditOpen={setIsModalEditOpen} />
+                    <IssuePopup issue={params.row} />
                 </Box>
             ),
         },
@@ -217,7 +225,6 @@ export default function ListIssueTable() {
                 </Box>
             )}
             <AddIssueModal isModalAddOpen={isModalAddOpen} setIsModalAddOpen={setIsModalAddOpen}></AddIssueModal>
-            <EditIssueModal isModalEditOpen={isModalEditOpen} setIsModalEditOpen={setIsModalEditOpen} />
         </div>
     );
 }

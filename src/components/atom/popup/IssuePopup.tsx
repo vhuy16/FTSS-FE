@@ -12,18 +12,18 @@ import { useAppDispatch } from '@redux/hook';
 import { Issue, selectIssue } from '@redux/slices/issueSlice';
 import ConfirmDeleteIssue from '../popup_modal/ConfirmDeleteIssue';
 import ConfirmActivateIssue from '../popup_modal/ConfirmActivateIssue';
+import EditIssueModal from '../modal/EditIssueModal';
 
 const ITEM_HEIGHT = 48;
 type IssuePopupProps = {
     issue: Issue;
-    setIsModalEditOpen: (isOpen: boolean) => void;
 };
-export default function IssuePopup({ issue, setIsModalEditOpen }: IssuePopupProps) {
+export default function IssuePopup({ issue }: IssuePopupProps) {
     const dispatch = useAppDispatch();
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const [isModalOpenDelete, setIsModalOpenDelete] = React.useState(false);
     const [isModalOpenActivate, setIsModalOpenActivate] = React.useState(false);
-
+    const [isModalEditOpen, setIsModalEditOpen] = React.useState(false);
     const open = Boolean(anchorEl);
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
@@ -64,8 +64,8 @@ export default function IssuePopup({ issue, setIsModalEditOpen }: IssuePopupProp
                 <MenuItem
                     onClick={() => {
                         handleClose();
-                        setIsModalEditOpen(true);
                         dispatch(selectIssue(issue));
+                        setIsModalEditOpen(true);
                     }}
                 >
                     <ListItemIcon>
@@ -109,6 +109,13 @@ export default function IssuePopup({ issue, setIsModalEditOpen }: IssuePopupProp
                 setIsModalOpenActivate={setIsModalOpenActivate}
                 issue={issue}
             />
+            {isModalEditOpen && (
+                <EditIssueModal
+                    isModalEditOpen={isModalEditOpen}
+                    setIsModalEditOpen={setIsModalEditOpen}
+                    issue={issue}
+                />
+            )}
         </div>
     );
 }
