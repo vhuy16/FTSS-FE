@@ -25,28 +25,27 @@ export const Section = styled.section`
 export const TitleWrapper = styled.div`
   margin-bottom: 24px;
   position: relative;
-  padding-left: 32px;
   display: flex;
   align-items: center;
   font-family: "Inter", sans-serif;
+  padding-right: 16px;
+  padding-left: 32px;
 
   h2,
   h3,
   h4 {
     font-weight: 600;
     margin-bottom: 0 !important;
+    white-space: normal; // Cho xuống dòng
+    word-break: break-word; // Ngắt từ nếu quá dài
   }
 
-  @media (max-width: ${breakpoints.lg}) {
-    padding-left: 24px;
-  }
-
-  @media (max-width: ${breakpoints.sm}) {
-    padding-left: 20px;
-  }
   h3 {
     font-size: 40px;
     margin-bottom: 4px;
+    max-width: 100%;
+    overflow-wrap: break-word;
+
     @media (max-width: ${breakpoints.lg}) {
       font-size: 24px;
     }
@@ -60,6 +59,7 @@ export const TitleWrapper = styled.div`
     font-size: 18px;
   }
 `;
+
 export const HorizontalLine = styled.hr`
   border: none;
   height: 1px;
