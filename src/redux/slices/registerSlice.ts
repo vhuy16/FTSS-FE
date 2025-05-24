@@ -1,6 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import myAxios from "@setup/axiosConfig";
-import axios from "axios";
 export type RegisterType = {
   email: string;
   address: string;
@@ -27,7 +26,7 @@ export const createAccount = createAsyncThunk("user/createAccount", async (data:
 
 export const googleSignin = createAsyncThunk("user/googleSignin", async (any, { rejectWithValue }) => {
   try {
-    const response = await myAxios.get("/google-auth/login");
+    const response = await myAxios.get("https://api.ftss.id.vn/api/v1/google-auth/login");
     return response.data;
   } catch (error: any) {
     if (error.response && error.response.data) {

@@ -36,7 +36,7 @@ const AuthOptions = () => {
     const left = Math.max((window.innerWidth - width) / 2, 0); // Căn giữa theo chiều ngang
     const top = Math.max((window.innerHeight - height) / 2, 0); // Căn giữa theo chiều dọc
     const popup = window.open(
-      `https://ftss.id.vn/api/v1/google-auth/login`,
+      `https://api.ftss.id.vn/api/v1/google-auth/login`,
       "google-signin",
       `width=${width},height=${height},top=${top},resizable=yes,scrollbars=yes`
     );
@@ -45,7 +45,7 @@ const AuthOptions = () => {
     window.addEventListener(
       "message",
       (event) => {
-        if (event.origin !== "https://ftss.id.vn") {
+        if (event.origin !== "https://api.ftss.id.vn") {
           console.error("Nguồn không hợp lệ:", event.origin);
           return;
         }
