@@ -148,7 +148,7 @@ const Footer = () => {
                         );
                     })}
                 </div>
-                <div className="footer-middle grid">
+                {/* <div className="footer-middle grid">
                     <div className="ftr-social-links flex items-center">
                         {socialLinksData?.map((socialLink) => {
                             return (
@@ -172,7 +172,7 @@ const Footer = () => {
                             </Link>
                         </div>
                     </div>
-                </div>
+                </div> */}
                 <div className="footer-bottom text-center">
                     <p className="text-base text-white">
                         Copyright &copy; 2025 &nbsp;
