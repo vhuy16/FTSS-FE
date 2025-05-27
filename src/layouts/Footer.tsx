@@ -148,31 +148,6 @@ const Footer = () => {
                         );
                     })}
                 </div>
-                {/* <div className="footer-middle grid">
-                    <div className="ftr-social-links flex items-center">
-                        {socialLinksData?.map((socialLink) => {
-                            return (
-                                <div
-                                    key={socialLink.id}
-                                    className="ftr-social-link bg-white flex items-center justify-center"
-                                >
-                                    <i className={socialLink.site_icon}></i>
-                                </div>
-                            );
-                        })}
-                    </div>
-                    <div className="ftr-app-links">
-                        <p className="app-links-title text-white text-xl font-semibold text-lg">Tải ngay</p>
-                        <div className="app-links-group flex items-center">
-                            <Link to="/">
-                                <img src={staticImages.google_play} />
-                            </Link>
-                            <Link to="/">
-                                <img src={staticImages.app_store} alt="" />
-                            </Link>
-                        </div>
-                    </div>
-                </div> */}
                 <div className="footer-bottom text-center">
                     <p className="text-base text-white">
                         Copyright &copy; 2025 &nbsp;
