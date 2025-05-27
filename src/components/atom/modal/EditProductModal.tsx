@@ -390,7 +390,7 @@ export default function EditProductModal({ isModalEditOpen, setIsModalEditOpen }
                                                         htmlFor="name"
                                                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                                                     >
-                                                        Kích thước
+                                                        Kích thước(cm)
                                                     </label>
                                                     <select
                                                         id="size"

@@ -31,13 +31,13 @@ const ConfirmScreen = () => {
                         <img src={image} alt="" className="object-fit-cover" />
                     </div>
                     <div className="confirm-msg w-full flex flex-col justify-center items-center">
-                        <p className="text-4xl font-semibold text-outerspace">Bạn Đã Đặt Hàng Thành Công</p>
+                        <p className="text-4xl font-semibold text-outerspace">Bạn đã đặt hàng thành công</p>
                         <BaseBtnGreen
                             onClick={async () => {
                                 window.location.href = '/';
                             }}
                         >
-                            Tiếp Tục Mua Hàng
+                            Tiếp tục mua hàng
                         </BaseBtnGreen>
                     </div>
                 </div>
