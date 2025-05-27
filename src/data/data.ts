@@ -9,7 +9,6 @@ const footerData = [
             { text: 'Theo dõi đơn hàng', url: '/track_order' },
             { text: 'Đổi trả & Hoàn tiền', url: '/returns_refunds' },
             { text: 'Câu hỏi thường gặp', url: '/faqs' },
-            { text: 'Tuyển dụng', url: '/career' },
         ],
     },
     {
@@ -19,8 +18,6 @@ const footerData = [
             { text: 'Giới thiệu', url: '/contact' },
             { text: 'Blog thủy sinh', url: '/blog' },
             { text: 'Cộng đồng thủy sinh', url: '/achatsian' },
-            { text: 'Hợp tác', url: '/collaboration' },
-            { text: 'Truyền thông', url: '/media' },
         ],
     },
     {
@@ -30,7 +27,6 @@ const footerData = [
             { text: 'Điều khoản & Điều kiện', url: '/tac' },
             { text: 'Chính sách bảo mật', url: '/privacy' },
             { text: 'Chính sách vận chuyển', url: '/shipping' },
-            { text: 'Sơ đồ website', url: '/sitemap' },
         ],
     },
     {

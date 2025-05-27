@@ -22,7 +22,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                 <Sidebar />
                 <div
                     style={{
-                        minHeight: 'calc(100vh - 415px)',
+                        minHeight: 'calc(100vh - 380px)',
                     }}
                 >
                     {children}
