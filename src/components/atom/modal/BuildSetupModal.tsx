@@ -34,19 +34,6 @@ const style = {
   transform: "translate(-50%, -50%)",
   width: 1200,
 };
-
-const BillingOrderWrapper = styled.div`
-  gap: 60px;
-
-  @media (max-width: ${breakpoints.xl}) {
-    gap: 40px;
-  }
-  @media (max-width: ${breakpoints.lg}) {
-    gap: 30px;
-    grid-template-columns: 100%;
-  }
-`;
-
 export default function BuildSetupModal({
   isModalOpen,
   closeModal,
@@ -152,14 +139,11 @@ export default function BuildSetupModal({
                                   ...(recommendations?.otherProducts || []),
                                 ].find((rec) => rec.id && rec.id.trim() === prod.id.trim())
                               : undefined;
-                            // console.log("matach recomend", recommendations);
-                            // console.log("matach pro ", prod.id);
-                            // console.log("matach re", matchedRecommendation);
-
+                            console.log("match", matchedRecommendation);
                             return (
                               <ProductCard key={prod.id}>
                                 <div className="relative product-img">
-                                  {matchedRecommendation && (
+                                  {matchedRecommendation != undefined && (
                                     <span className="absolute top-2 right-0 bg-white bg-opacity-80 rounded-full p-1 text-yellow-500 text-2xl">
                                       ⭐
                                     </span>

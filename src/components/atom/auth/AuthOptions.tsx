@@ -3,6 +3,7 @@ import { staticImages } from "@ultils/images";
 import { Link, useNavigate } from "react-router-dom";
 import { defaultTheme } from "@styles/themes/default";
 import { toast } from "react-toastify";
+import { decodeToken } from "@ultils/tokenUtils";
 
 const SignOptions = styled.div`
   row-gap: 12px;
@@ -49,14 +50,21 @@ const AuthOptions = () => {
           console.error("Nguồn không hợp lệ:", event.origin);
           return;
         }
-
         try {
           const { accessToken } = event.data;
 
           if (accessToken) {
-            // Lưu token vào localStorage
             localStorage.setItem("access_token", accessToken);
-            console.log(accessToken);
+            const decodedToken = decodeToken(accessToken); // Giải mã token
+
+            if (decodedToken) {
+              const role = decodedToken.role;
+              const userId = decodedToken.userId;
+              localStorage.setItem("role", role);
+              localStorage.setItem("userId", userId);
+            } else {
+              toast.error("Vui lòng kiểm tra lại email hoặc mật khẩu !!");
+            }
             navigate("/");
           }
         } catch (error) {
