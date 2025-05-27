@@ -3,7 +3,7 @@ import { servicesData } from '../../pages/ProductDetail/data';
 import { breakpoints, defaultTheme } from '@styles/themes/default';
 
 const ProductServicesWrapper = styled.div`
-    margin-top: 40px;
+    margin-top: 50px;
     border-top: 1px solid ${defaultTheme.color_silver};
     padding-top: 40px;
 

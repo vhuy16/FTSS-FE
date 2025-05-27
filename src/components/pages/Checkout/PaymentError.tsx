@@ -31,8 +31,8 @@ const ErrorScreen = () => {
                         <img src={image} alt="" className="object-fit-cover" />
                     </div>
                     <div className="confirm-msg w-full flex flex-col justify-center items-center">
-                        <p className="text-4xl font-semibold text-outerspace">Thanh Toán Thất Bại</p>
-                        <BaseLinkRed onClick={() => (window.location.href = '/checkout')}>Thanh Toán Lại</BaseLinkRed>
+                        <p className="text-4xl font-semibold text-outerspace">Thanh toán thất bại</p>
+                        <BaseLinkRed onClick={() => (window.location.href = '/')}>Quay lại trang chủ</BaseLinkRed>
                     </div>
                 </div>
             </Container>

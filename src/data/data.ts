@@ -18,7 +18,7 @@ const footerData = [
         links: [
             { text: 'Giới thiệu', url: '/contact' },
             { text: 'Blog thủy sinh', url: '/blog' },
-            { text: 'Cộng đồng achatsian', url: '/achatsian' },
+            { text: 'Cộng đồng thủy sinh', url: '/achatsian' },
             { text: 'Hợp tác', url: '/collaboration' },
             { text: 'Truyền thông', url: '/media' },
         ],

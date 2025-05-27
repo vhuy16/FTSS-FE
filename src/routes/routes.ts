@@ -249,7 +249,7 @@ if (role === 'Admin') {
             layout: null,
         },
     ];
-} else {
+} else if (role === 'Customer') {
     publicRoute = [
         {
             path: '/',
@@ -389,6 +389,82 @@ if (role === 'Admin') {
         {
             path: '/booking-detail/:id',
             component: BookingHistoryDetail,
+            layout: MainLayout,
+        },
+        {
+            path: '/issue-post',
+            component: IssueBlog,
+            layout: MainLayout,
+        },
+        {
+            path: '/issue-post/:id',
+            component: IssueBlogDetail,
+            layout: MainLayout,
+        },
+    ];
+} else {
+    publicRoute = [
+        {
+            path: '/',
+            component: Home,
+            layout: MainLayout,
+        },
+        {
+            path: '/login',
+            component: Login,
+            layout: AuthLayout,
+        },
+        {
+            path: '/register',
+            component: Register,
+            layout: AuthLayout,
+        },
+        {
+            path: '/verify',
+            component: VerifyAccount,
+            layout: AuthLayout,
+        },
+        {
+            path: '/forgot-password',
+            component: ForgotPassword,
+            layout: AuthLayout,
+        },
+        {
+            path: '/verify-forgot-password',
+            component: VerifyOTP,
+            layout: AuthLayout,
+        },
+        {
+            path: '/reset-password',
+            component: ResetPassword,
+            layout: AuthLayout,
+        },
+
+        {
+            path: '/product',
+            component: Product,
+            layout: MainLayout,
+        },
+        {
+            path: '/product/:id',
+            component: ProductDetail,
+            layout: MainLayout,
+        },
+
+        {
+            path: '*',
+            component: NotFoundScreen,
+            layout: null,
+        },
+
+        {
+            path: '/setup-package-shop',
+            component: SetupShop,
+            layout: MainLayout,
+        },
+        {
+            path: '/setup-package-shop/:setupPackageId',
+            component: SetupShopDetailScreen,
             layout: MainLayout,
         },
         {
