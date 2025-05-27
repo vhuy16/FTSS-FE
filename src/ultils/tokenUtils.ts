@@ -6,7 +6,6 @@ interface TokenPayload {
   role: string;
   userId: string;
 }
-
 export const decodeToken = (token: string): TokenPayload | null => {
   try {
     // Gọi hàm jwtDecode với kiểu trả về là TokenPayload

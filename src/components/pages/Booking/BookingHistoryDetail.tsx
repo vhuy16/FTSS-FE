@@ -75,7 +75,11 @@ const BookingHistoryDetail = () => {
   const isLoadingDetail = useAppSelector((state) => state.order.isLoading);
   const isLoadingBooking = useAppSelector((state) => state.bookingService.loading);
   const [selectedBooking, setSelectedBooking] = useState<BookingDetail | null>(null);
-
+  const [selectedBookingReport, setSelectedBookingReport] = useState<BookingDetail | null>(null);
+  const [showRefundModal, setShowRefundModal] = useState(false);
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showChatModal, setShowChatModal] = useState(false);
   useEffect(() => {
     window.scrollTo(0, 0);
     dispatch(getDetailBookingofUsers(id as string));
@@ -189,9 +193,9 @@ const BookingHistoryDetail = () => {
     setShowUpdateModal(false);
     setSelectedBooking(null);
   }, []);
-  const [showRefundModal, setShowRefundModal] = useState(false);
-  const [showUpdateModal, setShowUpdateModal] = useState(false);
+
   // confirm
+
   const openModalConfirm = (book: BookingDetail) => {
     setSelectedBooking(book);
     setShowConfirmModal(true);
@@ -200,18 +204,18 @@ const BookingHistoryDetail = () => {
     setShowConfirmModal(false);
     setSelectedBooking(null);
   }, []);
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
+
   //chat
+
   const openChatboxWithOrder = (book: BookingDetail) => {
     setShowChatModal(true); // Mở chatbox
-    setSelectedBooking(book);
-    // setHasNotification(false); // Tắt notification khi mở chat
+    setSelectedBookingReport(book);
   };
   const closeModalChat = useCallback(() => {
     setShowChatModal(false);
-    setSelectedBooking(null);
+    setSelectedBookingReport(null);
   }, []);
-  const [showChatModal, setShowChatModal] = useState(false);
+
   return (
     <BookingServiceStyle>
       {isLoadingDetail && isLoadingBooking ? (
@@ -359,7 +363,9 @@ const BookingHistoryDetail = () => {
                     <div className="flex justify-between w-full">
                       <p className="text-base dark:text-white leading-4 text-gray-800">Phương thức thanh toán</p>
                       <p className="text-base dark:text-gray-300 leading-4 text-gray-600">
-                        {bookingDetail?.payment.paymentMethod}
+                        {bookingDetail?.payment.paymentMethod === "FREE"
+                          ? "Sử dụng gói bảo trì"
+                          : bookingDetail?.payment.paymentMethod}
                       </p>
                     </div>
                     <div className="flex justify-between items-center w-full">
@@ -394,7 +400,7 @@ const BookingHistoryDetail = () => {
           <ChatboxWidget
             isOpen={showChatModal}
             onClose={closeModalChat}
-            booking={selectedBooking}
+            booking={selectedBookingReport}
             setIsOpen={setShowChatModal}
           />
         </Container>
