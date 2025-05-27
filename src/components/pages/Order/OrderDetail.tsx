@@ -394,6 +394,7 @@ const OrderDetailScreen = () => {
     return total + item.price * item.quantity;
   }, 0);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [selectedOrderReport, setSelectedOrderReport] = useState<Order | null>(null);
   const dispatch = useAppDispatch();
   // useEffect(() => {
   //   if (!orderId) return;
@@ -483,9 +484,10 @@ const OrderDetailScreen = () => {
   }, []);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   //chat
+
   const openChatboxWithOrder = (order: Order) => {
     setShowChatModal(true); // Mở chatbox
-    setSelectedOrder(order); // Truyền Order vào chatbox
+    setSelectedOrderReport(order); // Truyền Order vào chatbox
     // setHasNotification(false); // Tắt notification khi mở chat
   };
   const closeModalChat = () => setShowChatModal(false);
@@ -1000,7 +1002,7 @@ const OrderDetailScreen = () => {
       <ChatboxWidget
         isOpen={showChatModal}
         onClose={closeModalChat}
-        order={selectedOrder}
+        order={selectedOrderReport}
         setIsOpen={setShowChatModal}
       />
     </OrderDetailScreenWrapper>
