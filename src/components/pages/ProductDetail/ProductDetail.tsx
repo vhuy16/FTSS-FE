@@ -315,7 +315,7 @@ const ProductDetailsScreen: React.FC = () => {
                                     </div>
                                 </ProductSizeWrapper>
                             )}
-                            {product.categoryName == 'Bể' && (
+                            {(product.categoryName == 'Bể' || product.categoryName == 'Layout') && (
                                 <ProductSizeWrapper>
                                     <div className="prod-size-top flex items-center flex-wrap">
                                         <p className="text-lg font-semibold text-outerspace">
