@@ -268,13 +268,6 @@ const Billing = () => {
                 formValue.Address.split(',').map((part) => part.trim()).length - 1
             ] != 'Hồ Chí Minh'
         ) {
-            console.log(
-                setupId,
-                infoDefault,
-                formValue.Address.split(',').map((part) => part.trim())[
-                    formValue.Address.split(',').map((part) => part.trim()).length - 1
-                ],
-            );
             toast.error('Cửa hàng chỉ hỗ trợ mua và lắp đặt bể cá trong khu vực tp Hồ Chí Minh');
         } else {
             if (check) {
