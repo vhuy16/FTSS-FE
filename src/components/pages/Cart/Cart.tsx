@@ -75,6 +75,7 @@ const CartScreen = () => {
   if (OddCart.length <= 0) {
     return <CartEmptyScreen />;
   }
+  console.log("lis", listCart);
   const token = localStorage.getItem("access_token");
   return (
     <CartPageWrapper>

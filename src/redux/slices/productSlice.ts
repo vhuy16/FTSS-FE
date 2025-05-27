@@ -28,6 +28,7 @@ type ListCateAndProduct = {
 };
 type initialStateProduct = {
   data: ProductData | null;
+  datatopSelling: ProductData | null;
   listProductForAdmin: Product[];
   selectedProduct: Product;
   listCateAndProduct: ListCateAndProduct[];
@@ -39,6 +40,7 @@ type initialStateProduct = {
   isLoadingDelete: boolean;
   isLoadingEnable: boolean;
   isLoadingGetAllProductForAdmin: boolean;
+  isLoadingGetAllProductTopSelling: boolean;
   isError: boolean;
 };
 
@@ -95,6 +97,18 @@ export const getAllProductSimilar = createAsyncThunk(
   async (cateName: string, { rejectWithValue }) => {
     try {
       const response = await myAxios.get(`/product/get-all-product?page=1&size=4&cateName=${cateName}`);
+      return response.data.data;
+    } catch (error: any) {
+      console.log(error);
+      return rejectWithValue(error.response?.data?.message || "Lấy sản phẩm thất bại");
+    }
+  }
+);
+export const getAllProductTopSelling = createAsyncThunk(
+  "product/getAllProductTopSelling",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await myAxios.get(`/products/top-selling?page=1&size=10`);
       return response.data.data;
     } catch (error: any) {
       console.log(error);
@@ -222,6 +236,7 @@ export const enableProduct = createAsyncThunk(
 
 const initialState: initialStateProduct = {
   data: null,
+  datatopSelling: null,
   listProductForAdmin: [],
 
   selectedProduct: {
@@ -246,6 +261,7 @@ const initialState: initialStateProduct = {
   isLoadingDelete: false,
   isLoadingEnable: false,
   isLoadingGetAllProductForAdmin: false,
+  isLoadingGetAllProductTopSelling: false,
   isError: false,
 };
 
@@ -285,6 +301,20 @@ const productSlice = createSlice({
       })
       .addCase(getAllProductSimilar.rejected, (state, action) => {
         state.isLoading = false;
+        state.isError = true;
+      });
+    builder
+      .addCase(getAllProductTopSelling.pending, (state) => {
+        state.isLoadingGetAllProductTopSelling = true;
+        state.isError = false;
+      })
+      .addCase(getAllProductTopSelling.fulfilled, (state, action) => {
+        state.isLoadingGetAllProductTopSelling = false;
+        state.isError = false;
+        state.datatopSelling = action.payload;
+      })
+      .addCase(getAllProductTopSelling.rejected, (state, action) => {
+        state.isLoadingGetAllProductTopSelling = false;
         state.isError = true;
       });
     builder
