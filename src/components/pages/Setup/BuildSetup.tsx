@@ -27,7 +27,7 @@ import { createSetupPackage } from "@redux/slices/setupSlice";
 import Loading from "@components/atom/Loading/Loading";
 import SimpleModal, { ModalContent, ModalHeader } from "@components/atom/modal/Modal";
 import BuildSetupModal from "@components/atom/modal/BuildSetupModal";
-import { getRecommendations, Recommendations } from "@redux/slices/recommendSlice";
+import { clearRecommendations, getRecommendations, Recommendations } from "@redux/slices/recommendSlice";
 
 const breadcrumbItems = [
   { label: "Trang chủ", link: "/" },
@@ -63,8 +63,6 @@ const BuildSetup: React.FC<ProductItemProps> = () => {
   const [page, setPage] = useState(1);
   const [size, setSize] = useState(100);
   const navigate = useNavigate();
-  console.log("pro commenr", productRecommend);
-
   useEffect(() => {
     dispatch(getAllCategory());
   }, [dispatch]);
@@ -234,7 +232,9 @@ const BuildSetup: React.FC<ProductItemProps> = () => {
     }
     return products.filter((product) => product.subCategoryName === subcategory);
   };
-
+  useEffect(() => {
+    dispatch(clearRecommendations());
+  }, [dispatch]);
   return (
     <SetupScreenWrapper>
       <Container>
