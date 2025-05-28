@@ -66,7 +66,8 @@ const OrderDetailContainer = styled.div`
   padding: 40px;
   box-shadow: 2px 2px 5px 5px rgba(0, 0, 0, 0.03); /* Tạo hiệu ứng tách biệt */
 `;
-const statusSteps: OrderStatus[] = ["PROCESSING", "PROCESSED", "PENDING_DELIVERY", "DONE", "COMPLETED"];
+const statusSteps: OrderStatus[] = ["PROCESSING", "PROCESSED", "PENDING_DELIVERY", "COMPLETED"];
+const statusStepsSetUp: OrderStatus[] = ["PROCESSING", "PROCESSED", "PENDING_DELIVERY", "DONE", "COMPLETED"];
 const OrderDetailStatusWrapper = styled.div<{ currentIndex: number; totalSteps: number }>`
   margin: 0 40px;
 
@@ -781,72 +782,56 @@ const OrderDetailScreen = () => {
                       totalSteps={statusSteps.length}
                     >
                       <div className="order-status">
-                        {statusSteps
-                          .filter((s) => {
-                            if (!order?.setupPackage) {
-                              return s != "DONE";
-                            } else {
-                              return true;
-                            }
-                          })
-                          .map((status, index) => {
-                            const currentIndex = statusSteps.indexOf(order?.status as OrderStatus);
-                            const isDone = index < currentIndex;
-                            const isCurrent = index === currentIndex;
-                            const isPending = index > currentIndex;
+                        {statusSteps.map((status, index) => {
+                          const currentIndex = statusSteps.indexOf(order?.status as OrderStatus);
+                          const isDone = index < currentIndex;
+                          const isCurrent = index === currentIndex;
+                          const isPending = index > currentIndex;
 
-                            return (
-                              <div className="order-status-1" key={status}>
-                                <div
-                                  className={`order-status-dot 
+                          return (
+                            <div className="order-status-1" key={status}>
+                              <div
+                                className={`order-status-dot 
                 ${isCurrent ? "status-current" : ""} 
                 ${isDone ? "status-done" : ""} 
                 ${isPending ? "status-pending" : ""}`}
-                                >
-                                  {statusIcons[status]}
-                                  <span className="status-text">{orderStatusMap[status]}</span>
-                                </div>
+                              >
+                                {statusIcons[status]}
+                                <span className="status-text">{orderStatusMap[status]}</span>
                               </div>
-                            );
-                          })}
+                            </div>
+                          );
+                        })}
                       </div>
                     </OrderDetailStatusWrapper>
                   ) : ["PROCESSING", "PENDING_DELIVERY", "PROCESSED", "DONE", "COMPLETED"].includes(
                       order?.status || ""
                     ) && order?.setupPackage ? (
                     <OrderDetailStatusWrapper
-                      currentIndex={statusSteps.indexOf(order?.status as OrderStatus)}
-                      totalSteps={statusSteps.length}
+                      currentIndex={statusStepsSetUp.indexOf(order?.status as OrderStatus)}
+                      totalSteps={statusStepsSetUp.length}
                     >
                       <div className="order-status">
-                        {statusSteps
-                          .filter((s) => {
-                            if (!order?.setupPackage) {
-                              return s != "DONE";
-                            } else {
-                              return true;
-                            }
-                          })
-                          .map((status, index) => {
-                            const currentIndex = statusSteps.indexOf(order?.status as OrderStatus);
-                            const isDone = index < currentIndex;
-                            const isCurrent = index === currentIndex;
-                            const isPending = index > currentIndex;
+                        {statusStepsSetUp.map((status, index) => {
+                          const currentIndex = statusStepsSetUp.indexOf(order?.status as OrderStatus);
+                          const isDone = index < currentIndex;
+                          const isCurrent = index === currentIndex;
+                          const isPending = index > currentIndex;
 
-                            return (
-                              <div className="order-status-1" key={status}>
-                                <div
-                                  className={`order-status-dot 
+                          return (
+                            <div className="order-status-1" key={status}>
+                              <div
+                                className={`order-status-dot 
                 ${isCurrent ? "status-current" : ""} 
                 ${isDone ? "status-done" : ""} 
                 ${isPending ? "status-pending" : ""}`}
-                                >
-                                  {statusIcons[status]}
-                                  <span className="status-text">{orderStatusMap[status]}</span>
-                                </div>
+                              >
+                                {statusIcons[status]}
+                                <span className="status-text">{orderStatusMap[status]}</span>
                               </div>
-                            );
-                          })}
+                            </div>
+                          );
+                        })}
                       </div>
                     </OrderDetailStatusWrapper>
                   ) : (
@@ -879,9 +864,7 @@ const OrderDetailScreen = () => {
                     <OrderDetailMessageWrapperv2>
                       <div className="order-message-content">
                         <p className="font-semibold">Đơn hàng của bạn sẽ được chuẩn bị và chuyển đi</p>
-                        <p className="text-gray-600">{formatDate(order?.modifyDate || "")}.</p>
                       </div>
-
                       <div className="order-buttons">
                         <BaseButtonWhite className="request-button" onClick={openModalDelete}>
                           Hủy đơn hàng

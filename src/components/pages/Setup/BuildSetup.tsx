@@ -325,13 +325,8 @@ const BuildSetup: React.FC<ProductItemProps> = () => {
             <TempPriceBox>
               <h3>Tạm tính:</h3>
               <p className="price">{currencyFormat(totalPrice)}</p>
-              <p className="note">
-                Giá chưa bao gồm khuyến mãi Build Hồ Cá. <a href="#xemchi">Xem chi tiết</a>
-              </p>
+              <p className="note">Giá chưa bao gồm khuyến mãi Build Hồ Cá.</p>
             </TempPriceBox>
-            <BannerBox>
-              <img src="/images/aquarium-banner.jpg" alt="Banner hồ cá" />
-            </BannerBox>
           </RightSide>
         </ContentWrapper>
       </Container>
