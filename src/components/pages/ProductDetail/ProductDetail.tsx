@@ -316,9 +316,13 @@ const ProductDetailsScreen: React.FC = () => {
                   </div>
                 </ProductSizeWrapper>
               )}
-              <p className="text-lg font-semibold text-outerspace mt-4">
+              <p className="text-lg font-semibold text-outerspace mt-5">
                 Số lượng sản phẩm khả dụng:
                 <span className="text-lg text-gray font-thin"> {product.quantity} Sản phẩm</span>
+              </p>
+              <p className="text-lg font-semibold text-outerspace">
+                Số lượng sản phẩm bán được:
+                <span className="text-lg text-gray font-thin"> {product.totalSold} Sản phẩm</span>
               </p>
               {product.quantity === 0 || product.status !== "Available" ? (
                 <div className="prod-price text-xl font-bold text-outerspace text-red-500 mt-4">Ngừng hoạt động</div>
