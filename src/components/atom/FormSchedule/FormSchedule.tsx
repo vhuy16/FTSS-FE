@@ -86,7 +86,7 @@ const FormSchedule = ({ setSelectedSchedule, dateSchedule }: FormScheduleProps) 
                   isUnavailable
                     ? "bg-gray-200 text-gray-400 cursor-not-allowed"
                     : selectedDate.isSame(date, "day")
-                    ? "bg-[#6C63FF] text-white"
+                    ? "bg-[#10b9b0] text-white"
                     : "bg-white border border-gray-200 text-[#3A3A3A] hover:bg-gray-50"
                 }`}
                 aria-label={`Chọn ngày ${date.format("dddd, MMMM D")}`}
@@ -122,7 +122,7 @@ const FormSchedule = ({ setSelectedSchedule, dateSchedule }: FormScheduleProps) 
                   isDisabled
                     ? "bg-gray-200 text-gray-500 opacity-50 cursor-not-allowed"
                     : selectedTime === time
-                    ? "bg-[#6C63FF] text-white"
+                    ? "bg-[#10b9b0] text-white"
                     : "bg-white border border-gray-100 text-gray-500 hover:bg-gray-100"
                 }`}
                 aria-label={`Chọn giờ ${time}`}

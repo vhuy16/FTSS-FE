@@ -152,7 +152,9 @@ const Header = () => {
     }
   };
   useEffect(() => {
-    dispatch(getAllCart());
+    if (token) {
+      dispatch(getAllCart());
+    }
   }, [dispatch]);
   const listCart: CartItem[] = useAppSelector((state) => state.cart.items);
   const oddItemCount = listCart.reduce((total, item) => total + item.quantity, 0);
