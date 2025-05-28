@@ -157,7 +157,8 @@ const Header = () => {
     }
   }, [dispatch]);
   const listCart: CartItem[] = useAppSelector((state) => state.cart.items);
-  const oddItemCount = listCart.reduce((total, item) => total + item.quantity, 0);
+  const oddItemCount = Array.isArray(listCart) ? listCart.reduce((total, item) => total + item.quantity, 0) : 0;
+
   console.log("oddItemCount", oddItemCount);
   console.log("ca", listCart);
   return (
