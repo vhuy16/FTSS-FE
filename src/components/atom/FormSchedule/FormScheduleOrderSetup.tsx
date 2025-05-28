@@ -87,7 +87,7 @@ const FormScheduleOrderSetup = ({ setSelectedSchedule }: FormScheduleOrderSetupP
                 aria-label={`Chọn ngày ${date.format("dddd, MMMM D")}`}
               >
                 <span className="text-sm font-bold">{date.format("ddd").toUpperCase()}</span>
-                <span className="text-sm font-medium">{date.format("D")}</span>
+                <span className="text-sm font-medium">{date.format("D/M")}</span>
               </button>
             );
           })}
