@@ -333,10 +333,10 @@ const ProductDetailsScreen: React.FC = () => {
 
                   {/* Nút thêm vào giỏ hàng */}
                   <AddToCartButton
-                    onClick={() => {
+                    onClick={async () => {
                       const token = localStorage.getItem("access_token");
                       if (token) {
-                        dispatch(addItem({ productId: product.id, quantity: quantity }));
+                        await dispatch(addItem({ productId: product.id, quantity: quantity }));
                         dispatch(getAllCart());
                         toast.success("Thêm Sản Phẩm Vào Giỏ Hàng Thành Công");
                       } else {
