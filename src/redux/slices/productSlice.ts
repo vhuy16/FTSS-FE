@@ -108,7 +108,7 @@ export const getAllProductTopSelling = createAsyncThunk(
   "product/getAllProductTopSelling",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await myAxios.get(`/products/top-selling?page=1&size=10`);
+      const response = await myAxios.get(`/product/top-selling?page=1&size=10`);
       return response.data.data;
     } catch (error: any) {
       console.log(error);
