@@ -110,7 +110,7 @@ export default function ListOrderDeliveryTable() {
             headerName: 'Phương thức thanh toán',
             width: 180,
             headerClassName: 'super-app-theme--header',
-            renderCell: (params) => params.row.payment.paymentMethod,
+            renderCell: (params) => params.row.payment?.paymentMethod,
         },
         {
             field: 'paymentStatus',

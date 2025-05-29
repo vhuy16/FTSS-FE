@@ -175,7 +175,7 @@ export default function OrderDetail() {
                                                             Phương thức thanh toán
                                                         </p>
                                                         <p className="text-base dark:text-gray-300 leading-4 text-gray-600">
-                                                            {orderDetail.payment.paymentMethod}
+                                                            {orderDetail.payment?.paymentMethod}
                                                         </p>
                                                     </div>
                                                     <div className="flex justify-between items-center w-full">
@@ -183,7 +183,7 @@ export default function OrderDetail() {
                                                             Trạng thái
                                                         </p>
                                                         <p className="text-base dark:text-gray-300 leading-4 text-gray-600">
-                                                            {orderDetail.payment.paymentStatus == 'Processing'
+                                                            {orderDetail.payment?.paymentStatus == 'Processing'
                                                                 ? 'Đang chờ thanh toán'
                                                                 : orderDetail.payment.paymentStatus == 'Completed'
                                                                 ? 'Đã thanh toán'

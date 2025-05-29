@@ -11,7 +11,13 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
     return (
         <PageWrapper>
             <AuthHeader />
-            <main>{children}</main>
+            <main
+                style={{
+                    minHeight: 'calc(100vh - 280px)',
+                }}
+            >
+                {children}
+            </main>
             <Footer />
         </PageWrapper>
     );

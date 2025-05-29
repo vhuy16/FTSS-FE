@@ -119,7 +119,7 @@ const Footer = () => {
     return (
         <FooterWrapper className="bg-outerspace">
             <Container className="container">
-                <div className="footer-top grid">
+                {/* <div className="footer-top grid">
                     {footerData?.map((footer) => {
                         return (
                             <div className="footer-item" key={footer.id}>
@@ -147,7 +147,7 @@ const Footer = () => {
                             </div>
                         );
                     })}
-                </div>
+                </div> */}
                 <div className="footer-bottom text-center">
                     <p className="text-base text-white">
                         Copyright &copy; 2025 &nbsp;
