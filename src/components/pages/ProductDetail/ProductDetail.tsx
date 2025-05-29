@@ -340,9 +340,13 @@ const ProductDetailsScreen: React.FC = () => {
                     onClick={async () => {
                       const token = localStorage.getItem("access_token");
                       if (token) {
-                        await dispatch(addItem({ productId: product.id, quantity: quantity }));
-                        dispatch(getAllCart());
-                        toast.success("Thêm Sản Phẩm Vào Giỏ Hàng Thành Công");
+                        try {
+                          await dispatch(addItem({ productId: product.id, quantity: quantity })).unwrap();
+                          dispatch(getAllCart());
+                          toast.success("Thêm Sản Phẩm Vào Giỏ Hàng Thành Công");
+                        } catch (e: any) {
+                          toast.error(e.toString());
+                        }
                       } else {
                         toast.warning("Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng");
                         setTimeout(() => {
