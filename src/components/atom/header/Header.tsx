@@ -157,10 +157,8 @@ const Header = () => {
     }
   }, [dispatch]);
   const listCart: CartItem[] = useAppSelector((state) => state.cart.items);
-  const oddItemCount = Array.isArray(listCart) ? listCart.reduce((total, item) => total + item.quantity, 0) : 0;
-
-  console.log("oddItemCount", oddItemCount);
-  console.log("ca", listCart);
+  const OddCart = Array.isArray(listCart) ? listCart.filter((item) => item.status === "Odd") : 0;
+  const oddItemCount = Array.isArray(OddCart) ? OddCart.reduce((total, item) => total + item.quantity, 0) : 0;
   return (
     <HeaderMainWrapper className="header flex items-center">
       <Container className="container">
