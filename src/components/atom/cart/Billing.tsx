@@ -304,7 +304,7 @@ const Billing = () => {
                         }, 1000);
                     } else {
                         await toast.success('Đặt hàng thành công');
-                        // navigate('/order');
+                        navigate('/order');
                     }
                 } catch (error) {
                     toast.error(error as string);

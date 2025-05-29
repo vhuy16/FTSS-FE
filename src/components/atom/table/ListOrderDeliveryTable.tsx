@@ -375,8 +375,8 @@ export default function ListOrderDeliveryTable() {
                                 'Tên khách hàng': order.userResponse.name,
                                 'Số điện thoại': order.userResponse.phoneNumber,
                                 'Trạng thái đơn hàng': order.status,
-                                'Trạng thái thanh toán': order.payment.paymentStatus,
-                                'Phương thức thanh toán': order.payment.paymentMethod,
+                                'Trạng thái thanh toán': order.payment?.paymentStatus,
+                                'Phương thức thanh toán': order.payment?.paymentMethod,
                                 'Địa chỉ giao hàng': order.address,
                                 'Tổng tiền': order.totalPrice,
                             }));

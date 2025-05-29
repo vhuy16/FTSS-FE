@@ -207,7 +207,7 @@ const ActionsWrapper = styled.div`
   flex-wrap: wrap;
   */
     gap: 25px; /* Khoảng cách giữa 2 nút */
-    margin-top: 20px;
+    margin-top: 100px;
 `;
 const QuantityWrapper = styled.div`
     display: inline-flex;
@@ -316,31 +316,22 @@ const SetupShopDetailScreen: React.FC = () => {
                     {setupData ? (
                         <ProductDetailsWrapper>
                             <h2 className="prod-title font-bold text-2xl">{setupData?.setupName}</h2>
-                            <div className="flex items-center rating-and-comments flex-wrap">
-                                <div className="prod-rating flex items-center text-yellow">
-                                    {stars}
-                                    {/* <span className="text-gray text-xs"></span> */}
-                                </div>
-                                <div className="prod-comments flex items-start">
-                                    <span className="prod-comment-icon text-gray">
-                                        <i className="bi bi-chat-left-text"></i>
-                                    </span>
-                                    <span className="prod-comment-text text-sm text-gray">{10} comment(s)</span>
-                                </div>
-                            </div>
-                            <p className="text-sm font-semibold text-outerspace mt-4 mb-4">
+
+                            <p className="text-2xl font-semibold text-outerspace mt-4 mb-4">
                                 {currencyFormat(setupData.totalPrice)}
                             </p>
                             <ProductSizeWrapper>
                                 <div className="prod-size-top flex items-center flex-wrap">
-                                    <p className="text-sm font-semibold text-outerspace">
-                                        Mô tả: {setupData.description}
+                                    <p className="text-lg font-semibold text-outerspace">
+                                        Kích thước: {setupData.size}cm
                                     </p>
                                 </div>
                             </ProductSizeWrapper>
-                            <p className="text-sm font-semibold text-outerspace mt-4">
-                                Kích thước :<span className="text-sm text-gray font-thin"> {setupData.size}</span>
+                            <p className="text-lg font-semibold text-outerspace mt-5">
+                                Mô tả:
+                                <span className="text-lg text-gray font-thin"> {setupData.description}</span>
                             </p>
+
                             <ActionsWrapper className="flex items-center flex-wrap">
                                 <AddToCartButton
                                     onClick={async () => {
