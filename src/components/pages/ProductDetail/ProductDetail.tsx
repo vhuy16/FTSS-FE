@@ -188,7 +188,7 @@ const ProductColorWrapper = styled.div`
 `;
 const ActionsWrapper = styled.div`
   gap: 25px; /* Khoảng cách giữa 2 nút */
-  margin-top: 120px;
+  margin-top: 50px;
 `;
 const QuantityWrapper = styled.div`
   display: inline-flex;
@@ -317,11 +317,11 @@ const ProductDetailsScreen: React.FC = () => {
                 </ProductSizeWrapper>
               )}
               <p className="text-lg font-semibold text-outerspace mt-5">
-                Số lượng sản phẩm khả dụng:
+                Số sản phẩm khả dụng:
                 <span className="text-lg text-gray font-thin"> {product.quantity} Sản phẩm</span>
               </p>
               <p className="text-lg font-semibold text-outerspace">
-                Số lượng sản phẩm bán được:
+                Số sản phẩm bán được:
                 <span className="text-lg text-gray font-thin"> {product.totalSold} Sản phẩm</span>
               </p>
               {product.quantity === 0 || product.status !== "Available" ? (

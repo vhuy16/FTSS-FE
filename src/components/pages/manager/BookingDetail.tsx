@@ -167,9 +167,9 @@ export default function BookingDetail() {
                                                             Phương thức thanh toán
                                                         </p>
                                                         <p className="text-base dark:text-gray-300 leading-4 text-gray-600">
-                                                            {bookingDetail.payment.paymentMethod === 'FREE'
+                                                            {bookingDetail.payment?.paymentMethod === 'FREE'
                                                                 ? 'Sử dụng gói bảo trì'
-                                                                : bookingDetail.payment.paymentMethod}
+                                                                : bookingDetail.payment?.paymentMethod}
                                                         </p>
                                                     </div>
                                                     <div className="flex justify-between items-center w-full">
