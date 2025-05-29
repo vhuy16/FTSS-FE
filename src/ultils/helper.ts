@@ -1,5 +1,5 @@
 export function currencyFormat(num: number): string {
-  return "₫" + num.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  return "₫" + num?.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
 export const formatDate = (dateString: string) => {
   const date = new Date(dateString);

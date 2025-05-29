@@ -13,6 +13,7 @@ export type Product = {
   size: string;
   power: number;
   images: string[] | string;
+  totalSold: number;
 };
 
 type ProductData = {
@@ -108,7 +109,7 @@ export const getAllProductTopSelling = createAsyncThunk(
   "product/getAllProductTopSelling",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await myAxios.get(`/product/top-selling?page=1&size=10`);
+      const response = await myAxios.get(`/product  /top-selling?page=1&size=10`);
       return response.data.data;
     } catch (error: any) {
       console.log(error);
@@ -251,6 +252,7 @@ const initialState: initialStateProduct = {
     size: "",
     power: 0,
     images: "",
+    totalSold: 0,
   },
   isLoadingSearchUser: false,
   listCateAndProduct: [],
