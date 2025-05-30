@@ -243,10 +243,6 @@ const SetupList = () => {
                                 </span>
                               </li>
                               <li>
-                                <span className="text-lg font-bold">Mô tả:</span>
-                                <span className="text-lg text-gray font-medium capitalize">{setup.description}</span>
-                              </li>
-                              <li>
                                 <span className="text-lg font-bold">Giá:</span>
                                 <span className="text-lg text-gray font-medium capitalize">
                                   {currencyFormat(setup.totalPrice)}

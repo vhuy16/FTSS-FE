@@ -70,7 +70,7 @@ const FormSchedule = ({ setSelectedSchedule, dateSchedule }: FormScheduleProps) 
 
   return (
     <div className="items-start">
-      <h1 className="text-gray-800 text-xl font-bold mb-5">Thời gian lắp đặt</h1>
+      <h1 className="text-gray-800 text-xl font-bold mb-5">Thời gian bảo trì</h1>
       {/* Day Selector */}
       <div className="overflow-x-auto pb-4 mb-8">
         <div className="flex space-x-6">
