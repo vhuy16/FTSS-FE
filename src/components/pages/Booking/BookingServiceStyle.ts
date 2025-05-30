@@ -229,8 +229,7 @@ export const BookingServiceStyle = styled.main`
     }
 
     .serviceButton.selected {
-      background-color: #29d2c9;
-      color: white;
+      background-color: #10b9b0;
     }
 
     .serviceButton.unselected {
