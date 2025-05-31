@@ -45,7 +45,6 @@ const AddMissionBooking: React.FC = () => {
     const [des, setDes] = useState('');
     const [tech, setTech] = useState('');
     const [events, setEvents] = useState<CalendarEvent[]>([]);
-    const [cancelReason, setCancelReason] = useState('');
     const [images, setImages] = useState<ImageItem[]>([]);
     const calendarRef = useRef<FullCalendar>(null);
     const { isOpen, openModal, closeModal } = useModal();
@@ -58,7 +57,6 @@ const AddMissionBooking: React.FC = () => {
     const navigate = useNavigate();
 
     const calendarsEvents: { [key: string]: string } = {
-        Cancel: 'danger',
         NotStarted: 'primary',
         Processing: 'warning',
         NotDone: 'notDone',
@@ -87,7 +85,6 @@ const AddMissionBooking: React.FC = () => {
                     calendar: mission.status,
                     des: mission.missionDescription,
                     tech: mission.technicianName,
-                    cancelReason: mission.cancelReason,
                     images: mission.images,
                 },
             };
@@ -108,7 +105,6 @@ const AddMissionBooking: React.FC = () => {
             const localDate = new Date(date.getTime() - offset * 60 * 1000);
             return localDate.toISOString().slice(0, 16); // 'YYYY-MM-DDTHH:mm'
         };
-        setCancelReason(event.extendedProps.cancelReason);
         setImages(event.extendedProps.images);
         setEventStartDate(formatDateTimeLocal(event.start));
         setEventEndDate(formatDateTimeLocal(event.end));
@@ -143,7 +139,6 @@ const AddMissionBooking: React.FC = () => {
     const resetModalFields = () => {
         setData({ bookingId: '', technicianId: '', missionName: '', missionDescription: '' });
         setSelectedEvent(null);
-        setCancelReason('');
     };
     const renderEventContent = (eventInfo: any) => {
         const colorClass = `fc-bg-${calendarsEvents[eventInfo.event.extendedProps.calendar]}`;
@@ -229,14 +224,14 @@ const AddMissionBooking: React.FC = () => {
                         <div>
                             <div>
                                 <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                                    Tiêu đề
+                                    Tên công việc
                                 </label>
                                 <input
                                     id="event-title"
                                     type="text"
                                     value={selectedEvent ? eventTitle : data.missionName}
                                     onChange={(e) => setData({ ...data, missionName: e.target.value })}
-                                    placeholder="Viết tiêu đề của công việc tại đây"
+                                    placeholder="Viết tên của công việc tại đây"
                                     className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                                 />
                             </div>
@@ -260,7 +255,7 @@ const AddMissionBooking: React.FC = () => {
                         {!selectedEvent && (
                             <div className="mt-6 flex gap-4">
                                 <div className="w-full">
-                                    <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                                    <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
                                         Chọn nhân viên
                                     </label>
                                     <select
@@ -336,9 +331,7 @@ dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 d
                                                         <span className="w-2 h-2 bg-white rounded-full dark:bg-transparent"></span>
                                                     </span>
                                                 </span>
-                                                {key === 'Cancel'
-                                                    ? 'Đã hủy'
-                                                    : key === 'NotStarted'
+                                                {key === 'NotStarted'
                                                     ? 'Chưa bắt đầu'
                                                     : key === 'Done'
                                                     ? 'Xong công việc'
@@ -355,45 +348,10 @@ dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 d
                                 ))}
                             </div>
                         </div>
-                        {eventLevel === 'Cancel' && cancelReason && (
-                            <div className="mt-6">
-                                <div>
-                                    <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                                        Lý do hủy
-                                    </label>
-                                    <input
-                                        id="event-title"
-                                        type="text"
-                                        value={cancelReason}
-                                        placeholder="Viết tiêu đề của công việc tại đây"
-                                        className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                    />
-                                </div>
-                            </div>
-                        )}
-                        {eventLevel === 'Cancel' && cancelReason && (
-                            <div className="mt-6">
-                                <div>
-                                    <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                                        Tệp đính kèm
-                                    </label>
-                                    <div className="flex gap-2">
-                                        {images.map((image) => {
-                                            return (
-                                                <img
-                                                    className="h-32 w-20 rounded-lg object-cover"
-                                                    src={image.linkImage}
-                                                    alt="Ảnh sản phẩm lỗi"
-                                                />
-                                            );
-                                        })}
-                                    </div>
-                                </div>
-                            </div>
-                        )}
+
                         <div className="mt-6">
                             <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                                Ngày bắt đầu
+                                Thời gian bắt đầu công việc
                             </label>
                             <div className="relative">
                                 <input
@@ -407,7 +365,7 @@ dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 d
                         {selectedEvent && (
                             <div className="mt-6">
                                 <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                                    Ngày kết thúc
+                                    Thời gian kết thúc công việc
                                 </label>
                                 <div className="relative">
                                     <input

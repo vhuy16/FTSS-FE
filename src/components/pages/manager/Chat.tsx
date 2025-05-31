@@ -156,7 +156,19 @@ const Chat = () => {
                                                 </div>
                                                 <div className="ml-3 flex-1">
                                                     <div className="flex justify-between items-center">
-                                                        <h3 className="text-sm font-semibold text-gray-800">
+                                                        <h3
+                                                            style={{
+                                                                whiteSpace: 'nowrap',
+                                                                overflow: 'hidden',
+                                                                textOverflow: 'ellipsis',
+                                                                display: 'inline-block', // hoặc block
+                                                                maxWidth: '60px', // quan trọng để ngăn overflow
+                                                                fontSize: '14px',
+                                                                fontWeight: '600',
+                                                                color: '#1d2939',
+                                                            }}
+                                                            title={room.customerName}
+                                                        >
                                                             {room.customerName}
                                                         </h3>
                                                         <span className="text-xs text-gray-400">

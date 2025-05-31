@@ -42,8 +42,46 @@ export default function ListUserTable() {
     }, [searchValue, listUser]);
     const columns: GridColDef[] = [
         { field: 'stt', headerName: 'STT', width: 50, headerClassName: 'super-app-theme--header' },
-        { field: 'username', headerName: 'Tên đăng nhập', width: 150, headerClassName: 'super-app-theme--header' },
-        { field: 'fullName', headerName: 'Họ tên', width: 200, headerClassName: 'super-app-theme--header' },
+        {
+            field: 'username',
+            headerName: 'Tên đăng nhập',
+            width: 150,
+            headerClassName: 'super-app-theme--header',
+            renderCell: (params) => (
+                <span
+                    style={{
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        width: '150px',
+                        display: 'inline-block',
+                    }}
+                    title={params.row.username}
+                >
+                    {params.row.username}
+                </span>
+            ),
+        },
+        {
+            field: 'fullName',
+            headerName: 'Họ tên',
+            width: 220,
+            headerClassName: 'super-app-theme--header',
+            renderCell: (params) => (
+                <span
+                    style={{
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        width: '200px',
+                        display: 'inline-block',
+                    }}
+                    title={params.row.fullName}
+                >
+                    {params.row.fullName}
+                </span>
+            ),
+        },
         { field: 'email', headerName: 'Email', width: 250, headerClassName: 'super-app-theme--header' },
         // { field: 'address', headerName: 'Địa chỉ', width: 300, headerClassName: 'super-app-theme--header' },
         { field: 'phoneNumber', headerName: 'SĐT', width: 150, headerClassName: 'super-app-theme--header' },
