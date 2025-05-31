@@ -47,7 +47,6 @@ const Calendar: React.FC = () => {
     const [missionId, setMissionId] = useState('');
     const [techName, setTechName] = useState('');
     const [bookingCode, setBookingCode] = useState('');
-    const [cancelReason, setCancelReason] = useState('');
     const [images, setImages] = useState<ImageItem[]>([]);
     const [events, setEvents] = useState<CalendarEvent[]>([]);
     const calendarRef = useRef<FullCalendar>(null);
@@ -57,7 +56,6 @@ const Calendar: React.FC = () => {
     const isLoadingUpdate = useAppSelector((state) => state.mission.isLoadingUpdate);
 
     const calendarsEvents: { [key: string]: string } = {
-        Cancel: 'danger',
         NotStarted: 'primary',
         Processing: 'warning',
         NotDone: 'notDone',
@@ -76,7 +74,7 @@ const Calendar: React.FC = () => {
             };
             dispatch(getAlltechnician(data));
         }
-    }, [eventStartDate]);
+    }, [eventStartDate, techName]);
     useEffect(() => {
         const newListMission = listMission?.map((mission) => {
             return {
@@ -94,7 +92,6 @@ const Calendar: React.FC = () => {
                     orderId: mission.orderId,
                     orderCode: mission.orderCode,
                     missionId: mission.id,
-                    cancelReason: mission.cancelReason,
                     images: mission.images,
                 },
             };
@@ -122,7 +119,6 @@ const Calendar: React.FC = () => {
         setBookingCode(event.extendedProps.bookingCode);
         setOrderId(event.extendedProps.orderId);
         setMissionId(event.extendedProps.missionId);
-        setCancelReason(event.extendedProps.cancelReason);
         setImages(event.extendedProps.images);
         setData({
             missionName: event.title,
@@ -140,33 +136,23 @@ const Calendar: React.FC = () => {
         formData.append('MissionDescription', data.missionDescription);
         formData.append('TechnicianId', data.technicianId);
         formData.append('Status', eventLevel);
-        if (
-            eventLevel === 'Cancel' ||
-            eventLevel === 'NotDone' ||
-            eventLevel === 'Completed' ||
-            eventLevel === 'Reported'
-        ) {
-            try {
-                const res = await dispatch(updateMission({ formData: formData, id: missionId })).unwrap();
-                if (res.status == '200') {
-                    toast.success('Cập nhật công việc thành công');
-                    closeModal();
-                    resetModalFields();
-                } else {
-                    toast.error('Cập nhật công việc không thành công');
-                }
-            } catch (error) {
-                toast.error(error as string);
+        try {
+            const res = await dispatch(updateMission({ formData: formData, id: missionId })).unwrap();
+            if (res.status == '200') {
+                toast.success('Cập nhật công việc thành công');
+                closeModal();
+                resetModalFields();
+            } else {
+                toast.error('Cập nhật công việc không thành công');
             }
-        } else {
-            toast.error('Manager chỉ được cập nhật các trạng thái được cho phép');
+        } catch (error) {
+            toast.error(error as string);
         }
     };
 
     const resetModalFields = () => {
         setData({ bookingId: '', technicianId: '', missionName: '', missionDescription: '' });
         setSelectedEvent(null);
-        setCancelReason('');
     };
     const renderEventContent = (eventInfo: any) => {
         const colorClass = `fc-bg-${calendarsEvents[eventInfo.event.extendedProps.calendar]}`;
@@ -246,21 +232,21 @@ const Calendar: React.FC = () => {
                         <div>
                             <div>
                                 <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                                    Tiêu đề
+                                    Tên công việc
                                 </label>
                                 <input
                                     id="event-title"
                                     type="text"
                                     value={data.missionName}
                                     onChange={(e) => setData({ ...data, missionName: e.target.value })}
-                                    placeholder="Viết tiêu đề của công việc tại đây"
+                                    placeholder="Viết tên của công việc tại đây"
                                     className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                                 />
                             </div>
                         </div>
                         <div className="mt-6 flex gap-4">
                             <div className="w-full">
-                                <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                                <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
                                     Chọn nhân viên
                                 </label>
                                 <select
@@ -273,11 +259,13 @@ dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 d
                                     <option selected value={JSON.stringify({ name: techName, id: data.technicianId })}>
                                         {techName}
                                     </option>
-                                    {listTech?.map((tech) => (
-                                        <option value={JSON.stringify({ name: tech.fullName, id: tech.techId })}>
-                                            {tech.fullName}
-                                        </option>
-                                    ))}
+                                    {listTech
+                                        ?.filter((tech) => tech.fullName != techName)
+                                        .map((tech) => (
+                                            <option value={JSON.stringify({ name: tech.fullName, id: tech.techId })}>
+                                                {tech.fullName}
+                                            </option>
+                                        ))}
                                 </select>
                             </div>
                         </div>
@@ -327,9 +315,7 @@ dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 d
                                                         <span className="w-2 h-2 bg-white rounded-full dark:bg-transparent"></span>
                                                     </span>
                                                 </span>
-                                                {key === 'Cancel'
-                                                    ? 'Đã hủy'
-                                                    : key === 'NotStarted'
+                                                {key === 'NotStarted'
                                                     ? 'Chưa bắt đầu'
                                                     : key === 'Done'
                                                     ? 'Xong công việc'
@@ -346,42 +332,7 @@ dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 d
                                 ))}
                             </div>
                         </div>
-                        {eventLevel === 'Cancel' && cancelReason && (
-                            <div className="mt-6">
-                                <div>
-                                    <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                                        Lý do hủy
-                                    </label>
-                                    <input
-                                        id="event-title"
-                                        type="text"
-                                        value={cancelReason}
-                                        placeholder="Viết tiêu đề của công việc tại đây"
-                                        className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                    />
-                                </div>
-                            </div>
-                        )}
-                        {eventLevel === 'Cancel' && cancelReason && (
-                            <div className="mt-6">
-                                <div>
-                                    <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                                        Tệp đính kèm
-                                    </label>
-                                    <div className="flex gap-2">
-                                        {images.map((image) => {
-                                            return (
-                                                <img
-                                                    className="h-32 w-20 rounded-lg object-cover"
-                                                    src={image.linkImage}
-                                                    alt="Ảnh sản phẩm lỗi"
-                                                />
-                                            );
-                                        })}
-                                    </div>
-                                </div>
-                            </div>
-                        )}
+
                         <div className="mt-6">
                             <div>
                                 <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
@@ -398,7 +349,7 @@ dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 d
                         </div>
                         <div className="mt-6">
                             <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                                Ngày bắt đầu
+                                Thời gian bắt đầu công việc
                             </label>
                             <div className="relative">
                                 <input
@@ -412,7 +363,7 @@ dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 d
                         </div>
                         <div className="mt-6">
                             <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                                Ngày kết thúc
+                                Thời gian kết thúc công việc
                             </label>
                             <div className="relative">
                                 <input
