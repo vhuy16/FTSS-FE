@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import PageBreadcrumb from '@common/PageBreadCrumb';
 import { useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@redux/hook';
@@ -19,6 +19,7 @@ export default function OrderDetail() {
     const dispatch = useAppDispatch();
     const orderDetail = useAppSelector((state) => state.order.order);
     const isLoading = useAppSelector((state) => state.order.isLoading);
+    const [isOpen, setIsOpen] = useState(false);
     const total = orderDetail?.orderDetails.reduce((total: number, item: DetailOrder) => {
         return total + item.price * item.quantity;
     }, 0);
@@ -238,11 +239,28 @@ export default function OrderDetail() {
                                                         {orderDetail.returnRequests[0].mediaFiles.map((media) => {
                                                             if (media.mediaType === 'IMAGE') {
                                                                 return (
-                                                                    <img
-                                                                        className="h-32 w-20 rounded-lg object-cover"
-                                                                        src={media.mediaLink}
-                                                                        alt="Ảnh sản phẩm lỗi"
-                                                                    />
+                                                                    <>
+                                                                        <img
+                                                                            className="h-32 w-20 rounded-lg object-cover"
+                                                                            src={media.mediaLink}
+                                                                            alt="Ảnh sản phẩm lỗi"
+                                                                            onClick={() => setIsOpen(true)}
+                                                                        />
+                                                                        {/* Modal hiển thị ảnh lớn */}
+                                                                        {isOpen && (
+                                                                            <div
+                                                                                className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50"
+                                                                                onClick={() => setIsOpen(false)}
+                                                                            >
+                                                                                <img
+                                                                                    className="max-h-[90vh] max-w-[90vw] rounded-lg shadow-lg"
+                                                                                    src={media.mediaLink}
+                                                                                    alt="Phóng to ảnh"
+                                                                                    onClick={(e) => e.stopPropagation()} // tránh đóng khi click vào ảnh
+                                                                                />
+                                                                            </div>
+                                                                        )}
+                                                                    </>
                                                                 );
                                                             } else {
                                                                 return (
