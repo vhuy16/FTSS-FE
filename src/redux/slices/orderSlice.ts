@@ -76,6 +76,7 @@ export type Order = {
   voucher: Voucher | null;
   returnRequests: ReturnRequest[] | null;
   installationDate: string | null;
+  bookingStatus: string | null;
 };
 type initialStateProduct = {
   url: string;
