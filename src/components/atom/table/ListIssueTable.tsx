@@ -82,7 +82,26 @@ export default function ListIssueTable() {
                 </div>
             ),
         },
-        { field: 'issueCategoryName', headerName: 'Danh mục', width: 250, headerClassName: 'super-app-theme--header' },
+        {
+            field: 'issueCategoryName',
+            headerName: 'Danh mục',
+            width: 250,
+            headerClassName: 'super-app-theme--header',
+            renderCell: (params) => (
+                <span
+                    style={{
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        display: 'inline-block',
+                        textOverflow: 'ellipsis',
+                        width: '250px',
+                    }}
+                    title={params.row.issueCategoryName}
+                >
+                    {params.row.issueCategoryName}
+                </span>
+            ),
+        },
 
         {
             field: 'createDate',
