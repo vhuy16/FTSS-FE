@@ -68,14 +68,17 @@ const ChatboxWidget = ({ isOpen, onClose, order, setIsOpen, booking }: ChatboxWi
 
   useEffect(() => {
     if (chatMode === "employee" && roomId) {
-      dispatch(getRoomDetail(roomId));
+      console.log("Calling getRoomDetail for room:", roomId);
+      dispatch(getRoomDetail(roomId)).then((res) => {
+        console.log("room:", res);
+      });
       const channel = subscribeToRoomMessages(roomId, dispatch);
       return () => {
-        channel && channel.unsubscribe();
+        console.log("Unsubscribing from room:", roomId);
+        channel?.unsubscribe();
       };
     }
-  }, [roomId, chatMode]);
-
+  }, [roomId, chatMode, dispatch]);
   useEffect(() => {
     if (order || booking) {
       setIsOpen(true);

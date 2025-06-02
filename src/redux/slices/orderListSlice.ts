@@ -27,6 +27,7 @@ export type Order = {
   isAssigned: boolean;
   isEligible: boolean;
   phoneNumber: string;
+  bookingStatus: string;
 };
 export interface OrderDetail {
   productName: string;
