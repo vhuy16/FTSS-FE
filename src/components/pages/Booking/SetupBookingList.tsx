@@ -60,14 +60,35 @@ const SetupBookingList = () => {
                       >
                         <div className="p-6">
                           <div className="flex flex-wrap justify-between items-start gap-4 mb-4">
-                            <div>
-                              <span
-                                className={`px-3 py-1 rounded-md text-sm font-medium
-                              ${setup?.isEligible ? "bg-green-100 text-green-600" : "bg-red-100 text-red-600"}
-                                     `}
-                              >
-                                {setup?.isEligible ? "Bạn có 1 lần bảo trì miễn phí" : "Dịch vụ bảo trì tính phí"}
-                              </span>
+                            <div className="w-full">
+                              <div className="flex justify-between w-full">
+                                <span
+                                  className={`px-3 py-1 rounded-md text-sm font-medium
+          ${setup?.isEligible ? "bg-green-100 text-green-600" : "bg-red-100 text-red-600"}
+        `}
+                                >
+                                  {setup?.isEligible ? "Bạn có 1 lần bảo trì miễn phí" : "Dịch vụ bảo trì tính phí"}
+                                </span>
+                                <span
+                                  className={`px-3 py-1 rounded-md text-sm font-medium
+    ${
+      setup?.bookingStatus === "COMPLETED" ||
+      setup?.bookingStatus === "DONE" ||
+      setup?.bookingStatus === "CANCELLED" ||
+      setup?.bookingStatus === "MISSED"
+        ? "bg-green-100 text-green-600"
+        : "bg-yellow-100 text-yellow-700"
+    }
+  `}
+                                >
+                                  {setup?.bookingStatus === "COMPLETED" ||
+                                  setup?.bookingStatus === "DONE" ||
+                                  setup?.bookingStatus === "CANCELLED" ||
+                                  setup?.bookingStatus === "MISSED"
+                                    ? "Hoàn tất bảo trì"
+                                    : "Đang trong quá trình bảo trì"}
+                                </span>
+                              </div>
 
                               <h2
                                 className="text-xl font-semibold text-gray-900 hover:text-blue-600 cursor-pointer mt-4"
@@ -77,6 +98,7 @@ const SetupBookingList = () => {
                               </h2>
                             </div>
                           </div>
+
                           <div className="flex flex-wrap md:flex-nowrap gap-6">
                             <div className="w-full md:w-3/4">
                               <div className="flex justify-between mb-4">
@@ -92,9 +114,13 @@ const SetupBookingList = () => {
                                   <BaseBtnGreen onClick={() => navigate(`/setup-booking/detail/${setup?.id}`)}>
                                     Xem chi tiết
                                   </BaseBtnGreen>
-                                  <BaseButtonOuterspace onClick={() => navigate(`/setup-booking/service/${setup?.id}`)}>
-                                    Đặt dịch vụ
-                                  </BaseButtonOuterspace>
+                                  {["COMPLETED", "DONE", "CANCELLED", "MISSED"].includes(setup?.bookingStatus) && (
+                                    <BaseButtonOuterspace
+                                      onClick={() => navigate(`/setup-booking/service/${setup?.id}`)}
+                                    >
+                                      Đặt dịch vụ
+                                    </BaseButtonOuterspace>
+                                  )}
                                 </div>
                               </div>
                               <div className="flex flex-col gap-4 ml-8">

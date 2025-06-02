@@ -882,7 +882,7 @@ const OrderDetailScreen = () => {
                       <div className="order-buttons">
                         <BaseButtonOuterspace
                           className="confirm-button"
-                          onClick={() => openChatboxWithOrder(order as Order)}
+                          onClick={() => openChatboxWithOrder(order as unknown as Order)}
                         >
                           Báo cáo/Khiếu nại
                         </BaseButtonOuterspace>
