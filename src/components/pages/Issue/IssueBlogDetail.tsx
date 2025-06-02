@@ -135,16 +135,6 @@ const IssueBlogDetail = () => {
                         </div>
                         <div className="product-info">
                           <ProductTitle className="font-normal">{product.productName}</ProductTitle>
-                          <div className="flex items-center justify-between text-sm font-medium">
-                            <span className="text-gray" style={{ color: "gray" }}>
-                              {product.productDescription}
-                            </span>
-                            {/* <span className="text-outerspace font-bold text-red" style={{ color: "red" }}>
-                              {product.status === "Available"
-                                ? `${currencyFormat(product.price)}`
-                                : "Sản phẩm đã dừng hoạt động"}
-                            </span> */}
-                          </div>
                         </div>
                       </ProductCardWrapper>
                     ))}

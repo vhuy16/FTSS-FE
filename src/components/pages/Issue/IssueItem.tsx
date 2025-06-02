@@ -25,11 +25,20 @@ const IssueItem: React.FC<IssueItemProps> = ({ issue }) => {
         />
       </div>
       <div className="p-6">
-        <h2 className="text-2xl font-bold text-gray-900 hover:text-blue-600 transition-colors duration-300 mb-2">
+        <h2 className="text-4xl font-bold text-gray-900 hover:text-blue-600 transition-colors duration-300 mb-2">
           {issue.title}
         </h2>
-        <div className="text-sm text-gray-600600 mb-4">
-          <span>{issue.description}</span>
+        <div
+          className="text-lg text-gray-600 mb-4 flex-1"
+          style={{
+            display: "-webkit-box",
+            WebkitLineClamp: 5,
+            WebkitBoxOrient: "vertical",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+        >
+          {issue.description}
         </div>
         <div className="text-sm text-gray-800 mb-4">
           <span className="mr-1">Ngày tạo:</span>
