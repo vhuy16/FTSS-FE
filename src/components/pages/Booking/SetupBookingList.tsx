@@ -34,7 +34,6 @@ const SetupBookingList = () => {
     dispatch(getAllOrdersByUsers("COMPLETED"));
   }, [dispatch]);
   const navigate = useNavigate();
-
   return (
     <WishListScreenWrapper className="page-py-spacing">
       {isLoading || isLoadingProfile ? (
@@ -70,26 +69,21 @@ const SetupBookingList = () => {
                                   {setup?.isEligible ? "Bạn có 1 lần bảo trì miễn phí" : "Dịch vụ bảo trì tính phí"}
                                 </span>
                                 <span
-                                  className={`px-3 py-1 rounded-md text-sm font-medium
-    ${
-      setup?.bookingStatus === "COMPLETED" ||
-      setup?.bookingStatus === "DONE" ||
-      setup?.bookingStatus === "CANCELLED" ||
-      setup?.bookingStatus === "MISSED"
-        ? "bg-green-100 text-green-600"
-        : "bg-yellow-100 text-yellow-700"
-    }
-  `}
+                                  className={`px-3 py-1 rounded-md text-sm font-medium ${
+                                    [null, undefined, "COMPLETED", "DONE", "CANCELLED", "MISSED"].includes(
+                                      setup?.bookingStatus
+                                    )
+                                      ? "bg-green-100 text-green-600"
+                                      : "bg-yellow-100 text-yellow-700"
+                                  }`}
                                 >
-                                  {setup?.bookingStatus === "COMPLETED" ||
-                                  setup?.bookingStatus === "DONE" ||
-                                  setup?.bookingStatus === "CANCELLED" ||
-                                  setup?.bookingStatus === "MISSED"
-                                    ? "Hoàn tất bảo trì"
+                                  {[null, undefined, "COMPLETED", "DONE", "CANCELLED", "MISSED"].includes(
+                                    setup?.bookingStatus
+                                  )
+                                    ? "Đang rãnh - Có thể đặt bảo trì"
                                     : "Đang trong quá trình bảo trì"}
                                 </span>
                               </div>
-
                               <h2
                                 className="text-xl font-semibold text-gray-900 hover:text-blue-600 cursor-pointer mt-4"
                                 onClick={() => navigate(`/setup-booking/detail/${setup?.id}`)}
@@ -114,7 +108,8 @@ const SetupBookingList = () => {
                                   <BaseBtnGreen onClick={() => navigate(`/setup-booking/detail/${setup?.id}`)}>
                                     Xem chi tiết
                                   </BaseBtnGreen>
-                                  {["COMPLETED", "DONE", "CANCELLED", "MISSED"].includes(setup?.bookingStatus) && (
+                                  {(setup?.bookingStatus == null ||
+                                    ["COMPLETED", "DONE", "CANCELLED", "MISSED"].includes(setup.bookingStatus)) && (
                                     <BaseButtonOuterspace
                                       onClick={() => navigate(`/setup-booking/service/${setup?.id}`)}
                                     >
