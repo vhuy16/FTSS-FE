@@ -110,13 +110,13 @@ const BookingHistory: React.FC<BookingItemListProps> = ({ bookings }) => {
         bg: "bg-gray-100",
         text: "text-gray-800",
         icon: <FaClock className="inline-block mr-1" />,
-        label: "Chưa bắt đầu",
+        label: "Chưa phân công",
       },
       null: {
         bg: "bg-gray-100",
         text: "text-gray-800",
         icon: <FaClock className="inline-block mr-1" />,
-        label: "Chưa bắt đầu",
+        label: "Chưa phân công",
       },
       ASSIGNED: {
         bg: "bg-yellow-100",
@@ -146,7 +146,7 @@ const BookingHistory: React.FC<BookingItemListProps> = ({ bookings }) => {
         bg: "bg-red-100",
         text: "text-red-800",
         icon: <FaTimes className="inline-block mr-1" />,
-        label: "Chưa bảo trì",
+        label: "Chưa xong",
       },
     };
 

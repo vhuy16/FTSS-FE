@@ -585,7 +585,7 @@ const OrderDetailScreen = () => {
         bg: "bg-red-100",
         text: "text-red-800",
         icon: <FaTimes className="inline-block mr-1" />,
-        label: "Chưa lắp đặt",
+        label: "Chưa xong",
       },
       DONE: {
         bg: "bg-green-100",
@@ -721,7 +721,7 @@ const OrderDetailScreen = () => {
                       >
                         {order?.status === "PROCESSING" && "Đang xử lý"}
                         {order?.status === "PROCESSED" && "Đã xử lý"}
-                        {order?.status === "PENDING_DELIVERY" && "Chờ giao hàng"}
+                        {order?.status === "PENDING_DELIVERY" && "Đang giao hàng"}
                         {order?.status === "COMPLETED" && "Hoàn thành"}
                         {order?.status === "CANCELLED" && "Đã hủy"}
                         {order?.status === "RETURNED" && "Trả hàng"}
