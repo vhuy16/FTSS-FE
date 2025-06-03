@@ -80,7 +80,7 @@ const SetupBookingList = () => {
                                   {[null, undefined, "COMPLETED", "DONE", "CANCELLED", "MISSED"].includes(
                                     setup?.bookingStatus
                                   )
-                                    ? "Đang rãnh - Có thể đặt bảo trì"
+                                    ? "Có thể đặt bảo trì"
                                     : "Đang trong quá trình bảo trì"}
                                 </span>
                               </div>

@@ -161,9 +161,9 @@ const OrderListScreen = () => {
                       {key === "ALL" && "Tất cả"}
                       {key === "PROCESSING" && "Đang xử lý"}
                       {key === "PROCESSED" && "Đã xử lý"}
-                      {key === "PENDING_DELIVERY" && "Chờ giao hàng"}
+                      {key === "PENDING_DELIVERY" && "Đang giao hàng"}
                       {key === "DONE" && "Đã lắp đặt"}
-                      {key === "NOTDONE" && "Chưa lắp đặt"}
+                      {key === "NOTDONE" && "Chưa xong"}
                       {key === "COMPLETED" && "Hoàn thành"}
                       {key === "CANCELLED" && "Đã hủy"}
                       {key === "RETURN" && "Trả hàng"}

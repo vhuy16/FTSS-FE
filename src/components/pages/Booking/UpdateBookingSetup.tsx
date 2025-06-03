@@ -125,13 +125,13 @@ const UpdateBookingSetup = () => {
         bg: "bg-green-100",
         text: "text-green-800",
         icon: <FaTruck className="inline-block mr-1" />,
-        label: "Chờ giao hàng",
+        label: "Đang giao hàng",
       },
       NOTDONE: {
         bg: "bg-red-100",
         text: "text-red-800",
         icon: <FaTimes className="inline-block mr-1" />,
-        label: "Chưa lắp đặt",
+        label: "Chưa xong",
       },
       DONE: {
         bg: "bg-green-100",

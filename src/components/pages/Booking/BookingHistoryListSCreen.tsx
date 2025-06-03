@@ -139,12 +139,12 @@ const BookingHistoryListSCreen = () => {
                       onClick={() => handleTabClick(key as BookingStatus)}
                     >
                       {key === "ALL" && "Tất cả"}
-                      {key === "NOTASSIGN" && "Chưa bắt đầu"}
+                      {key === "NOTASSIGN" && "Chưa phân công"}
                       {key === "ASSIGNED" && "Đã phân công"}
                       {key === "PROCESSING" && "Đang tiến hành"}
                       {key === "DONE" && "Hoàn thành bảo trì"}
                       {key === "COMPLETED" && "Đã bảo trì"}
-                      {key === "NOTDONE" && "Chưa bảo trì"}
+                      {key === "NOTDONE" && "Chưa xong"}
                       {key === "CANCELLED" && "Đã hủy"}
                     </button>
                   ))}
