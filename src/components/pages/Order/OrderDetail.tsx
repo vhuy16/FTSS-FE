@@ -396,6 +396,7 @@ const OrderDetailScreen = () => {
   }, 0);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [selectedOrderReport, setSelectedOrderReport] = useState<Order | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
   const dispatch = useAppDispatch();
   // useEffect(() => {
   //   if (!orderId) return;
@@ -761,12 +762,29 @@ const OrderDetailScreen = () => {
                                   <source src={file.mediaLink} type="video/mp4" />
                                 </video>
                               ) : (
-                                <img
-                                  key={idx}
-                                  src={file.mediaLink}
-                                  alt={`media-${idx}`}
-                                  className="w-48 h-32 object-cover rounded shadow"
-                                />
+                                <>
+                                  <img
+                                    key={idx}
+                                    src={file.mediaLink}
+                                    alt={`media-${idx}`}
+                                    className="w-48 h-32 object-cover rounded shadow"
+                                    onClick={() => setIsOpen(true)}
+                                  />
+                                  {/* Modal hiển thị ảnh lớn */}
+                                  {isOpen && (
+                                    <div
+                                      className="fixed inset-0 bg-slate-950 bg-opacity-70 flex items-center justify-center z-50"
+                                      onClick={() => setIsOpen(false)}
+                                    >
+                                      <img
+                                        className="max-h-[70vh] max-w-[70vw] rounded-lg shadow-lg"
+                                        src={file.mediaLink}
+                                        alt="Phóng to ảnh"
+                                        onClick={(e) => e.stopPropagation()} // tránh đóng khi click vào ảnh
+                                      />
+                                    </div>
+                                  )}
+                                </>
                               )
                             )
                           ) : (
