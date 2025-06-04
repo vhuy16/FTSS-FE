@@ -31,9 +31,9 @@ export const subscribeToRoomChanges = (dispatch: AppDispatch) => {
         .on(
             'postgres_changes',
             {
-                event: 'INSERT', // chỉ cần lắng nghe khi có tin nhắn mới
+                event: '*',
                 schema: 'public',
-                table: 'rooms',
+                table: 'room',
             },
             (payload) => {
                 dispatch(getAllRoom());
