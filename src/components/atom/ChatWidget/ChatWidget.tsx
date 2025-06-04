@@ -134,8 +134,7 @@ const ChatboxWidget = ({ isOpen, onClose, order, setIsOpen, booking }: ChatboxWi
     messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
   };
   const handleSendMessage = () => {
-    if (!inputMessage.trim() || !userId) return;
-
+    if (!userId || (!inputMessage.trim() && mediaFiles.length === 0)) return;
     if (chatMode === "ai") {
       // Gửi tin nhắn qua Redux action
       const userMsg = {
@@ -287,15 +286,17 @@ const ChatboxWidget = ({ isOpen, onClose, order, setIsOpen, booking }: ChatboxWi
                           </div>
                         )}
                         <div className="flex flex-col max-w-[80%] space-y-2">
-                          <div
-                            className={`p-4 rounded-2xl ${
-                              msg.userId === userId
-                                ? "bg-[#10ac97] text-white self-end"
-                                : "bg-white text-gray-800 self-start"
-                            }`}
-                          >
-                            {msg.text}
-                          </div>
+                          {msg.text && (
+                            <div
+                              className={`p-4 rounded-2xl ${
+                                msg.userId === userId
+                                  ? "bg-[#10ac97] text-white self-end"
+                                  : "bg-white text-gray-800 self-start"
+                              }`}
+                            >
+                              {msg.text}
+                            </div>
+                          )}
                           {msg.media && msg.media.length > 0 && (
                             <div className={`${msg.userId === userId ? "self-end" : "self-start"}`}>
                               {msg.media.map((mediaItem, idx) => (
