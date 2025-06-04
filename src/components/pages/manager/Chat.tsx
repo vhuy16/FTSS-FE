@@ -123,7 +123,7 @@ const Chat = () => {
     return (
         <>
             <PageBreadcrumb pageTitle="Tin nhắn" />
-            {isLoading ? (
+            {isLoading && rooms.length === 0 ? (
                 <LoadingPage></LoadingPage>
             ) : (
                 <div className="space-y-6" style={{ height: '80vh' }}>
@@ -243,15 +243,18 @@ const Chat = () => {
                                                                 />
                                                             ),
                                                         )}
-                                                    <div
-                                                        className={`px-4 py-2 rounded-xl max-w-[70%] ${
-                                                            message.role === 'Manager'
-                                                                ? 'bg-[#4F46E5] text-white'
-                                                                : 'bg-gray-100 text-gray-800'
-                                                        }`}
-                                                    >
-                                                        <p className="text-sm leading-5">{message.text}</p>
-                                                    </div>
+                                                    {message.text && (
+                                                        <div
+                                                            className={`px-4 py-2 rounded-xl max-w-[70%] ${
+                                                                message.role === 'Manager'
+                                                                    ? 'bg-[#4F46E5] text-white'
+                                                                    : 'bg-gray-100 text-gray-800'
+                                                            }`}
+                                                        >
+                                                            <p className="text-sm leading-5">{message.text}</p>
+                                                        </div>
+                                                    )}
+
                                                     <p className="text-xs text-gray-400 mt-1">
                                                         {message.timestamp.split('T')[0]}
                                                         {' lúc '}
