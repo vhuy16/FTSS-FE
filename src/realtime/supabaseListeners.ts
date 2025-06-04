@@ -12,11 +12,12 @@ export const subscribeToRoomMessages = (roomId: string, dispatch: AppDispatch) =
                 event: '*', // lắng nghe tất cả: INSERT, UPDATE, DELETE
                 schema: 'public',
                 table: 'messages',
-                filter: `room_id=eq.${roomId}`, // chỉ lắng nghe tin nhắn thuộc roomId này
+                // filter: `room_id=eq.${roomId}`, // chỉ lắng nghe tin nhắn thuộc roomId này
             },
-            (payload) => {
+            async (payload) => {
                 // Gọi lại API để lấy toàn bộ message mới (hoặc bạn có thể xử lý payload trực tiếp để tối ưu)
-                dispatch(getRoomDetail(roomId));
+                await dispatch(getRoomDetail(roomId));
+                await dispatch(getAllRoom());
             },
         )
         .subscribe((status) => {
@@ -39,7 +40,9 @@ export const subscribeToRoomChanges = (dispatch: AppDispatch) => {
                 dispatch(getAllRoom());
             },
         )
-        .subscribe();
+        .subscribe((status) => {
+            console.log('🟢 Đã kết nối room channel:', status);
+        });
 
     return channel;
 };
