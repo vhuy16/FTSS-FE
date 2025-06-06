@@ -153,22 +153,18 @@ const SetupBookingDetail = () => {
                   <div className="flex items-center">
                     <span className="text-gray-800 font-bold mr-2">Trạng thái bể cá:</span>
                     <span
-                      className={`px-3 py-1 rounded-md text-sm font-medium
-    ${
-      orderDetail?.bookingStatus === "COMPLETED" ||
-      orderDetail?.bookingStatus === "DONE" ||
-      orderDetail?.bookingStatus === "CANCELLED" ||
-      orderDetail?.bookingStatus === "MISSED"
-        ? "bg-green-100 text-green-600"
-        : "bg-yellow-100 text-yellow-700"
-    }
-  `}
+                      className={`px-3 py-1 rounded-md text-sm font-medium ${
+                        [null, undefined, "COMPLETED", "DONE", "CANCELLED", "MISSED"].includes(
+                          orderDetail?.bookingStatus
+                        )
+                          ? "bg-green-100 text-green-600"
+                          : "bg-yellow-100 text-yellow-700"
+                      }`}
                     >
-                      {orderDetail?.bookingStatus === "COMPLETED" ||
-                      orderDetail?.bookingStatus === "DONE" ||
-                      orderDetail?.bookingStatus === "CANCELLED" ||
-                      orderDetail?.bookingStatus === "MISSED"
-                        ? "Hoàn tất bảo trì"
+                      {[null, undefined, "COMPLETED", "DONE", "CANCELLED", "MISSED"].includes(
+                        orderDetail?.bookingStatus
+                      )
+                        ? "Có thể đặt bảo trì"
                         : "Đang trong quá trình bảo trì"}
                     </span>
                   </div>
