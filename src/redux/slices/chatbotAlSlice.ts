@@ -1,67 +1,67 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import axios from 'axios';
 
 interface ChatResponse {
-  response: string;
-  tip: string;
+    response: string;
+    tip: string;
 }
 
 interface ChatState {
-  data: ChatResponse | null;
-  loading: boolean;
-  error: string | null;
+    data: ChatResponse | null;
+    loading: boolean;
+    error: string | null;
 }
 
 const initialState: ChatState = {
-  data: null,
-  loading: false,
-  error: null,
+    data: null,
+    loading: false,
+    error: null,
 };
 
 export const sendChatbotAlMessage = createAsyncThunk<ChatResponse, string, { rejectValue: string }>(
-  "chat/sendMessage",
-  async (message, { rejectWithValue }) => {
-    try {
-      const res = await axios.post(
-        "https://chatbot-l2vmvfxre-self-check-out.vercel.app/generate",
-        { message },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
+    'chat/sendMessage',
+    async (message, { rejectWithValue }) => {
+        try {
+            const res = await axios.post(
+                'https://chatbot-kyqx9xn9p-self-check-out.vercel.app/generate',
+                { message },
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                },
+            );
+            return res.data as ChatResponse;
+        } catch (err: any) {
+            return rejectWithValue(err.response?.data?.message || 'Unknown error');
         }
-      );
-      return res.data as ChatResponse;
-    } catch (err: any) {
-      return rejectWithValue(err.response?.data?.message || "Unknown error");
-    }
-  }
+    },
 );
 
 const chatbotAlSlice = createSlice({
-  name: "chat",
-  initialState,
-  reducers: {
-    clearChatResponse: (state) => {
-      state.data = null;
-      state.error = null;
+    name: 'chat',
+    initialState,
+    reducers: {
+        clearChatResponse: (state) => {
+            state.data = null;
+            state.error = null;
+        },
     },
-  },
-  extraReducers: (builder) => {
-    builder
-      .addCase(sendChatbotAlMessage.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(sendChatbotAlMessage.fulfilled, (state, action) => {
-        state.loading = false;
-        state.data = action.payload;
-      })
-      .addCase(sendChatbotAlMessage.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload || "Lỗi không xác định";
-      });
-  },
+    extraReducers: (builder) => {
+        builder
+            .addCase(sendChatbotAlMessage.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(sendChatbotAlMessage.fulfilled, (state, action) => {
+                state.loading = false;
+                state.data = action.payload;
+            })
+            .addCase(sendChatbotAlMessage.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload || 'Lỗi không xác định';
+            });
+    },
 });
 
 export const { clearChatResponse } = chatbotAlSlice.actions;

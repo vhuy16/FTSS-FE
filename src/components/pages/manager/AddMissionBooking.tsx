@@ -123,7 +123,7 @@ const AddMissionBooking: React.FC = () => {
                 const res = await dispatch(assignBooking(newEvent)).unwrap();
                 if (res.status == '201') {
                     navigate('/calendar');
-                    toast.success('Giao nhiệm vụ cho nhân viên thành công');
+                    toast.success('Giao công việc cho nhân viên thành công');
                     closeModal();
                     resetModalFields();
                 } else {
