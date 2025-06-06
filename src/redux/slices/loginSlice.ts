@@ -31,7 +31,7 @@ const loginSlice = createSlice({
       state.isError = false;
       // Xóa token khỏi Local Storage
       localStorage.removeItem("access_token");
-      localStorage.removeItem("roomId");
+      // localStorage.removeItem("roomId");
       localStorage.removeItem("role");
       localStorage.removeItem("userId");
     },

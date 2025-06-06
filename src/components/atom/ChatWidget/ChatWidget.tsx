@@ -40,17 +40,16 @@ const ChatboxWidget = ({ isOpen, onClose, order, setIsOpen, booking }: ChatboxWi
     if (chatMode !== "employee" || !managerID) return;
 
     const getOrCreateRoom = async () => {
-      const savedRoomId = localStorage.getItem("roomId");
-      if (savedRoomId) {
-        setRoomId(savedRoomId);
-        return;
-      }
-
+      // const savedRoomId = localStorage.getItem("roomId");
+      // if (savedRoomId) {
+      //   setRoomId(savedRoomId);
+      //   return;
+      // }
       try {
         const res = await dispatch(CreateChatRoom({ managerId: managerID })).unwrap();
         if (res?.id) {
           setRoomId(res.id);
-          localStorage.setItem("roomId", res.id);
+          // localStorage.setItem("roomId", res.id);
         }
       } catch (err) {
         console.error("Không thể tạo hoặc lấy roomId:", err);
