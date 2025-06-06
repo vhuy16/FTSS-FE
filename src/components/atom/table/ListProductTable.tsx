@@ -109,6 +109,7 @@ export default function ListProductTable() {
             headerName: 'Số lượng',
             width: 150,
             headerClassName: 'super-app-theme--header',
+            renderCell: (params) => (params.row.quantity >= 0 ? params.row.quantity : 0),
         },
 
         {

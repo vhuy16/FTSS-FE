@@ -264,7 +264,7 @@ export default function OrderDeliveryPopup({ order, setIsModalEditOpen }: OrderP
                         <ListItemIcon>
                             <AddIcon fontSize="small" className="text-yellow-600" />
                         </ListItemIcon>
-                        <ListItemText>Thêm nhiệm vụ</ListItemText>
+                        <ListItemText>Thêm công việc</ListItemText>
                     </MenuItem>
                 )}
             </Menu>
